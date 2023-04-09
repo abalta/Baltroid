@@ -13,8 +13,8 @@ android {
 
     defaultConfig {
         applicationId = "com.baltroid.apps"
-        versionCode = 5
-        versionName = "1.0.4"
+        versionCode = 1
+        versionName = "1.0.0"
     }
 }
 

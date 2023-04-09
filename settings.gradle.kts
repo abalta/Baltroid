@@ -18,13 +18,13 @@ dependencyResolutionManagement {
 rootProject.name = "Baltroid"
 
 include(":app")
+include(":core:core-common")
+include(":core:core-network")
 /*
 include(":benchmark")
-include(":core:core-common")
 include(":core:core-data")
 include(":core:core-database")
 include(":core:core-datastore")
-include(":core:core-network")
 include(":core:core-domain")
 include(":core:core-model")
 include(":core:core-ui")
