@@ -414,7 +414,7 @@ val MaterialTheme.localDimens
     @ReadOnlyComposable
     get() = LocalDimensions.current
 
-val MaterialTheme.localTextStyle
+val MaterialTheme.localTextStyles
     @Composable
     @ReadOnlyComposable
     get() = LocalTextStyles.current
