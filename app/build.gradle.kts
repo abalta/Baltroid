@@ -29,4 +29,6 @@ dependencies {
     implementation(libs.dagger.hilt.android)
     kapt(libs.dagger.hilt.compiler)
     implementation(libs.androidx.room.runtime)
+
+    implementation(libs.androidx.compose.material)
 }
