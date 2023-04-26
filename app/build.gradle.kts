@@ -31,4 +31,7 @@ dependencies {
     implementation(libs.androidx.room.runtime)
 
     implementation(libs.androidx.compose.material)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.coil.compose)
+    debugImplementation(libs.androidx.compose.ui.tooling)
 }

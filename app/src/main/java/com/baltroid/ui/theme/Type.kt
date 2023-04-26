@@ -6,7 +6,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -128,7 +127,7 @@ val DarkThemeTextStyles = TextStyles(
         fontWeight = FontWeight.Normal,
         fontSize = 14.sp,
         lineHeight = 18.5.sp,
-        color = Color(0xCCFFFFFF)
+        color = White_alpha08
     ),
     summaryIconText = TextStyle(
         fontFamily = Poppins,
@@ -170,7 +169,7 @@ val DarkThemeTextStyles = TextStyles(
         fontFamily = Poppins,
         fontSize = 11.sp,
         fontWeight = FontWeight.Medium,
-        color = Color(0x66FFFFFF)
+        color = White_alpha04
     ),
     episodeSelectedText = TextStyle(
         fontFamily = SpaceGrotesk,
