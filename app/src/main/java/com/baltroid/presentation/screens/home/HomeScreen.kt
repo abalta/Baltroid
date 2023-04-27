@@ -1,7 +1,5 @@
 package com.baltroid.presentation.screens.home
 
-import androidx.annotation.DrawableRes
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -32,13 +30,13 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import coil.compose.AsyncImage
 import com.baltroid.apps.R
 import com.baltroid.presentation.common.HorizontalSpacer
 import com.baltroid.presentation.common.SimpleIcon
@@ -197,23 +195,32 @@ fun StoriesRow(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp31),
     ) {
-        item { StoryImage(imgRes = R.drawable.woods_image, isNew = true) {} }
-        item { StoryImage(imgRes = R.drawable.woods_image, isNew = false) {} }
-        item { StoryImage(imgRes = R.drawable.woods_image, isNew = true) {} }
+        item {
+            StoryImage(
+                imgUrl = "https://www.figma.com/file/MYxJBHOTh2JfbmrYbojuxc/image/1d56515ab14098684701024283a07d386bbb94e7?fuid=1097272770330818914",
+                isNew = true
+            ) {}
+        }
+        item {
+            StoryImage(
+                imgUrl = "https://www.figma.com/file/MYxJBHOTh2JfbmrYbojuxc/image/d7ac3769304cdecbbe3a0ff5b327d15512547d7e?fuid=1097272770330818914",
+                isNew = false
+            ) {}
+        }
     }
 }
 
 @Composable
 fun StoryImage(
-    @DrawableRes imgRes: Int,
+    imgUrl: String,
     isNew: Boolean,
     onClick: () -> Unit
 ) {
     Box(
         modifier = Modifier.clickable { onClick.invoke() }
     ) {
-        Image(
-            painter = painterResource(id = imgRes),
+        AsyncImage(
+            model = imgUrl,
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
