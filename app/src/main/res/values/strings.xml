@@ -14,4 +14,12 @@
     <string name="marks">İŞARETLEMELER</string>
     <string name="stories">HİKAYELER</string>
     <string name="authors">YAZARLAR</string>
+    <string name="settings">AYARLAR</string>
+    <string name="light">AÇIK</string>
+    <string name="notifications">BİLDİRİMLER</string>
+    <string name="app_settings">UYGULAMA AYARLARI</string>
+    <string name="privacy">GİZLİLİK</string>
+    <string name="personal_datas">KİŞİSEL VERİLER</string>
+    <string name="user_infos">KULLANICI BİLGİLERİ</string>
+    <string name="dark">KOYU</string>
 </resources>
