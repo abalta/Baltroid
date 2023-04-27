@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">Baltroid</string>
     <string name="welcome">HitReads\'e Hoş Geldiniz.</string>
+    <string name="menu">Menu</string>
+    <string name="story_summary">TÜM KATEGORİLERDEKİ %1$d HİKAYE LİSTELENİYOR</string>
+    <string name="episode_size">%1$d Bölüm</string>
+    <string name="all_episodes">TÜM HİKAYELER (%1$d)</string>
+    <string name="favorites">FAVORİLER (%1$d)</string>
+    <string name="new_">Yeni</string>
 </resources>

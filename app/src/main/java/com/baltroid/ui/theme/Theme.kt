@@ -29,18 +29,19 @@ fun HitReadsTheme(
     }
 
     val dimensions = Dimensions()
-
     val staticColors = Colors()
+    val shapes = Shapes()
 
     CompositionLocalProvider(
         LocalTextStyles provides textStyles,
         LocalDimensions provides dimensions,
-        LocalColors provides staticColors
+        LocalColors provides staticColors,
+        LocalShapes provides shapes
     ) {
         MaterialTheme(
             colors = colors,
             typography = Typography,
-            shapes = Shapes,
+            shapes = MaterialShapes,
             content = content
         )
     }

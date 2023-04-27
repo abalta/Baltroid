@@ -33,5 +33,6 @@ dependencies {
     implementation(libs.androidx.compose.material)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.coil.compose)
+    implementation(libs.androidx.constraintlayout.compose)
     debugImplementation(libs.androidx.compose.ui.tooling)
 }

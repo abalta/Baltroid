@@ -108,9 +108,6 @@ fun OnboardingScreenBottomSection(
 }
 
 @Preview(device = Devices.DEFAULT)
-@Preview(device = Devices.NEXUS_7)
-@Preview(device = Devices.NEXUS_5)
-@Preview(device = Devices.NEXUS_5X)
 @Preview(heightDp = 650)
 @Preview(widthDp = 360, heightDp = 540)
 @Composable

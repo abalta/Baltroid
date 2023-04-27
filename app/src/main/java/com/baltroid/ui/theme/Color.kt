@@ -16,6 +16,9 @@ val White_alpha07 = Color(0xB3FFFFFF)
 val White_alpha08 = Color(0xCCFFFFFF)
 val White_alpha05 = Color(0x80FFFFFF)
 val White_alpha04 = Color(0x66FFFFFF)
+val Purple = Color(0xFF8D1697)
+val Pink = Color(0xFFED116D)
+val Orange = Color(0xFFFF7A00)
 
 data class Colors(
     val black: Color = Black,
@@ -27,7 +30,10 @@ data class Colors(
     val white_alpha08: Color = White_alpha08,
     val white_alpha07: Color = White_alpha07,
     val white_alpha04: Color = White_alpha04,
-    val white_alpha05: Color = White_alpha05
+    val white_alpha05: Color = White_alpha05,
+    val purple: Color = Purple,
+    val pink: Color = Pink,
+    val orange: Color = Orange
 )
 
 val LocalColors = staticCompositionLocalOf { Colors() }

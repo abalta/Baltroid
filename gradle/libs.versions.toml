@@ -26,6 +26,7 @@ androidx-room = "2.5.1"
 androidx-datastore = "1.0.0"
 androidx-paging = "3.1.1"
 androidx-paging-compose = "1.0.0-alpha18"
+androidx-constraintlayout-compose = "1.0.1"
 androidx-hilt = "1.0.0"
 androidx-test-ext = "1.1.5"
 androidx-test-espresso = "3.5.1"
@@ -83,6 +84,8 @@ androidx-datastore-preferences = { module = "androidx.datastore:datastore-prefer
 androidx-paging-runtime = { module = "androidx.paging:paging-runtime", version.ref = "androidx-paging" }
 androidx-paging-common = { module = "androidx.paging:paging-common", version.ref = "androidx-paging" }
 androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "androidx-paging-compose" }
+
+androidx-constraintlayout-compose = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "androidx-constraintlayout-compose" }
 
 androidx-test-ext-junit = { module = "androidx.test.ext:junit", version.ref = "androidx-test-ext" }
 androidx-test-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "androidx-test-espresso" }
