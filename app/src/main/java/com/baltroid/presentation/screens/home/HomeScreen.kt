@@ -163,7 +163,10 @@ fun HomeScreenTabs(
         )
         HorizontalSpacer(width = MaterialTheme.localDimens.dp28)
         Text(
-            text = stringResource(id = R.string.favorites, tabState.favorites.contentSize),
+            text = stringResource(
+                id = R.string.favorites_with_size,
+                tabState.favorites.contentSize
+            ),
             style = MaterialTheme.localTextStyles.homeScreenTabText,
             modifier = Modifier
                 .drawBehind {

@@ -44,6 +44,7 @@ data class TextStyles(
     val storyItemTitle: TextStyle,
     val body: TextStyle,
     val episodeText: TextStyle,
+    val authorText: TextStyle,
     val summaryInfoText: TextStyle,
     val detailSummaryText: TextStyle,
     val sideBarIconText: TextStyle,
@@ -70,6 +71,12 @@ val DarkThemeTextStyles = TextStyles(
         fontWeight = FontWeight.Medium,
         fontSize = 17.sp,
         color = White
+    ),
+    authorText = TextStyle(
+        fontFamily = SpaceGrotesk,
+        fontWeight = FontWeight.Medium,
+        fontSize = 15.sp,
+        color = White_alpha09
     ),
     detailSummaryText = TextStyle(
         fontFamily = SpaceGrotesk,
@@ -274,6 +281,12 @@ val LightThemeTextStyles = TextStyles(
         fontSize = 12.sp,
         color = White
     ),
+    authorText = TextStyle(
+        fontFamily = SpaceGrotesk,
+        fontWeight = FontWeight.Medium,
+        fontSize = 15.sp,
+        color = White_alpha09
+    ),
     summaryInfoText = TextStyle(
         fontFamily = SpaceGrotesk,
         fontWeight = FontWeight.Normal,
@@ -396,6 +409,7 @@ data class Dimensions(
     val dp35: Dp = 35.dp,
     val dp36: Dp = 36.dp,
     val dp39: Dp = 39.dp,
+    val dp43: Dp = 43.dp,
     val dp50: Dp = 50.dp,
     val dp67: Dp = 67.dp,
     val dp102: Dp = 102.dp,

@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
@@ -40,6 +39,7 @@ import com.baltroid.presentation.common.SimpleIcon
 import com.baltroid.presentation.common.VerticalSpacer
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
+import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
 
 @Composable
@@ -132,7 +132,7 @@ fun StoryItem() {
                     MaterialTheme.localDimens.dp127,
                     MaterialTheme.localDimens.dp177
                 )
-                .clip(RoundedCornerShape(MaterialTheme.localDimens.dp18))
+                .clip(MaterialTheme.localShapes.roundedDp18)
         )
         VerticalSpacer(height = MaterialTheme.localDimens.dp13)
         Text(text = "KİMSE GERÇEK DEĞİL", style = MaterialTheme.localTextStyles.storyItemTitle)
@@ -183,7 +183,7 @@ fun MarkItem() {
                     MaterialTheme.localDimens.dp127,
                     MaterialTheme.localDimens.dp177
                 )
-                .clip(RoundedCornerShape(MaterialTheme.localDimens.dp18))
+                .clip(MaterialTheme.localShapes.roundedDp18)
         )
         VerticalSpacer(height = MaterialTheme.localDimens.dp13)
         Text(text = "KİMSE GERÇEK DEĞİL", style = MaterialTheme.localTextStyles.storyItemTitle)
@@ -211,7 +211,7 @@ fun YellowBar(
     val localColors = MaterialTheme.localColors
     Canvas(modifier = modifier.height(MaterialTheme.localDimens.dp8), onDraw = {
         drawRect(
-            color = localColors.yellow
+            color = localColors.gold
         )
     })
 }

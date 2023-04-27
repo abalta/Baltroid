@@ -5,11 +5,13 @@
     <string name="story_summary">TÜM KATEGORİLERDEKİ %1$d HİKAYE LİSTELENİYOR</string>
     <string name="episode_size">%1$d Bölüm</string>
     <string name="all_episodes">TÜM HİKAYELER (%1$d)</string>
-    <string name="favorites">FAVORİLER (%1$d)</string>
+    <string name="favorites_with_size">FAVORİLER (%1$d)</string>
+    <string name="favorites">FAVORİLER</string>
     <string name="new_">Yeni</string>
     <string name="hashtag_kgd">#KGD</string>
     <string name="episode">BÖLÜM</string>
     <string name="place_marks">YER İŞARETLERİ</string>
     <string name="marks">İŞARETLEMELER</string>
     <string name="stories">HİKAYELER</string>
+    <string name="authors">YAZARLAR</string>
 </resources>
