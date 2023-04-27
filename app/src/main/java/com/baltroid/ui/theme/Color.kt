@@ -8,6 +8,7 @@ import androidx.compose.ui.graphics.Color
 
 val Black = Color(0xFF000000)
 val Black_alpha09 = Color(0xE6000000)
+val Black_alpha05 = Color(0x80000000)
 val Black_alpha03 = Color(0x4D000000)
 val Black_alpha02 = Color(0x33000000)
 val White = Color(0xFFFFFFFF)
@@ -23,6 +24,7 @@ val Orange = Color(0xFFFF7A00)
 data class Colors(
     val black: Color = Black,
     val black_alpha09: Color = Black_alpha09,
+    val black_alpha05: Color = Black_alpha05,
     val black_alpha03: Color = Black_alpha03,
     val black_alpha02: Color = Black_alpha02,
     val white: Color = White,
