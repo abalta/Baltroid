@@ -14,6 +14,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import com.baltroid.apps.R
@@ -59,7 +60,7 @@ fun HomeDetailScreen(
                 .align(Alignment.BottomCenter)
         ) {
             Text(
-                text = "#KGD",
+                text = stringResource(id = R.string.hashtag_kgd),
                 style = MaterialTheme.localTextStyles.hashTag,
                 modifier = Modifier.padding(start = MaterialTheme.localDimens.dp17)
             )
