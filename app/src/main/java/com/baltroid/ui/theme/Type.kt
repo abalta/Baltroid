@@ -215,7 +215,7 @@ val LightThemeTextStyles = TextStyles(
         fontFamily = Poppins,
         fontWeight = FontWeight.Light,
         fontSize = 17.sp,
-        color = Black
+        color = White
     ),
     mediumTitle = TextStyle(
         fontFamily = Poppins,
@@ -223,37 +223,23 @@ val LightThemeTextStyles = TextStyles(
         fontSize = 17.sp,
         color = White
     ),
-    subtitle = TextStyle(
-        fontFamily = Poppins,
+    authorText = TextStyle(
+        fontFamily = SpaceGrotesk,
         fontWeight = FontWeight.Medium,
-        fontSize = 12.5.sp,
-        color = Black
-    ),
-    subtitleGrotesk = TextStyle(
-        fontFamily = SpaceGrotesk,
-        fontWeight = FontWeight.Normal,
-        fontSize = 14.sp,
-        lineHeight = 19.sp,
-        color = White
-    ),
-    hashTag = TextStyle(
-        fontFamily = SpaceGrotesk,
-        fontWeight = FontWeight.Light,
-        fontSize = 100.sp,
-        color = White
-    ),
-    body = TextStyle(
-        fontFamily = Poppins,
-        fontWeight = FontWeight.Normal,
-        fontSize = 14.sp,
-        lineHeight = 18.5.sp,
-        color = Black_alpha09
+        fontSize = 15.sp,
+        color = White_alpha09
     ),
     detailSummaryText = TextStyle(
         fontFamily = SpaceGrotesk,
         fontWeight = FontWeight.Normal,
         fontSize = 13.5.sp,
         color = White
+    ),
+    menuBarTitle = TextStyle(
+        fontFamily = SpaceGrotesk,
+        fontWeight = FontWeight.Medium,
+        fontSize = 24.sp,
+        color = White_alpha09
     ),
     storyItemTitle = TextStyle(
         fontFamily = Poppins,
@@ -263,35 +249,43 @@ val LightThemeTextStyles = TextStyles(
         lineHeight = 13.sp,
         textAlign = TextAlign.Center
     ),
-    menuBarTitle = TextStyle(
-        fontFamily = SpaceGrotesk,
-        fontWeight = FontWeight.Medium,
-        fontSize = 24.sp,
-        color = White_alpha09
-    ),
     menuBarSubTitle = TextStyle(
         fontFamily = SpaceGrotesk,
         fontWeight = FontWeight.Medium,
         fontSize = 20.sp,
         color = White_alpha09
     ),
-    episodeText = TextStyle(
+    hashTag = TextStyle(
+        fontFamily = SpaceGrotesk,
+        fontWeight = FontWeight.Light,
+        fontSize = 100.sp,
+        color = White
+    ),
+    extraBoldTitle = TextStyle(
+        fontFamily = Poppins,
+        fontWeight = FontWeight.ExtraBold,
+        fontSize = 20.sp,
+        color = White
+    ),
+    subtitle = TextStyle(
+        fontFamily = Poppins,
+        fontWeight = FontWeight.Medium,
+        fontSize = 12.5.sp,
+        color = White
+    ),
+    subtitleGrotesk = TextStyle(
+        fontFamily = SpaceGrotesk,
+        fontWeight = FontWeight.Normal,
+        fontSize = 14.sp,
+        lineHeight = 19.sp,
+        color = White
+    ),
+    body = TextStyle(
         fontFamily = Poppins,
         fontWeight = FontWeight.Normal,
-        fontSize = 12.sp,
-        color = White
-    ),
-    authorText = TextStyle(
-        fontFamily = SpaceGrotesk,
-        fontWeight = FontWeight.Medium,
-        fontSize = 15.sp,
-        color = White_alpha09
-    ),
-    summaryInfoText = TextStyle(
-        fontFamily = SpaceGrotesk,
-        fontWeight = FontWeight.Normal,
-        fontSize = 12.sp,
-        color = White
+        fontSize = 14.sp,
+        lineHeight = 18.5.sp,
+        color = White_alpha08
     ),
     summaryIconText = TextStyle(
         fontFamily = Poppins,
@@ -299,11 +293,23 @@ val LightThemeTextStyles = TextStyles(
         fontSize = 10.sp,
         color = White
     ),
+    summaryInfoText = TextStyle(
+        fontFamily = SpaceGrotesk,
+        fontWeight = FontWeight.Normal,
+        fontSize = 12.sp,
+        color = White
+    ),
+    episodeText = TextStyle(
+        fontFamily = Poppins,
+        fontWeight = FontWeight.Normal,
+        fontSize = 12.sp,
+        color = White
+    ),
     sideBarIconText = TextStyle(
         fontFamily = Poppins,
         fontSize = 10.sp,
         fontWeight = FontWeight.Normal,
-        color = Black
+        color = White
     ),
     menuButtonText = TextStyle(
         fontFamily = Poppins,
@@ -321,19 +327,19 @@ val LightThemeTextStyles = TextStyles(
         fontFamily = Poppins,
         fontSize = 11.sp,
         fontWeight = FontWeight.Medium,
-        color = Black
+        color = White_alpha04
     ),
     episodeSelectedText = TextStyle(
         fontFamily = SpaceGrotesk,
         fontSize = 16.sp,
         fontWeight = FontWeight.Medium,
-        color = Black
+        color = White
     ),
     episodeUnselectedText = TextStyle(
         fontFamily = SpaceGrotesk,
         fontSize = 16.sp,
         fontWeight = FontWeight.Medium,
-        color = Black_alpha03
+        color = White_alpha05
     ),
     homeScreenTabText = TextStyle(
         fontFamily = SpaceGrotesk,
@@ -352,16 +358,12 @@ val LightThemeTextStyles = TextStyles(
         fontSize = 11.sp,
         fontWeight = FontWeight.Medium,
         color = Black
-    ),
-    extraBoldTitle = TextStyle(
-        fontFamily = Poppins,
-        fontWeight = FontWeight.ExtraBold,
-        fontSize = 20.sp,
-        color = White
     )
 )
 
 data class Dimensions(
+    val default: Dp = 0.dp,
+    val minScreenHeight: Dp = 700.dp,
     val dp0_5: Dp = 0.5.dp,
     val dp1: Dp = 1.dp,
     val dp2: Dp = 2.dp,
@@ -386,6 +388,7 @@ data class Dimensions(
     val dp13_5: Dp = 13.5.dp,
     val dp14: Dp = 14.dp,
     val dp14_5: Dp = 14.5.dp,
+    val dp15: Dp = 15.dp,
     val dp16: Dp = 16.dp,
     val dp17: Dp = 17.dp,
     val dp18: Dp = 18.dp,
@@ -411,6 +414,7 @@ data class Dimensions(
     val dp39: Dp = 39.dp,
     val dp43: Dp = 43.dp,
     val dp50: Dp = 50.dp,
+    val dp51: Dp = 51.dp,
     val dp67: Dp = 67.dp,
     val dp102: Dp = 102.dp,
     val dp107: Dp = 107.dp,

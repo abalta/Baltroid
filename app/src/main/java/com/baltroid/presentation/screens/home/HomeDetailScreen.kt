@@ -23,7 +23,7 @@ import com.baltroid.presentation.common.HorizontalSpacer
 import com.baltroid.presentation.common.SimpleIcon
 import com.baltroid.presentation.common.SimpleImage
 import com.baltroid.presentation.common.VerticalSpacer
-import com.baltroid.presentation.components.HitReadTopBar
+import com.baltroid.presentation.components.HitReadsTopBar
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localTextStyles
@@ -44,7 +44,7 @@ fun HomeDetailScreen(
         modifier = Modifier.fillMaxSize()
     ) {
         CroppedImage(imgResId = R.drawable.woods_image, modifier = Modifier.fillMaxSize())
-        HitReadTopBar(
+        HitReadsTopBar(
             iconResId = R.drawable.ic_bell,
             onMenuCLicked = {},
             numberOfNotification = numberOfNotification,

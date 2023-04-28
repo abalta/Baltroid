@@ -19,6 +19,7 @@ val White_alpha06 = Color(0x99FFFFFF)
 val White_alpha05 = Color(0x80FFFFFF)
 val White_alpha04 = Color(0x66FFFFFF)
 val White_alpha02 = Color(0x33FFFFFF)
+val Grey = Color(0xFFA5A4A3)
 val Purple = Color(0xFF8D1697)
 val Pink = Color(0xFFED116D)
 val Orange = Color(0xFFFF7A00)
@@ -39,6 +40,7 @@ data class Colors(
     val white_alpha05: Color = White_alpha05,
     val white_alpha04: Color = White_alpha04,
     val white_alpha02: Color = White_alpha02,
+    val grey: Color = Grey,
     val purple: Color = Purple,
     val pink: Color = Pink,
     val orange: Color = Orange,

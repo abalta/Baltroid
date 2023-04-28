@@ -41,7 +41,7 @@ import com.baltroid.apps.R
 import com.baltroid.presentation.common.HorizontalSpacer
 import com.baltroid.presentation.common.SimpleIcon
 import com.baltroid.presentation.common.VerticalSpacer
-import com.baltroid.presentation.components.HitReadTopBar
+import com.baltroid.presentation.components.HitReadsTopBar
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localShapes
@@ -79,7 +79,7 @@ fun HomeScreen(
             .verticalScroll(scrollState)
             .background(MaterialTheme.localColors.black)
     ) {
-        HitReadTopBar(
+        HitReadsTopBar(
             iconResId = R.drawable.ic_bell_outlined,
             iconTint = MaterialTheme.localColors.white,
             modifier = Modifier.padding(

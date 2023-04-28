@@ -31,7 +31,7 @@ import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
 
 @Composable
-fun HitReadTopBar(
+fun HitReadsTopBar(
     @DrawableRes iconResId: Int,
     numberOfNotification: Int,
     modifier: Modifier = Modifier,
@@ -185,8 +185,8 @@ fun iconWithBadgeMeasurePolicy() = MeasurePolicy { measurable, constraints ->
 
 @Preview
 @Composable
-fun HitReadTopBarPreview() {
-    HitReadTopBar(
+fun HitReadsTopBarPreview() {
+    HitReadsTopBar(
         onMenuCLicked = {},
         onNotificationClicked = {},
         iconResId = R.drawable.ic_bell,
