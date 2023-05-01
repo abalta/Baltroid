@@ -298,7 +298,9 @@ fun GenreSection(
         GenreItem(text = genres[1], color = MaterialTheme.localColors.pink)
         HorizontalSpacer(width = MaterialTheme.localDimens.dp12_5)
         Column(
-            modifier = Modifier.width(IntrinsicSize.Min)
+            modifier = Modifier
+                .width(IntrinsicSize.Min)
+                .align(Alignment.CenterVertically)
         ) {
             Text(
                 text = stringResource(id = R.string.episode_size, episodeSize),
