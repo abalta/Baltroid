@@ -34,9 +34,7 @@ fun OnboardingScreen(
     text: String,
     onClick: () -> Unit
 ) {
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
+    Box {
         CroppedImage(
             imgResId = imgResId,
             modifier = Modifier.fillMaxSize()
