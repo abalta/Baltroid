@@ -29,4 +29,10 @@ dependencies {
     implementation(libs.dagger.hilt.android)
     kapt(libs.dagger.hilt.compiler)
     implementation(libs.androidx.room.runtime)
+
+    implementation(libs.androidx.compose.material)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.coil.compose)
+    implementation(libs.androidx.constraintlayout.compose)
+    debugImplementation(libs.androidx.compose.ui.tooling)
 }
