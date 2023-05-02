@@ -300,7 +300,7 @@ fun GenreSection(
         Column(
             modifier = Modifier
                 .width(IntrinsicSize.Min)
-                .align(Alignment.CenterVertically)
+                .align(Alignment.Bottom)
         ) {
             Text(
                 text = stringResource(id = R.string.episode_size, episodeSize),
