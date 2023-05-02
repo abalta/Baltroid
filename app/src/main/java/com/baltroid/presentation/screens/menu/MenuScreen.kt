@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
@@ -29,6 +30,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.baltroid.apps.R
 import com.baltroid.presentation.common.CroppedImage
+import com.baltroid.presentation.common.HorizontalSpacer
 import com.baltroid.presentation.common.IconWithTextBelow
 import com.baltroid.presentation.common.SimpleIcon
 import com.baltroid.presentation.common.VerticalSpacer
@@ -208,6 +210,57 @@ fun ThemeButtons(
     ) {
         LightThemeButton()
         DarkThemeButton()
+    }
+}
+
+@Composable
+fun LightThemeButton(
+    modifier: Modifier = Modifier
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .clip(RoundedCornerShape(MaterialTheme.localDimens.dp24))
+            .background(MaterialTheme.localColors.white_alpha02)
+            .padding(
+                vertical = MaterialTheme.localDimens.dp12,
+                horizontal = MaterialTheme.localDimens.dp29
+            )
+    ) {
+        Text(
+            text = stringResource(id = R.string.light),
+            style = MaterialTheme.localTextStyles.menuBarSubTitle,
+            color = MaterialTheme.localColors.black
+        )
+        HorizontalSpacer(width = MaterialTheme.localDimens.dp9)
+        SimpleIcon(iconResId = R.drawable.ic_sun)
+    }
+}
+
+@Composable
+fun DarkThemeButton(
+    modifier: Modifier = Modifier
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center,
+        modifier = modifier
+            .border(
+                MaterialTheme.localDimens.dp1,
+                MaterialTheme.localColors.white_alpha05,
+                MaterialTheme.localShapes.roundedDp24
+            )
+            .padding(
+                vertical = MaterialTheme.localDimens.dp12,
+                horizontal = MaterialTheme.localDimens.dp29
+            )
+    ) {
+        Text(
+            text = stringResource(id = R.string.dark),
+            style = MaterialTheme.localTextStyles.menuBarSubTitle
+        )
+        HorizontalSpacer(width = MaterialTheme.localDimens.dp9)
+        SimpleIcon(iconResId = R.drawable.ic_moon)
     }
 }
 
