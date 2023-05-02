@@ -4,12 +4,14 @@
     <string name="menu">Menu</string>
     <string name="story_summary">TÜM KATEGORİLERDEKİ %1$d HİKAYE LİSTELENİYOR</string>
     <string name="episode_size">%1$d Bölüm</string>
-    <string name="all_episodes">TÜM HİKAYELER (%1$d)</string>
+    <string name="all_stories">TÜM HİKAYELER (%1$d)</string>
+    <string name="all_stories_text">TÜM HİKAYELER</string>
     <string name="favorites_with_size">FAVORİLER (%1$d)</string>
     <string name="favorites">FAVORİLER</string>
     <string name="new_">Yeni</string>
     <string name="hashtag_kgd">#KGD</string>
     <string name="episode">BÖLÜM</string>
+    <string name="episode_number">BÖLÜM %1$d</string>
     <string name="place_marks">YER İŞARETLERİ</string>
     <string name="marks">İŞARETLEMELER</string>
     <string name="stories">HİKAYELER</string>
@@ -22,4 +24,7 @@
     <string name="personal_datas">KİŞİSEL VERİLER</string>
     <string name="user_infos">KULLANICI BİLGİLERİ</string>
     <string name="dark">KOYU</string>
+    <string name="next">DEVAM ET</string>
+    <string name="profile_text">PROFİL</string>
+    <string name="comments">YORUMLAR</string>
 </resources>
