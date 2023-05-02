@@ -197,17 +197,19 @@ fun HomeScreenTabItem(
                 .padding(bottom = MaterialTheme.localDimens.dp6_5)
 
         )
-        if (isSelected) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(MaterialTheme.localDimens.dp4)
-                    .clip(MaterialTheme.localShapes.roundedDp3)
-                    .background(MaterialTheme.localColors.purple_alpha08)
-            )
-        } else {
-            VerticalSpacer(height = MaterialTheme.localDimens.dp4)
-        }
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(MaterialTheme.localDimens.dp4)
+                .clip(MaterialTheme.localShapes.roundedDp3)
+                .background(
+                    if (isSelected) {
+                        MaterialTheme.localColors.purple_alpha08
+                    } else {
+                        MaterialTheme.localColors.transparent
+                    }
+                )
+        )
     }
 }
 
