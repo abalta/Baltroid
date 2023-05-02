@@ -28,6 +28,7 @@ val Orange = Color(0xFFFF7A00)
 val Yellow_100 = Color(0xFFFFDA1A)
 val Yellow_200 = Color(0xFFEFCD19)
 val Gold = Color(0xFFB39912)
+val Transparent = Color.Transparent
 
 data class Colors(
     val black: Color = Black,
@@ -51,7 +52,8 @@ data class Colors(
     val orange: Color = Orange,
     val yellow: Color = Yellow_100,
     val textSelectionColor: Color = Yellow_200,
-    val gold: Color = Gold
+    val gold: Color = Gold,
+    val transparent: Color = Transparent
 )
 
 val LocalColors = staticCompositionLocalOf { Colors() }
