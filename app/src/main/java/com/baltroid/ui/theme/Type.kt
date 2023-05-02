@@ -1,7 +1,6 @@
 package com.baltroid.ui.theme
 
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.compositionLocalOf
@@ -15,8 +14,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.baltroid.apps.R
-
-val Typography = Typography()
 
 val Poppins = FontFamily(
     Font(R.font.poppins_regular, FontWeight.Normal),
@@ -38,6 +35,7 @@ data class TextStyles(
     val extraBoldTitle: TextStyle,
     val hashTag: TextStyle,
     val subtitle: TextStyle,
+    val interactiveEpisode: TextStyle,
     val menuBarTitle: TextStyle,
     val menuBarSubTitle: TextStyle,
     val subtitleGrotesk: TextStyle,
@@ -56,7 +54,11 @@ data class TextStyles(
     val episodeUnselectedText: TextStyle,
     val homeScreenTabText: TextStyle,
     val splashScreenText: TextStyle,
-    val isStoryNewText: TextStyle
+    val isStoryNewText: TextStyle,
+    val dateText: TextStyle,
+    val commentText: TextStyle,
+    val interactiveHashtag: TextStyle,
+    val imageCardText: TextStyle
 )
 
 val DarkThemeTextStyles = TextStyles(
@@ -121,6 +123,12 @@ val DarkThemeTextStyles = TextStyles(
         fontWeight = FontWeight.Medium,
         fontSize = 12.5.sp,
         color = White
+    ),
+    interactiveEpisode = TextStyle(
+        fontFamily = Poppins,
+        fontWeight = FontWeight.Medium,
+        fontSize = 12.5.sp,
+        color = White_alpha07
     ),
     subtitleGrotesk = TextStyle(
         fontFamily = SpaceGrotesk,
@@ -207,6 +215,30 @@ val DarkThemeTextStyles = TextStyles(
         fontSize = 11.sp,
         fontWeight = FontWeight.Medium,
         color = Black
+    ),
+    dateText = TextStyle(
+        fontFamily = Poppins,
+        fontWeight = FontWeight.Normal,
+        fontSize = 10.sp,
+        color = White_alpha07
+    ),
+    commentText = TextStyle(
+        fontFamily = Poppins,
+        fontWeight = FontWeight.Normal,
+        fontSize = 12.sp,
+        color = White_alpha08
+    ),
+    interactiveHashtag = TextStyle(
+        fontFamily = Poppins,
+        fontWeight = FontWeight.Medium,
+        fontSize = 15.sp,
+        color = White
+    ),
+    imageCardText = TextStyle(
+        fontFamily = Poppins,
+        fontWeight = FontWeight.Medium,
+        fontSize = 14.sp,
+        color = White
     )
 )
 
@@ -273,6 +305,12 @@ val LightThemeTextStyles = TextStyles(
         fontSize = 12.5.sp,
         color = White
     ),
+    interactiveEpisode = TextStyle(
+        fontFamily = Poppins,
+        fontWeight = FontWeight.Medium,
+        fontSize = 12.5.sp,
+        color = White_alpha07
+    ),
     subtitleGrotesk = TextStyle(
         fontFamily = SpaceGrotesk,
         fontWeight = FontWeight.Normal,
@@ -358,12 +396,37 @@ val LightThemeTextStyles = TextStyles(
         fontSize = 11.sp,
         fontWeight = FontWeight.Medium,
         color = Black
+    ),
+    dateText = TextStyle(
+        fontFamily = Poppins,
+        fontWeight = FontWeight.Normal,
+        fontSize = 10.sp,
+        color = White_alpha07
+    ),
+    commentText = TextStyle(
+        fontFamily = Poppins,
+        fontWeight = FontWeight.Normal,
+        fontSize = 12.sp,
+        color = White_alpha08
+    ),
+    interactiveHashtag = TextStyle(
+        fontFamily = Poppins,
+        fontWeight = FontWeight.Medium,
+        fontSize = 15.sp,
+        color = White
+    ),
+    imageCardText = TextStyle(
+        fontFamily = Poppins,
+        fontWeight = FontWeight.Medium,
+        fontSize = 14.sp,
+        color = White
     )
 )
 
 data class Dimensions(
     val default: Dp = 0.dp,
     val minScreenHeight: Dp = 700.dp,
+    val minDetailScreenHeight: Dp = 650.dp,
     val dp0_5: Dp = 0.5.dp,
     val dp1: Dp = 1.dp,
     val dp2: Dp = 2.dp,
@@ -401,6 +464,7 @@ data class Dimensions(
     val dp23: Dp = 23.dp,
     val dp24: Dp = 24.dp,
     val dp25: Dp = 25.dp,
+    val dp26: Dp = 26.dp,
     val dp28: Dp = 28.dp,
     val dp28_5: Dp = 28.5.dp,
     val dp29: Dp = 29.dp,
@@ -409,18 +473,28 @@ data class Dimensions(
     val dp31: Dp = 31.dp,
     val dp32: Dp = 32.dp,
     val dp33: Dp = 33.dp,
+    val dp34: Dp = 34.dp,
     val dp35: Dp = 35.dp,
     val dp36: Dp = 36.dp,
     val dp39: Dp = 39.dp,
+    val dp42: Dp = 42.dp,
     val dp43: Dp = 43.dp,
+    val dp44: Dp = 44.dp,
+    val dp48: Dp = 48.dp,
     val dp50: Dp = 50.dp,
     val dp51: Dp = 51.dp,
+    val dp54: Dp = 54.dp,
+    val dp54_5: Dp = 54.5.dp,
     val dp67: Dp = 67.dp,
+    val dp78: Dp = 78.dp,
     val dp102: Dp = 102.dp,
     val dp107: Dp = 107.dp,
     val dp111: Dp = 111.dp,
+    val dp117: Dp = 117.dp,
     val dp127: Dp = 127.dp,
+    val dp155: Dp = 155.dp,
     val dp177: Dp = 177.dp,
+    val dp244: Dp = 244.dp,
     val dp249: Dp = 249.dp,
     val dp348: Dp = 348.dp,
 )

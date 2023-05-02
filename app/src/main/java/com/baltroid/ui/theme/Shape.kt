@@ -8,11 +8,13 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.unit.dp
 
-val MaterialShapes = androidx.compose.material.Shapes()
-
 data class Shapes(
     val circleShape: RoundedCornerShape = CircleShape,
+    val roundedDp3: RoundedCornerShape = RoundedCornerShape(3.dp),
     val roundedDp4: RoundedCornerShape = RoundedCornerShape(4.dp),
+    val roundedDp8_5: RoundedCornerShape = RoundedCornerShape(8.5.dp),
+    val roundedDp10: RoundedCornerShape = RoundedCornerShape(10.dp),
+    val roundedDp16: RoundedCornerShape = RoundedCornerShape(16.dp),
     val roundedDp18: RoundedCornerShape = RoundedCornerShape(18.dp),
     val roundedDp20: RoundedCornerShape = RoundedCornerShape(20.dp),
     val roundedDp24: RoundedCornerShape = RoundedCornerShape(24.dp)
