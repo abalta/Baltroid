@@ -151,4 +151,3 @@ enum class AuthorScreenTabs {
     Stories,
     Comments
 }
-

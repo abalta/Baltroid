@@ -330,4 +330,3 @@ fun MenuScreenPreview() {
         currentUserName = "SELEN PEKMEZCİ"
     )
 }
-
