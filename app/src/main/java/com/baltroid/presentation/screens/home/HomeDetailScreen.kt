@@ -1,6 +1,7 @@
 package com.baltroid.presentation.screens.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -27,6 +29,7 @@ import com.baltroid.presentation.components.HitReadsTopBar
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localTextStyles
+import com.baltroid.util.conditional
 
 @Composable
 fun HomeDetailScreen(
@@ -41,7 +44,8 @@ fun HomeDetailScreen(
     genres: List<String>
 ) {
     BoxWithConstraints(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
     ) {
         CroppedImage(imgResId = R.drawable.woods_image, modifier = Modifier.fillMaxSize())
         HitReadsTopBar(
@@ -49,13 +53,15 @@ fun HomeDetailScreen(
             onMenuCLicked = {},
             numberOfNotification = numberOfNotification,
             modifier = Modifier
-                .padding(horizontal = MaterialTheme.localDimens.dp32)
+                .systemBarsPadding()
                 .padding(top = MaterialTheme.localDimens.dp8)
         ) {}
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(maxHeight / 1.6f)
+                .conditional(maxHeight >= MaterialTheme.localDimens.minDetailScreenHeight) {
+                    height(maxHeight / 1.6f)
+                }
                 .background(MaterialTheme.localColors.black_alpha05)
                 .align(Alignment.BottomCenter)
         ) {
@@ -80,10 +86,20 @@ fun HomeDetailScreen(
                     modifier = Modifier.padding(start = MaterialTheme.localDimens.dp22)
                 )
                 HorizontalSpacer(width = MaterialTheme.localDimens.dp13)
-                Interactions(numberOfViews = numberOfViews, numberOfComments = numberOfComments)
+                Interactions(
+                    numberOfViews = numberOfViews,
+                    numberOfComments = numberOfComments,
+                    modifier = Modifier.align(Alignment.Bottom)
+                )
             }
             VerticalSpacer(height = MaterialTheme.localDimens.dp20_5)
-            HomeDetailSummarySection(summary = summary)
+            HomeDetailSummarySection(
+                summary = summary,
+                modifier = Modifier.padding(start = MaterialTheme.localDimens.dp25)
+            ) {}
+            if (this@BoxWithConstraints.maxHeight < MaterialTheme.localDimens.minDetailScreenHeight) {
+                VerticalSpacer(height = MaterialTheme.localDimens.dp50)
+            }
         }
     }
 }
@@ -91,10 +107,12 @@ fun HomeDetailScreen(
 @Composable
 fun Interactions(
     numberOfViews: Int,
-    numberOfComments: Int
+    numberOfComments: Int,
+    modifier: Modifier = Modifier
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
     ) {
         SimpleIcon(
             iconResId = R.drawable.ic_eye,
@@ -109,6 +127,7 @@ fun Interactions(
     HorizontalSpacer(width = MaterialTheme.localDimens.dp11_5)
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier,
     ) {
         SimpleIcon(
             iconResId = R.drawable.ic_comment,
@@ -128,10 +147,11 @@ fun Interactions(
 @Composable
 fun HomeDetailSummarySection(
     summary: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
 ) {
     Row(
-        modifier = modifier.padding(start = MaterialTheme.localDimens.dp25)
+        modifier = modifier
     ) {
         Text(
             text = summary,
@@ -139,10 +159,12 @@ fun HomeDetailSummarySection(
             style = MaterialTheme.localTextStyles.detailSummaryText,
             modifier = Modifier.weight(1f)
         )
+        HorizontalSpacer(width = MaterialTheme.localDimens.dp9)
         SimpleImage(
             imgResId = R.drawable.ic_arrow_right,
             modifier = Modifier
                 .padding(end = MaterialTheme.localDimens.dp33)
+                .clickable { onClick.invoke() }
                 .align(Alignment.CenterVertically)
         )
     }
