@@ -1,4 +1,4 @@
-package com.baltroid.presentation.screens.menu.components
+package com.baltroid.presentation.components
 
 import androidx.annotation.DrawableRes
 import androidx.compose.material.Divider

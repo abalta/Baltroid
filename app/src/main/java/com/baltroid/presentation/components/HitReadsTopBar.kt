@@ -40,7 +40,9 @@ fun HitReadsTopBar(
     onNotificationClicked: () -> Unit
 ) {
     Box(
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(start = MaterialTheme.localDimens.dp36, end = MaterialTheme.localDimens.dp32)
     ) {
         SimpleImage(imgResId = R.drawable.ic_hitreads)
         MenuAndNotification(
