@@ -3,6 +3,7 @@ package com.baltroid.presentation.common
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,6 +29,25 @@ fun IconWithTextBelow(
     ) {
         SimpleIcon(iconResId = iconResId, tint = tint)
         VerticalSpacer(height = spacedBy)
+        Text(text = text, style = textStyle)
+    }
+}
+
+@Composable
+fun IconWithTextNextTo(
+    @DrawableRes iconResId: Int,
+    text: String,
+    modifier: Modifier = Modifier,
+    textStyle: TextStyle = TextStyle.Default,
+    spacedBy: Dp = 0.dp,
+    tint: Color = Color.Unspecified,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+    ) {
+        SimpleIcon(iconResId = iconResId, tint = tint)
+        HorizontalSpacer(width = spacedBy)
         Text(text = text, style = textStyle)
     }
 }
