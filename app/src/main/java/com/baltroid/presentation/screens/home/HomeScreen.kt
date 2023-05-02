@@ -203,7 +203,7 @@ fun HomeScreenTabItem(
                     .fillMaxWidth()
                     .height(MaterialTheme.localDimens.dp4)
                     .clip(MaterialTheme.localShapes.roundedDp3)
-                    .background(MaterialTheme.localColors.purple)
+                    .background(MaterialTheme.localColors.purple_alpha08)
             )
         } else {
             VerticalSpacer(height = MaterialTheme.localDimens.dp4)
