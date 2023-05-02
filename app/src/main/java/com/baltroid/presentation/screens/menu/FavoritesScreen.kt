@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -27,6 +28,7 @@ import com.baltroid.apps.R
 import com.baltroid.presentation.common.CroppedImage
 import com.baltroid.presentation.common.SimpleIcon
 import com.baltroid.presentation.common.VerticalSpacer
+import com.baltroid.presentation.screens.menu.components.MenuBar
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localShapes
@@ -42,12 +44,12 @@ fun FavoritesScreen() {
             .fillMaxSize()
             .background(MaterialTheme.localColors.black)
             .verticalScroll(scrollState)
+            .navigationBarsPadding()
     ) {
         VerticalSpacer(height = MaterialTheme.localDimens.dp36)
         MenuBar(
             modifier = Modifier.fillMaxWidth(),
             title = stringResource(id = R.string.favorites),
-            isIconVisible = true,
             iconResId = R.drawable.ic_star
         )
         VerticalSpacer(height = MaterialTheme.localDimens.dp16)
@@ -72,7 +74,9 @@ fun FavoritesScreen() {
 }
 
 @Composable
-fun AuthorsItem() {
+fun AuthorsItem(
+    author: String
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -84,11 +88,30 @@ fun AuthorsItem() {
         )
         VerticalSpacer(height = MaterialTheme.localDimens.dp20)
         Text(
-            text = "ZEYNEP SEY",
+            text = author,
             style = MaterialTheme.localTextStyles.authorText,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
         VerticalSpacer(height = MaterialTheme.localDimens.dp19)
+        YellowStarBox()
+    }
+}
+
+@Composable
+fun NamelessAuthorItem(
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        CroppedImage(
+            imgResId = R.drawable.woods_image,
+            modifier = Modifier
+                .size(MaterialTheme.localDimens.dp111)
+                .clip(MaterialTheme.localShapes.circleShape)
+        )
+        VerticalSpacer(height = MaterialTheme.localDimens.dp20)
         YellowStarBox()
     }
 }
@@ -101,11 +124,11 @@ fun AuthorsFavoritesList(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp30)
     ) {
-        item { AuthorsItem() }
-        item { AuthorsItem() }
-        item { AuthorsItem() }
-        item { AuthorsItem() }
-        item { AuthorsItem() }
+        item { AuthorsItem("ZEYNEP SEY") }
+        item { AuthorsItem("ZEYNEP SEY") }
+        item { AuthorsItem("ZEYNEP SEY") }
+        item { AuthorsItem("ZEYNEP SEY") }
+        item { AuthorsItem("ZEYNEP SEY") }
     }
 }
 
@@ -117,11 +140,11 @@ fun StoryItemFavoritesList(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp30)
     ) {
-        item { StoryItemFavorites() }
-        item { StoryItemFavorites() }
-        item { StoryItemFavorites() }
-        item { StoryItemFavorites() }
-        item { StoryItemFavorites() }
+        item { StoryItemFavorites("KİMSE GERÇEK DEĞİL") }
+        item { StoryItemFavorites("KİMSE GERÇEK DEĞİL") }
+        item { StoryItemFavorites("KİMSE GERÇEK DEĞİL") }
+        item { StoryItemFavorites("KİMSE GERÇEK DEĞİL") }
+        item { StoryItemFavorites("KİMSE GERÇEK DEĞİL") }
     }
 }
 
@@ -146,7 +169,9 @@ fun YellowStarBox(
 }
 
 @Composable
-fun StoryItemFavorites() {
+fun StoryItemFavorites(
+    title: String
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.width(IntrinsicSize.Min)
@@ -161,7 +186,7 @@ fun StoryItemFavorites() {
                 .clip(MaterialTheme.localShapes.roundedDp18)
         )
         VerticalSpacer(height = MaterialTheme.localDimens.dp13)
-        Text(text = "KİMSE GERÇEK DEĞİL", style = MaterialTheme.localTextStyles.storyItemTitle)
+        Text(text = title, style = MaterialTheme.localTextStyles.storyItemTitle)
         VerticalSpacer(height = MaterialTheme.localDimens.dp11)
         YellowStarBox(modifier = Modifier.align(Alignment.CenterHorizontally))
     }
