@@ -58,7 +58,9 @@ data class TextStyles(
     val dateText: TextStyle,
     val commentText: TextStyle,
     val interactiveHashtag: TextStyle,
-    val imageCardText: TextStyle
+    val imageCardText: TextStyle,
+    val profileScreenUserInfo: TextStyle,
+    val forgotPassword: TextStyle
 )
 
 val DarkThemeTextStyles = TextStyles(
@@ -239,6 +241,18 @@ val DarkThemeTextStyles = TextStyles(
         fontWeight = FontWeight.Medium,
         fontSize = 14.sp,
         color = White
+    ),
+    profileScreenUserInfo = TextStyle(
+        fontFamily = Poppins,
+        fontWeight = FontWeight.Normal,
+        fontSize = 18.sp,
+        color = White
+    ),
+    forgotPassword = TextStyle(
+        fontFamily = Poppins,
+        fontWeight = FontWeight.Medium,
+        fontSize = 14.sp,
+        color = Orange
     )
 )
 
@@ -420,6 +434,18 @@ val LightThemeTextStyles = TextStyles(
         fontWeight = FontWeight.Medium,
         fontSize = 14.sp,
         color = White
+    ),
+    profileScreenUserInfo = TextStyle(
+        fontFamily = Poppins,
+        fontWeight = FontWeight.Normal,
+        fontSize = 18.sp,
+        color = White
+    ),
+    forgotPassword = TextStyle(
+        fontFamily = Poppins,
+        fontWeight = FontWeight.Medium,
+        fontSize = 14.sp,
+        color = Orange
     )
 )
 
@@ -453,6 +479,7 @@ data class Dimensions(
     val dp14_5: Dp = 14.5.dp,
     val dp15: Dp = 15.dp,
     val dp16: Dp = 16.dp,
+    val dp16_5: Dp = 16.5.dp,
     val dp17: Dp = 17.dp,
     val dp18: Dp = 18.dp,
     val dp18_5: Dp = 18.5.dp,
@@ -477,6 +504,7 @@ data class Dimensions(
     val dp35: Dp = 35.dp,
     val dp36: Dp = 36.dp,
     val dp39: Dp = 39.dp,
+    val dp40: Dp = 40.dp,
     val dp42: Dp = 42.dp,
     val dp43: Dp = 43.dp,
     val dp44: Dp = 44.dp,
@@ -486,6 +514,8 @@ data class Dimensions(
     val dp54: Dp = 54.dp,
     val dp54_5: Dp = 54.5.dp,
     val dp67: Dp = 67.dp,
+    val dp70: Dp = 70.dp,
+    val dp76: Dp = 76.dp,
     val dp78: Dp = 78.dp,
     val dp102: Dp = 102.dp,
     val dp107: Dp = 107.dp,
