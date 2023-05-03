@@ -1,4 +1,4 @@
-package com.baltroid.presentation.screens.interactive
+package com.baltroid.ui.screens.interactive
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
@@ -45,13 +45,13 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.baltroid.apps.R
-import com.baltroid.presentation.common.CroppedImage
-import com.baltroid.presentation.common.HorizontalSpacer
-import com.baltroid.presentation.common.IconWithTextNextTo
-import com.baltroid.presentation.common.SimpleIcon
-import com.baltroid.presentation.common.VerticalSpacer
-import com.baltroid.presentation.components.HitReadsTopBar
-import com.baltroid.presentation.screens.reading.Titles
+import com.baltroid.ui.common.CroppedImage
+import com.baltroid.ui.common.HorizontalSpacer
+import com.baltroid.ui.common.IconWithTextNextTo
+import com.baltroid.ui.common.SimpleIcon
+import com.baltroid.ui.common.VerticalSpacer
+import com.baltroid.ui.components.HitReadsTopBar
+import com.baltroid.ui.screens.reading.Titles
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localShapes

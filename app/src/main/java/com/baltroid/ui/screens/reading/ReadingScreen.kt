@@ -1,4 +1,4 @@
-package com.baltroid.presentation.screens.reading
+package com.baltroid.ui.screens.reading
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
@@ -43,14 +43,14 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.baltroid.apps.R
-import com.baltroid.presentation.common.CroppedImage
-import com.baltroid.presentation.common.HorizontalSpacer
-import com.baltroid.presentation.common.IconWithTextNextTo
-import com.baltroid.presentation.common.SimpleIcon
-import com.baltroid.presentation.common.VerticalSpacer
-import com.baltroid.presentation.components.HitReadsSideBar
-import com.baltroid.presentation.components.HitReadsTopBar
-import com.baltroid.presentation.screens.menu.EpisodeBanner
+import com.baltroid.ui.common.CroppedImage
+import com.baltroid.ui.common.HorizontalSpacer
+import com.baltroid.ui.common.IconWithTextNextTo
+import com.baltroid.ui.common.SimpleIcon
+import com.baltroid.ui.common.VerticalSpacer
+import com.baltroid.ui.components.HitReadsSideBar
+import com.baltroid.ui.components.HitReadsTopBar
+import com.baltroid.ui.screens.menu.EpisodeBanner
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localShapes

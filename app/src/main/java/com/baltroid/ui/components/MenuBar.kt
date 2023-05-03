@@ -1,4 +1,4 @@
-package com.baltroid.presentation.components
+package com.baltroid.ui.components
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.clickable
@@ -14,8 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.baltroid.apps.R
-import com.baltroid.presentation.common.SimpleIcon
-import com.baltroid.presentation.common.VerticalSpacer
+import com.baltroid.ui.common.SimpleIcon
+import com.baltroid.ui.common.VerticalSpacer
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localTextStyles

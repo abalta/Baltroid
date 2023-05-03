@@ -1,4 +1,4 @@
-package com.baltroid.presentation.screens.menu
+package com.baltroid.ui.screens.menu
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -23,9 +23,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import com.baltroid.apps.R
-import com.baltroid.presentation.common.RoundedIconCard
-import com.baltroid.presentation.common.VerticalSpacer
-import com.baltroid.presentation.components.MenuBar
+import com.baltroid.ui.common.RoundedIconCard
+import com.baltroid.ui.common.VerticalSpacer
+import com.baltroid.ui.components.MenuBar
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localShapes

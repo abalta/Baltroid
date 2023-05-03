@@ -1,4 +1,4 @@
-package com.baltroid.presentation.common
+package com.baltroid.ui.common
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.border

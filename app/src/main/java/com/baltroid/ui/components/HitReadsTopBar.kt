@@ -1,4 +1,4 @@
-package com.baltroid.presentation.components
+package com.baltroid.ui.components
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
@@ -23,9 +23,9 @@ import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.baltroid.apps.R
-import com.baltroid.presentation.common.HorizontalSpacer
-import com.baltroid.presentation.common.SimpleIcon
-import com.baltroid.presentation.common.SimpleImage
+import com.baltroid.ui.common.HorizontalSpacer
+import com.baltroid.ui.common.SimpleIcon
+import com.baltroid.ui.common.SimpleImage
 import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles

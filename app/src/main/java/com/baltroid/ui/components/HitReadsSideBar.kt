@@ -1,4 +1,4 @@
-package com.baltroid.presentation.components
+package com.baltroid.ui.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,8 +16,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.baltroid.apps.R
-import com.baltroid.presentation.common.IconWithTextBelow
-import com.baltroid.presentation.common.SimpleIcon
+import com.baltroid.ui.common.IconWithTextBelow
+import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localTextStyles

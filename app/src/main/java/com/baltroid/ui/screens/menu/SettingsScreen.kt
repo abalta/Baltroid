@@ -1,4 +1,4 @@
-package com.baltroid.presentation.screens.menu
+package com.baltroid.ui.screens.menu
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -20,8 +20,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.baltroid.apps.R
-import com.baltroid.presentation.common.SimpleIcon
-import com.baltroid.presentation.common.VerticalSpacer
+import com.baltroid.ui.common.SimpleIcon
+import com.baltroid.ui.common.VerticalSpacer
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localTextStyles

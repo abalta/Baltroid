@@ -1,4 +1,4 @@
-package com.baltroid.presentation.screens.home
+package com.baltroid.ui.screens.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,12 +20,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import com.baltroid.apps.R
-import com.baltroid.presentation.common.CroppedImage
-import com.baltroid.presentation.common.HorizontalSpacer
-import com.baltroid.presentation.common.SimpleIcon
-import com.baltroid.presentation.common.SimpleImage
-import com.baltroid.presentation.common.VerticalSpacer
-import com.baltroid.presentation.components.HitReadsTopBar
+import com.baltroid.ui.common.CroppedImage
+import com.baltroid.ui.common.HorizontalSpacer
+import com.baltroid.ui.common.SimpleIcon
+import com.baltroid.ui.common.SimpleImage
+import com.baltroid.ui.common.VerticalSpacer
+import com.baltroid.ui.components.HitReadsTopBar
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localTextStyles

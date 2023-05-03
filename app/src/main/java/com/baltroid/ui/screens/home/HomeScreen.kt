@@ -1,4 +1,4 @@
-package com.baltroid.presentation.screens.home
+package com.baltroid.ui.screens.home
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
@@ -42,10 +42,10 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import coil.compose.AsyncImage
 import com.baltroid.apps.R
-import com.baltroid.presentation.common.HorizontalSpacer
-import com.baltroid.presentation.common.SimpleIcon
-import com.baltroid.presentation.common.VerticalSpacer
-import com.baltroid.presentation.components.HitReadsTopBar
+import com.baltroid.ui.common.HorizontalSpacer
+import com.baltroid.ui.common.SimpleIcon
+import com.baltroid.ui.common.VerticalSpacer
+import com.baltroid.ui.components.HitReadsTopBar
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localShapes
