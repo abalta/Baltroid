@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
@@ -193,7 +192,7 @@ fun HomeScreenTabItem(
             text = stringResource(id = title, size),
             style = MaterialTheme.localTextStyles.homeScreenTabText,
             modifier = Modifier
-                .requiredWidth(IntrinsicSize.Max)
+                .width(IntrinsicSize.Max)
                 .padding(bottom = MaterialTheme.localDimens.dp6_5)
 
         )
@@ -307,7 +306,7 @@ fun GenreSection(
             Text(
                 text = stringResource(id = R.string.episode_size, episodeSize),
                 style = MaterialTheme.localTextStyles.episodeText,
-                modifier = Modifier.requiredWidth(IntrinsicSize.Max)
+                modifier = Modifier.width(IntrinsicSize.Max)
             )
             Box(
                 modifier = Modifier

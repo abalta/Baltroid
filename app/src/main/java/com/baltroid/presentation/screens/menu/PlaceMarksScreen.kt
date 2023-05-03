@@ -3,7 +3,6 @@ package com.baltroid.presentation.screens.menu
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -12,13 +11,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -33,7 +30,6 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import com.baltroid.apps.R
 import com.baltroid.presentation.common.CroppedImage
-import com.baltroid.presentation.common.SimpleIcon
 import com.baltroid.presentation.common.VerticalSpacer
 import com.baltroid.presentation.components.MenuBar
 import com.baltroid.ui.theme.localColors
@@ -145,7 +141,7 @@ fun StoryItem(
                 Text(
                     text = stringResource(id = R.string.episode_size, episodeNumber),
                     style = MaterialTheme.localTextStyles.episodeSelectedText,
-                    modifier = Modifier.requiredWidth(IntrinsicSize.Max)
+                    modifier = Modifier.width(IntrinsicSize.Max)
                 )
             }
             VerticalSpacer(height = MaterialTheme.localDimens.dp5)
@@ -201,7 +197,7 @@ fun MarkItem(
                 Text(
                     text = stringResource(id = R.string.episode_size, episodeNumber),
                     style = MaterialTheme.localTextStyles.episodeSelectedText,
-                    modifier = Modifier.requiredWidth(IntrinsicSize.Max)
+                    modifier = Modifier.width(IntrinsicSize.Max)
                 )
             }
             VerticalSpacer(height = MaterialTheme.localDimens.dp7)
@@ -220,37 +216,6 @@ fun YellowBar(
             color = localColors.gold
         )
     })
-}
-
-@Composable
-fun IconlessMenuBar(
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier
-    ) {
-        Box(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(
-                text = "ZEYNEP SEY",
-                style = MaterialTheme.localTextStyles.menuBarTitle,
-                modifier = Modifier.align(
-                    Alignment.Center
-                )
-            )
-            SimpleIcon(
-                iconResId = R.drawable.ic_close,
-                modifier = Modifier.align(Alignment.CenterEnd)
-            )
-
-        }
-        VerticalSpacer(height = MaterialTheme.localDimens.dp20)
-        Divider(
-            thickness = MaterialTheme.localDimens.dp0_5,
-            color = MaterialTheme.localColors.white_alpha06
-        )
-    }
 }
 
 @Preview(device = Devices.DEFAULT)

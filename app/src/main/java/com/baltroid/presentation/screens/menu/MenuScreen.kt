@@ -31,7 +31,7 @@ import androidx.constraintlayout.compose.Dimension
 import com.baltroid.apps.R
 import com.baltroid.presentation.common.CroppedImage
 import com.baltroid.presentation.common.HorizontalSpacer
-import com.baltroid.presentation.common.IconWithTextBelow
+import com.baltroid.presentation.common.RoundedIconCard
 import com.baltroid.presentation.common.SimpleIcon
 import com.baltroid.presentation.common.VerticalSpacer
 import com.baltroid.ui.theme.localColors
@@ -68,6 +68,7 @@ fun MenuScreen(
 
             RoundedIconCard(
                 text = diamondValue.toString(),
+                iconResId = R.drawable.ic_diamond,
                 modifier = Modifier.constrainAs(diamond) {
                     end.linkTo(image.start, margin = localDimens.dp23)
                     top.linkTo(image.top)
@@ -262,30 +263,6 @@ fun DarkThemeButton(
         HorizontalSpacer(width = MaterialTheme.localDimens.dp9)
         SimpleIcon(iconResId = R.drawable.ic_moon)
     }
-}
-
-@Composable
-fun RoundedIconCard(
-    text: String,
-    modifier: Modifier = Modifier
-) {
-    IconWithTextBelow(
-        iconResId = R.drawable.ic_diamond,
-        text = text,
-        spacedBy = MaterialTheme.localDimens.dp3,
-        textStyle = MaterialTheme.localTextStyles.imageCardText,
-        modifier = modifier
-            .clip(MaterialTheme.localShapes.roundedDp16)
-            .border(
-                width = MaterialTheme.localDimens.dp1,
-                color = MaterialTheme.localColors.white,
-                shape = MaterialTheme.localShapes.roundedDp16
-            )
-            .padding(
-                horizontal = MaterialTheme.localDimens.dp20,
-                vertical = MaterialTheme.localDimens.dp14_5
-            )
-    )
 }
 
 @Composable

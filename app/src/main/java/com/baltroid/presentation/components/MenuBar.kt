@@ -1,15 +1,21 @@
 package com.baltroid.presentation.components
 
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.baltroid.apps.R
 import com.baltroid.presentation.common.SimpleIcon
+import com.baltroid.presentation.common.VerticalSpacer
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localTextStyles
@@ -55,6 +61,41 @@ fun MenuBar(
                 top.linkTo(text.bottom, margin = localDimens.dp20)
                 width = Dimension.fillToConstraints
             }
+        )
+    }
+}
+
+@Composable
+fun IconlessMenuBar(
+    title: String,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    Column(
+        modifier = modifier.fillMaxWidth(0.9f)
+    ) {
+        Box(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.localTextStyles.menuBarTitle,
+                modifier = Modifier.align(
+                    Alignment.Center
+                )
+            )
+            SimpleIcon(
+                iconResId = R.drawable.ic_close,
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .clickable { onClick.invoke() }
+            )
+
+        }
+        VerticalSpacer(height = MaterialTheme.localDimens.dp20)
+        Divider(
+            thickness = MaterialTheme.localDimens.dp0_5,
+            color = MaterialTheme.localColors.white_alpha06
         )
     }
 }

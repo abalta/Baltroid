@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
@@ -30,6 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.baltroid.apps.R
 import com.baltroid.presentation.common.VerticalSpacer
+import com.baltroid.presentation.components.IconlessMenuBar
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localTextStyles
@@ -51,10 +51,11 @@ fun AuthorScreen() {
     ) {
         VerticalSpacer(height = MaterialTheme.localDimens.dp36)
         IconlessMenuBar(
+            title = "ZEYNEP SEY",
             modifier = Modifier
-                .fillMaxWidth(0.9f)
+                .fillMaxWidth(0.8f)
                 .align(Alignment.CenterHorizontally)
-        )
+        ) {}
         VerticalSpacer(height = MaterialTheme.localDimens.dp22)
         NamelessAuthorItem(
             modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -98,7 +99,7 @@ fun StoryAndCommentTabs(
             Text(
                 text = stringResource(id = R.string.stories),
                 style = MaterialTheme.localTextStyles.menuBarSubTitle,
-                modifier = Modifier.requiredWidth(IntrinsicSize.Max)
+                modifier = Modifier.width(IntrinsicSize.Max)
             )
             Box(
                 modifier = Modifier
@@ -123,7 +124,7 @@ fun StoryAndCommentTabs(
             Text(
                 text = stringResource(id = R.string.comments),
                 style = MaterialTheme.localTextStyles.menuBarSubTitle,
-                modifier = Modifier.requiredWidth(IntrinsicSize.Max)
+                modifier = Modifier.width(IntrinsicSize.Max)
             )
             Box(
                 modifier = Modifier
