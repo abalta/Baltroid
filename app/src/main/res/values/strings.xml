@@ -28,4 +28,6 @@
     <string name="profile_text">PROFİL</string>
     <string name="comments">YORUMLAR</string>
     <string name="forgot_password">Şifremi Unuttum</string>
+    <string name="buy">SATIN AL</string>
+    <string name="balance">%1$.2f TL</string>
 </resources>
