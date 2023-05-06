@@ -49,7 +49,7 @@ fun MenuScreen(
     navigate: (route: String) -> Unit,
 ) {
     MenuScreenContent(
-        balance = menuScreenState.balance,
+        balance = menuScreenState.diamondBalance,
         currentUserName = menuScreenState.currentUserName,
         imgUrl = menuScreenState.imgUrl,
         scrollState = rememberScrollState(),

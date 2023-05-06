@@ -1,17 +1,15 @@
-package com.baltroid.ui.screens.menu
+package com.baltroid.ui.screens.menu.shop
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -32,7 +30,23 @@ import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
 
 @Composable
-fun ShopScreen() {
+fun ShopScreen(
+    screenState: ShopScreenState,
+    onBackClick: () -> Unit
+) {
+    ShopScreenContent(
+        currentBalance = screenState.currentBalance,
+        currentPoint = screenState.currentPoint,
+        onBackClick = onBackClick
+    )
+}
+
+@Composable
+private fun ShopScreenContent(
+    currentBalance: Float,
+    currentPoint: Int,
+    onBackClick: () -> Unit
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -42,25 +56,12 @@ fun ShopScreen() {
             .statusBarsPadding()
     ) {
         MenuBar(
-            title = "4500 PUAN",
+            title = stringResource(id = R.string.point, currentPoint),
             iconResId = R.drawable.ic_diamond,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            onBackClick = onBackClick
         )
         VerticalSpacer(height = MaterialTheme.localDimens.dp40)
-        ShopScreenContent(currentBalance = 3.67f, modifier = Modifier.width(IntrinsicSize.Min))
-    }
-}
-
-@Composable
-fun ShopScreenContent(
-    currentBalance: Float,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp26),
-        modifier = modifier
-    ) {
         DiamondsGrid()
         Text(
             text = stringResource(id = R.string.balance, currentBalance),
@@ -130,5 +131,10 @@ fun BuyButton(
 @Preview(widthDp = 360, heightDp = 540)
 @Composable
 fun ShopScreenPreview() {
-    ShopScreen()
+    ShopScreen(
+        screenState = ShopScreenState(
+            currentBalance = 20f,
+            currentPoint = 4500
+        )
+    ) {}
 }

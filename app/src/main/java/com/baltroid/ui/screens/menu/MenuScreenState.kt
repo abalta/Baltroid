@@ -1,7 +1,7 @@
 package com.baltroid.ui.screens.menu
 
 data class MenuScreenState(
-    val balance: Int,
+    val diamondBalance: Int,
     val currentUserName: String,
     val imgUrl: String,
 )

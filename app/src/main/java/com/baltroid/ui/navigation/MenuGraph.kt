@@ -7,12 +7,14 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navigation
 import com.baltroid.ui.screens.menu.MenuScreen
+import com.baltroid.ui.screens.menu.MenuScreenState
 import com.baltroid.ui.screens.menu.author.AuthorScreen
 import com.baltroid.ui.screens.menu.favorites.FavoritesScreen
 import com.baltroid.ui.screens.menu.place_marks.PlaceMarksScreen
 import com.baltroid.ui.screens.menu.profile.ProfileScreen
 import com.baltroid.ui.screens.menu.settings.SettingsScreen
 import com.baltroid.ui.screens.menu.shop.ShopScreen
+import com.baltroid.ui.screens.menu.shop.ShopScreenState
 import com.google.accompanist.navigation.animation.composable
 
 
@@ -45,9 +47,13 @@ fun NavGraphBuilder.menuGraph(navController: NavController) {
                 )
             }
         ) {
-            MenuScreen(
-                diamondValue = 15,
+            val screenState = MenuScreenState(
+                diamondBalance = 4500,
                 currentUserName = "SELEN PEKMEZCİ",
+                imgUrl = "",
+            )
+            MenuScreen(
+                menuScreenState = screenState,
                 onBackClick = { navController.popBackStack() }
             ) { route ->
                 navController.navigate(route)
@@ -79,7 +85,12 @@ fun NavGraphBuilder.menuGraph(navController: NavController) {
             )
         }
         composable(route = HitReadsScreens.ShopScreen.route) {
+            val screenState = ShopScreenState(
+                currentPoint = 4500,
+                currentBalance = 15f
+            )
             ShopScreen(
+                screenState = screenState,
                 onBackClick = { navController.popBackStack() }
             )
         }
