@@ -34,5 +34,6 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.coil.compose)
     implementation(libs.androidx.constraintlayout.compose)
+    implementation(libs.accompanist.navigation.animation)
     debugImplementation(libs.androidx.compose.ui.tooling)
 }
