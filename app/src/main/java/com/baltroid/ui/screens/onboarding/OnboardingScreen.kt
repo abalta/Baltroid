@@ -1,6 +1,5 @@
 package com.baltroid.ui.screens.onboarding
 
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -30,13 +29,12 @@ import com.baltroid.ui.theme.localTextStyles
 
 @Composable
 fun OnboardingScreen(
-    @DrawableRes imgResId: Int,
-    text: String,
+    screenState: OnboardingScreenState,
     onClick: () -> Unit
 ) {
     Box {
         CroppedImage(
-            imgResId = imgResId,
+            imgResId = screenState.imageResId,
             modifier = Modifier.fillMaxSize()
         )
         SimpleImage(
@@ -57,7 +55,7 @@ fun OnboardingScreen(
                 )
         )
         OnboardingScreenBottomSection(
-            text = text,
+            text = screenState.messageText,
             modifier = Modifier.align(Alignment.BottomCenter),
             onClick = onClick
         )
@@ -97,9 +95,9 @@ fun OnboardingScreenBottomSection(
         SimpleImage(
             imgResId = R.drawable.ic_arrow_right,
             modifier = Modifier
-                .clickable { onClick.invoke() }
                 .align(Alignment.CenterHorizontally)
                 .navigationBarsPadding()
+                .clickable { onClick.invoke() }
         )
         VerticalSpacer(height = MaterialTheme.localDimens.dp29)
     }
@@ -111,7 +109,9 @@ fun OnboardingScreenBottomSection(
 @Composable
 fun OnboardingPreview() {
     OnboardingScreen(
-        R.drawable.woods_image,
-        text = stringResource(id = R.string.welcome)
+        screenState = OnboardingScreenState(
+            imageResId = R.drawable.woods_image,
+            messageText = stringResource(id = R.string.welcome)
+        )
     ) {}
 }
