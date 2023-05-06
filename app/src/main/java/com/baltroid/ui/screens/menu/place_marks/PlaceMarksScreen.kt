@@ -1,8 +1,9 @@
-package com.baltroid.ui.screens.menu
+package com.baltroid.ui.screens.menu.place_marks
 
-import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -22,14 +23,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.ClipOp
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import com.baltroid.apps.R
 import com.baltroid.ui.common.CroppedImage
+import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.VerticalSpacer
 import com.baltroid.ui.components.MenuBar
 import com.baltroid.ui.theme.localColors
@@ -38,47 +37,61 @@ import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
 
 @Composable
-fun PlaceMarksScreen() {
+fun PlaceMarksScreen(
+    onBackClick: () -> Unit
+) {
+    PlaceMarsScreenContent(
+        scrollState = rememberScrollState(),
+        onBackClick = onBackClick
+    )
+}
 
-    val scrollState = rememberScrollState()
-
+@Composable
+fun PlaceMarsScreenContent(
+    scrollState: ScrollState,
+    onBackClick: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.localColors.black)
-            .verticalScroll(scrollState)
             .navigationBarsPadding()
     ) {
         VerticalSpacer(height = MaterialTheme.localDimens.dp36)
         MenuBar(
             modifier = Modifier.fillMaxWidth(),
             title = stringResource(id = R.string.place_marks),
-            iconResId = R.drawable.ic_banner_filled
+            iconResId = R.drawable.ic_banner_filled,
+            onBackClick = onBackClick
         )
         VerticalSpacer(height = MaterialTheme.localDimens.dp16)
-        Text(
-            text = stringResource(id = R.string.stories),
-            style = MaterialTheme.localTextStyles.menuBarSubTitle,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
-        VerticalSpacer(height = MaterialTheme.localDimens.dp16)
-        StoryItemList(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = MaterialTheme.localDimens.dp35)
-        )
-        VerticalSpacer(height = MaterialTheme.localDimens.dp18_5)
-        Text(
-            text = stringResource(id = R.string.marks),
-            style = MaterialTheme.localTextStyles.menuBarSubTitle,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
-        VerticalSpacer(height = MaterialTheme.localDimens.dp21)
-        MarkItemList(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = MaterialTheme.localDimens.dp35)
-        )
+        Column(
+            modifier = Modifier.verticalScroll(scrollState)
+        ) {
+            Text(
+                text = stringResource(id = R.string.stories),
+                style = MaterialTheme.localTextStyles.menuBarSubTitle,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+            VerticalSpacer(height = MaterialTheme.localDimens.dp16)
+            StoryItemList(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = MaterialTheme.localDimens.dp35)
+            )
+            VerticalSpacer(height = MaterialTheme.localDimens.dp18_5)
+            Text(
+                text = stringResource(id = R.string.marks),
+                style = MaterialTheme.localTextStyles.menuBarSubTitle,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+            VerticalSpacer(height = MaterialTheme.localDimens.dp21)
+            MarkItemList(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = MaterialTheme.localDimens.dp35)
+            )
+        }
     }
 }
 
@@ -154,19 +167,9 @@ fun StoryItem(
 fun EpisodeBanner(
     modifier: Modifier
 ) {
-    val localColor = MaterialTheme.localColors
-    Canvas(
-        modifier = modifier.height(MaterialTheme.localDimens.dp17),
-        onDraw = {
-            val path = Path().apply {
-                moveTo(size.width / 2f, size.height / 3f)
-                lineTo(0f, size.height)
-                lineTo(size.width, size.height)
-            }
-            clipPath(path, ClipOp.Difference) {
-                drawRect(localColor.purple_dark)
-            }
-        }
+    SimpleIcon(
+        iconResId = R.drawable.ic_banner_long,
+        modifier = modifier.height(MaterialTheme.localDimens.dp17)
     )
 }
 
@@ -210,12 +213,11 @@ fun MarkItem(
 fun YellowBar(
     modifier: Modifier
 ) {
-    val localColors = MaterialTheme.localColors
-    Canvas(modifier = modifier.height(MaterialTheme.localDimens.dp8), onDraw = {
-        drawRect(
-            color = localColors.gold
-        )
-    })
+    Box(
+        modifier = modifier
+            .height(MaterialTheme.localDimens.dp8)
+            .background(MaterialTheme.localColors.gold)
+    )
 }
 
 @Preview(device = Devices.DEFAULT)
@@ -223,5 +225,5 @@ fun YellowBar(
 @Preview(widthDp = 360, heightDp = 540)
 @Composable
 fun PlaceMarkScreenPreview() {
-    PlaceMarksScreen()
+    PlaceMarksScreen {}
 }

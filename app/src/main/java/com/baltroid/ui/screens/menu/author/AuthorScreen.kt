@@ -1,5 +1,6 @@
-package com.baltroid.ui.screens.menu
+package com.baltroid.ui.screens.menu.author
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -12,7 +13,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -25,19 +28,37 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.baltroid.apps.R
+import com.baltroid.ui.common.CroppedImage
+import com.baltroid.ui.common.HorizontalSpacer
+import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.VerticalSpacer
 import com.baltroid.ui.components.IconlessMenuBar
+import com.baltroid.ui.screens.menu.favorites.NamelessAuthorItem
+import com.baltroid.ui.screens.menu.favorites.StoryItemFavorites
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
+import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
 
 @Composable
-fun AuthorScreen() {
+fun AuthorScreen(
+    onBackClick: () -> Unit
+) {
+    AuthorScreenContent(
+        scrollState = rememberScrollState(),
+        onBackClick = onBackClick
+    )
+}
 
-    val scrollState = rememberScrollState()
+@Composable
+fun AuthorScreenContent(
+    scrollState: ScrollState,
+    onBackClick: () -> Unit,
+) {
     var selectedTab: AuthorScreenTabs by rememberSaveable {
         mutableStateOf(AuthorScreenTabs.Stories)
     }
@@ -52,10 +73,11 @@ fun AuthorScreen() {
         VerticalSpacer(height = MaterialTheme.localDimens.dp36)
         IconlessMenuBar(
             title = "ZEYNEP SEY",
+            onBackClick = onBackClick,
             modifier = Modifier
                 .fillMaxWidth(0.8f)
                 .align(Alignment.CenterHorizontally)
-        ) {}
+        )
         VerticalSpacer(height = MaterialTheme.localDimens.dp22)
         NamelessAuthorItem(
             modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -142,10 +164,102 @@ fun StoryAndCommentTabs(
     }
 }
 
+@Composable
+fun AuthorComments(
+    modifier: Modifier = Modifier
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp23),
+        modifier = modifier
+    ) {
+        repeat(5) {
+
+            AuthorCommentItem(
+                owner = "ZEYNEP SEY",
+                date = "04/01/2023 20:29",
+                isLiked = false
+            )
+
+        }
+    }
+}
+
+@Composable
+fun AuthorCommentItem(
+    owner: String,
+    date: String,
+    isLiked: Boolean,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = Modifier.width(IntrinsicSize.Min)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+        ) {
+            CroppedImage(
+                imgResId = R.drawable.woods_image,
+                modifier
+                    .size(MaterialTheme.localDimens.dp48)
+                    .clip(MaterialTheme.localShapes.circleShape)
+            )
+            HorizontalSpacer(width = MaterialTheme.localDimens.dp13)
+            Column(
+                verticalArrangement = Arrangement.Bottom,
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp5)
+                ) {
+                    Text(text = owner, style = MaterialTheme.localTextStyles.subtitle)
+                    SimpleIcon(
+                        iconResId = R.drawable.ic_star,
+                        tint = MaterialTheme.localColors.yellow,
+                        modifier = Modifier
+                            .padding(top = MaterialTheme.localDimens.dp1)
+                            .size(MaterialTheme.localDimens.dp15)
+                            .align(Alignment.Top)
+                    )
+                }
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(
+                        text = date,
+                        style = MaterialTheme.localTextStyles.dateText
+                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp14),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentWidth(Alignment.CenterHorizontally),
+                    ) {
+                        SimpleIcon(iconResId = if (isLiked) R.drawable.ic_heart_filled else R.drawable.ic_heart_outlined)
+                        SimpleIcon(iconResId = R.drawable.ic_chat_outlined)
+                        SimpleIcon(iconResId = R.drawable.ic_menu_horizontal)
+                    }
+                }
+            }
+        }
+        VerticalSpacer(height = MaterialTheme.localDimens.dp6)
+        Text(
+            text = "First of all please publish this so I can buy it for my library! second #KGD is my best book",
+            style = MaterialTheme.localTextStyles.body,
+            modifier = Modifier
+                .width(IntrinsicSize.Max)
+                .padding(start = MaterialTheme.localDimens.dp5)
+        )
+    }
+}
+
 @Preview
 @Composable
 fun AuthorScreenPreview() {
-    AuthorScreen()
+    AuthorScreen {}
 }
 
 enum class AuthorScreenTabs {

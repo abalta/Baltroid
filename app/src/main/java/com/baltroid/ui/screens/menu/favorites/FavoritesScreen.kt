@@ -1,5 +1,6 @@
-package com.baltroid.ui.screens.menu
+package com.baltroid.ui.screens.menu.favorites
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -35,41 +36,55 @@ import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
 
 @Composable
-fun FavoritesScreen() {
+fun FavoritesScreen(
+    onBackClick: () -> Unit
+) {
+    FavoritesScreenContent(
+        scrollState = rememberScrollState(),
+        onBackClick = onBackClick
+    )
+}
 
-    val scrollState = rememberScrollState()
-
+@Composable
+fun FavoritesScreenContent(
+    scrollState: ScrollState,
+    onBackClick: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.localColors.black)
-            .verticalScroll(scrollState)
             .navigationBarsPadding()
     ) {
         VerticalSpacer(height = MaterialTheme.localDimens.dp36)
         MenuBar(
             modifier = Modifier.fillMaxWidth(),
             title = stringResource(id = R.string.favorites),
-            iconResId = R.drawable.ic_star
+            iconResId = R.drawable.ic_star,
+            onBackClick = onBackClick
         )
         VerticalSpacer(height = MaterialTheme.localDimens.dp16)
-        Text(
-            text = stringResource(id = R.string.stories),
-            style = MaterialTheme.localTextStyles.menuBarSubTitle,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
-        VerticalSpacer(height = MaterialTheme.localDimens.dp22)
-        StoryItemFavoritesList(modifier = Modifier.padding(start = MaterialTheme.localDimens.dp35))
-        VerticalSpacer(height = MaterialTheme.localDimens.dp25)
-        Text(
-            text = stringResource(id = R.string.authors),
-            style = MaterialTheme.localTextStyles.menuBarSubTitle,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
-        VerticalSpacer(height = MaterialTheme.localDimens.dp25)
-        AuthorsFavoritesList(
-            modifier = Modifier.padding(start = MaterialTheme.localDimens.dp43)
-        )
+        Column(
+            modifier = Modifier.verticalScroll(scrollState)
+        ) {
+            Text(
+                text = stringResource(id = R.string.stories),
+                style = MaterialTheme.localTextStyles.menuBarSubTitle,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+            VerticalSpacer(height = MaterialTheme.localDimens.dp22)
+            StoryItemFavoritesList(modifier = Modifier.padding(start = MaterialTheme.localDimens.dp35))
+            VerticalSpacer(height = MaterialTheme.localDimens.dp25)
+            Text(
+                text = stringResource(id = R.string.authors),
+                style = MaterialTheme.localTextStyles.menuBarSubTitle,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+            VerticalSpacer(height = MaterialTheme.localDimens.dp25)
+            AuthorsFavoritesList(
+                modifier = Modifier.padding(start = MaterialTheme.localDimens.dp43)
+            )
+        }
     }
 }
 
@@ -197,6 +212,6 @@ fun StoryItemFavorites(
 @Preview(widthDp = 360, heightDp = 540)
 @Composable
 fun FavoritesScreenPreview() {
-    FavoritesScreen()
+    FavoritesScreen {}
 }
 

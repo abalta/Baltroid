@@ -1,11 +1,13 @@
-package com.baltroid.ui.screens.menu
+package com.baltroid.ui.screens.menu.settings
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
@@ -22,32 +24,38 @@ import androidx.constraintlayout.compose.Dimension
 import com.baltroid.apps.R
 import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.VerticalSpacer
+import com.baltroid.ui.screens.menu.ThemeButtons
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localTextStyles
 
 @Composable
-fun SettingsScreen() {
+fun SettingsScreen(
+    onBackClick: () -> Unit
+) {
+    SettingsScreenContent(
+        scrollState = rememberScrollState(),
+        onBackClick = onBackClick
+    )
+}
 
-    val scrollState = rememberScrollState()
-
+@Composable
+fun SettingsScreenContent(
+    scrollState: ScrollState,
+    onBackClick: () -> Unit
+) {
     BoxWithConstraints {
-        val maxHeight = maxHeight
-
         ConstraintLayout(
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.localColors.black)
-                .verticalScroll(scrollState)
                 .navigationBarsPadding()
         ) {
             val localDimens = MaterialTheme.localDimens
 
             val (
-                userInfo, notification, appSettings,
-                privacy, privateDatas, text,
-                close, divider, leftIcon,
-                themeButtons,
+                userInfo, text, close, divider,
+                leftIcon, themeButtons,
             ) = createRefs()
 
             createHorizontalChain(leftIcon, text, close)
@@ -68,10 +76,12 @@ fun SettingsScreen() {
                 }
             )
             SimpleIcon(iconResId = R.drawable.ic_close,
-                modifier = Modifier.constrainAs(close) {
-                    top.linkTo(text.top)
-                    bottom.linkTo(text.bottom)
-                }
+                modifier = Modifier
+                    .constrainAs(close) {
+                        top.linkTo(text.top)
+                        bottom.linkTo(text.bottom)
+                    }
+                    .clickable { onBackClick.invoke() }
             )
             Divider(
                 thickness = MaterialTheme.localDimens.dp0_5,
@@ -83,69 +93,47 @@ fun SettingsScreen() {
                     width = Dimension.fillToConstraints
                 }
             )
-            SettingsItem(
-                title = stringResource(id = R.string.user_infos),
-                modifier = Modifier.constrainAs(userInfo) {
-                    top.linkTo(divider.bottom, margin = localDimens.dp35)
-                    start.linkTo(divider.start)
-                    end.linkTo(divider.end)
-                    width = Dimension.fillToConstraints
-                }
-            )
-            SettingsItem(
-                title = stringResource(id = R.string.notifications),
-                modifier = Modifier.constrainAs(notification) {
-                    top.linkTo(userInfo.bottom, margin = localDimens.dp18)
-                    start.linkTo(divider.start)
-                    end.linkTo(divider.end)
-                    width = Dimension.fillToConstraints
-                }
-            )
-            SettingsItem(
-                title = stringResource(id = R.string.app_settings),
-                modifier = Modifier.constrainAs(appSettings) {
-                    top.linkTo(notification.bottom, margin = localDimens.dp18)
-                    start.linkTo(divider.start)
-                    end.linkTo(divider.end)
-                    width = Dimension.fillToConstraints
-                }
-            )
-            SettingsItem(
-                title = stringResource(id = R.string.privacy),
-                modifier = Modifier.constrainAs(privacy) {
-                    top.linkTo(appSettings.bottom, margin = localDimens.dp18)
-                    start.linkTo(divider.start)
-                    end.linkTo(divider.end)
-                    width = Dimension.fillToConstraints
-                }
-            )
-            SettingsItem(
-                title = stringResource(id = R.string.personal_datas),
-                modifier = Modifier.constrainAs(privateDatas) {
-                    top.linkTo(privacy.bottom, margin = localDimens.dp18)
-                    start.linkTo(divider.start)
-                    end.linkTo(divider.end)
-                    width = Dimension.fillToConstraints
-                }
-            )
+            Column(
+                verticalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp18),
+                modifier = Modifier
+                    .constrainAs(userInfo) {
+                        top.linkTo(divider.bottom, margin = localDimens.dp35)
+                        start.linkTo(divider.start)
+                        end.linkTo(divider.end)
+                        bottom.linkTo(themeButtons.top, margin = localDimens.dp16)
+                        width = Dimension.fillToConstraints
+                        height = Dimension.fillToConstraints
+                    }
+                    .verticalScroll(scrollState)
+            ) {
+                SettingsItem(
+                    title = stringResource(id = R.string.user_infos),
+                    modifier = Modifier
+                )
+                SettingsItem(
+                    title = stringResource(id = R.string.notifications),
+                    modifier = Modifier
+                )
+                SettingsItem(
+                    title = stringResource(id = R.string.app_settings),
+                    modifier = Modifier
+                )
+                SettingsItem(
+                    title = stringResource(id = R.string.privacy),
+                    modifier = Modifier
+                )
+                SettingsItem(
+                    title = stringResource(id = R.string.personal_datas),
+                    modifier = Modifier
+                )
+            }
             ThemeButtons(
                 modifier = Modifier
                     .constrainAs(themeButtons) {
-                        if (maxHeight < localDimens.minScreenHeight) {
-                            top.linkTo(privateDatas.bottom, margin = localDimens.dp244)
-                        } else {
-                            bottom.linkTo(bottomGuideLine)
-                        }
+                        bottom.linkTo(bottomGuideLine)
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                     }
-                    .padding(
-                        bottom = if (maxHeight < localDimens.minScreenHeight) {
-                            MaterialTheme.localDimens.dp78
-                        } else {
-                            MaterialTheme.localDimens.default
-                        }
-                    )
             )
         }
     }
@@ -174,5 +162,5 @@ fun SettingsItem(
 @Preview(widthDp = 360, heightDp = 540)
 @Composable
 fun SettingsScreenPreview() {
-    SettingsScreen()
+    SettingsScreen {}
 }

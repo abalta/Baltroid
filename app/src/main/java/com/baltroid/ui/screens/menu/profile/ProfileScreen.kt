@@ -1,4 +1,4 @@
-package com.baltroid.ui.screens.menu
+package com.baltroid.ui.screens.menu.profile
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -35,7 +35,16 @@ import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
 
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(
+    onBackClick: () -> Unit
+) {
+    ProfileScreenContent(onBackClick = onBackClick)
+}
+
+@Composable
+fun ProfileScreenContent(
+    onBackClick: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -44,11 +53,12 @@ fun ProfileScreen() {
         VerticalSpacer(height = MaterialTheme.localDimens.dp36)
         IconlessMenuBar(
             title = stringResource(id = R.string.profile_text),
+            onBackClick = onBackClick,
             modifier = Modifier
                 .fillMaxWidth(0.8f)
                 .align(Alignment.CenterHorizontally)
                 .statusBarsPadding()
-        ) {}
+        )
         VerticalSpacer(height = MaterialTheme.localDimens.dp29)
         IconsAndProfileImage(diamondValue = 4500, modifier = Modifier.fillMaxWidth())
         VerticalSpacer(height = MaterialTheme.localDimens.dp67)
@@ -145,6 +155,6 @@ fun EditProfileSection(
 @Preview(widthDp = 360, heightDp = 540)
 @Composable
 fun ProfileScreenPreview() {
-    ProfileScreen()
+    ProfileScreen {}
 }
 
