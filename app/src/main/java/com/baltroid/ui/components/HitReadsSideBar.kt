@@ -1,5 +1,6 @@
 package com.baltroid.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -14,6 +15,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.tooling.preview.Preview
 import com.baltroid.apps.R
 import com.baltroid.ui.common.IconWithTextBelow
@@ -21,13 +24,17 @@ import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localTextStyles
+import com.baltroid.util.conditional
 
 @Composable
 fun HitReadsSideBar(
     modifier: Modifier = Modifier,
     numberOfViews: Int,
     numberOfComments: Int,
-    hasSmallHeight: Boolean
+    hasSmallHeight: Boolean,
+    isCommentsSelected: Boolean,
+    onDotsClick: () -> Unit,
+    onCommentsClick: () -> Unit
 ) {
     Row(
         modifier = modifier
@@ -41,6 +48,9 @@ fun HitReadsSideBar(
             SideBarTopSection(
                 numberOfViews = numberOfViews,
                 numberOfComments = numberOfComments,
+                isCommentsSelected = isCommentsSelected,
+                onDotsClick = onDotsClick,
+                onCommentsClick = onCommentsClick,
                 hasSmallHeight = hasSmallHeight, modifier = Modifier
                     .align(Alignment.TopCenter)
                     .fillMaxWidth()
@@ -79,8 +89,15 @@ fun SideBarTopSection(
     modifier: Modifier = Modifier,
     numberOfViews: Int,
     numberOfComments: Int,
-    hasSmallHeight: Boolean
+    hasSmallHeight: Boolean,
+    isCommentsSelected: Boolean,
+    onCommentsClick: () -> Unit,
+    onDotsClick: () -> Unit
 ) {
+
+    val localColors = MaterialTheme.localColors
+    val localDimens = MaterialTheme.localDimens
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
@@ -88,10 +105,12 @@ fun SideBarTopSection(
     ) {
         SimpleIcon(
             iconResId = R.drawable.ic_menu,
-            modifier = Modifier.padding(
-                vertical = MaterialTheme.localDimens.dp12,
-                horizontal = MaterialTheme.localDimens.dp8
-            )
+            modifier = Modifier
+                .padding(
+                    vertical = MaterialTheme.localDimens.dp12,
+                    horizontal = MaterialTheme.localDimens.dp8
+                )
+                .clickable { onDotsClick.invoke() }
         )
         if (!hasSmallHeight) {
             SideBarHorizontalDivider()
@@ -120,10 +139,24 @@ fun SideBarTopSection(
             text = numberOfComments.toString(),
             spacedBy = MaterialTheme.localDimens.dp3,
             textStyle = MaterialTheme.localTextStyles.sideBarIconText,
-            modifier = Modifier.padding(
-                vertical = MaterialTheme.localDimens.dp12,
-                horizontal = MaterialTheme.localDimens.dp8
-            )
+            modifier = Modifier
+                .fillMaxWidth()
+                .conditional(isCommentsSelected) {
+                    drawBehind {
+                        drawRoundRect(
+                            color = localColors.orange,
+                            size = Size(
+                                width = localDimens.dp3.toPx(),
+                                height = size.height
+                            )
+                        )
+                    }
+                }
+                .padding(
+                    vertical = MaterialTheme.localDimens.dp12,
+                    horizontal = MaterialTheme.localDimens.dp8
+                )
+                .clickable { onCommentsClick.invoke() }
         )
         SideBarHorizontalDivider()
     }
@@ -183,6 +216,9 @@ fun HitReadsSideBarPreview() {
     HitReadsSideBar(
         numberOfViews = 12,
         numberOfComments = 12,
-        hasSmallHeight = false
+        hasSmallHeight = false,
+        onCommentsClick = {},
+        isCommentsSelected = true,
+        onDotsClick = {}
     )
 }

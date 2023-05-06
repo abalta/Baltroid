@@ -24,7 +24,8 @@ import com.baltroid.ui.theme.localTextStyles
 fun MenuBar(
     title: String,
     @DrawableRes iconResId: Int,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onBackClick: () -> Unit
 ) {
     val localDimens = MaterialTheme.localDimens
 
@@ -38,7 +39,8 @@ fun MenuBar(
             modifier = Modifier.constrainAs(banner) {
                 top.linkTo(text.top)
                 bottom.linkTo(text.bottom)
-            })
+            }
+        )
         Text(
             text = title,
             style = MaterialTheme.localTextStyles.menuBarTitle,
@@ -48,10 +50,13 @@ fun MenuBar(
         )
         SimpleIcon(
             iconResId = R.drawable.ic_close,
-            modifier = Modifier.constrainAs(close) {
-                top.linkTo(text.top)
-                bottom.linkTo(text.bottom)
-            })
+            modifier = Modifier
+                .constrainAs(close) {
+                    top.linkTo(text.top)
+                    bottom.linkTo(text.bottom)
+                }
+                .clickable { onBackClick.invoke() }
+        )
         Divider(
             thickness = MaterialTheme.localDimens.dp0_5,
             color = MaterialTheme.localColors.white_alpha06,
@@ -69,7 +74,7 @@ fun MenuBar(
 fun IconlessMenuBar(
     title: String,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit
+    onBackClick: () -> Unit
 ) {
     Column(
         modifier = modifier.fillMaxWidth(0.9f)
@@ -88,7 +93,7 @@ fun IconlessMenuBar(
                 iconResId = R.drawable.ic_close,
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
-                    .clickable { onClick.invoke() }
+                    .clickable { onBackClick.invoke() }
             )
 
         }

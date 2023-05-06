@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -36,22 +37,33 @@ fun HitReadsTopBar(
     numberOfNotification: Int,
     modifier: Modifier = Modifier,
     iconTint: Color = Color.Unspecified,
-    onMenuCLicked: () -> Unit,
-    onNotificationClicked: () -> Unit
+    onIconClick: () -> Unit = {},
+    onMenuClick: () -> Unit,
+    onNotificationClick: () -> Unit
 ) {
+
+
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(start = MaterialTheme.localDimens.dp36, end = MaterialTheme.localDimens.dp32)
+            .statusBarsPadding()
+            .padding(
+                start = MaterialTheme.localDimens.dp36,
+                end = MaterialTheme.localDimens.dp32,
+                top = MaterialTheme.localDimens.dp12
+            )
     ) {
-        SimpleImage(imgResId = R.drawable.ic_hitreads)
+        SimpleImage(
+            imgResId = R.drawable.ic_hitreads,
+            modifier = Modifier.clickable(
+            ) { onIconClick.invoke() })
         MenuAndNotification(
             modifier = Modifier.align(Alignment.CenterEnd),
-            onMenuClicked = onMenuCLicked,
             iconTint = iconTint,
             iconResId = iconResId,
+            onMenuClick = onMenuClick,
             numberOfNotification = numberOfNotification,
-            onNotificationClicked = onNotificationClicked
+            onNotificationClick = onNotificationClick
         )
     }
 }
@@ -62,15 +74,15 @@ fun MenuAndNotification(
     numberOfNotification: Int,
     modifier: Modifier = Modifier,
     iconTint: Color = Color.Unspecified,
-    onMenuClicked: () -> Unit,
-    onNotificationClicked: () -> Unit
+    onMenuClick: () -> Unit,
+    onNotificationClick: () -> Unit
 ) {
     val maxNotificationNumber = 99
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
     ) {
-        MenuButton(onMenuClicked)
+        MenuButton(onMenuClick)
         HorizontalSpacer(width = MaterialTheme.localDimens.dp13_5)
         IconWithBadge(
             iconResId = iconResId,
@@ -79,7 +91,7 @@ fun MenuAndNotification(
             else maxNotificationNumber,
             modifier = Modifier
                 .padding(bottom = MaterialTheme.localDimens.dp11)
-                .clickable { onNotificationClicked.invoke() }
+                .clickable { onNotificationClick.invoke() }
         )
     }
 }
@@ -189,9 +201,10 @@ fun iconWithBadgeMeasurePolicy() = MeasurePolicy { measurable, constraints ->
 @Composable
 fun HitReadsTopBarPreview() {
     HitReadsTopBar(
-        onMenuCLicked = {},
-        onNotificationClicked = {},
+        onNotificationClick = {},
         iconResId = R.drawable.ic_bell,
-        numberOfNotification = 12
+        numberOfNotification = 12,
+        onIconClick = {},
+        onMenuClick = {}
     )
 }
