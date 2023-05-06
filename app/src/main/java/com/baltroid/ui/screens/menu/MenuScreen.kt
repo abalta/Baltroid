@@ -1,8 +1,10 @@
 package com.baltroid.ui.screens.menu
 
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -10,9 +12,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -34,6 +36,7 @@ import com.baltroid.ui.common.HorizontalSpacer
 import com.baltroid.ui.common.RoundedIconCard
 import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.VerticalSpacer
+import com.baltroid.ui.navigation.HitReadsScreens
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localShapes
@@ -41,39 +44,59 @@ import com.baltroid.ui.theme.localTextStyles
 
 @Composable
 fun MenuScreen(
-    diamondValue: Int,
-    currentUserName: String
+    menuScreenState: MenuScreenState,
+    onBackClick: () -> Unit,
+    navigate: (route: String) -> Unit,
 ) {
-    val verticalScroll = rememberScrollState()
-    BoxWithConstraints(
-        modifier = Modifier.background(MaterialTheme.localColors.black)
+    MenuScreenContent(
+        balance = menuScreenState.balance,
+        currentUserName = menuScreenState.currentUserName,
+        imgUrl = menuScreenState.imgUrl,
+        scrollState = rememberScrollState(),
+        onBackClick = onBackClick,
+        navigate = navigate
+    )
+}
 
+@Composable
+private fun MenuScreenContent(
+    balance: Int,
+    currentUserName: String,
+    imgUrl: String,
+    scrollState: ScrollState,
+    onBackClick: () -> Unit,
+    navigate: (route: String) -> Unit
+) {
+    BoxWithConstraints(
+        modifier = Modifier
+            .background(MaterialTheme.localColors.black)
     ) {
-        val maxHeight = maxHeight
         ConstraintLayout(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(verticalScroll)
-                .navigationBarsPadding()
+                .systemBarsPadding()
         ) {
             val (
                 diamond, image, name,
                 profileButton, close, divider,
-                allStories, placeMarks, favorites,
-                comments, settings, themeButtons
+                scrollSection, themeButtons
             ) = createRefs()
 
             val bottomGuideLine = createGuidelineFromBottom(0.075f)
             val localDimens = MaterialTheme.localDimens
 
             RoundedIconCard(
-                text = diamondValue.toString(),
+                text = balance.toString(),
                 iconResId = R.drawable.ic_diamond,
-                modifier = Modifier.constrainAs(diamond) {
-                    end.linkTo(image.start, margin = localDimens.dp23)
-                    top.linkTo(image.top)
-                    bottom.linkTo(image.bottom)
-                }
+                modifier = Modifier
+                    .constrainAs(diamond) {
+                        end.linkTo(image.start, margin = localDimens.dp23)
+                        top.linkTo(image.top)
+                        bottom.linkTo(image.bottom)
+                    }
+                    .clickable {
+                        navigate.invoke(HitReadsScreens.ShopScreen.route)
+                    }
             )
             CroppedImage(
                 imgResId = R.drawable.woods_image,
@@ -106,6 +129,9 @@ fun MenuScreen(
                     }
                     .clip(MaterialTheme.localShapes.roundedDp4)
                     .background(MaterialTheme.localColors.purple)
+                    .clickable {
+                        navigate.invoke(HitReadsScreens.ProfileScreen.route)
+                    }
                     .padding(
                         vertical = MaterialTheme.localDimens.dp6,
                         horizontal = MaterialTheme.localDimens.dp20
@@ -117,6 +143,7 @@ fun MenuScreen(
                         end.linkTo(parent.end, margin = localDimens.dp42)
                         top.linkTo(image.top)
                     }
+                    .clickable { onBackClick.invoke() }
             )
             Divider(
                 color = MaterialTheme.localColors.white,
@@ -128,74 +155,59 @@ fun MenuScreen(
                     width = Dimension.percent(0.8f)
                 }
             )
-            MenuItem(
-                title = stringResource(id = R.string.all_stories_text),
-                iconResId = R.drawable.ic_open_book,
-                modifier = Modifier.constrainAs(allStories) {
-                    top.linkTo(divider.bottom, margin = localDimens.dp16)
-                    start.linkTo(divider.start)
-                    end.linkTo(divider.end)
-                    width = Dimension.fillToConstraints
+            Column(
+                verticalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp16),
+                modifier = Modifier
+                    .constrainAs(scrollSection) {
+                        top.linkTo(divider.bottom, margin = localDimens.dp16)
+                        start.linkTo(divider.start)
+                        end.linkTo(divider.end)
+                        bottom.linkTo(themeButtons.top, margin = localDimens.dp16)
+                        width = Dimension.fillToConstraints
+                        height = Dimension.fillToConstraints
+                    }
+                    .verticalScroll(scrollState)
+
+            ) {
+                MenuItem(
+                    title = stringResource(id = R.string.all_stories_text),
+                    iconResId = R.drawable.ic_open_book,
+                    modifier = Modifier
+                ) {}
+                MenuItem(
+                    title = stringResource(id = R.string.place_marks),
+                    iconResId = R.drawable.ic_banner_filled,
+                    modifier = Modifier
+                ) {
+                    navigate.invoke(HitReadsScreens.PlaceMarksScreen.route)
                 }
-            )
-            MenuItem(
-                title = stringResource(id = R.string.place_marks),
-                iconResId = R.drawable.ic_banner_filled,
-                modifier = Modifier.constrainAs(placeMarks) {
-                    top.linkTo(allStories.bottom, margin = localDimens.dp16)
-                    start.linkTo(divider.start)
-                    end.linkTo(divider.end)
-                    width = Dimension.fillToConstraints
+                MenuItem(
+                    title = stringResource(id = R.string.favorites),
+                    iconResId = R.drawable.ic_star,
+                    modifier = Modifier
+                ) {
+                    navigate.invoke(HitReadsScreens.FavoritesScreen.route)
                 }
-            )
-            MenuItem(
-                title = stringResource(id = R.string.favorites),
-                iconResId = R.drawable.ic_star,
-                modifier = Modifier.constrainAs(favorites) {
-                    top.linkTo(placeMarks.bottom, margin = localDimens.dp16)
-                    start.linkTo(divider.start)
-                    end.linkTo(divider.end)
-                    width = Dimension.fillToConstraints
+                MenuItem(
+                    title = stringResource(id = R.string.comments),
+                    iconResId = R.drawable.ic_chat_filled,
+                    modifier = Modifier
+                ) {}
+                MenuItem(
+                    title = stringResource(id = R.string.settings),
+                    iconResId = R.drawable.ic_settings,
+                    modifier = Modifier
+                ) {
+                    navigate.invoke(HitReadsScreens.SettingsScreen.route)
                 }
-            )
-            MenuItem(
-                title = stringResource(id = R.string.comments),
-                iconResId = R.drawable.ic_chat_filled,
-                modifier = Modifier.constrainAs(comments) {
-                    top.linkTo(favorites.bottom, margin = localDimens.dp16)
-                    start.linkTo(divider.start)
-                    end.linkTo(divider.end)
-                    width = Dimension.fillToConstraints
-                }
-            )
-            MenuItem(
-                title = stringResource(id = R.string.settings),
-                iconResId = R.drawable.ic_settings,
-                modifier = Modifier.constrainAs(settings) {
-                    top.linkTo(comments.bottom, margin = localDimens.dp16)
-                    start.linkTo(divider.start)
-                    end.linkTo(divider.end)
-                    width = Dimension.fillToConstraints
-                }
-            )
+            }
             ThemeButtons(
                 modifier = Modifier
                     .constrainAs(themeButtons) {
-                        if (maxHeight < localDimens.minScreenHeight) {
-                            top.linkTo(settings.bottom, margin = localDimens.dp117)
-                        } else {
-                            bottom.linkTo(bottomGuideLine)
-                        }
+                        bottom.linkTo(bottomGuideLine)
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                     }
-                    .padding(
-                        bottom = if (maxHeight < localDimens.minScreenHeight) {
-                            MaterialTheme.localDimens.dp78
-                        } else {
-                            MaterialTheme.localDimens.default
-                        }
-                    )
             )
         }
     }
@@ -269,10 +281,11 @@ fun DarkThemeButton(
 fun MenuItem(
     title: String,
     @DrawableRes iconResId: Int,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
 ) {
     Column(
-        modifier = modifier
+        modifier = modifier.clickable { onClick.invoke() }
     ) {
         Box(
             modifier = Modifier.fillMaxWidth()
@@ -303,7 +316,11 @@ fun MenuItem(
 @Composable
 fun MenuScreenPreview() {
     MenuScreen(
-        diamondValue = 4500,
-        currentUserName = "SELEN PEKMEZCİ"
-    )
+        menuScreenState = MenuScreenState(
+            200,
+            "SELEN PEKMEZCİ",
+            imgUrl = ""
+        ),
+        onBackClick = {}
+    ) {}
 }

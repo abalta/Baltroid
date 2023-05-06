@@ -68,7 +68,7 @@ fun HomeScreen(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun HomeScreenContent(
+private fun HomeScreenContent(
     screenState: HomeScreenState,
     openMenuScreen: () -> Unit,
     navigate: (route: String, itemId: Int?) -> Unit

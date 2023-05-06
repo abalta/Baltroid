@@ -47,7 +47,7 @@ fun HomeDetailScreen(
 }
 
 @Composable
-fun HomeDetailScreenContent(
+private fun HomeDetailScreenContent(
     screenState: HomeDetailScreenState,
     openMenuScreen: () -> Unit,
     navigate: (route: String, itemId: Int) -> Unit
