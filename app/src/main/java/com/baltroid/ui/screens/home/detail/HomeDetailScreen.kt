@@ -1,4 +1,4 @@
-package com.baltroid.ui.screens.home
+package com.baltroid.ui.screens.home.detail
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -26,6 +25,9 @@ import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.SimpleImage
 import com.baltroid.ui.common.VerticalSpacer
 import com.baltroid.ui.components.HitReadsTopBar
+import com.baltroid.ui.navigation.HitReadsScreens
+import com.baltroid.ui.screens.home.GenreSection
+import com.baltroid.ui.screens.home.TitleSection
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localTextStyles
@@ -33,15 +35,22 @@ import com.baltroid.util.conditional
 
 @Composable
 fun HomeDetailScreen(
-    summary: String,
-    author: String,
-    firstName: String,
-    secondName: String,
-    episodeSize: Int,
-    numberOfNotification: Int,
-    numberOfViews: Int,
-    numberOfComments: Int,
-    genres: List<String>
+    screenState: HomeDetailScreenState,
+    openMenuScreen: () -> Unit,
+    navigate: (route: String, itemId: Int) -> Unit
+) {
+    HomeDetailScreenContent(
+        screenState = screenState,
+        openMenuScreen = openMenuScreen,
+        navigate = navigate
+    )
+}
+
+@Composable
+fun HomeDetailScreenContent(
+    screenState: HomeDetailScreenState,
+    openMenuScreen: () -> Unit,
+    navigate: (route: String, itemId: Int) -> Unit
 ) {
     BoxWithConstraints(
         modifier = Modifier
@@ -50,12 +59,11 @@ fun HomeDetailScreen(
         CroppedImage(imgResId = R.drawable.woods_image, modifier = Modifier.fillMaxSize())
         HitReadsTopBar(
             iconResId = R.drawable.ic_bell,
-            onMenuCLicked = {},
-            numberOfNotification = numberOfNotification,
-            modifier = Modifier
-                .systemBarsPadding()
-                .padding(top = MaterialTheme.localDimens.dp8)
-        ) {}
+            numberOfNotification = screenState.numberOfNotification,
+            onMenuClick = openMenuScreen,
+            onIconClick = {},
+            onNotificationClick = {}
+        )
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -71,32 +79,26 @@ fun HomeDetailScreen(
                 modifier = Modifier.padding(start = MaterialTheme.localDimens.dp17)
             )
             TitleSection(
-                author = author,
-                firstName = firstName,
-                secondName = secondName,
+                author = screenState.author,
+                firstName = screenState.firstName,
+                secondName = screenState.secondName,
                 modifier = Modifier.padding(start = MaterialTheme.localDimens.dp23)
             )
             VerticalSpacer(height = MaterialTheme.localDimens.dp10_5)
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                GenreSection(
-                    episodeSize = episodeSize,
-                    genres = genres,
-                    modifier = Modifier.padding(start = MaterialTheme.localDimens.dp22)
-                )
-                HorizontalSpacer(width = MaterialTheme.localDimens.dp13)
-                Interactions(
-                    numberOfViews = numberOfViews,
-                    numberOfComments = numberOfComments,
-                    modifier = Modifier.align(Alignment.Bottom)
-                )
-            }
+            GenreAndInteractions(
+                episodeSize = screenState.episodeSize,
+                genres = screenState.genres,
+                numberOfViews = screenState.numberOfViews,
+                numberOfComments = screenState.numberOfComments
+            )
             VerticalSpacer(height = MaterialTheme.localDimens.dp20_5)
             HomeDetailSummarySection(
-                summary = summary,
+                summary = screenState.summary,
                 modifier = Modifier.padding(start = MaterialTheme.localDimens.dp25)
-            ) {}
+            ) {
+                val id = 0
+                navigate.invoke(HitReadsScreens.ReadingScreen.route, id)
+            }
             if (this@BoxWithConstraints.maxHeight < MaterialTheme.localDimens.minDetailScreenHeight) {
                 VerticalSpacer(height = MaterialTheme.localDimens.dp50)
             }
@@ -145,7 +147,31 @@ fun Interactions(
 }
 
 @Composable
-fun HomeDetailSummarySection(
+fun GenreAndInteractions(
+    episodeSize: Int,
+    genres: List<String>,
+    numberOfViews: Int,
+    numberOfComments: Int
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        GenreSection(
+            episodeSize = episodeSize,
+            genres = genres,
+            modifier = Modifier.padding(start = MaterialTheme.localDimens.dp22)
+        )
+        HorizontalSpacer(width = MaterialTheme.localDimens.dp13)
+        Interactions(
+            numberOfViews = numberOfViews,
+            numberOfComments = numberOfComments,
+            modifier = Modifier.align(Alignment.Bottom)
+        )
+    }
+}
+
+@Composable
+private fun HomeDetailSummarySection(
     summary: String,
     modifier: Modifier = Modifier,
     onClick: () -> Unit
@@ -176,14 +202,18 @@ fun HomeDetailSummarySection(
 @Composable
 fun HomeDetailScreenPreview() {
     HomeDetailScreen(
-        author = "ZEYNEP SEY",
-        firstName = "KİMSE GERÇEK DEĞİL",
-        secondName = "Araf, Aydınlık Ve Aşık",
-        genres = listOf("ROMANTİK", "GENÇLİK"),
-        numberOfNotification = 12,
-        numberOfViews = 1002,
-        numberOfComments = 142,
-        episodeSize = 35,
-        summary = "Kim olduğunu sorguladıkça dünyasının sahtelikten İbaret olduğunu anlamaya başlayan Işıl Özsoydan, öğrendiği gerçekleri..."
-    )
+        screenState = HomeDetailScreenState(
+            id = 0,
+            author = "ZEYNEP SEY",
+            firstName = "KİMSE GERÇEK DEĞİL",
+            secondName = "Araf, Aydınlık Ve Aşık",
+            genres = listOf("ROMANTİK", "GENÇLİK"),
+            numberOfNotification = 12,
+            numberOfViews = 1002,
+            numberOfComments = 142,
+            episodeSize = 35,
+            summary = "Kim olduğunu sorguladıkça dünyasının sahtelikten İbaret olduğunu anlamaya başlayan Işıl Özsoydan, öğrendiği gerçekleri..."
+        ),
+        openMenuScreen = {}
+    ) { _, _ -> }
 }
