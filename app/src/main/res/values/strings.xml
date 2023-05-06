@@ -30,4 +30,7 @@
     <string name="forgot_password">Şifremi Unuttum</string>
     <string name="buy">SATIN AL</string>
     <string name="balance">%1$.2f TL</string>
+    <string name="all_comments">TÜM YORUMLAR</string>
+    <string name="my_favorite_comments">BEĞENDİKLERİM</string>
+    <string name="my_comments">YORUMLARIM</string>
 </resources>
