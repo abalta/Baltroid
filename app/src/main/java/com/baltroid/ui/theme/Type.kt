@@ -452,6 +452,7 @@ val LightThemeTextStyles = TextStyles(
 data class Dimensions(
     val default: Dp = 0.dp,
     val minScreenHeight: Dp = 700.dp,
+    val minSideBarHeight: Dp = 500.dp,
     val minDetailScreenHeight: Dp = 650.dp,
     val dp0_5: Dp = 0.5.dp,
     val dp1: Dp = 1.dp,
@@ -492,6 +493,7 @@ data class Dimensions(
     val dp24: Dp = 24.dp,
     val dp25: Dp = 25.dp,
     val dp26: Dp = 26.dp,
+    val dp27: Dp = 27.dp,
     val dp28: Dp = 28.dp,
     val dp28_5: Dp = 28.5.dp,
     val dp29: Dp = 29.dp,
