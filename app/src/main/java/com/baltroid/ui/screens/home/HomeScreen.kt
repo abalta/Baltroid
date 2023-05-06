@@ -1,12 +1,14 @@
 package com.baltroid.ui.screens.home
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,12 +16,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PageSize
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
@@ -46,6 +47,7 @@ import com.baltroid.ui.common.HorizontalSpacer
 import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.VerticalSpacer
 import com.baltroid.ui.components.HitReadsTopBar
+import com.baltroid.ui.navigation.HitReadsScreens
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localShapes
@@ -53,23 +55,26 @@ import com.baltroid.ui.theme.localTextStyles
 
 @Composable
 fun HomeScreen(
-    author: String,
-    firstName: String,
-    secondName: String,
-    summary: String,
-    genres: List<String>,
-    imgUrls: List<String>,
-    numberOfNotification: Int,
-    numberOfStory: Int,
-    numberOfViews: Int,
-    numberOfComments: Int,
-    numberOfFavorites: Int,
-    episodeSize: Int
+    screenState: HomeScreenState,
+    openMenuScreen: () -> Unit,
+    navigate: (route: String, itemId: Int?) -> Unit
 ) {
+    HomeScreenContent(
+        screenState = screenState,
+        openMenuScreen = openMenuScreen,
+        navigate = navigate
+    )
+}
 
-    val lazyListState = rememberLazyListState()
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun HomeScreenContent(
+    screenState: HomeScreenState,
+    openMenuScreen: () -> Unit,
+    navigate: (route: String, itemId: Int?) -> Unit
+) {
     val scrollState = rememberScrollState()
-
+    val pagerState = rememberPagerState()
     var tabState by rememberSaveable {
         mutableStateOf(HomeScreenTabs.AllStories)
     }
@@ -77,77 +82,84 @@ fun HomeScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(scrollState)
             .background(MaterialTheme.localColors.black)
-
     ) {
         HitReadsTopBar(
             iconResId = R.drawable.ic_bell_outlined,
             iconTint = MaterialTheme.localColors.white,
-            modifier = Modifier.statusBarsPadding(),
-            numberOfNotification = numberOfNotification,
-            onMenuCLicked = {},
-            onNotificationClicked = {}
+            numberOfNotification = screenState.numberOfNotification,
+            onNotificationClick = {},
+            onIconClick = {
+                navigate.invoke(HitReadsScreens.OnboardingScreen.route, null)
+            },
+            onMenuClick = openMenuScreen
         )
         VerticalSpacer(height = MaterialTheme.localDimens.dp18_5)
         HomeScreenTabs(
-            storiesSize = numberOfStory,
-            favoritesSize = numberOfFavorites,
+            storiesSize = screenState.numberOfStory,
+            favoritesSize = screenState.numberOfFavorites,
             selectedTab = tabState,
             modifier = Modifier.padding(start = MaterialTheme.localDimens.dp32)
         ) { selectedTab ->
             tabState = selectedTab
         }
         VerticalSpacer(height = MaterialTheme.localDimens.dp14)
-        if (tabState == HomeScreenTabs.AllStories) {
-            StoriesRow(
-                lazyListState = lazyListState,
-                imgUrls = imgUrls,
-                modifier = Modifier.padding(start = MaterialTheme.localDimens.dp25)
+        Column(
+            modifier = Modifier.verticalScroll(scrollState)
+        ) {
+            if (tabState == HomeScreenTabs.AllStories) {
+                StoriesRow(
+                    state = pagerState,
+                    imgUrls = screenState.imgUrls,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.Start)
+                ) { id ->
+                    if (id == 1) {
+                        navigate.invoke(HitReadsScreens.InteractiveScreen.route, id)
+                    } else {
+                        navigate.invoke(HitReadsScreens.HomeDetailScreen.route, id)
+                    }
+                }
+            } else {
+                /*todo Favorites*/
+            }
+            VerticalSpacer(height = MaterialTheme.localDimens.dp28_5)
+            TitleSection(
+                author = screenState.author,
+                firstName = screenState.firstName,
+                secondName = screenState.secondName,
+                modifier = Modifier.padding(start = MaterialTheme.localDimens.dp23)
             )
-        } else {
-            /*todo Favorites*/
+            VerticalSpacer(height = MaterialTheme.localDimens.dp20)
+            GenreSection(
+                genres = screenState.genres,
+                episodeSize = screenState.episodeSize,
+                modifier = Modifier.padding(start = MaterialTheme.localDimens.dp23)
+            )
+            SummarySection(
+                summary = screenState.summary,
+                numberOfStory = screenState.numberOfStory,
+                numberOfViews = screenState.numberOfViews,
+                numberOfComments = screenState.numberOfComments,
+                onCommentsClick = {},
+                onListClick = {},
+                modifier = Modifier.padding(
+                    top = MaterialTheme.localDimens.dp9,
+                    start = MaterialTheme.localDimens.dp25,
+                    end = MaterialTheme.localDimens.dp39
+                )
+            )
+            VerticalSpacer(
+                height = MaterialTheme.localDimens.dp50,
+                modifier = Modifier.navigationBarsPadding()
+            )
         }
-        VerticalSpacer(height = MaterialTheme.localDimens.dp28_5)
-        TitleSection(
-            author = author,
-            firstName = firstName,
-            secondName = secondName,
-            modifier = Modifier.padding(start = MaterialTheme.localDimens.dp23)
-        )
-        VerticalSpacer(height = MaterialTheme.localDimens.dp20)
-        GenreSection(
-            genres = genres,
-            episodeSize = episodeSize,
-            modifier = Modifier.padding(start = MaterialTheme.localDimens.dp23)
-        )
-        SummarySection(
-            summary = summary,
-            numberOfStory = numberOfStory,
-            numberOfViews = numberOfViews,
-            numberOfComments = numberOfComments,
-            onCommentsClick = {},
-            onListClick = {},
-            modifier = Modifier.padding(
-                top = MaterialTheme.localDimens.dp9,
-                start = MaterialTheme.localDimens.dp25,
-                end = MaterialTheme.localDimens.dp39
-            )
-        )
-        VerticalSpacer(
-            height = MaterialTheme.localDimens.dp50,
-            modifier = Modifier.navigationBarsPadding()
-        )
     }
 }
 
-enum class HomeScreenTabs {
-    AllStories,
-    Favorites
-}
-
 @Composable
-fun HomeScreenTabs(
+private fun HomeScreenTabs(
     storiesSize: Int,
     favoritesSize: Int,
     selectedTab: HomeScreenTabs,
@@ -175,8 +187,13 @@ fun HomeScreenTabs(
     }
 }
 
+enum class HomeScreenTabs {
+    AllStories,
+    Favorites
+}
+
 @Composable
-fun HomeScreenTabItem(
+private fun HomeScreenTabItem(
     @StringRes title: Int,
     size: Int,
     isSelected: Boolean,
@@ -212,25 +229,37 @@ fun HomeScreenTabItem(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun StoriesRow(
+private fun StoriesRow(
     imgUrls: List<String>,
-    lazyListState: LazyListState,
+    state: PagerState,
     modifier: Modifier = Modifier,
+    onClick: (id: Int) -> Unit,
 ) {
-    LazyRow(
-        state = lazyListState,
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp31),
-    ) {
-        items(imgUrls) { url ->
-            StoryImage(imgUrl = url, isNew = true) {}
+    BoxWithConstraints {
+        HorizontalPager(
+            pageCount = imgUrls.size,
+            state = state,
+            contentPadding = PaddingValues(
+                start = MaterialTheme.localDimens.dp25,
+                end = this.maxWidth - MaterialTheme.localDimens.dp249 - MaterialTheme.localDimens.dp25
+            ),
+            pageSpacing = MaterialTheme.localDimens.dp31,
+            pageSize = PageSize.Fixed(MaterialTheme.localDimens.dp249),
+            modifier = modifier,
+        ) { page ->
+            StoryImage(
+                imgUrl = imgUrls[page],
+                isNew = true,
+                onClick = { onClick.invoke(page) }
+            )
         }
     }
 }
 
 @Composable
-fun StoryImage(
+private fun StoryImage(
     imgUrl: String,
     isNew: Boolean,
     onClick: () -> Unit
@@ -320,7 +349,7 @@ fun GenreSection(
 }
 
 @Composable
-fun GenreItem(
+private fun GenreItem(
     text: String,
     color: Color
 ) {
@@ -338,7 +367,7 @@ fun GenreItem(
 }
 
 @Composable
-fun SummarySection(
+private fun SummarySection(
     summary: String,
     numberOfStory: Int,
     numberOfViews: Int,
@@ -390,6 +419,7 @@ fun SummarySection(
                 .constrainAs(comments) {
                     start.linkTo(views.start)
                     end.linkTo(views.end)
+                    top.linkTo(views.bottom)
                     bottom.linkTo(summaryText.bottom)
                 }
         ) {
@@ -432,20 +462,20 @@ fun SummarySection(
 @Composable
 fun HomeScreenPreview() {
     HomeScreen(
-        author = "ZEYNEP SEY",
-        firstName = "KİMSE GERÇEK DEĞİL",
-        secondName = "Araf, Aydınlık Ve Aşık",
-        genres = listOf("ROMANTİK", "GENÇLİK"),
-        numberOfNotification = 12,
-        numberOfStory = 12,
-        numberOfViews = 1002,
-        numberOfComments = 142,
-        numberOfFavorites = 5,
-        episodeSize = 35,
-        summary = LoremIpsum(16).values.joinToString(),
-        imgUrls = listOf(
-            "https://www.figma.com/file/MYxJBHOTh2JfbmrYbojuxc/image/1d56515ab14098684701024283a07d386bbb94e7?fuid=1097272770330818914",
-            "https://www.figma.com/file/MYxJBHOTh2JfbmrYbojuxc/image/d7ac3769304cdecbbe3a0ff5b327d15512547d7e?fuid=1097272770330818914"
-        )
-    )
+        screenState = HomeScreenState(
+            author = "ZEYNEP SEY",
+            firstName = "KİMSE GERÇEK DEĞİL",
+            secondName = "Araf, Aydınlık Ve Aşık",
+            genres = listOf("ROMANTİK", "GENÇLİK"),
+            numberOfNotification = 12,
+            numberOfStory = 12,
+            numberOfViews = 1002,
+            numberOfComments = 142,
+            numberOfFavorites = 5,
+            episodeSize = 35,
+            summary = LoremIpsum(16).values.joinToString(),
+            imgUrls = listOf("")
+        ),
+        openMenuScreen = {}
+    ) { _, _ -> }
 }
