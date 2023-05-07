@@ -60,7 +60,10 @@ data class TextStyles(
     val interactiveHashtag: TextStyle,
     val imageCardText: TextStyle,
     val profileScreenUserInfo: TextStyle,
-    val forgotPassword: TextStyle
+    val forgotPassword: TextStyle,
+    val writingCardInfo: TextStyle,
+    val writingCardBody: TextStyle,
+    val writingCardButtonText: TextStyle,
 )
 
 val DarkThemeTextStyles = TextStyles(
@@ -253,6 +256,24 @@ val DarkThemeTextStyles = TextStyles(
         fontWeight = FontWeight.Medium,
         fontSize = 14.sp,
         color = Orange
+    ),
+    writingCardBody = TextStyle(
+        fontFamily = Poppins,
+        fontWeight = FontWeight.Normal,
+        fontSize = 16.sp,
+        color = White_alpha08
+    ),
+    writingCardInfo = TextStyle(
+        fontFamily = SpaceGrotesk,
+        fontWeight = FontWeight.Medium,
+        fontSize = 14.sp,
+        color = White_alpha06
+    ),
+    writingCardButtonText = TextStyle(
+        fontFamily = Poppins,
+        fontWeight = FontWeight.Medium,
+        fontSize = 12.sp,
+        color = Black
     )
 )
 
@@ -446,6 +467,24 @@ val LightThemeTextStyles = TextStyles(
         fontWeight = FontWeight.Medium,
         fontSize = 14.sp,
         color = Orange
+    ),
+    writingCardBody = TextStyle(
+        fontFamily = Poppins,
+        fontWeight = FontWeight.Normal,
+        fontSize = 16.sp,
+        color = White_alpha08
+    ),
+    writingCardInfo = TextStyle(
+        fontFamily = SpaceGrotesk,
+        fontWeight = FontWeight.Medium,
+        fontSize = 14.sp,
+        color = White_alpha06
+    ),
+    writingCardButtonText = TextStyle(
+        fontFamily = Poppins,
+        fontWeight = FontWeight.Medium,
+        fontSize = 12.sp,
+        color = Black
     )
 )
 
