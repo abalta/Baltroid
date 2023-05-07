@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -387,8 +388,8 @@ private fun SummarySection(
         Text(
             text = summary,
             style = MaterialTheme.localTextStyles.subtitleGrotesk,
-            maxLines = 4,
             modifier = Modifier
+                .heightIn(min = localDimens.dp50)
                 .constrainAs(summaryText) {
                     top.linkTo(parent.top, margin = localDimens.dp9)
                     start.linkTo(parent.start)
@@ -419,8 +420,7 @@ private fun SummarySection(
                 .constrainAs(comments) {
                     start.linkTo(views.start)
                     end.linkTo(views.end)
-                    top.linkTo(views.bottom)
-                    bottom.linkTo(summaryText.bottom)
+                    top.linkTo(views.bottom, margin = localDimens.dp8)
                 }
         ) {
             SimpleIcon(
