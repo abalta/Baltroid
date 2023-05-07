@@ -181,7 +181,6 @@ private fun HomeDetailSummarySection(
     ) {
         Text(
             text = summary,
-            maxLines = 4,
             style = MaterialTheme.localTextStyles.detailSummaryText,
             modifier = Modifier.weight(1f)
         )
