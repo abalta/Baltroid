@@ -6,11 +6,12 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
@@ -54,7 +55,7 @@ fun FavoritesScreenContent(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.localColors.black)
-            .navigationBarsPadding()
+            .systemBarsPadding()
     ) {
         VerticalSpacer(height = MaterialTheme.localDimens.dp36)
         MenuBar(
@@ -73,7 +74,7 @@ fun FavoritesScreenContent(
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
             VerticalSpacer(height = MaterialTheme.localDimens.dp22)
-            StoryItemFavoritesList(modifier = Modifier.padding(start = MaterialTheme.localDimens.dp35))
+            StoryItemFavoritesList()
             VerticalSpacer(height = MaterialTheme.localDimens.dp25)
             Text(
                 text = stringResource(id = R.string.authors),
@@ -81,9 +82,7 @@ fun FavoritesScreenContent(
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
             VerticalSpacer(height = MaterialTheme.localDimens.dp25)
-            AuthorsFavoritesList(
-                modifier = Modifier.padding(start = MaterialTheme.localDimens.dp43)
-            )
+            AuthorsFavoritesList()
         }
     }
 }
@@ -137,6 +136,7 @@ fun AuthorsFavoritesList(
 ) {
     LazyRow(
         modifier = modifier,
+        contentPadding = PaddingValues(horizontal = MaterialTheme.localDimens.dp35),
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp30)
     ) {
         item { AuthorsItem("ZEYNEP SEY") }
@@ -153,6 +153,7 @@ fun StoryItemFavoritesList(
 ) {
     LazyRow(
         modifier = modifier,
+        contentPadding = PaddingValues(horizontal = MaterialTheme.localDimens.dp35),
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp30)
     ) {
         item { StoryItemFavorites("KİMSE GERÇEK DEĞİL") }

@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
@@ -49,7 +49,7 @@ fun SettingsScreenContent(
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.localColors.black)
-                .navigationBarsPadding()
+                .systemBarsPadding()
         ) {
             val localDimens = MaterialTheme.localDimens
 

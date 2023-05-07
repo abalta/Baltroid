@@ -10,9 +10,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
@@ -55,7 +55,7 @@ fun PlaceMarsScreenContent(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.localColors.black)
-            .navigationBarsPadding()
+            .systemBarsPadding()
     ) {
         VerticalSpacer(height = MaterialTheme.localDimens.dp36)
         MenuBar(
@@ -148,15 +148,15 @@ fun StoryItem(
         VerticalSpacer(height = MaterialTheme.localDimens.dp13)
         Text(text = title, style = MaterialTheme.localTextStyles.storyItemTitle)
         Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.width(IntrinsicSize.Min)
         ) {
-            Row {
-                Text(
-                    text = stringResource(id = R.string.episode_size, episodeNumber),
-                    style = MaterialTheme.localTextStyles.episodeSelectedText,
-                    modifier = Modifier.width(IntrinsicSize.Max)
-                )
-            }
+
+            Text(
+                text = stringResource(id = R.string.episode_size, episodeNumber),
+                style = MaterialTheme.localTextStyles.episodeSelectedText,
+                modifier = Modifier.width(IntrinsicSize.Max)
+            )
             VerticalSpacer(height = MaterialTheme.localDimens.dp5)
             EpisodeBanner(modifier = Modifier.fillMaxWidth())
         }
