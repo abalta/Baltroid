@@ -34,4 +34,9 @@
     <string name="my_favorite_comments">BEĞENDİKLERİM</string>
     <string name="my_comments">YORUMLARIM</string>
     <string name="point">%1$d PUAN</string>
+    <string name="member_login">ÜYE GİRİŞİ</string>
+    <string name="email">E-POSTA</string>
+    <string name="password">ŞİFRE</string>
+    <string name="sign_in">GİRİŞ YAP</string>
+    <string name="sign_up">YENİ ÜYE OL</string>
 </resources>

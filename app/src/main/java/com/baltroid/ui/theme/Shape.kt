@@ -14,6 +14,7 @@ data class Shapes(
     val roundedDp4: RoundedCornerShape = RoundedCornerShape(4.dp),
     val roundedDp8_5: RoundedCornerShape = RoundedCornerShape(8.5.dp),
     val roundedDp10: RoundedCornerShape = RoundedCornerShape(10.dp),
+    val roundedDp11_5: RoundedCornerShape = RoundedCornerShape(11.5.dp),
     val roundedDp16: RoundedCornerShape = RoundedCornerShape(16.dp),
     val roundedDp18: RoundedCornerShape = RoundedCornerShape(18.dp),
     val roundedDp20: RoundedCornerShape = RoundedCornerShape(20.dp),

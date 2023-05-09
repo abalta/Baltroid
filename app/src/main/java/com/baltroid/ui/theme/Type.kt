@@ -64,6 +64,8 @@ data class TextStyles(
     val writingCardInfo: TextStyle,
     val writingCardBody: TextStyle,
     val writingCardButtonText: TextStyle,
+    val signInTextWhite: TextStyle,
+    val signUpTextOrange: TextStyle
 )
 
 val DarkThemeTextStyles = TextStyles(
@@ -274,6 +276,18 @@ val DarkThemeTextStyles = TextStyles(
         fontWeight = FontWeight.Medium,
         fontSize = 12.sp,
         color = Black
+    ),
+    signInTextWhite = TextStyle(
+        fontFamily = SpaceGrotesk,
+        fontWeight = FontWeight.Medium,
+        fontSize = 18.sp,
+        color = White_alpha09
+    ),
+    signUpTextOrange = TextStyle(
+        fontFamily = SpaceGrotesk,
+        fontWeight = FontWeight.Medium,
+        fontSize = 18.sp,
+        color = Orange
     )
 )
 
@@ -485,6 +499,18 @@ val LightThemeTextStyles = TextStyles(
         fontWeight = FontWeight.Medium,
         fontSize = 12.sp,
         color = Black
+    ),
+    signInTextWhite = TextStyle(
+        fontFamily = SpaceGrotesk,
+        fontWeight = FontWeight.Medium,
+        fontSize = 18.sp,
+        color = White_alpha09
+    ),
+    signUpTextOrange = TextStyle(
+        fontFamily = SpaceGrotesk,
+        fontWeight = FontWeight.Medium,
+        fontSize = 18.sp,
+        color = Orange
     )
 )
 
@@ -544,6 +570,7 @@ data class Dimensions(
     val dp34: Dp = 34.dp,
     val dp35: Dp = 35.dp,
     val dp36: Dp = 36.dp,
+    val dp38: Dp = 38.dp,
     val dp39: Dp = 39.dp,
     val dp40: Dp = 40.dp,
     val dp42: Dp = 42.dp,
