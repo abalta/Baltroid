@@ -37,6 +37,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
@@ -350,12 +351,13 @@ fun GenreSection(
 }
 
 @Composable
-private fun GenreItem(
+fun GenreItem(
     text: String,
     color: Color
 ) {
     Text(
         text = text,
+        textAlign = TextAlign.Center,
         style = MaterialTheme.localTextStyles.isStoryNewText,
         modifier = Modifier
             .clip(MaterialTheme.localShapes.roundedDp4)
