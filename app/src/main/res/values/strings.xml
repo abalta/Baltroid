@@ -39,4 +39,5 @@
     <string name="password">ŞİFRE</string>
     <string name="sign_in">GİRİŞ YAP</string>
     <string name="sign_up">YENİ ÜYE OL</string>
+    <string name="filter">FİLTRELE</string>
 </resources>
