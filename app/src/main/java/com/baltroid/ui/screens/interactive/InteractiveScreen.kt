@@ -20,13 +20,19 @@ import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredWidthIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -58,7 +64,14 @@ import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
 
 @Composable
-fun InteractiveScreen() {
+fun InteractiveScreen(
+    openMenuScreen: () -> Unit
+) {
+
+    var interactiveOrder by remember {
+        mutableStateOf(InteractiveScreenOrder.FIRST)
+    }
+
     Box(
         modifier = Modifier.navigationBarsPadding()
     ) {
@@ -66,21 +79,43 @@ fun InteractiveScreen() {
             imgResId = R.drawable.woods_image,
             modifier = Modifier.fillMaxSize()
         )
-        HitReadsTopBar(
-            iconResId = R.drawable.ic_bell,
-            numberOfNotification = 12,
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(top = MaterialTheme.localDimens.dp11),
-            onMenuCLicked = {}
-        ) {}
         Column(
             modifier = Modifier.align(Alignment.BottomCenter)
         ) {
-            InteractiveBottomContent(
-                text = "Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean",
-                modifier = Modifier.padding(horizontal = MaterialTheme.localDimens.dp20)
+            HitReadsTopBar(
+                iconResId = R.drawable.ic_bell,
+                numberOfNotification = 12,
+                onMenuClick = openMenuScreen,
+                modifier = Modifier
+                    .padding(top = MaterialTheme.localDimens.dp11)
             ) {}
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = MaterialTheme.localDimens.dp20)
+            ) {
+                when (interactiveOrder) {
+                    InteractiveScreenOrder.FIRST -> {
+                        FirstInteractiveContent(
+                            text = "Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean",
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .wrapContentHeight(Alignment.Bottom)
+                        ) {
+                            interactiveOrder = InteractiveScreenOrder.SECOND
+                        }
+                    }
+
+                    InteractiveScreenOrder.SECOND -> {
+                        SecondInteractiveContent()
+                    }
+
+                    InteractiveScreenOrder.THIRD -> TODO()
+                    InteractiveScreenOrder.FOURTH -> TODO()
+                    InteractiveScreenOrder.FIFTH -> TODO()
+                }
+            }
+
             InteractiveScreenBottomSection(
                 modifier = Modifier
                     .background(MaterialTheme.localColors.black_alpha02)
@@ -109,7 +144,7 @@ fun RemindingInfo(
 }
 
 @Composable
-fun InteractiveBottomContent(
+fun FirstInteractiveContent(
     text: String,
     modifier: Modifier = Modifier,
     onNextClick: () -> Unit,
@@ -153,6 +188,68 @@ fun InteractiveBottomContent(
             HorizontalSpacer(width = MaterialTheme.localDimens.dp10)
             SimpleIcon(iconResId = R.drawable.ic_arrow_forward)
         }
+    }
+}
+
+@Composable
+fun SecondInteractiveContent(
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+    ) {
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(
+                space = MaterialTheme.localDimens.dp27,
+                alignment = Alignment.CenterVertically
+            ),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .padding(vertical = MaterialTheme.localDimens.dp12)
+        ) {
+            item {
+                Text(
+                    text = "ORMANDA GÖRDÜĞÜM KLÜBEYE GİDERİM",
+                    style = MaterialTheme.localTextStyles.imageCardText,
+                    modifier = Modifier
+                        .clip(MaterialTheme.localShapes.roundedDp10)
+                        .background(MaterialTheme.localColors.black)
+                        .padding(
+                            vertical = MaterialTheme.localDimens.dp14,
+                            horizontal = MaterialTheme.localDimens.dp21
+                        )
+                )
+            }
+            item {
+                Text(
+                    text = "ORMANDA GÖRDÜĞÜM KLÜBEYE GİDERİM",
+                    style = MaterialTheme.localTextStyles.imageCardText,
+                    modifier = Modifier
+                        .clip(MaterialTheme.localShapes.roundedDp10)
+                        .background(MaterialTheme.localColors.black)
+                        .padding(
+                            vertical = MaterialTheme.localDimens.dp14,
+                            horizontal = MaterialTheme.localDimens.dp21
+                        )
+                )
+            }
+            item {
+                Text(
+                    text = "ORMANDA GÖRDÜĞÜM KLÜBEYE GİDERİM",
+                    style = MaterialTheme.localTextStyles.imageCardText,
+                    modifier = Modifier
+                        .clip(MaterialTheme.localShapes.roundedDp10)
+                        .background(MaterialTheme.localColors.black)
+                        .padding(
+                            vertical = MaterialTheme.localDimens.dp14,
+                            horizontal = MaterialTheme.localDimens.dp21
+                        )
+                )
+            }
+        }
+        RemindingInfo(text = "ELİF ARTIK BİR KARAR VERMELİSİN")
     }
 }
 
@@ -292,7 +389,7 @@ fun ImageWithNameCard(
 
             )
             Text(
-                text = "Tunahan",
+                text = "MURAT",
                 style = MaterialTheme.localTextStyles.imageCardText,
                 modifier = Modifier.layoutId("name")
             )
@@ -438,11 +535,19 @@ enum class PointerLocation {
     RIGHT
 }
 
+enum class InteractiveScreenOrder {
+    FIRST,
+    SECOND,
+    THIRD,
+    FOURTH,
+    FIFTH
+}
+
 @Preview(device = Devices.DEFAULT)
 @Preview(heightDp = 650)
 @Preview(widthDp = 360, heightDp = 540)
 @Composable
 fun InteractiveScreenPreview() {
-    InteractiveScreen()
+    InteractiveScreen() {}
 }
 
