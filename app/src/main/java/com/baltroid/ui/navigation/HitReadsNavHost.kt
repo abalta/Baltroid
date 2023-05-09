@@ -108,7 +108,7 @@ fun HitReadsNavHost(
             route = HitReadsScreens.ReadingScreen.route
         ) {
             val screenState = ReadingScreenState(
-                bodyText = LoremIpsum(200).values.joinToString(),
+                bodyText = LoremIpsum(2000).values.joinToString(),
                 title = "KİMSE GERÇEK DEĞİL",
                 subtitle = "ZEYNEP SEY",
                 numberOfComments = 12,
