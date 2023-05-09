@@ -75,7 +75,6 @@ fun AuthorScreenContent(
             title = "ZEYNEP SEY",
             onBackClick = onBackClick,
             modifier = Modifier
-                .fillMaxWidth(0.8f)
                 .align(Alignment.CenterHorizontally)
         )
         VerticalSpacer(height = MaterialTheme.localDimens.dp22)

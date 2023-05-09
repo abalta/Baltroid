@@ -55,7 +55,6 @@ fun ProfileScreenContent(
             title = stringResource(id = R.string.profile_text),
             onBackClick = onBackClick,
             modifier = Modifier
-                .fillMaxWidth(0.8f)
                 .align(Alignment.CenterHorizontally)
                 .statusBarsPadding()
         )

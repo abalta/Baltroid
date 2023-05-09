@@ -58,7 +58,7 @@ private fun ShopScreenContent(
         MenuBar(
             title = stringResource(id = R.string.point, currentPoint),
             iconResId = R.drawable.ic_diamond,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.align(Alignment.CenterHorizontally),
             onBackClick = onBackClick
         )
         VerticalSpacer(height = MaterialTheme.localDimens.dp40)

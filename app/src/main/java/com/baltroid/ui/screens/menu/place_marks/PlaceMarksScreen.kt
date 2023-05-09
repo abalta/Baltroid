@@ -59,7 +59,7 @@ fun PlaceMarsScreenContent(
     ) {
         VerticalSpacer(height = MaterialTheme.localDimens.dp36)
         MenuBar(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.align(Alignment.CenterHorizontally),
             title = stringResource(id = R.string.place_marks),
             iconResId = R.drawable.ic_banner_filled,
             onBackClick = onBackClick

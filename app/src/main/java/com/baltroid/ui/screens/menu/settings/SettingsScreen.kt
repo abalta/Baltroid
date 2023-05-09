@@ -2,7 +2,6 @@ package com.baltroid.ui.screens.menu.settings
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -22,8 +21,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.baltroid.apps.R
-import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.VerticalSpacer
+import com.baltroid.ui.components.MenuBar
 import com.baltroid.ui.screens.menu.ThemeButtons
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
@@ -54,52 +53,27 @@ fun SettingsScreenContent(
             val localDimens = MaterialTheme.localDimens
 
             val (
-                userInfo, text, close, divider,
-                leftIcon, themeButtons,
+                userInfo, menuBar, themeButtons,
             ) = createRefs()
 
-            createHorizontalChain(leftIcon, text, close)
             val bottomGuideLine = createGuidelineFromBottom(0.075f)
 
-            Text(
-                text = stringResource(id = R.string.settings),
-                style = MaterialTheme.localTextStyles.menuBarTitle,
-                modifier = Modifier.constrainAs(text) {
+            MenuBar(
+                title = stringResource(id = R.string.settings),
+                iconResId = R.drawable.ic_settings,
+                modifier = Modifier.constrainAs(menuBar) {
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
                     top.linkTo(parent.top, margin = localDimens.dp36)
                 }
-            )
-            SimpleIcon(
-                iconResId = R.drawable.ic_settings,
-                modifier = Modifier.constrainAs(leftIcon) {
-                    top.linkTo(text.top)
-                    bottom.linkTo(text.bottom)
-                }
-            )
-            SimpleIcon(iconResId = R.drawable.ic_close,
-                modifier = Modifier
-                    .constrainAs(close) {
-                        top.linkTo(text.top)
-                        bottom.linkTo(text.bottom)
-                    }
-                    .clickable { onBackClick.invoke() }
-            )
-            Divider(
-                thickness = MaterialTheme.localDimens.dp0_5,
-                color = MaterialTheme.localColors.white_alpha06,
-                modifier = Modifier.constrainAs(divider) {
-                    start.linkTo(leftIcon.start)
-                    end.linkTo(close.end)
-                    top.linkTo(text.bottom, localDimens.dp20)
-                    width = Dimension.fillToConstraints
-                }
-            )
+            ) {}
             Column(
                 verticalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp18),
                 modifier = Modifier
                     .constrainAs(userInfo) {
-                        top.linkTo(divider.bottom, margin = localDimens.dp35)
-                        start.linkTo(divider.start)
-                        end.linkTo(divider.end)
+                        top.linkTo(menuBar.bottom, margin = localDimens.dp35)
+                        start.linkTo(menuBar.start)
+                        end.linkTo(menuBar.end)
                         bottom.linkTo(themeButtons.top, margin = localDimens.dp16)
                         width = Dimension.fillToConstraints
                         height = Dimension.fillToConstraints

@@ -11,6 +11,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.constraintlayout.compose.ChainStyle
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.baltroid.apps.R
@@ -29,10 +30,10 @@ fun MenuBar(
 ) {
     val localDimens = MaterialTheme.localDimens
 
-    ConstraintLayout(modifier = modifier) {
+    ConstraintLayout(modifier = modifier.fillMaxWidth(.85f)) {
 
         val (banner, text, close, divider) = createRefs()
-        createHorizontalChain(banner, text, close)
+        createHorizontalChain(banner, text, close, chainStyle = ChainStyle.SpreadInside)
 
         SimpleIcon(
             iconResId = iconResId,
@@ -77,7 +78,7 @@ fun IconlessMenuBar(
     onBackClick: () -> Unit
 ) {
     Column(
-        modifier = modifier.fillMaxWidth(0.9f)
+        modifier = modifier.fillMaxWidth(0.85f)
     ) {
         Box(
             modifier = Modifier.fillMaxWidth()
