@@ -42,7 +42,6 @@ fun HitReadsTopBar(
     onNotificationClick: () -> Unit
 ) {
 
-
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -55,8 +54,8 @@ fun HitReadsTopBar(
     ) {
         SimpleImage(
             imgResId = R.drawable.ic_hitreads,
-            modifier = Modifier.clickable(
-            ) { onIconClick.invoke() })
+            modifier = Modifier.clickable { onIconClick.invoke() }
+        )
         MenuAndNotification(
             modifier = Modifier.align(Alignment.CenterEnd),
             iconTint = iconTint,
