@@ -65,7 +65,9 @@ data class TextStyles(
     val writingCardBody: TextStyle,
     val writingCardButtonText: TextStyle,
     val signInTextWhite: TextStyle,
-    val signUpTextOrange: TextStyle
+    val signUpTextOrange: TextStyle,
+    val filterScreenPinkText: TextStyle,
+    val commentsScreenTabText: TextStyle
 )
 
 val DarkThemeTextStyles = TextStyles(
@@ -288,6 +290,18 @@ val DarkThemeTextStyles = TextStyles(
         fontWeight = FontWeight.Medium,
         fontSize = 18.sp,
         color = Orange
+    ),
+    filterScreenPinkText = TextStyle(
+        fontFamily = SpaceGrotesk,
+        fontWeight = FontWeight.Normal,
+        fontSize = 14.sp,
+        color = Pink_alpha09
+    ),
+    commentsScreenTabText = TextStyle(
+        fontFamily = SpaceGrotesk,
+        fontWeight = FontWeight.Medium,
+        fontSize = 14.sp,
+        color = White_alpha09
     )
 )
 
@@ -511,6 +525,18 @@ val LightThemeTextStyles = TextStyles(
         fontWeight = FontWeight.Medium,
         fontSize = 18.sp,
         color = Orange
+    ),
+    filterScreenPinkText = TextStyle(
+        fontFamily = SpaceGrotesk,
+        fontWeight = FontWeight.Normal,
+        fontSize = 14.sp,
+        color = Pink_alpha09
+    ),
+    commentsScreenTabText = TextStyle(
+        fontFamily = SpaceGrotesk,
+        fontWeight = FontWeight.Medium,
+        fontSize = 14.sp,
+        color = White_alpha09
     )
 )
 
@@ -576,6 +602,7 @@ data class Dimensions(
     val dp42: Dp = 42.dp,
     val dp43: Dp = 43.dp,
     val dp44: Dp = 44.dp,
+    val dp47: Dp = 47.dp,
     val dp48: Dp = 48.dp,
     val dp50: Dp = 50.dp,
     val dp51: Dp = 51.dp,
