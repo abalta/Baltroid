@@ -1,11 +1,11 @@
 package com.baltroid.core.data.mapper
 
-import com.baltroid.core.database.model.common.Author
-import com.baltroid.core.database.model.common.User
 import com.baltroid.core.network.model.author.NetworkAuthor
 import com.baltroid.core.network.model.originals.NetworkOriginal
 import com.baltroid.core.network.model.user.NetworkUserData
+import com.hitreads.core.domain.model.AuthorModel
 import com.hitreads.core.domain.model.OriginalModel
+import com.hitreads.core.domain.model.UserDataModel
 
 internal fun NetworkOriginal.asOriginalModel() = OriginalModel(
     type = type,
@@ -14,22 +14,22 @@ internal fun NetworkOriginal.asOriginalModel() = OriginalModel(
     description = description,
     cover = cover,
     banner = banner,
-    author = author?.asAuthorEntity(),
+    author = author.asAuthorModel(),
     isLocked = isLocked,
     isActual = isActual,
     status = status,
     likeCount = likeCount,
     sort = sort,
-    packagex = packagex,
-    userData = userData?.asUserEntity()
+    `package` = `package`,
+    userData = userData.asUserDataModel()
 )
 
-internal fun NetworkAuthor.asAuthorEntity() = Author(
+internal fun NetworkAuthor.asAuthorModel() = AuthorModel(
     id = id,
     name = name
 )
 
-internal fun NetworkUserData.asUserEntity() = User(
+internal fun NetworkUserData.asUserDataModel() = UserDataModel(
     isLike = isLike,
     isPurchase = isPurchase
 )

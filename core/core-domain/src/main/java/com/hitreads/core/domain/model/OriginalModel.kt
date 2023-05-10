@@ -1,7 +1,7 @@
 package com.hitreads.core.domain.model
 
 data class OriginalModel(
-    val author: AuthorModel?,
+    val author: AuthorModel,
     val banner: String,
     val cover: String,
     val description: String,
@@ -9,10 +9,10 @@ data class OriginalModel(
     val isActual: Boolean,
     val isLocked: Boolean,
     val likeCount: Int,
-    val packagex: String?,
+    val `package`: String?,
     val sort: Int,
     val status: Boolean,
     val title: String,
     val type: String,
-    val userData: UserDataModel?
+    val userData: UserDataModel
 )

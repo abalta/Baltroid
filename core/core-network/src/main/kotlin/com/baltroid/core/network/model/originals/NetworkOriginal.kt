@@ -10,7 +10,7 @@ import kotlinx.serialization.SerialName
 @Serializable
 data class NetworkOriginal(
     @SerialName("author")
-    val author: NetworkAuthor?,
+    val author: NetworkAuthor,
     @SerialName("banner")
     val banner: String,
     @SerialName("cover")
@@ -26,7 +26,7 @@ data class NetworkOriginal(
     @SerialName("like_count")
     val likeCount: Int,
     @SerialName("package")
-    val packagex: String?,
+    val `package`: String?,
     @SerialName("sort")
     val sort: Int,
     @SerialName("status")
@@ -36,6 +36,6 @@ data class NetworkOriginal(
     @SerialName("type")
     val type: String,
     @SerialName("user_data")
-    val userData: NetworkUserData?
+    val userData: NetworkUserData
 )
 
