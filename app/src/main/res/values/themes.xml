@@ -2,7 +2,7 @@
     <!-- Base application theme. -->
     <style name="Theme.Baltroid" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:statusBarColor">@color/transparent</item>
-        <item name="android:navigationBarColor">@color/primaryLight</item>
+        <item name="android:navigationBarColor">@color/transparent</item>
         <item name="android:windowLightStatusBar" tools:targetApi="23">true</item>
         <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
     </style>
