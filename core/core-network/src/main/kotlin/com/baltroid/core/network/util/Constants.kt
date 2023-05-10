@@ -1,14 +1,14 @@
 package com.baltroid.core.network.util
 
 internal object Constants {
-    internal const val API_URL = ""
+    internal const val API_URL = "https://test.kitap-kulubu.com"
     internal const val IMAGE_URL = ""
     internal const val API_KEY_QUERY_PARAM = "api_key"
     internal const val PAGE_SIZE = 20
     internal const val DEFAULT_PAGE = 1
 
     internal object Path {
-
+        internal const val ORIGINALS_INDEX = "original"
     }
 
     internal object Fields {
@@ -17,7 +17,7 @@ internal object Constants {
         internal const val STATUS = "status"
         internal const val TYPE = "type"
         internal const val PAGE = "page"
-        internal const val TOTAL_PAGES = "total_pages"
+        internal const val TOTAL_PAGE = "total_page"
         internal const val RESULTS = "results"
         internal const val TOTAL_RESULTS = "total_results"
         internal const val DATES = "dates"
@@ -29,6 +29,12 @@ internal object Constants {
         internal const val MINIMUM = "minimum"
         internal const val QUERY = "query"
         internal const val LANGUAGE = "language"
+        internal const val MESSAGE = "message"
+        internal const val DATA = "data"
+        internal const val DATA_COUNT = "data_count"
+        internal const val ORIGINALS = "originals"
+        internal const val ACTIVE_PAGE = "active_page"
+
         private fun buildAppendToResponse(vararg fields: String) =
             fields.joinToString(separator = APPEND_TO_RESPONSE_SEPARATOR)
 

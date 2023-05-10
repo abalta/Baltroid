@@ -19,6 +19,15 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:core-common"))
+    implementation(project(":core:core-data"))
+    implementation(project(":core:core-database"))
+    implementation(project(":core:core-datastore"))
+    implementation(project(":core:core-network"))
+    implementation(project(":core:core-domain"))
+    implementation(project(":core:core-model"))
+    implementation(project(":core:core-ui"))
+
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.profileinstaller)
@@ -31,9 +40,15 @@ dependencies {
     implementation(libs.androidx.room.runtime)
 
     implementation(libs.androidx.compose.material)
+    implementation(libs.androidx.paging.compose)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.coil.compose)
     implementation(libs.androidx.constraintlayout.compose)
     implementation(libs.accompanist.navigation.animation)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
     debugImplementation(libs.androidx.compose.ui.tooling)
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.kotlinx.coroutines.android)
+
+
 }
