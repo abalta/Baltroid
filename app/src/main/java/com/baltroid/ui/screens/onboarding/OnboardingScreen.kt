@@ -32,6 +32,14 @@ fun OnboardingScreen(
     screenState: OnboardingScreenState,
     onClick: () -> Unit
 ) {
+    OnboardingScreenContent(screenState = screenState, onClick)
+}
+
+@Composable
+fun OnboardingScreenContent(
+    screenState: OnboardingScreenState,
+    onClick: () -> Unit
+) {
     Box {
         CroppedImage(
             imgResId = screenState.imageResId,

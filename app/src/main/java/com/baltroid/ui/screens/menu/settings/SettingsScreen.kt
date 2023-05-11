@@ -61,12 +61,13 @@ fun SettingsScreenContent(
             MenuBar(
                 title = stringResource(id = R.string.settings),
                 iconResId = R.drawable.ic_settings,
+                onBackClick = onBackClick,
                 modifier = Modifier.constrainAs(menuBar) {
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                     top.linkTo(parent.top, margin = localDimens.dp36)
                 }
-            ) {}
+            )
             Column(
                 verticalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp18),
                 modifier = Modifier
