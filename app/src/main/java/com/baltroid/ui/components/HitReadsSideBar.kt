@@ -34,7 +34,8 @@ fun HitReadsSideBar(
     hasSmallHeight: Boolean,
     isCommentsSelected: Boolean,
     onDotsClick: () -> Unit,
-    onCommentsClick: () -> Unit
+    onCommentsClick: () -> Unit,
+    addComment: () -> Unit
 ) {
     Row(
         modifier = modifier
@@ -56,6 +57,7 @@ fun HitReadsSideBar(
                     .fillMaxWidth()
             )
             SideBarBottomSection(
+                addComment = addComment,
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
@@ -164,6 +166,7 @@ fun SideBarTopSection(
 
 @Composable
 fun SideBarBottomSection(
+    addComment: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -193,10 +196,12 @@ fun SideBarBottomSection(
         SideBarHorizontalDivider()
         SimpleIcon(
             iconResId = R.drawable.ic_add_comment,
-            modifier = Modifier.padding(
-                vertical = MaterialTheme.localDimens.dp12,
-                horizontal = MaterialTheme.localDimens.dp8
-            )
+            modifier = Modifier
+                .padding(
+                    vertical = MaterialTheme.localDimens.dp12,
+                    horizontal = MaterialTheme.localDimens.dp8
+                )
+                .clickable { addComment.invoke() }
         )
         SideBarHorizontalDivider()
         SimpleIcon(
@@ -219,6 +224,7 @@ fun HitReadsSideBarPreview() {
         hasSmallHeight = false,
         onCommentsClick = {},
         isCommentsSelected = true,
-        onDotsClick = {}
+        onDotsClick = {},
+        addComment = {}
     )
 }

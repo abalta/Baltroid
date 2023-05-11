@@ -2,6 +2,7 @@ package com.baltroid.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
@@ -18,12 +20,13 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.baltroid.apps.R
 import com.baltroid.ui.common.CroppedImage
@@ -36,8 +39,11 @@ import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
 
 @Composable
-fun CommentWritingCard() {
-    var comment by remember {
+fun CommentWritingCard(
+    onBackClick: () -> Unit,
+    sendComment: (comment: String) -> Unit
+) {
+    var comment by rememberSaveable {
         mutableStateOf("")
     }
     Box(
@@ -46,6 +52,7 @@ fun CommentWritingCard() {
                 horizontal = MaterialTheme.localDimens.dp20,
                 vertical = MaterialTheme.localDimens.dp22
             )
+            .systemBarsPadding()
             .fillMaxSize()
             .clip(MaterialTheme.localShapes.roundedDp10)
             .border(
@@ -61,11 +68,9 @@ fun CommentWritingCard() {
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(top = MaterialTheme.localDimens.dp14, end = MaterialTheme.localDimens.dp22)
+                .clickable { onBackClick.invoke() }
         )
-        Column(
-            modifier = Modifier
-
-        ) {
+        Column {
             Column(
                 modifier = Modifier.weight(1f)
             ) {
@@ -110,7 +115,7 @@ fun CommentWritingCard() {
                 VerticalSpacer(height = MaterialTheme.localDimens.dp15)
                 BasicTextField(
                     value = "First of all please publish this so I can buy it for my library! second, there definitely needs to be a part 2 or second book because I’m hooked.",
-                    onValueChange = { comment = it },
+                    onValueChange = { comment = if (comment.length < 1200) it else comment },
                     textStyle = MaterialTheme.localTextStyles.writingCardBody,
                     cursorBrush = SolidColor(MaterialTheme.localColors.white_alpha08),
                     modifier = Modifier
@@ -128,7 +133,7 @@ fun CommentWritingCard() {
 
             ) {
                 Text(
-                    text = "176/1200",
+                    text = "${comment.length}/1200",
                     style = MaterialTheme.localTextStyles.writingCardInfo,
                     modifier = Modifier
                         .align(Alignment.Bottom)
@@ -138,7 +143,7 @@ fun CommentWritingCard() {
                         )
                 )
                 Text(
-                    text = "GÖNDER",
+                    text = stringResource(id = R.string.send),
                     style = MaterialTheme.localTextStyles.writingCardButtonText,
                     modifier = Modifier
                         .padding(
@@ -147,10 +152,12 @@ fun CommentWritingCard() {
                         )
                         .clip(MaterialTheme.localShapes.roundedDp4)
                         .background(MaterialTheme.localColors.white_alpha08)
+                        .clickable { sendComment.invoke(comment) }
                         .padding(
                             vertical = MaterialTheme.localDimens.dp8,
                             horizontal = MaterialTheme.localDimens.dp18
                         )
+
                 )
             }
         }
@@ -161,6 +168,6 @@ fun CommentWritingCard() {
 @Preview(widthDp = 300, heightDp = 400)
 @Composable
 fun CommentWritingCardPreview() {
-    CommentWritingCard()
+    CommentWritingCard({}) {}
 }
 

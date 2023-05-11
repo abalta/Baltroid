@@ -40,4 +40,17 @@
     <string name="sign_in">GİRİŞ YAP</string>
     <string name="sign_up">YENİ ÜYE OL</string>
     <string name="filter">FİLTRELE</string>
+    <string name="romantic">ROMANTİK</string>
+    <string name="teen">GENÇLİK</string>
+    <string name="adventure">MACERA</string>
+    <string name="mystery">GİZEM</string>
+    <string name="journey">YOLCULUK</string>
+    <string name="legend">EFSANE</string>
+    <string name="detective">POLİSİYE</string>
+    <string name="love">AŞK</string>
+    <string name="high_school">LİSE</string>
+    <string name="sci_fi">BİLİM KURGU</string>
+    <string name="space">UZAY</string>
+    <string name="funn">EĞLENCE</string>
+    <string name="send">GÖNDER</string>
 </resources>

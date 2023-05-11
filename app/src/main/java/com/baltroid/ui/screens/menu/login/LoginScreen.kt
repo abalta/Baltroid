@@ -135,9 +135,11 @@ fun UserInputArea(
 @Composable
 fun TextBetweenDividers(
     text: String,
-    textStyle: TextStyle
+    textStyle: TextStyle,
+    modifier: Modifier = Modifier
 ) {
     Column(
+        modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Divider(

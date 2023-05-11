@@ -145,7 +145,7 @@ private fun HomeScreenContent(
                 numberOfViews = screenState.numberOfViews,
                 numberOfComments = screenState.numberOfComments,
                 onCommentsClick = {},
-                onListClick = {},
+                onFilterClick = { navigate.invoke(HitReadsScreens.FilterScreen.route, null) },
                 modifier = Modifier.padding(
                     top = MaterialTheme.localDimens.dp9,
                     start = MaterialTheme.localDimens.dp25,
@@ -377,7 +377,7 @@ private fun SummarySection(
     numberOfComments: Int,
     modifier: Modifier = Modifier,
     onCommentsClick: () -> Unit,
-    onListClick: () -> Unit
+    onFilterClick: () -> Unit
 ) {
     val localDimens = MaterialTheme.localDimens
 
@@ -447,7 +447,7 @@ private fun SummarySection(
         SimpleIcon(
             iconResId = R.drawable.ic_list,
             modifier = Modifier
-                .clickable { onListClick.invoke() }
+                .clickable { onFilterClick.invoke() }
                 .constrainAs(listIcon) {
                     top.linkTo(info.top)
                     bottom.linkTo(info.bottom)
@@ -476,7 +476,8 @@ fun HomeScreenPreview() {
             numberOfFavorites = 5,
             episodeSize = 35,
             summary = LoremIpsum(16).values.joinToString(),
-            imgUrls = listOf("")
+            imgUrls = listOf(""),
+            selectedFilters = listOf()
         ),
         openMenuScreen = {}
     ) { _, _ -> }

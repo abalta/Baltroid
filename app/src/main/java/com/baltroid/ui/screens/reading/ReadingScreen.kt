@@ -1,6 +1,8 @@
 package com.baltroid.ui.screens.reading
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -57,6 +59,7 @@ import com.baltroid.ui.common.HorizontalSpacer
 import com.baltroid.ui.common.IconWithTextNextTo
 import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.VerticalSpacer
+import com.baltroid.ui.components.CommentWritingCard
 import com.baltroid.ui.components.HitReadsSideBar
 import com.baltroid.ui.components.HitReadsTopBar
 import com.baltroid.ui.screens.menu.place_marks.EpisodeBanner
@@ -88,74 +91,87 @@ private fun ReadingScreenContent(
     var isReadingSection by remember {
         mutableStateOf(true)
     }
+    var isWriteCardShown by remember {
+        mutableStateOf(false)
+    }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.localColors.black)
-            .navigationBarsPadding()
-    ) {
-        HitReadsPageHeader(
-            numberOfNotification = screenState.numberOfNotification,
-            onMenuClick = openMenuScreen
-        )
-        Row(
-            modifier = Modifier.weight(1f)
+    Box {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.localColors.black)
+                .navigationBarsPadding()
         ) {
-            Column(
+            HitReadsPageHeader(
+                numberOfNotification = screenState.numberOfNotification,
+                onMenuClick = openMenuScreen
+            )
+            Row(
                 modifier = Modifier.weight(1f)
             ) {
-                TitleSection(
-                    title = screenState.title,
-                    subtitle = screenState.subtitle,
-                    isExpanded = !isSideBarVisible,
-                    onDotsClick = { isSideBarVisible = !isSideBarVisible },
-                    modifier = Modifier.padding(
-                        top = MaterialTheme.localDimens.dp12,
-                        start = MaterialTheme.localDimens.dp32
-                    )
-                )
-                Row(
-                    modifier = Modifier.padding(end = MaterialTheme.localDimens.dp8)
+                Column(
+                    modifier = Modifier.weight(1f)
                 ) {
-                    if (isReadingSection) {
-                        ScrollBar(
-                            scrollState = scrollState,
-                            modifier = Modifier.padding(start = MaterialTheme.localDimens.dp12)
+                    TitleSection(
+                        title = screenState.title,
+                        subtitle = screenState.subtitle,
+                        isExpanded = !isSideBarVisible,
+                        onDotsClick = { isSideBarVisible = !isSideBarVisible },
+                        modifier = Modifier.padding(
+                            top = MaterialTheme.localDimens.dp12,
+                            start = MaterialTheme.localDimens.dp32
                         )
+                    )
+                    Row(
+                        modifier = Modifier.padding(end = MaterialTheme.localDimens.dp8)
+                    ) {
+                        if (isReadingSection) {
+                            ScrollBar(
+                                scrollState = scrollState,
+                                modifier = Modifier.padding(start = MaterialTheme.localDimens.dp12)
+                            )
+                        }
+                        if (isReadingSection) {
+                            ReadingSection(
+                                text = screenState.bodyText,
+                                scrollState = scrollState,
+                                modifier = Modifier.padding(start = MaterialTheme.localDimens.dp12)
+                            )
+                        } else {
+                            CommentSection(
+                                lazyListState = lazyScrollState,
+                                tabState = CommentsTabState.AllComments,
+                                onTabSelect = {},
+                                modifier = Modifier.padding(start = MaterialTheme.localDimens.dp32)
+                            )
+                        }
                     }
-                    if (isReadingSection) {
-                        ReadingSection(
-                            text = screenState.bodyText,
-                            scrollState = scrollState,
-                            modifier = Modifier.padding(start = MaterialTheme.localDimens.dp12)
-                        )
-                    } else {
-                        CommentSection(
-                            lazyListState = lazyScrollState,
-                            tabState = CommentsTabState.AllComments,
-                            onTabSelect = {},
-                            modifier = Modifier.padding(start = MaterialTheme.localDimens.dp32)
+                }
+                AnimatedVisibility(visible = isSideBarVisible) {
+                    BoxWithConstraints {
+                        HitReadsSideBar(
+                            numberOfViews = screenState.numberOfViews,
+                            numberOfComments = screenState.numberOfComments,
+                            hasSmallHeight = maxHeight < MaterialTheme.localDimens.minSideBarHeight,
+                            isCommentsSelected = !isReadingSection,
+                            onDotsClick = { isSideBarVisible = !isSideBarVisible },
+                            onCommentsClick = { isReadingSection = !isReadingSection },
+                            addComment = { isWriteCardShown = true }
                         )
                     }
                 }
             }
-            AnimatedVisibility(visible = isSideBarVisible) {
-                BoxWithConstraints {
-                    HitReadsSideBar(
-                        numberOfViews = screenState.numberOfViews,
-                        numberOfComments = screenState.numberOfComments,
-                        hasSmallHeight = maxHeight < MaterialTheme.localDimens.minSideBarHeight,
-                        isCommentsSelected = !isReadingSection,
-                        onDotsClick = { isSideBarVisible = !isSideBarVisible },
-                        onCommentsClick = { isReadingSection = !isReadingSection }
-                    )
-                }
+            VerticalSpacer(height = MaterialTheme.localDimens.dp16)
+            AnimatedVisibility(visible = if (isReadingSection) scrollState.isEpisodesVisible() else lazyScrollState.isEpisodesVisible()) {
+                EpisodeSection(paddingValues = PaddingValues(start = MaterialTheme.localDimens.dp32))
             }
         }
-        VerticalSpacer(height = MaterialTheme.localDimens.dp16)
-        AnimatedVisibility(visible = if (isReadingSection) scrollState.isEpisodesVisible() else lazyScrollState.isEpisodesVisible()) {
-            EpisodeSection(paddingValues = PaddingValues(start = MaterialTheme.localDimens.dp32))
+        AnimatedVisibility(visible = isWriteCardShown, enter = fadeIn(), exit = fadeOut()) {
+            CommentWritingCard(
+                onBackClick = { isWriteCardShown = !isWriteCardShown }
+            ) {
+                //todo send comment
+            }
         }
     }
 }

@@ -13,4 +13,5 @@ data class HomeScreenState(
     val numberOfComments: Int,
     val numberOfFavorites: Int,
     val episodeSize: Int,
+    val selectedFilters: List<Int>,
 )

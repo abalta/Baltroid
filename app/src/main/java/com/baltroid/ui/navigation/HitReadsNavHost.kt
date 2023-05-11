@@ -14,6 +14,7 @@ import com.baltroid.ui.screens.home.HomeScreen
 import com.baltroid.ui.screens.home.HomeScreenState
 import com.baltroid.ui.screens.home.detail.HomeDetailScreen
 import com.baltroid.ui.screens.home.detail.HomeDetailScreenState
+import com.baltroid.ui.screens.home.filter.FilterScreen
 import com.baltroid.ui.screens.interactive.InteractiveScreen
 import com.baltroid.ui.screens.onboarding.OnboardingScreen
 import com.baltroid.ui.screens.onboarding.OnboardingScreenState
@@ -71,7 +72,8 @@ fun HitReadsNavHost(
                 imgUrls = listOf(
                     "https://www.figma.com/file/MYxJBHOTh2JfbmrYbojuxc/image/1d56515ab14098684701024283a07d386bbb94e7?fuid=1097272770330818914",
                     "https://www.figma.com/file/MYxJBHOTh2JfbmrYbojuxc/image/1d56515ab14098684701024283a07d386bbb94e7?fuid=1097272770330818914",
-                )
+                ),
+                selectedFilters = listOf()
             )
             HomeScreen(
                 screenState = screenState,
@@ -79,6 +81,15 @@ fun HitReadsNavHost(
             ) { route, itemId ->
                 // todo navArgs
                 navController.navigate(route)
+            }
+        }
+        composable(
+            route = HitReadsScreens.FilterScreen.route
+        ) {
+            FilterScreen(applyFilter = {
+                //navigate with item ids
+            }) {
+                navController.popBackStack()
             }
         }
         composable(
