@@ -3,9 +3,7 @@ package com.baltroid.core.network.model.originals
 import com.baltroid.core.network.model.author.NetworkAuthor
 import com.baltroid.core.network.model.user.NetworkUserData
 import kotlinx.serialization.Serializable
-
 import kotlinx.serialization.SerialName
-
 
 @Serializable
 data class NetworkOriginal(
@@ -36,6 +34,14 @@ data class NetworkOriginal(
     @SerialName("type")
     val type: String,
     @SerialName("user_data")
-    val userData: NetworkUserData
+    val userData: NetworkUserData,
+    @SerialName("subtitle")
+    var subtitle: String?,
+    @SerialName("tags")
+    val tags: List<NetworkTag>,
+    @SerialName("episode_count")
+    val episodeCount: Int,
+    @SerialName("hashtag")
+    val hashtag: String
 )
 

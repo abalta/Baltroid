@@ -1,7 +1,7 @@
 package com.baltroid.core.network.util
 
 internal object Constants {
-    internal const val API_URL = "https://test.kitap-kulubu.com"
+    internal const val API_URL = "http://3.73.140.195/api"
     internal const val IMAGE_URL = ""
     internal const val API_KEY_QUERY_PARAM = "api_key"
     internal const val PAGE_SIZE = 20
@@ -29,6 +29,7 @@ internal object Constants {
         internal const val MINIMUM = "minimum"
         internal const val QUERY = "query"
         internal const val LANGUAGE = "language"
+        internal const val LIKE = "like"
         internal const val MESSAGE = "message"
         internal const val DATA = "data"
         internal const val DATA_COUNT = "data_count"

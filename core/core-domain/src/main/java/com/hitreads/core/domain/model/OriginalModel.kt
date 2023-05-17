@@ -14,5 +14,9 @@ data class OriginalModel(
     val status: Boolean,
     val title: String,
     val type: String,
-    val userData: UserDataModel
+    val userData: UserDataModel,
+    val subtitle: String,
+    val tags: List<TagModel>,
+    val episodeCount: Int,
+    val hashtag: String
 )

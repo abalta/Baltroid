@@ -2,9 +2,11 @@ package com.baltroid.core.data.mapper
 
 import com.baltroid.core.network.model.author.NetworkAuthor
 import com.baltroid.core.network.model.originals.NetworkOriginal
+import com.baltroid.core.network.model.originals.NetworkTag
 import com.baltroid.core.network.model.user.NetworkUserData
 import com.hitreads.core.domain.model.AuthorModel
 import com.hitreads.core.domain.model.OriginalModel
+import com.hitreads.core.domain.model.TagModel
 import com.hitreads.core.domain.model.UserDataModel
 
 internal fun NetworkOriginal.asOriginalModel() = OriginalModel(
@@ -21,7 +23,12 @@ internal fun NetworkOriginal.asOriginalModel() = OriginalModel(
     likeCount = likeCount,
     sort = sort,
     `package` = `package`,
-    userData = userData.asUserDataModel()
+    userData = userData.asUserDataModel(),
+    subtitle = subtitle.orEmpty(),
+    tags = tags.map { it.asTagModel() },
+    episodeCount = episodeCount,
+    hashtag = hashtag
+
 )
 
 internal fun NetworkAuthor.asAuthorModel() = AuthorModel(
@@ -32,5 +39,9 @@ internal fun NetworkAuthor.asAuthorModel() = AuthorModel(
 internal fun NetworkUserData.asUserDataModel() = UserDataModel(
     isLike = isLike,
     isPurchase = isPurchase
+)
+
+internal fun NetworkTag.asTagModel() = TagModel(
+    id, name, icon
 )
 

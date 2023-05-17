@@ -8,9 +8,12 @@ import com.baltroid.core.network.util.DEFAULT_PAGE
 import javax.inject.Inject
 
 class HitReadsNetworkDataSource @Inject constructor(private val hitReadsService: HitReadsService) {
-
     suspend fun getOriginals(
         page: Int = DEFAULT_PAGE
     ): BaltroidResult<HitReadsResponse<OriginalResponseDto>> = hitReadsService.getOriginals(page)
+
+    suspend fun likeOriginal(
+        originalId: Int
+    ): BaltroidResult<HitReadsResponse<Unit>> = hitReadsService.likeOriginal(originalId)
 
 }

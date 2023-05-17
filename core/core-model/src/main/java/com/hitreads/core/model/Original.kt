@@ -14,5 +14,8 @@ data class Original(
     val status: Boolean,
     val title: String,
     val type: String,
-    val userData: UserData
+    val userData: UserData,
+    val tags: List<Tag>,
+    val hashtag: String,
+    val subtitle: String
 )
