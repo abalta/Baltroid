@@ -26,7 +26,8 @@ fun OriginalModel.asOriginal() = Original(
     userData = userData.asUserData(),
     hashtag = hashtag,
     tags = tags.map { it.asTag() },
-    subtitle = subtitle
+    subtitle = subtitle,
+    episodeCount = episodeCount
 )
 
 fun AuthorModel.asAuthor() = Author(

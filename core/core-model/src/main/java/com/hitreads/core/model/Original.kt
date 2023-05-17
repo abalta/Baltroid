@@ -17,5 +17,6 @@ data class Original(
     val userData: UserData,
     val tags: List<Tag>,
     val hashtag: String,
-    val subtitle: String
+    val subtitle: String,
+    val episodeCount: Int
 )
