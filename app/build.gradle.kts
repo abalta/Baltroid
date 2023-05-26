@@ -49,6 +49,5 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.kotlinx.coroutines.android)
-
-
+    implementation(libs.androidx.hilt.navigation.compose)
 }
