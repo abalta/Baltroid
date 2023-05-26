@@ -296,7 +296,7 @@ fun TitleSection(
                 SimpleIcon(
                     iconResId = R.drawable.ic_menu,
                     modifier = Modifier
-                        .padding(top = MaterialTheme.localDimens.dp12)
+                        .padding(top = MaterialTheme.localDimens.dp12, end = MaterialTheme.localDimens.dp20)
                         .clickable { onDotsClick.invoke() })
             }
 
