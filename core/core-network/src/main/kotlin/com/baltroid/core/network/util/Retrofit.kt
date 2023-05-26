@@ -18,7 +18,7 @@ internal fun retrofit(
 
 private fun loggingOkHttpClient(): OkHttpClient {
     val logging = HttpLoggingInterceptor()
-    logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
+    logging.setLevel(HttpLoggingInterceptor.Level.BODY)
     return OkHttpClient.Builder()
         .addInterceptor(logging)
         .build()
