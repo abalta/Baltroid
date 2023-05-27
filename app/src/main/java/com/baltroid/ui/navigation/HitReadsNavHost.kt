@@ -7,11 +7,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptionsBuilder
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.baltroid.apps.R
+import com.baltroid.presentation.screens.home.HomeViewModel
 import com.baltroid.ui.screens.home.HomeScreen
-import com.baltroid.ui.screens.home.HomeScreenState
 import com.baltroid.ui.screens.home.detail.HomeDetailScreen
 import com.baltroid.ui.screens.home.detail.HomeDetailScreenState
 import com.baltroid.ui.screens.home.filter.FilterScreen
@@ -44,8 +47,7 @@ fun HitReadsNavHost(
             route = HitReadsScreens.OnboardingScreen.route
         ) {
             val screenState = OnboardingScreenState(
-                R.drawable.woods_image,
-                messageText = stringResource(id = R.string.welcome)
+                R.drawable.woods_image, messageText = stringResource(id = R.string.welcome)
             )
             OnboardingScreen(screenState = screenState) {
                 navController.navigate(HitReadsScreens.HomeScreen.route) {
@@ -57,27 +59,14 @@ fun HitReadsNavHost(
         composable(
             route = HitReadsScreens.HomeScreen.route
         ) {
-            val screenState = HomeScreenState(
-                author = "ZEYNEP SEY",
-                firstName = "KİMSE GERÇEK DEĞİL",
-                secondName = "Araf, Aydınlık Ve Aşık",
-                genres = listOf("ROMANTİK", "GENÇLİK"),
-                numberOfNotification = 12,
-                numberOfStory = 12,
-                numberOfViews = 1002,
-                numberOfComments = 142,
-                numberOfFavorites = 5,
-                episodeSize = 35,
-                summary = LoremIpsum(16).values.joinToString(),
-                imgUrls = listOf(
-                    "https://www.figma.com/file/MYxJBHOTh2JfbmrYbojuxc/image/1d56515ab14098684701024283a07d386bbb94e7?fuid=1097272770330818914",
-                    "https://www.figma.com/file/MYxJBHOTh2JfbmrYbojuxc/image/1d56515ab14098684701024283a07d386bbb94e7?fuid=1097272770330818914",
-                ),
-                selectedFilters = listOf()
-            )
+            val viewModel: HomeViewModel = hiltViewModel()
+            val uiStates = viewModel.uiState.collectAsStateWithLifecycle()
+                .value
+                .originals
+                .collectAsLazyPagingItems()
+
             HomeScreen(
-                screenState = screenState,
-                openMenuScreen = openMenuScreen
+                uiStates = uiStates, openMenuScreen = openMenuScreen
             ) { route, itemId ->
                 // todo navArgs
                 navController.navigate(route)
@@ -127,8 +116,7 @@ fun HitReadsNavHost(
                 numberOfNotification = 14
             )
             ReadingScreen(
-                screenState = screenState,
-                openMenuScreen = openMenuScreen
+                screenState = screenState, openMenuScreen = openMenuScreen
             )
         }
         composable(
