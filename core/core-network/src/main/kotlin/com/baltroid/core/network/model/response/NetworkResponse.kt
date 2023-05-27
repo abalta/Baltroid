@@ -19,3 +19,21 @@ data class OriginalResponseDto(
     @SerialName(Constants.Fields.TOTAL_PAGE)
     val totalResults: Int,
 )
+
+@Serializable
+data class LoginDto(
+    @SerialName(Constants.Fields.USER_ID)
+    val userId: Int,
+
+    @SerialName(Constants.Fields.TOKEN)
+    val token: String,
+
+    @SerialName(Constants.Fields.USERNAME)
+    val username: String,
+
+    @SerialName(Constants.Fields.AVATAR)
+    val avatar: String,
+
+    @SerialName(Constants.Fields.WALLET)
+    val wallet: Int,
+)

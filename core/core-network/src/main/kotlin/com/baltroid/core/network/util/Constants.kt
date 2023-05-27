@@ -9,6 +9,8 @@ internal object Constants {
 
     internal object Path {
         internal const val ORIGINALS_INDEX = "original"
+        internal const val LOGIN = "login"
+        internal const val LIKE = "like"
     }
 
     internal object Fields {
@@ -29,12 +31,18 @@ internal object Constants {
         internal const val MINIMUM = "minimum"
         internal const val QUERY = "query"
         internal const val LANGUAGE = "language"
-        internal const val LIKE = "like"
         internal const val MESSAGE = "message"
         internal const val DATA = "data"
         internal const val DATA_COUNT = "data_count"
         internal const val ORIGINALS = "originals"
         internal const val ACTIVE_PAGE = "active_page"
+        internal const val EMAIL = "email"
+        internal const val PASSWORD = "password"
+        internal const val USER_ID = "user_id"
+        internal const val TOKEN = "token"
+        internal const val USERNAME = "username"
+        internal const val AVATAR = "avatar"
+        internal const val WALLET = "wallet"
 
         private fun buildAppendToResponse(vararg fields: String) =
             fields.joinToString(separator = APPEND_TO_RESPONSE_SEPARATOR)
@@ -46,5 +54,4 @@ internal object Constants {
 const val PAGE_SIZE = Constants.PAGE_SIZE
 const val DEFAULT_PAGE = Constants.DEFAULT_PAGE
 
-@PublishedApi
-internal const val MESSAGE_UNHANDLED_STATE = "Unhandled state."
+const val MESSAGE_UNHANDLED_STATE = "Unhandled state."
