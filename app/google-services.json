@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "552029269378",
+    "project_id": "hitreads-6aaba",
+    "storage_bucket": "hitreads-6aaba.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:552029269378:android:53a0724f376e153745f39b",
+        "android_client_info": {
+          "package_name": "com.baltroid.apps"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCK8vD2xZlumITqVTlX1NluOrmZ0aeY-H0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
