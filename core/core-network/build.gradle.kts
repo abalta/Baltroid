@@ -5,6 +5,7 @@ plugins {
 
 dependencies {
     implementation(project(":core:core-common"))
+    implementation(project(":core:core-datastore"))
 
     implementation(libs.kotlinx.datetime)
     implementation(libs.kotlinx.coroutines.core)
