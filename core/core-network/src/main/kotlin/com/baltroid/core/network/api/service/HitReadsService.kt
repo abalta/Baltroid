@@ -2,6 +2,7 @@ package com.baltroid.core.network.api.service
 
 import com.baltroid.core.common.result.BaltroidResult
 import com.baltroid.core.network.model.HitReadsResponse
+import com.baltroid.core.network.model.originals.NetworkOriginal
 import com.baltroid.core.network.model.response.LoginDto
 import com.baltroid.core.network.model.response.OriginalResponseDto
 import com.baltroid.core.network.util.Constants.DEFAULT_PAGE
@@ -24,6 +25,9 @@ interface HitReadsService {
     suspend fun getOriginals(
         @Query(PAGE) page: Int = DEFAULT_PAGE
     ): BaltroidResult<HitReadsResponse<OriginalResponseDto>>
+
+    @GET("$ORIGINALS_INDEX/{id}")
+    suspend fun showOriginal(@Path("id") id: Int): BaltroidResult<HitReadsResponse<NetworkOriginal>>
 
     @PUT("$ORIGINALS_INDEX/{id}/$LIKE")
     suspend fun likeOriginal(@Path("id") id: Int): BaltroidResult<HitReadsResponse<Unit>>

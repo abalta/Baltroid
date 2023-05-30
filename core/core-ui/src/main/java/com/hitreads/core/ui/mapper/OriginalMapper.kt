@@ -1,11 +1,15 @@
 package com.hitreads.core.ui.mapper
 
 import com.hitreads.core.domain.model.AuthorModel
+import com.hitreads.core.domain.model.EpisodeModel
 import com.hitreads.core.domain.model.OriginalModel
+import com.hitreads.core.domain.model.SeasonModel
 import com.hitreads.core.domain.model.TagModel
 import com.hitreads.core.domain.model.UserDataModel
 import com.hitreads.core.model.Author
+import com.hitreads.core.model.Episode
 import com.hitreads.core.model.Original
+import com.hitreads.core.model.Season
 import com.hitreads.core.model.Tag
 import com.hitreads.core.model.UserData
 
@@ -27,7 +31,8 @@ fun OriginalModel.asOriginal() = Original(
     hashtag = hashtag,
     tags = tags.map { it.asTag() },
     subtitle = subtitle,
-    episodeCount = episodeCount
+    episodeCount = episodeCount,
+    seasons = seasons.map { it.asSeason() }
 )
 
 fun AuthorModel.asAuthor() = Author(
@@ -37,3 +42,7 @@ fun AuthorModel.asAuthor() = Author(
 fun UserDataModel.asUserData() = UserData(isLike, isPurchase)
 
 fun TagModel.asTag() = Tag(id, name, icon)
+
+fun SeasonModel.asSeason() = Season(id, name, episodes.map { it.asEpisode() })
+
+fun EpisodeModel.asEpisode() = Episode(id, name, price, priceType, userPurchase.orEmpty())

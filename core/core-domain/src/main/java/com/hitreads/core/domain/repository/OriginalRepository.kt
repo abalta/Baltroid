@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface OriginalRepository {
     fun getOriginals(): Flow<PagingData<OriginalModel>>
-
     fun likeOriginal(originalId: Int): Flow<BaltroidResult<Unit?>>
-
+    fun showOriginal(originalId: Int): Flow<BaltroidResult<OriginalModel>>
 }

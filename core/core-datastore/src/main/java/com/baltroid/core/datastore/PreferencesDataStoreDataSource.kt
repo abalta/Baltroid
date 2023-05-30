@@ -3,7 +3,7 @@ package com.baltroid.core.datastore
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
-import com.baltroid.core.util.Constants.TOKEN_KEY
+import com.baltroid.core.datastore.util.Constants.TOKEN_KEY
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject

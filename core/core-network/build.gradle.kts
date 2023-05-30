@@ -1,7 +1,10 @@
 plugins {
-    alias(libs.plugins.kotlin.jvm)
+    id("baltroid.android.library")
+    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.serialization)
 }
+
+android.namespace = "com.baltroid.core.network"
 
 dependencies {
     implementation(project(":core:core-common"))

@@ -18,5 +18,6 @@ data class OriginalModel(
     val subtitle: String,
     val tags: List<TagModel>,
     val episodeCount: Int,
-    val hashtag: String
+    val hashtag: String,
+    val seasons: List<SeasonModel>
 )

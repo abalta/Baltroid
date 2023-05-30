@@ -42,6 +42,8 @@ data class NetworkOriginal(
     @SerialName("episode_count")
     val episodeCount: Int,
     @SerialName("hashtag")
-    val hashtag: String
+    val hashtag: String,
+    @SerialName("seasons")
+    val seasons: List<NetworkSeason>?
 )
 

@@ -1,4 +1,4 @@
-package com.baltroid.core.util
+package com.baltroid.core.datastore.util
 
 import androidx.datastore.preferences.core.stringPreferencesKey
 
