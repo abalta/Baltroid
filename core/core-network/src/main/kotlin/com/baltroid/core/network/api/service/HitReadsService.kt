@@ -3,6 +3,7 @@ package com.baltroid.core.network.api.service
 import com.baltroid.core.common.result.BaltroidResult
 import com.baltroid.core.network.model.HitReadsResponse
 import com.baltroid.core.network.model.originals.NetworkOriginal
+import com.baltroid.core.network.model.originals.NetworkTag
 import com.baltroid.core.network.model.response.LoginDto
 import com.baltroid.core.network.model.response.OriginalResponseDto
 import com.baltroid.core.network.util.Constants.DEFAULT_PAGE
@@ -12,6 +13,7 @@ import com.baltroid.core.network.util.Constants.Fields.PASSWORD
 import com.baltroid.core.network.util.Constants.Path.LIKE
 import com.baltroid.core.network.util.Constants.Path.LOGIN
 import com.baltroid.core.network.util.Constants.Path.ORIGINALS_INDEX
+import com.baltroid.core.network.util.Constants.Path.TAG
 import retrofit2.http.Field
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -34,5 +36,8 @@ interface HitReadsService {
 
     @POST("$LOGIN")
     suspend fun login(@Field("$EMAIL") email: String, @Field("$PASSWORD") password: String): BaltroidResult<HitReadsResponse<LoginDto>>
+
+    @GET("$TAG")
+    suspend fun getTags(): BaltroidResult<HitReadsResponse<List<NetworkTag>>>
 
 }
