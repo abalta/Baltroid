@@ -1,5 +1,6 @@
 package com.baltroid.core.network.model.response
 
+import com.baltroid.core.network.model.originals.NetworkEpisode
 import com.baltroid.core.network.model.originals.NetworkOriginal
 import com.baltroid.core.network.util.Constants
 import kotlinx.serialization.SerialName
@@ -36,4 +37,13 @@ data class LoginDto(
 
     @SerialName(Constants.Fields.WALLET)
     val wallet: Int,
+)
+
+@Serializable
+data class EpisodeResponseDto(
+    @SerialName(Constants.Fields.EPISODE)
+    val episode: NetworkEpisode,
+
+    @SerialName(Constants.Fields.REPUTATION)
+    val reputation: List<Unit>
 )

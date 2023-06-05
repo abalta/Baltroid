@@ -5,6 +5,7 @@ import androidx.paging.PagingData
 import com.baltroid.core.common.result.BaltroidResult
 import com.baltroid.core.common.result.isFailure
 import com.baltroid.core.common.result.isSuccess
+import com.baltroid.core.data.mapper.asEpisodeModel
 import com.baltroid.core.data.mapper.asLoginModel
 import com.baltroid.core.data.mapper.asOriginalModel
 import com.baltroid.core.data.paging.OriginalsPagingSource
@@ -12,6 +13,7 @@ import com.baltroid.core.data.util.defaultPagingConfig
 import com.baltroid.core.network.common.networkBoundResource
 import com.baltroid.core.network.source.HitReadsNetworkDataSource
 import com.baltroid.core.network.util.MESSAGE_UNHANDLED_STATE
+import com.hitreads.core.domain.model.EpisodeModel
 import com.hitreads.core.domain.model.OriginalModel
 import com.hitreads.core.domain.repository.OriginalRepository
 import kotlinx.coroutines.flow.Flow
@@ -43,6 +45,26 @@ class OriginalRepositoryImpl @Inject constructor(
             response.isSuccess() -> {
                 response.value.data?.let {
                     emit(BaltroidResult.success(it.asOriginalModel()))
+                }
+            }
+
+            response.isFailure() -> {
+                val throwable = response.error
+                emit(BaltroidResult.failure(throwable))
+            }
+
+            else -> error("$MESSAGE_UNHANDLED_STATE $response")
+        }
+    }
+
+    override fun showEpisode(episodeId: Int): Flow<BaltroidResult<EpisodeModel>> = flow {
+        emit(BaltroidResult.loading())
+        val response = networkDataSource.showEpisode(episodeId)
+
+        when {
+            response.isSuccess() -> {
+                response.value.data?.let {
+                    emit(BaltroidResult.success(it.episode.asEpisodeModel()))
                 }
             }
 

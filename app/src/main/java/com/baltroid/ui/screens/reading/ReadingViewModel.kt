@@ -7,7 +7,9 @@ import com.baltroid.core.common.result.handle
 import com.hitreads.core.domain.model.OriginalModel
 import com.hitreads.core.domain.usecase.GetOriginalsUseCase
 import com.hitreads.core.domain.usecase.LikeOriginalUseCase
+import com.hitreads.core.domain.usecase.ShowEpisodeUseCase
 import com.hitreads.core.domain.usecase.ShowOriginalUseCase
+import com.hitreads.core.ui.mapper.asEpisode
 import com.hitreads.core.ui.mapper.asOriginal
 import com.hitreads.core.ui.mapper.pagingMap
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,7 +22,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ReadingViewModel @Inject constructor(
     private val likeOriginalUseCase: LikeOriginalUseCase,
-    private val showOriginalUseCase: ShowOriginalUseCase
+    private val showOriginalUseCase: ShowOriginalUseCase,
+    private val showEpisodeUseCase: ShowEpisodeUseCase
 ): ViewModel() {
 
     private val _uiState = MutableStateFlow(ReadingUiState())
@@ -45,6 +48,18 @@ class ReadingViewModel @Inject constructor(
             }
             onSuccess { originalModel ->
                 _uiState.update { it.copy(original = originalModel.asOriginal(), isLoading = false) }
+            }
+            onFailure(::handleFailure)
+        }
+    }
+
+    private fun showEpisode(id: Int) = viewModelScope.launch {
+        showEpisodeUseCase(id).handle {
+            onLoading { episodeModel ->
+                _uiState.update { it.copy(episode = episodeModel?.asEpisode(), isLoading = true) }
+            }
+            onSuccess { episodeModel ->
+                _uiState.update { it.copy(episode = episodeModel.asEpisode(), isLoading = false) }
             }
             onFailure(::handleFailure)
         }

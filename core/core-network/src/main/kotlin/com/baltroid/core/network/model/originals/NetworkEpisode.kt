@@ -15,4 +15,6 @@ data class NetworkEpisode(
     val priceType: String,
     @SerialName("user_purchase")
     val userPurchase: String?,
+    @SerialName("asset_contents")
+    val assetContent: String?
 )
