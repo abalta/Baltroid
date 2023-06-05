@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 data class NetworkTag(
     @SerialName("id")
     val id: Int,
-    @SerialName("name")
+    @SerialName("title")
     val name: String,
     @SerialName("icon")
     val icon: String
