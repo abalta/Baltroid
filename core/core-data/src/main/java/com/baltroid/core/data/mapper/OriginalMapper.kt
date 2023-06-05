@@ -61,6 +61,7 @@ internal fun NetworkEpisode.asEpisodeModel() = EpisodeModel(
     name = episodeName,
     price = price,
     priceType = priceType,
-    userPurchase = userPurchase
+    userPurchase = userPurchase,
+    assetContents = assetContent
 )
 
