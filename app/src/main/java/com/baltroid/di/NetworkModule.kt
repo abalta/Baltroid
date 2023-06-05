@@ -1,5 +1,6 @@
 package com.baltroid.di
 
+import com.baltroid.core.datastore.PreferencesDataStoreDataSource
 import com.baltroid.core.network.api.BaltroidApi
 import dagger.Module
 import dagger.Provides
@@ -12,7 +13,7 @@ import javax.inject.Singleton
 object NetworkModule {
     @Provides
     @Singleton
-    fun provideBaltroidApi() = BaltroidApi()
+    fun provideBaltroidApi(dataSource: PreferencesDataStoreDataSource) = BaltroidApi(dataSource)
 
     @Provides
     fun provideHitReadsService(api: BaltroidApi) = api.hitReadsService

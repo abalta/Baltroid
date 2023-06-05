@@ -29,7 +29,7 @@ class ReadingViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(ReadingUiState())
     val uiState = _uiState.asStateFlow()
 
-    private fun likeOriginal(id: Int) = viewModelScope.launch {
+    fun likeOriginal(id: Int) = viewModelScope.launch {
         likeOriginalUseCase(id).handle {
             onLoading {
                 _uiState.update { it.copy(isLike = null, isLoading = true) }
@@ -53,7 +53,7 @@ class ReadingViewModel @Inject constructor(
         }
     }
 
-    private fun showEpisode(id: Int) = viewModelScope.launch {
+    fun showEpisode(id: Int) = viewModelScope.launch {
         showEpisodeUseCase(id).handle {
             onLoading { episodeModel ->
                 _uiState.update { it.copy(episode = episodeModel?.asEpisode(), isLoading = true) }

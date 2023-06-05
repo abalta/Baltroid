@@ -18,6 +18,7 @@ import com.baltroid.core.network.util.Constants.Path.ORIGINALS_INDEX
 import com.baltroid.core.network.util.Constants.Path.SHOW
 import com.baltroid.core.network.util.Constants.Path.TAG
 import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
@@ -37,13 +38,14 @@ interface HitReadsService {
     @PUT("$ORIGINALS_INDEX/{id}/$LIKE")
     suspend fun likeOriginal(@Path("id") id: Int): BaltroidResult<HitReadsResponse<Unit>>
 
+    @FormUrlEncoded
     @POST("$LOGIN")
     suspend fun login(@Field("$EMAIL") email: String, @Field("$PASSWORD") password: String): BaltroidResult<HitReadsResponse<LoginDto>>
 
     @GET("$TAG")
     suspend fun getTags(): BaltroidResult<HitReadsResponse<List<NetworkTag>>>
 
-    @GET("$EPISODE/{id}/$SHOW")
+    @GET("$ORIGINALS_INDEX/$EPISODE/{id}/$SHOW")
     suspend fun showEpisode(@Path("id") id: Int): BaltroidResult<HitReadsResponse<EpisodeResponseDto>>
 
 }

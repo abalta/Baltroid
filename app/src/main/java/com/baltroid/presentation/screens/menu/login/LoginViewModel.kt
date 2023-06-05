@@ -20,7 +20,7 @@ class LoginViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState = _uiState.asStateFlow()
 
-    private fun login(email: String, password: String) = viewModelScope.launch {
+    fun login(email: String, password: String) = viewModelScope.launch {
         loginUseCase(email, password).handle {
             onLoading {
                 _uiState.update { state ->
