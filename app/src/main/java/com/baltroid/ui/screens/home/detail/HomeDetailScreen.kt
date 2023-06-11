@@ -17,9 +17,13 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import coil.compose.AsyncImage
 import com.baltroid.apps.R
 import com.baltroid.ui.common.CroppedImage
 import com.baltroid.ui.common.HorizontalSpacer
@@ -32,6 +36,7 @@ import com.baltroid.ui.screens.home.GenreSection
 import com.baltroid.ui.screens.home.TitleSection
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
+import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
 import com.baltroid.util.conditional
 import com.hitreads.core.model.Original
@@ -63,7 +68,15 @@ private fun HomeDetailScreenContent(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        CroppedImage(imgResId = R.drawable.woods_image, modifier = Modifier.fillMaxSize())
+        AsyncImage(
+            model = screenState.banner,
+            contentDescription = null,
+            fallback = painterResource(id = R.drawable.hitreads_placeholder),
+            placeholder = painterResource(id = R.drawable.hitreads_placeholder),
+            error = painterResource(id = R.drawable.hitreads_placeholder),
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
+        )
         HitReadsTopBar(
             iconResId = R.drawable.ic_bell,
             numberOfNotification = 99,
