@@ -24,10 +24,10 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
@@ -56,13 +57,15 @@ import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
+import com.baltroid.util.orEmpty
 import com.hitreads.core.model.Original
+import com.hitreads.core.model.Tag
 
 @Composable
 fun HomeScreen(
     uiStates: LazyPagingItems<Original>,
     openMenuScreen: () -> Unit,
-    navigate: (route: String, itemId: Int?) -> Unit
+    navigate: (route: String, item: Original?) -> Unit
 ) {
     HomeScreenContent(uiStates = uiStates, openMenuScreen = openMenuScreen, navigate = navigate)
 }
@@ -72,7 +75,7 @@ fun HomeScreen(
 private fun HomeScreenContent(
     uiStates: LazyPagingItems<Original>,
     openMenuScreen: () -> Unit,
-    navigate: (route: String, itemId: Int?) -> Unit
+    navigate: (route: String, item: Original?) -> Unit
 ) {
     val scrollState = rememberScrollState()
     val pagerState = rememberPagerState()
@@ -105,7 +108,7 @@ private fun HomeScreenContent(
         )
         VerticalSpacer(height = MaterialTheme.localDimens.dp18_5)
         HomeScreenTabs(
-            storiesSize = 12,
+            storiesSize = uiStates.itemCount,
             favoritesSize = 12,
             selectedTab = tabState,
             modifier = Modifier.padding(start = MaterialTheme.localDimens.dp32)
@@ -123,12 +126,8 @@ private fun HomeScreenContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .align(Alignment.Start)
-                ) { id ->
-                    if (id == 1) {
-                        navigate.invoke(HitReadsScreens.InteractiveScreen.route, id)
-                    } else {
-                        navigate.invoke(HitReadsScreens.HomeDetailScreen.route, id)
-                    }
+                ) {
+                    navigate.invoke(HitReadsScreens.HomeDetailScreen.route, currentItem)
                 }
             } else {
                 /*todo Favorites*/
@@ -137,13 +136,13 @@ private fun HomeScreenContent(
             if (uiStates.itemCount > 0) {
                 TitleSection(
                     author = currentItem?.author?.name.toString(),
-                    firstName = currentItem?.title.toString(),
-                    secondName = "Araf,Aydınlık Ve Aşık",
+                    title = currentItem?.title.toString(),
+                    subTitle = currentItem?.subtitle.toString(),
                     modifier = Modifier.padding(start = MaterialTheme.localDimens.dp23)
                 )
                 VerticalSpacer(height = MaterialTheme.localDimens.dp20)
                 GenreSection(
-                    genres = listOf("Romantik", "Gençlik"),
+                    genres = currentItem?.tags,
                     episodeSize = currentItem?.episodeCount ?: 0,
                     modifier = Modifier.padding(start = MaterialTheme.localDimens.dp23)
                 )
@@ -246,7 +245,7 @@ private fun StoriesRow(
     lazyPagingItems: LazyPagingItems<Original>,
     state: PagerState,
     modifier: Modifier = Modifier,
-    onClick: (id: Int) -> Unit,
+    onClick: () -> Unit,
 ) {
     BoxWithConstraints {
         HorizontalPager(
@@ -263,7 +262,7 @@ private fun StoriesRow(
             StoryImage(
                 imgUrl = lazyPagingItems[page]?.cover.toString(),
                 isNew = true,
-                onClick = { onClick.invoke(page) }
+                onClick = { onClick.invoke() }
             )
         }
     }
@@ -279,8 +278,11 @@ private fun StoryImage(
         modifier = Modifier.clickable { onClick.invoke() }
     ) {
         AsyncImage(
-            model = "https://s3-alpha-sig.figma.com/img/1d56/515a/b14098684701024283a07d386bbb94e7?Expires=1685923200&Signature=c~Ac5-s57idL6G3UdD9fjGazuBxO0oAkOiexIunJhrpPPjdKaXUuMc5u2Jl3FAhQcu4rnM1Vgg-ho59SPzRxE0D~1~vv5iExIEO6bv35dpAUVEwjqixsQSKVc-0W6vzXnFM9Fn0luDUimIPcGC5T0Gm-GGi1YtibF6iCbe3v3Mb~EqruH~h0O43YMh91DUX5rvgle5Q8t2HVPbcJM4kU5o~sjrz04At1N6~33Ghp9YvWbPWkOlFufoaKF59QgRmAHesgc45nRkO6oqXWjBL5YyCT-tRW75meJNlZUjZQE--RmGPPl1rjCRrqB1mR0C1tA4oUnmntCRfg6fHF441Jlw__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4",
+            model = imgUrl,
             contentDescription = null,
+            fallback = painterResource(id = R.drawable.hitreads_placeholder),
+            placeholder = painterResource(id = R.drawable.hitreads_placeholder),
+            error = painterResource(id = R.drawable.hitreads_placeholder),
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .size(
@@ -312,31 +314,36 @@ private fun StoryImage(
 @Composable
 fun TitleSection(
     author: String,
-    firstName: String,
-    secondName: String,
+    title: String,
+    subTitle: String,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
     ) {
         Text(text = author, style = MaterialTheme.localTextStyles.mediumTitle)
-        Text(text = firstName, style = MaterialTheme.localTextStyles.extraBoldTitle)
-        Text(text = secondName, style = MaterialTheme.localTextStyles.subtitleGrotesk)
+        Text(text = title, style = MaterialTheme.localTextStyles.extraBoldTitle)
+        Text(text = subTitle, style = MaterialTheme.localTextStyles.subtitleGrotesk)
     }
 }
 
 @Composable
 fun GenreSection(
     episodeSize: Int,
-    genres: List<String>,
+    genres: List<Tag>?,
     modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier
     ) {
-        GenreItem(genres.first(), color = MaterialTheme.localColors.purple)
-        HorizontalSpacer(width = MaterialTheme.localDimens.dp10_5)
-        GenreItem(text = genres[1], color = MaterialTheme.localColors.pink)
+        genres?.forEachIndexed { index, tag ->
+            GenreItem(
+                tag.name,
+                color = if (index % 2 == 0) MaterialTheme.localColors.purple
+                else MaterialTheme.localColors.pink
+            )
+            HorizontalSpacer(width = MaterialTheme.localDimens.dp10_5)
+        }
         HorizontalSpacer(width = MaterialTheme.localDimens.dp12_5)
         Column(
             modifier = Modifier

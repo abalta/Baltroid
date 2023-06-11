@@ -1,10 +1,18 @@
 package com.baltroid.ui.navigation
 
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -14,9 +22,13 @@ import androidx.navigation.NavOptionsBuilder
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.baltroid.apps.R
 import com.baltroid.presentation.screens.home.HomeViewModel
+import com.baltroid.presentation.screens.home.isLoading
+import com.baltroid.ui.common.CroppedImage
+import com.baltroid.ui.common.SimpleImage
 import com.baltroid.ui.screens.home.HomeScreen
 import com.baltroid.ui.screens.home.detail.HomeDetailScreen
 import com.baltroid.ui.screens.home.detail.HomeDetailScreenState
+import com.baltroid.ui.screens.home.detail.HomeDetailViewModel
 import com.baltroid.ui.screens.home.filter.FilterScreen
 import com.baltroid.ui.screens.interactive.InteractiveScreen
 import com.baltroid.ui.screens.onboarding.OnboardingScreen
@@ -35,97 +47,110 @@ fun HitReadsNavHost(
     navController: NavHostController = rememberAnimatedNavController(),
     openMenuScreen: () -> Unit = { navController.navigate(HitReadsScreens.MenuScreen.route) }
 ) {
-    AnimatedNavHost(
-        navController = navController,
-        startDestination = HitReadsScreens.OnboardingScreen.route,
-        modifier = modifier.background(MaterialTheme.localColors.black)
-    ) {
 
-        menuGraph(navController)
+    val homeDetailViewModel: HomeDetailViewModel = hiltViewModel()
+    var isLoading by remember {
+        mutableStateOf(false)
+    }
 
-        composable(
-            route = HitReadsScreens.OnboardingScreen.route
+    Box {
+        AnimatedNavHost(
+            navController = navController,
+            startDestination = HitReadsScreens.OnboardingScreen.route,
+            modifier = modifier
+                .fillMaxSize()
+                .background(MaterialTheme.localColors.black)
         ) {
-            val screenState = OnboardingScreenState(
-                R.drawable.woods_image, messageText = stringResource(id = R.string.welcome)
-            )
-            OnboardingScreen(screenState = screenState) {
-                navController.navigate(HitReadsScreens.HomeScreen.route) {
-                    popUpToInclusive(HitReadsScreens.OnboardingScreen.route)
-                    launchSingleTop = true
+
+            menuGraph(navController)
+
+            composable(
+                route = HitReadsScreens.OnboardingScreen.route
+            ) {
+                val screenState = OnboardingScreenState(
+                    R.drawable.woods_image, messageText = stringResource(id = R.string.welcome)
+                )
+                OnboardingScreen(screenState = screenState) {
+                    navController.navigate(HitReadsScreens.HomeScreen.route) {
+                        popUpToInclusive(HitReadsScreens.OnboardingScreen.route)
+                        launchSingleTop = true
+                    }
                 }
             }
-        }
-        composable(
-            route = HitReadsScreens.HomeScreen.route
-        ) {
-            val viewModel: HomeViewModel = hiltViewModel()
-            val uiStates = viewModel.uiState.collectAsStateWithLifecycle()
-                .value
-                .originals
-                .collectAsLazyPagingItems()
+            composable(
+                route = HitReadsScreens.HomeScreen.route
+            ) {
+                val viewModel: HomeViewModel = hiltViewModel()
+                val uiStates = viewModel.uiState.collectAsStateWithLifecycle()
+                    .value
 
-            HomeScreen(
-                uiStates = uiStates, openMenuScreen = openMenuScreen
-            ) { route, itemId ->
-                // todo navArgs
-                navController.navigate(route)
+                isLoading = uiStates.isLoading
+                HomeScreen(
+                    uiStates = uiStates.originals.collectAsLazyPagingItems(), openMenuScreen = openMenuScreen
+                ) { route, item ->
+                    if (route == HitReadsScreens.HomeDetailScreen.route) {
+                        homeDetailViewModel.setHomeDetailState(item)
+                    }
+                    navController.navigate(route)
+                }
+            }
+            composable(
+                route = HitReadsScreens.FilterScreen.route
+            ) {
+                FilterScreen(applyFilter = {
+                    //navigate with item ids
+                }) {
+                    navController.popBackStack()
+                }
+            }
+            composable(
+                route = HitReadsScreens.HomeDetailScreen.route
+            ) {
+                val state = homeDetailViewModel.homeDetailState
+                    .collectAsStateWithLifecycle().value
+                state?.let {
+                    HomeDetailScreen(
+                        screenState = it,
+                        openMenuScreen = openMenuScreen,
+                    ) { route, itemId ->
+                        //todo navArgs
+                        navController.navigate(route)
+                    }
+                }
+            }
+            composable(
+                route = HitReadsScreens.ReadingScreen.route
+            ) {
+                val screenState = ReadingScreenState(
+                    bodyText = LoremIpsum(2000).values.joinToString(),
+                    title = "KİMSE GERÇEK DEĞİL",
+                    subtitle = "ZEYNEP SEY",
+                    numberOfComments = 12,
+                    numberOfViews = 4412,
+                    numberOfNotification = 14
+                )
+                ReadingScreen(
+                    screenState = screenState, openMenuScreen = openMenuScreen
+                )
+            }
+            composable(
+                route = HitReadsScreens.InteractiveScreen.route
+            ) {
+                InteractiveScreen(
+                    openMenuScreen = openMenuScreen
+                )
             }
         }
-        composable(
-            route = HitReadsScreens.FilterScreen.route
-        ) {
-            FilterScreen(applyFilter = {
-                //navigate with item ids
-            }) {
-                navController.popBackStack()
-            }
+        if (isLoading) {
+            HitReadsLoading()
         }
-        composable(
-            route = HitReadsScreens.HomeDetailScreen.route
-        ) {
-            val screenState = HomeDetailScreenState(
-                id = 0,
-                author = "ZEYNEP SEY",
-                firstName = "KİMSE GERÇEK DEĞİL",
-                secondName = "Araf, Aydınlık Ve Aşık",
-                genres = listOf("ROMANTİK", "GENÇLİK"),
-                numberOfNotification = 12,
-                numberOfViews = 1002,
-                numberOfComments = 142,
-                episodeSize = 35,
-                summary = "Kim olduğunu sorguladıkça dünyasının sahtelikten İbaret olduğunu anlamaya başlayan Işıl Özsoydan, öğrendiği gerçekleri..."
-            )
-            HomeDetailScreen(
-                screenState = screenState,
-                openMenuScreen = openMenuScreen,
-            ) { route, itemId ->
-                //todo navArgs
-                navController.navigate(route)
-            }
-        }
-        composable(
-            route = HitReadsScreens.ReadingScreen.route
-        ) {
-            val screenState = ReadingScreenState(
-                bodyText = LoremIpsum(2000).values.joinToString(),
-                title = "KİMSE GERÇEK DEĞİL",
-                subtitle = "ZEYNEP SEY",
-                numberOfComments = 12,
-                numberOfViews = 4412,
-                numberOfNotification = 14
-            )
-            ReadingScreen(
-                screenState = screenState, openMenuScreen = openMenuScreen
-            )
-        }
-        composable(
-            route = HitReadsScreens.InteractiveScreen.route
-        ) {
-            InteractiveScreen(
-                openMenuScreen = openMenuScreen
-            )
-        }
+    }
+}
+
+@Composable
+fun HitReadsLoading() {
+    Box(modifier = Modifier.fillMaxSize()) {
+        CroppedImage(imgResId = R.drawable.hitreads_placeholder, Modifier.fillMaxSize())
     }
 }
 
