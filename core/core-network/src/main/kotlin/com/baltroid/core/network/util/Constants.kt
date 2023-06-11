@@ -11,6 +11,7 @@ internal object Constants {
         internal const val ORIGINALS_INDEX = "original"
         internal const val LOGIN = "login"
         internal const val LIKE = "like"
+        internal const val UNLIKE = "unlike"
         internal const val TAG = "tag"
         internal const val EPISODE = "episode"
         internal const val SHOW = "show"

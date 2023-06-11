@@ -13,12 +13,17 @@ import javax.inject.Inject
 
 class HitReadsNetworkDataSource @Inject constructor(private val hitReadsService: HitReadsService) {
     suspend fun getOriginals(
-        page: Int = DEFAULT_PAGE
-    ): BaltroidResult<HitReadsResponse<OriginalResponseDto>> = hitReadsService.getOriginals(page)
+        page: Int = DEFAULT_PAGE,
+        filter: String? = null
+    ): BaltroidResult<HitReadsResponse<OriginalResponseDto>> = hitReadsService.getOriginals(page, filter)
 
     suspend fun likeOriginal(
         originalId: Int
     ): BaltroidResult<HitReadsResponse<Unit>> = hitReadsService.likeOriginal(originalId)
+
+    suspend fun unlikeOriginal(
+        originalId: Int
+    ): BaltroidResult<HitReadsResponse<Unit>> = hitReadsService.unlikeOriginal(originalId)
 
     suspend fun login(email: String, password: String): BaltroidResult<HitReadsResponse<LoginDto>> = hitReadsService.login(email, password)
 

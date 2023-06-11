@@ -2,16 +2,13 @@ package com.baltroid.ui.screens.reading
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.cachedIn
 import com.baltroid.core.common.result.handle
-import com.hitreads.core.domain.model.OriginalModel
-import com.hitreads.core.domain.usecase.GetOriginalsUseCase
 import com.hitreads.core.domain.usecase.LikeOriginalUseCase
 import com.hitreads.core.domain.usecase.ShowEpisodeUseCase
 import com.hitreads.core.domain.usecase.ShowOriginalUseCase
+import com.hitreads.core.domain.usecase.UnlikeOriginalUseCase
 import com.hitreads.core.ui.mapper.asEpisode
 import com.hitreads.core.ui.mapper.asOriginal
-import com.hitreads.core.ui.mapper.pagingMap
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,6 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ReadingViewModel @Inject constructor(
     private val likeOriginalUseCase: LikeOriginalUseCase,
+    private val unlikeOriginalUseCase: UnlikeOriginalUseCase,
     private val showOriginalUseCase: ShowOriginalUseCase,
     private val showEpisodeUseCase: ShowEpisodeUseCase
 ): ViewModel() {
@@ -40,6 +38,19 @@ class ReadingViewModel @Inject constructor(
             onFailure(::handleFailure)
         }
     }
+
+    fun unlikeOriginal(id: Int) = viewModelScope.launch {
+        unlikeOriginalUseCase(id).handle {
+            onLoading {
+                _uiState.update { it.copy(isLike = null, isLoading = true) }
+            }
+            onSuccess {
+                _uiState.update { it.copy(isLike = null, isLoading = false) }
+            }
+            onFailure(::handleFailure)
+        }
+    }
+
 
     private fun showOriginal(id: Int) = viewModelScope.launch {
         showOriginalUseCase(id).handle {

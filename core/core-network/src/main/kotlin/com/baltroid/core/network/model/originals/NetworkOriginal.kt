@@ -44,6 +44,7 @@ data class NetworkOriginal(
     @SerialName("hashtag")
     val hashtag: String,
     @SerialName("seasons")
-    val seasons: List<NetworkSeason>?
+    val seasons: List<NetworkSeason>?,
+    var dataCount: Int = 0
 )
 

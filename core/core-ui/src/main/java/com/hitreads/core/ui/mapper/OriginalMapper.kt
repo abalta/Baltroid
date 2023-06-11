@@ -32,7 +32,8 @@ fun OriginalModel.asOriginal() = Original(
     tags = tags.map { it.asTag() },
     subtitle = subtitle,
     episodeCount = episodeCount,
-    seasons = seasons.map { it.asSeason() }
+    seasons = seasons.map { it.asSeason() },
+    dataCount = dataCount
 )
 
 fun AuthorModel.asAuthor() = Author(

@@ -7,8 +7,9 @@ import com.hitreads.core.domain.model.OriginalModel
 import kotlinx.coroutines.flow.Flow
 
 interface OriginalRepository {
-    fun getOriginals(): Flow<PagingData<OriginalModel>>
+    fun getOriginals(filter: String? = null): Flow<PagingData<OriginalModel>>
     fun likeOriginal(originalId: Int): Flow<BaltroidResult<Unit?>>
+    fun unlikeOriginal(originalId: Int): Flow<BaltroidResult<Unit?>>
     fun showOriginal(originalId: Int): Flow<BaltroidResult<OriginalModel>>
     fun showEpisode(episodeId: Int): Flow<BaltroidResult<EpisodeModel>>
 }

@@ -32,8 +32,8 @@ internal fun NetworkOriginal.asOriginalModel() = OriginalModel(
     tags = tags.map { it.asTagModel() },
     episodeCount = episodeCount,
     hashtag = hashtag,
-    seasons = seasons?.map { it.asSeasonModel() }.orEmpty()
-
+    seasons = seasons?.map { it.asSeasonModel() }.orEmpty(),
+    dataCount = dataCount
 )
 
 internal fun NetworkAuthor.asAuthorModel() = AuthorModel(

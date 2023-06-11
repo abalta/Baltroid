@@ -24,17 +24,22 @@ class OriginalRepositoryImpl @Inject constructor(
     private val networkDataSource: HitReadsNetworkDataSource
 ) : OriginalRepository {
 
-    override fun getOriginals(): Flow<PagingData<OriginalModel>> = Pager(
+    override fun getOriginals(filter: String?): Flow<PagingData<OriginalModel>> = Pager(
         config = defaultPagingConfig,
         pagingSourceFactory = {
             OriginalsPagingSource(
                 networkDataSource = networkDataSource,
+                filter
             )
         }
     ).flow
 
     override fun likeOriginal(originalId: Int): Flow<BaltroidResult<Unit?>> = networkBoundResource {
         networkDataSource.likeOriginal(originalId)
+    }
+
+    override fun unlikeOriginal(originalId: Int): Flow<BaltroidResult<Unit?>> = networkBoundResource {
+        networkDataSource.unlikeOriginal(originalId)
     }
 
     override fun showOriginal(originalId: Int): Flow<BaltroidResult<OriginalModel>> = flow {

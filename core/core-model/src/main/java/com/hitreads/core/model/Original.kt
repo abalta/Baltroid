@@ -19,5 +19,6 @@ data class Original(
     val hashtag: String,
     val subtitle: String,
     val episodeCount: Int,
-    val seasons: List<Season>
+    val seasons: List<Season>,
+    val dataCount: Int
 )

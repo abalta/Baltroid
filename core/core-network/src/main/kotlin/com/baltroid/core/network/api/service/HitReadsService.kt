@@ -9,6 +9,7 @@ import com.baltroid.core.network.model.response.LoginDto
 import com.baltroid.core.network.model.response.OriginalResponseDto
 import com.baltroid.core.network.util.Constants.DEFAULT_PAGE
 import com.baltroid.core.network.util.Constants.Fields.EMAIL
+import com.baltroid.core.network.util.Constants.Fields.FILTER_TAG
 import com.baltroid.core.network.util.Constants.Fields.PAGE
 import com.baltroid.core.network.util.Constants.Fields.PASSWORD
 import com.baltroid.core.network.util.Constants.Path.EPISODE
@@ -29,7 +30,8 @@ interface HitReadsService {
 
     @GET(ORIGINALS_INDEX)
     suspend fun getOriginals(
-        @Query(PAGE) page: Int = DEFAULT_PAGE
+        @Query(PAGE) page: Int = DEFAULT_PAGE,
+        @Query(FILTER_TAG) filter: String? = null
     ): BaltroidResult<HitReadsResponse<OriginalResponseDto>>
 
     @GET("$ORIGINALS_INDEX/{id}")
@@ -37,6 +39,9 @@ interface HitReadsService {
 
     @PUT("$ORIGINALS_INDEX/{id}/$LIKE")
     suspend fun likeOriginal(@Path("id") id: Int): BaltroidResult<HitReadsResponse<Unit>>
+
+    @PUT("$ORIGINALS_INDEX/{id}/$LIKE")
+    suspend fun unlikeOriginal(@Path("id") id: Int): BaltroidResult<HitReadsResponse<Unit>>
 
     @FormUrlEncoded
     @POST("$LOGIN")
