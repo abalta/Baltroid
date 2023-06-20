@@ -5,5 +5,6 @@ data class Episode(
     val name: String,
     val price: Int,
     val priceType: String,
-    val userPurchase: String
+    val userPurchase: String,
+    val content: String
 )
