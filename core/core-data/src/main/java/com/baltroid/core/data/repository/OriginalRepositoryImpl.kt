@@ -69,7 +69,8 @@ class OriginalRepositoryImpl @Inject constructor(
         when {
             response.isSuccess() -> {
                 response.value.data?.let {
-                    emit(BaltroidResult.success(it.episode.asEpisodeModel()))
+                    val episodeContent = fetchEpisodeFromUrl(it.episode.assetContent.orEmpty())
+                    emit(BaltroidResult.success(it.episode.asEpisodeModel(episodeContent)))
                 }
             }
 
@@ -81,5 +82,7 @@ class OriginalRepositoryImpl @Inject constructor(
             else -> error("$MESSAGE_UNHANDLED_STATE $response")
         }
     }
+
+    override fun fetchEpisodeFromUrl(url: String) = networkDataSource.fetchTextFromUrl(url)
 
 }

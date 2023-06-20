@@ -12,4 +12,5 @@ interface OriginalRepository {
     fun unlikeOriginal(originalId: Int): Flow<BaltroidResult<Unit?>>
     fun showOriginal(originalId: Int): Flow<BaltroidResult<OriginalModel>>
     fun showEpisode(episodeId: Int): Flow<BaltroidResult<EpisodeModel>>
+    fun fetchEpisodeFromUrl(url: String): String
 }

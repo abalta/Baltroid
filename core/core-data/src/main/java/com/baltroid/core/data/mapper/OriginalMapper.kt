@@ -56,12 +56,12 @@ internal fun NetworkSeason.asSeasonModel() = SeasonModel(
     episodes = episodes.map { it.asEpisodeModel() }
 )
 
-internal fun NetworkEpisode.asEpisodeModel() = EpisodeModel(
+internal fun NetworkEpisode.asEpisodeModel(episodeContent: String = "") = EpisodeModel(
     id = id,
     name = episodeName,
     price = price,
     priceType = priceType,
     userPurchase = userPurchase,
-    assetContents = assetContent
+    assetContents = episodeContent
 )
 
