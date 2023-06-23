@@ -8,7 +8,9 @@ data class NetworkTag(
     @SerialName("id")
     val id: Int,
     @SerialName("name")
-    val name: String,
+    val name: String?,
+    @SerialName("title")
+    val title: String?,
     @SerialName("icon")
     val icon: String
 )

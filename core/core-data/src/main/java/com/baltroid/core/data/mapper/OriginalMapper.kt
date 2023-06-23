@@ -48,7 +48,7 @@ internal fun NetworkUserData.asUserDataModel() = UserDataModel(
 )
 
 internal fun NetworkTag.asTagModel() = TagModel(
-    id, name, icon
+    id, name ?: title.orEmpty(), icon
 )
 
 internal fun NetworkSeason.asSeasonModel() = SeasonModel(
@@ -57,7 +57,10 @@ internal fun NetworkSeason.asSeasonModel() = SeasonModel(
     episodes = episodes.map { it.asEpisodeModel() }
 )
 
-internal fun NetworkEpisode.asEpisodeModel(episodeContent: String = "", xmlContent: XmlContent? = null) = EpisodeModel(
+internal fun NetworkEpisode.asEpisodeModel(
+    episodeContent: String = "",
+    xmlContent: XmlContent? = null
+) = EpisodeModel(
     id = id,
     name = episodeName,
     price = price,
