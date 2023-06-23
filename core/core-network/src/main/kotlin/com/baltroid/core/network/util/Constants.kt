@@ -49,6 +49,7 @@ internal object Constants {
         internal const val WALLET = "wallet"
         internal const val FILTER_TAG = "filter_tag"
         internal const val EPISODE = "episode"
+        internal const val DIALOGUE = "dialogue"
         internal const val REPUTATION = "reputation"
 
         private fun buildAppendToResponse(vararg fields: String) =

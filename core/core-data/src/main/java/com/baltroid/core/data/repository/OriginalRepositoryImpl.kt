@@ -6,15 +6,18 @@ import com.baltroid.core.common.result.BaltroidResult
 import com.baltroid.core.common.result.isFailure
 import com.baltroid.core.common.result.isSuccess
 import com.baltroid.core.data.mapper.asEpisodeModel
-import com.baltroid.core.data.mapper.asLoginModel
 import com.baltroid.core.data.mapper.asOriginalModel
 import com.baltroid.core.data.paging.OriginalsPagingSource
 import com.baltroid.core.data.util.defaultPagingConfig
 import com.baltroid.core.network.common.networkBoundResource
 import com.baltroid.core.network.source.HitReadsNetworkDataSource
 import com.baltroid.core.network.util.MESSAGE_UNHANDLED_STATE
+import com.github.underscore.U
+import com.google.gson.Gson
 import com.hitreads.core.domain.model.EpisodeModel
 import com.hitreads.core.domain.model.OriginalModel
+import com.hitreads.core.domain.model.OriginalType
+import com.hitreads.core.domain.model.XmlContent
 import com.hitreads.core.domain.repository.OriginalRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -62,7 +65,7 @@ class OriginalRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun showEpisode(episodeId: Int): Flow<BaltroidResult<EpisodeModel>> = flow {
+    override fun showEpisode(episodeId: Int, type: String): Flow<BaltroidResult<EpisodeModel>> = flow {
         emit(BaltroidResult.loading())
         val response = networkDataSource.showEpisode(episodeId)
 
@@ -70,7 +73,12 @@ class OriginalRepositoryImpl @Inject constructor(
             response.isSuccess() -> {
                 response.value.data?.let {
                     val episodeContent = fetchEpisodeFromUrl(it.episode.assetContent.orEmpty())
-                    emit(BaltroidResult.success(it.episode.asEpisodeModel(episodeContent)))
+                    if (type == OriginalType.INTERACTIVE) {
+                        val xmlContent: XmlContent = Gson().fromJson(U.xmlToJson(episodeContent), XmlContent::class.java)
+                        emit(BaltroidResult.success(it.episode.asEpisodeModel(xmlContent = xmlContent)))
+                    } else {
+                        emit(BaltroidResult.success(it.episode.asEpisodeModel(episodeContent = episodeContent)))
+                    }
                 }
             }
 
@@ -83,6 +91,6 @@ class OriginalRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun fetchEpisodeFromUrl(url: String) = networkDataSource.fetchTextFromUrl(url)
+    override suspend fun fetchEpisodeFromUrl(url: String) = networkDataSource.fetchTextFromUrl(url)
 
 }

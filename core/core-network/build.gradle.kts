@@ -13,7 +13,6 @@ dependencies {
     implementation(libs.kotlinx.datetime)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.serialization.json)
-    implementation(libs.kotlinx.serialization.xml)
     implementation(libs.bundles.retrofit)
     implementation(libs.javax.inject)
 }

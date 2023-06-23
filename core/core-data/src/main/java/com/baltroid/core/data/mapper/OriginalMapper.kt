@@ -12,6 +12,7 @@ import com.hitreads.core.domain.model.OriginalModel
 import com.hitreads.core.domain.model.SeasonModel
 import com.hitreads.core.domain.model.TagModel
 import com.hitreads.core.domain.model.UserDataModel
+import com.hitreads.core.domain.model.XmlContent
 
 internal fun NetworkOriginal.asOriginalModel() = OriginalModel(
     type = type,
@@ -56,12 +57,13 @@ internal fun NetworkSeason.asSeasonModel() = SeasonModel(
     episodes = episodes.map { it.asEpisodeModel() }
 )
 
-internal fun NetworkEpisode.asEpisodeModel(episodeContent: String = "") = EpisodeModel(
+internal fun NetworkEpisode.asEpisodeModel(episodeContent: String = "", xmlContent: XmlContent? = null) = EpisodeModel(
     id = id,
     name = episodeName,
     price = price,
     priceType = priceType,
     userPurchase = userPurchase,
-    assetContents = episodeContent
+    assetContents = episodeContent,
+    xmlContents = xmlContent
 )
 

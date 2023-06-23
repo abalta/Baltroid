@@ -1,5 +1,9 @@
 package com.hitreads.core.domain.model
 
+import androidx.annotation.StringDef
+import com.hitreads.core.domain.model.OriginalType.Companion.INTERACTIVE
+import com.hitreads.core.domain.model.OriginalType.Companion.TEXT
+
 data class OriginalModel(
     val author: AuthorModel,
     val banner: String,
@@ -22,3 +26,12 @@ data class OriginalModel(
     val seasons: List<SeasonModel>,
     var dataCount: Int
 )
+
+@Retention(AnnotationRetention.SOURCE)
+@StringDef(INTERACTIVE, TEXT)
+annotation class OriginalType {
+    companion object {
+        const val INTERACTIVE = "INTERACTIVe"
+        const val TEXT = "TEXT"
+    }
+}

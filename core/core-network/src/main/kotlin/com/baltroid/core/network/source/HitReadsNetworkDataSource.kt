@@ -9,6 +9,8 @@ import com.baltroid.core.network.model.response.EpisodeResponseDto
 import com.baltroid.core.network.model.response.LoginDto
 import com.baltroid.core.network.model.response.OriginalResponseDto
 import com.baltroid.core.network.util.DEFAULT_PAGE
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -43,20 +45,22 @@ class HitReadsNetworkDataSource @Inject constructor(private val hitReadsService:
     suspend fun showEpisode(episodeId: Int): BaltroidResult<HitReadsResponse<EpisodeResponseDto>> =
         hitReadsService.showEpisode(episodeId)
 
-    fun fetchTextFromUrl(url: String): String {
-        val client = OkHttpClient.Builder().build()
-        val request = Request.Builder().url(url).build()
-        val response: Response
-        try {
-            response = client.newCall(request).execute()
-            val body: ResponseBody? = response.body
-            if (response.isSuccessful && body != null) {
-                return body.string()
-            } else {
-                throw IOException("Error fetching text from URL: ${response.code}")
+    suspend fun fetchTextFromUrl(url: String): String {
+        return withContext(Dispatchers.IO) {
+            val client = OkHttpClient.Builder().build()
+            val request = Request.Builder().url(url).build()
+            val response: Response
+            try {
+                response = client.newCall(request).execute()
+                val body: ResponseBody? = response.body
+                if (response.isSuccessful && body != null) {
+                    body.string()
+                } else {
+                    throw IOException("Error fetching text from URL: ${response.code}")
+                }
+            } catch (e: Exception) {
+                throw IOException("Error fetching text from URL: ${e.message}")
             }
-        } catch (e: Exception) {
-            throw IOException("Error fetching text from URL: ${e.message}")
         }
     }
 }
