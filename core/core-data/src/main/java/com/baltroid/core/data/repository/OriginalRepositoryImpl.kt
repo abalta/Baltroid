@@ -2,6 +2,7 @@ package com.baltroid.core.data.repository
 
 import androidx.paging.Pager
 import androidx.paging.PagingData
+import com.baltroid.core.common.model.XmlContent
 import com.baltroid.core.common.result.BaltroidResult
 import com.baltroid.core.common.result.isFailure
 import com.baltroid.core.common.result.isSuccess
@@ -17,7 +18,6 @@ import com.google.gson.Gson
 import com.hitreads.core.domain.model.EpisodeModel
 import com.hitreads.core.domain.model.OriginalModel
 import com.hitreads.core.domain.model.OriginalType
-import com.hitreads.core.domain.model.XmlContent
 import com.hitreads.core.domain.repository.OriginalRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

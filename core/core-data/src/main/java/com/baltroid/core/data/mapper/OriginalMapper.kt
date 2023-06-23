@@ -1,5 +1,6 @@
 package com.baltroid.core.data.mapper
 
+import com.baltroid.core.common.model.XmlContent
 import com.baltroid.core.network.model.author.NetworkAuthor
 import com.baltroid.core.network.model.originals.NetworkEpisode
 import com.baltroid.core.network.model.originals.NetworkOriginal
@@ -12,7 +13,6 @@ import com.hitreads.core.domain.model.OriginalModel
 import com.hitreads.core.domain.model.SeasonModel
 import com.hitreads.core.domain.model.TagModel
 import com.hitreads.core.domain.model.UserDataModel
-import com.hitreads.core.domain.model.XmlContent
 
 internal fun NetworkOriginal.asOriginalModel() = OriginalModel(
     type = type,

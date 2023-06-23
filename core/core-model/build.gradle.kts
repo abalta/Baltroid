@@ -4,4 +4,5 @@ plugins {
 
 dependencies {
     implementation(libs.androidx.annotation)
+    implementation(project(":core:core-common"))
 }

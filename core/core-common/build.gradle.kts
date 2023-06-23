@@ -5,4 +5,5 @@ plugins {
 dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.dagger.hilt.core)
+    implementation(libs.google.gson)
 }

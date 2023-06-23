@@ -46,4 +46,4 @@ fun TagModel.asTag() = Tag(id, name, icon)
 
 fun SeasonModel.asSeason() = Season(id, name, episodes.map { it.asEpisode() })
 
-fun EpisodeModel.asEpisode() = Episode(id, name, price, priceType, userPurchase.orEmpty(), assetContents.orEmpty())
+fun EpisodeModel.asEpisode() = Episode(id, name, price, priceType, userPurchase.orEmpty(), assetContents, xmlContents)
