@@ -1,41 +1,35 @@
 package com.baltroid.ui.navigation
 
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptionsBuilder
-import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import com.baltroid.apps.R
 import com.baltroid.presentation.screens.home.HomeViewModel
-import com.baltroid.presentation.screens.home.isLoading
+import com.baltroid.presentation.screens.menu.login.LoginViewModel
 import com.baltroid.ui.common.CroppedImage
-import com.baltroid.ui.common.SimpleImage
 import com.baltroid.ui.screens.home.HomeScreen
 import com.baltroid.ui.screens.home.detail.HomeDetailScreen
-import com.baltroid.ui.screens.home.detail.HomeDetailScreenState
 import com.baltroid.ui.screens.home.detail.HomeDetailViewModel
 import com.baltroid.ui.screens.home.filter.FilterScreen
 import com.baltroid.ui.screens.interactive.InteractiveScreen
 import com.baltroid.ui.screens.onboarding.OnboardingScreen
 import com.baltroid.ui.screens.onboarding.OnboardingScreenState
 import com.baltroid.ui.screens.reading.ReadingScreen
-import com.baltroid.ui.screens.reading.ReadingScreenState
 import com.baltroid.ui.theme.localColors
+import com.baltroid.util.orZero
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
@@ -49,9 +43,13 @@ fun HitReadsNavHost(
 ) {
 
     val homeDetailViewModel: HomeDetailViewModel = hiltViewModel()
-    var isLoading by remember {
+    val loginViewModel: LoginViewModel = hiltViewModel()
+    val homeViewModel: HomeViewModel = hiltViewModel()
+    val isLoading = remember {
         mutableStateOf(false)
     }
+    val isLogged = loginViewModel.uiStateIsLogged.collectAsStateWithLifecycle()
+        .value
 
     Box {
         AnimatedNavHost(
@@ -62,7 +60,7 @@ fun HitReadsNavHost(
                 .background(MaterialTheme.localColors.black)
         ) {
 
-            menuGraph(navController)
+            menuGraph(navController, loginViewModel)
 
             composable(
                 route = HitReadsScreens.OnboardingScreen.route
@@ -80,13 +78,9 @@ fun HitReadsNavHost(
             composable(
                 route = HitReadsScreens.HomeScreen.route
             ) {
-                val viewModel: HomeViewModel = hiltViewModel()
-                val uiStates = viewModel.uiState.collectAsStateWithLifecycle()
-                    .value
-
-                isLoading = uiStates.isLoading
                 HomeScreen(
-                    uiStates = uiStates.originals.collectAsLazyPagingItems(), openMenuScreen = openMenuScreen
+                    viewModel = homeViewModel,
+                    openMenuScreen = openMenuScreen,
                 ) { route, item ->
                     if (route == HitReadsScreens.HomeDetailScreen.route) {
                         homeDetailViewModel.setHomeDetailState(item)
@@ -97,40 +91,31 @@ fun HitReadsNavHost(
             composable(
                 route = HitReadsScreens.FilterScreen.route
             ) {
-                FilterScreen(applyFilter = {
-                    //navigate with item ids
-                }) {
+                FilterScreen(
+                    applyFilter = {
+                        //homeViewModel.loadFilteredOriginals(it)
+                        navController.popBackStack()
+                    }) {
                     navController.popBackStack()
                 }
             }
             composable(
                 route = HitReadsScreens.HomeDetailScreen.route
             ) {
-                val state = homeDetailViewModel.homeDetailState
-                    .collectAsStateWithLifecycle().value
-                state?.let {
-                    HomeDetailScreen(
-                        screenState = it,
-                        openMenuScreen = openMenuScreen,
-                    ) { route, itemId ->
-                        //todo navArgs
-                        navController.navigate(route)
-                    }
+                HomeDetailScreen(
+                    viewModel = homeDetailViewModel,
+                    openMenuScreen = openMenuScreen,
+                ) { route ->
+                    navController.navigate(route)
                 }
             }
             composable(
-                route = HitReadsScreens.ReadingScreen.route
-            ) {
-                val screenState = ReadingScreenState(
-                    bodyText = LoremIpsum(2000).values.joinToString(),
-                    title = "KİMSE GERÇEK DEĞİL",
-                    subtitle = "ZEYNEP SEY",
-                    numberOfComments = 12,
-                    numberOfViews = 4412,
-                    numberOfNotification = 14
-                )
+                route = HitReadsScreens.ReadingScreen.route.plus("/{id}"),
+                arguments = listOf(navArgument("id") { type = NavType.IntType })
+            ) { bacStackEntry ->
                 ReadingScreen(
-                    screenState = screenState, openMenuScreen = openMenuScreen
+                    originalId = bacStackEntry.arguments?.getInt("id").orZero(),
+                    openMenuScreen = openMenuScreen
                 )
             }
             composable(
@@ -141,7 +126,7 @@ fun HitReadsNavHost(
                 )
             }
         }
-        if (isLoading) {
+        if (isLoading.value) {
             HitReadsLoading()
         }
     }

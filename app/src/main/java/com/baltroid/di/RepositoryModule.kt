@@ -1,9 +1,11 @@
 package com.baltroid.di
 
 import com.baltroid.core.data.repository.AuthRepositoryImpl
+import com.baltroid.core.data.repository.CommentRepositoryImpl
 import com.baltroid.core.data.repository.OriginalRepositoryImpl
 import com.baltroid.core.data.repository.TagRepositoryImpl
 import com.hitreads.core.domain.repository.AuthRepository
+import com.hitreads.core.domain.repository.CommentRepository
 import com.hitreads.core.domain.repository.OriginalRepository
 import com.hitreads.core.domain.repository.TagRepository
 import dagger.Binds
@@ -26,5 +28,9 @@ interface RepositoryModule {
     @Binds
     @ViewModelScoped
     fun bindTagRepository(tagRepositoryImpl: TagRepositoryImpl): TagRepository
+
+    @Binds
+    @ViewModelScoped
+    fun bindCommentRepository(commentRepositoryImpl: CommentRepositoryImpl): CommentRepository
 
 }

@@ -34,6 +34,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,13 +47,15 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.baltroid.apps.R
 import com.baltroid.ui.common.CroppedImage
 import com.baltroid.ui.common.HorizontalSpacer
@@ -68,18 +71,45 @@ import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
+import com.baltroid.util.orEmpty
+import com.hitreads.core.domain.model.OriginalType
+import com.hitreads.core.model.Episode
 
 @Composable
 fun ReadingScreen(
-    screenState: ReadingScreenState,
+    originalId: Int,
+    viewModel: ReadingViewModel = hiltViewModel(),
     openMenuScreen: () -> Unit
 ) {
-    ReadingScreenContent(screenState = screenState, openMenuScreen)
+    val original = viewModel.uiState.collectAsStateWithLifecycle().value
+
+    LaunchedEffect(Unit) {
+        viewModel.showOriginal(originalId)
+    }
+
+    LaunchedEffect(original.original) {
+        if (original != null) {
+            viewModel.showEpisode(
+                760,
+                OriginalType.TEXT
+            )
+        }
+    }
+
+    ReadingScreenContent(
+        screenState = viewModel.uiState.collectAsStateWithLifecycle().value,
+        onLikeClick = {
+            if (it) viewModel.unlikeOriginal(originalId)
+            else viewModel.likeOriginal(originalId)
+        },
+        openMenuScreen
+    )
 }
 
 @Composable
 private fun ReadingScreenContent(
-    screenState: ReadingScreenState,
+    screenState: ReadingUiState,
+    onLikeClick: (Boolean) -> Unit,
     openMenuScreen: () -> Unit
 ) {
     val scrollState = rememberScrollState()
@@ -103,7 +133,7 @@ private fun ReadingScreenContent(
                 .navigationBarsPadding()
         ) {
             HitReadsPageHeader(
-                numberOfNotification = screenState.numberOfNotification,
+                numberOfNotification = 10,
                 onMenuClick = openMenuScreen
             )
             Row(
@@ -113,10 +143,12 @@ private fun ReadingScreenContent(
                     modifier = Modifier.weight(1f)
                 ) {
                     TitleSection(
-                        title = screenState.title,
-                        subtitle = screenState.subtitle,
+                        title = screenState.original?.title.orEmpty(),
+                        subtitle = screenState.original?.subtitle.orEmpty(),
                         isExpanded = !isSideBarVisible,
                         onDotsClick = { isSideBarVisible = !isSideBarVisible },
+                        isLiked = screenState.original?.userData?.isLike ?: false,
+                        onLikeClick = { onLikeClick(it) },
                         modifier = Modifier.padding(
                             top = MaterialTheme.localDimens.dp12,
                             start = MaterialTheme.localDimens.dp32
@@ -133,7 +165,7 @@ private fun ReadingScreenContent(
                         }
                         if (isReadingSection) {
                             ReadingSection(
-                                text = screenState.bodyText,
+                                text = screenState.episode?.content.orEmpty(),
                                 scrollState = scrollState,
                                 modifier = Modifier.padding(start = MaterialTheme.localDimens.dp12)
                             )
@@ -150,8 +182,8 @@ private fun ReadingScreenContent(
                 AnimatedVisibility(visible = isSideBarVisible) {
                     BoxWithConstraints {
                         HitReadsSideBar(
-                            numberOfViews = screenState.numberOfViews,
-                            numberOfComments = screenState.numberOfComments,
+                            numberOfViews = 10,
+                            numberOfComments = 10,
                             hasSmallHeight = maxHeight < MaterialTheme.localDimens.minSideBarHeight,
                             isCommentsSelected = !isReadingSection,
                             onDotsClick = { isSideBarVisible = !isSideBarVisible },
@@ -163,7 +195,10 @@ private fun ReadingScreenContent(
             }
             VerticalSpacer(height = MaterialTheme.localDimens.dp16)
             AnimatedVisibility(visible = if (isReadingSection) scrollState.isEpisodesVisible() else lazyScrollState.isEpisodesVisible()) {
-                EpisodeSection(paddingValues = PaddingValues(start = MaterialTheme.localDimens.dp32))
+                EpisodeSection(
+                    episodes = screenState.original?.seasons?.firstOrNull()?.episodes.orEmpty(),
+                    paddingValues = PaddingValues(start = MaterialTheme.localDimens.dp32)
+                )
             }
         }
         AnimatedVisibility(visible = isWriteCardShown, enter = fadeIn(), exit = fadeOut()) {
@@ -266,7 +301,9 @@ fun TitleSection(
     title: String,
     subtitle: String,
     isExpanded: Boolean,
+    isLiked: Boolean,
     onDotsClick: () -> Unit,
+    onLikeClick: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -277,12 +314,16 @@ fun TitleSection(
         ) {
             Titles(title = title, subtitle = subtitle, modifier = Modifier.weight(1f))
             SimpleIcon(
-                iconResId = R.drawable.ic_star,
-                tint = MaterialTheme.localColors.yellow,
-                modifier = Modifier.padding(
-                    top = MaterialTheme.localDimens.dp12,
-                    end = MaterialTheme.localDimens.dp15
-                )
+                iconResId = if (isLiked) R.drawable.ic_star else R.drawable.ic_star_outlined,
+                tint = if (isLiked) MaterialTheme.localColors.yellow else Color.Unspecified,
+                modifier = Modifier
+                    .padding(
+                        top = MaterialTheme.localDimens.dp12,
+                        end = MaterialTheme.localDimens.dp15
+                    )
+                    .clickable {
+                        onLikeClick(isLiked)
+                    }
             )
             if (isExpanded) {
                 HorizontalSpacer(width = MaterialTheme.localDimens.dp15)
@@ -296,7 +337,10 @@ fun TitleSection(
                 SimpleIcon(
                     iconResId = R.drawable.ic_menu,
                     modifier = Modifier
-                        .padding(top = MaterialTheme.localDimens.dp12, end = MaterialTheme.localDimens.dp20)
+                        .padding(
+                            top = MaterialTheme.localDimens.dp12,
+                            end = MaterialTheme.localDimens.dp20
+                        )
                         .clickable { onDotsClick.invoke() })
             }
 
@@ -342,6 +386,7 @@ fun ReadingSection(
 
 @Composable
 fun EpisodeSection(
+    episodes: List<Episode>,
     paddingValues: PaddingValues,
     modifier: Modifier = Modifier
 ) {
@@ -669,16 +714,6 @@ private fun LazyListState.isEpisodesVisible(): Boolean {
 @Preview
 @Composable
 fun ReadingScreenPreview() {
-    ReadingScreen(
-        screenState = ReadingScreenState(
-            bodyText = LoremIpsum(400).values.joinToString(),
-            title = "KİMSE GERÇEK DEĞİL",
-            subtitle = "ZEYNEP SEY",
-            numberOfComments = 12,
-            numberOfViews = 4412,
-            numberOfNotification = 14
-        ),
-        openMenuScreen = {}
-    )
+
 }
 

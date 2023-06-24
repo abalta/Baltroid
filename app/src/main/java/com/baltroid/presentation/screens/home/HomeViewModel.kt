@@ -21,12 +21,33 @@ class HomeViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState = _uiState.asStateFlow()
 
+    private val _uiStateFavorites = MutableStateFlow(HomeUiState())
+    val uiStateFavorites = _uiStateFavorites.asStateFlow()
+
     init {
         loadOriginals()
+        loadFavoriteOriginals()
     }
 
     private fun loadOriginals() = _uiState.update {
         val originals = getOriginalsUseCase().pagingMap(OriginalModel::asOriginal)
+            .cachedIn(viewModelScope)
+
+        it.copy(
+            originals = originals
+        )
+    }
+
+    fun loadFilteredOriginals(filter: String) = _uiState.update {
+        val originals = getOriginalsUseCase(filter = filter).pagingMap(OriginalModel::asOriginal)
+            .cachedIn(viewModelScope)
+        it.copy(
+            originals = originals
+        )
+    }
+
+    private fun loadFavoriteOriginals() = _uiState.update {
+        val originals = getOriginalsUseCase(getByFav = true).pagingMap(OriginalModel::asOriginal)
             .cachedIn(viewModelScope)
 
         it.copy(

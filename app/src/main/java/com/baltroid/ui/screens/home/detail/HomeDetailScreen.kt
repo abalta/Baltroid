@@ -17,15 +17,13 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.baltroid.apps.R
-import com.baltroid.ui.common.CroppedImage
 import com.baltroid.ui.common.HorizontalSpacer
 import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.SimpleImage
@@ -36,20 +34,22 @@ import com.baltroid.ui.screens.home.GenreSection
 import com.baltroid.ui.screens.home.TitleSection
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
-import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
 import com.baltroid.util.conditional
+import com.baltroid.util.orEmpty
+import com.baltroid.util.orZero
 import com.hitreads.core.model.Original
 import com.hitreads.core.model.Tag
 
 @Composable
 fun HomeDetailScreen(
-    screenState: Original,
+    viewModel: HomeDetailViewModel,
     openMenuScreen: () -> Unit,
-    navigate: (route: String, itemId: Int) -> Unit
+    navigate: (route: String) -> Unit
 ) {
     HomeDetailScreenContent(
-        screenState = screenState,
+        screenState = viewModel.homeDetailState
+            .collectAsStateWithLifecycle().value,
         openMenuScreen = openMenuScreen,
         navigate = navigate
     )
@@ -57,9 +57,9 @@ fun HomeDetailScreen(
 
 @Composable
 private fun HomeDetailScreenContent(
-    screenState: Original,
+    screenState: Original?,
     openMenuScreen: () -> Unit,
-    navigate: (route: String, itemId: Int) -> Unit
+    navigate: (route: String) -> Unit
 ) {
 
     val verticalScrollState = rememberScrollState()
@@ -69,7 +69,7 @@ private fun HomeDetailScreenContent(
             .fillMaxSize()
     ) {
         AsyncImage(
-            model = screenState.banner,
+            model = screenState?.banner,
             contentDescription = null,
             fallback = painterResource(id = R.drawable.hitreads_placeholder),
             placeholder = painterResource(id = R.drawable.hitreads_placeholder),
@@ -97,30 +97,29 @@ private fun HomeDetailScreenContent(
 
         ) {
             Text(
-                text = screenState.hashtag,
+                text = screenState?.hashtag.orEmpty(),
                 style = MaterialTheme.localTextStyles.hashTag,
                 modifier = Modifier.padding(start = MaterialTheme.localDimens.dp17)
             )
             TitleSection(
-                author = screenState.author.name,
-                title = screenState.title,
-                subTitle = screenState.subtitle,
+                author = screenState?.author?.name.orEmpty(),
+                title = screenState?.title.orEmpty(),
+                subTitle = screenState?.subtitle.orEmpty(),
                 modifier = Modifier.padding(start = MaterialTheme.localDimens.dp23)
             )
             VerticalSpacer(height = MaterialTheme.localDimens.dp10_5)
             GenreAndInteractions(
-                episodeSize = screenState.episodeCount,
-                genres = screenState.tags,
+                episodeSize = screenState?.episodeCount.orZero(),
+                genres = screenState?.tags.orEmpty(),
                 numberOfViews = 99,
                 numberOfComments = 99
             )
             VerticalSpacer(height = MaterialTheme.localDimens.dp20_5)
             HomeDetailSummarySection(
-                summary = screenState.description,
+                summary = screenState?.description.orEmpty(),
                 modifier = Modifier.padding(start = MaterialTheme.localDimens.dp25)
             ) {
-                val id = 0
-                navigate.invoke(HitReadsScreens.ReadingScreen.route, id)
+                navigate.invoke(HitReadsScreens.ReadingScreen.route.plus("/${screenState?.id}"))
             }
             if (this@BoxWithConstraints.maxHeight < MaterialTheme.localDimens.minDetailScreenHeight) {
                 VerticalSpacer(height = MaterialTheme.localDimens.dp50)

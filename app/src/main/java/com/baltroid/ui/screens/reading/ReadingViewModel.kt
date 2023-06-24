@@ -27,13 +27,14 @@ class ReadingViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(ReadingUiState())
     val uiState = _uiState.asStateFlow()
 
+
     fun likeOriginal(id: Int) = viewModelScope.launch {
         likeOriginalUseCase(id).handle {
             onLoading {
                 _uiState.update { it.copy(isLike = null, isLoading = true) }
             }
             onSuccess {
-                _uiState.update { it.copy(isLike = null, isLoading = false) }
+                _uiState.update { it.copy(isLike = true, isLoading = false) }
             }
             onFailure(::handleFailure)
         }
@@ -45,14 +46,14 @@ class ReadingViewModel @Inject constructor(
                 _uiState.update { it.copy(isLike = null, isLoading = true) }
             }
             onSuccess {
-                _uiState.update { it.copy(isLike = null, isLoading = false) }
+                _uiState.update { it.copy(isLike = false, isLoading = false) }
             }
             onFailure(::handleFailure)
         }
     }
 
 
-    private fun showOriginal(id: Int) = viewModelScope.launch {
+    fun showOriginal(id: Int) = viewModelScope.launch {
         showOriginalUseCase(id).handle {
             onLoading { originalModel ->
                 _uiState.update { it.copy(original = originalModel?.asOriginal(), isLoading = true) }
@@ -63,9 +64,9 @@ class ReadingViewModel @Inject constructor(
             onFailure(::handleFailure)
         }
     }
-
-    fun showEpisode(id: Int) = viewModelScope.launch {
-        showEpisodeUseCase(id).handle {
+    // 761 OriginalType.INTERACTIVE
+    fun showEpisode(id: Int, type: String) = viewModelScope.launch {
+        showEpisodeUseCase(id, type).handle {
             onLoading { episodeModel ->
                 _uiState.update { it.copy(episode = episodeModel?.asEpisode(), isLoading = true) }
             }

@@ -272,7 +272,7 @@ fun InteractiveScreenBottomSection(
                 HorizontalSpacer(width = MaterialTheme.localDimens.dp31)
                 Titles(title = "PENAH", subtitle = "GAMZE KARACA", modifier = Modifier.weight(1f))
                 SimpleIcon(
-                    iconResId = R.drawable.ic_start_outlined,
+                    iconResId = R.drawable.ic_star_outlined,
                     modifier = Modifier.align(Alignment.Bottom)
                 )
                 HorizontalSpacer(width = MaterialTheme.localDimens.dp19)

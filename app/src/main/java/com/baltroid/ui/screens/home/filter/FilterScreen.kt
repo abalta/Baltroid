@@ -2,12 +2,19 @@ package com.baltroid.ui.screens.home.filter
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -15,10 +22,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
-import androidx.constraintlayout.compose.ChainStyle
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.baltroid.apps.R
 import com.baltroid.ui.components.MenuBar
 import com.baltroid.ui.screens.menu.login.TextBetweenDividers
@@ -26,12 +33,17 @@ import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
+import com.hitreads.core.model.Tag
 
 @Composable
 fun FilterScreen(
     applyFilter: (selectedGenres: List<Int>) -> Unit,
     onBackClick: () -> Unit
 ) {
+    val viewModel: FilterViewModel = hiltViewModel()
+    val selectedIds = remember {
+        mutableStateListOf<Int>()
+    }
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -54,16 +66,19 @@ fun FilterScreen(
             }
         )
         GenreSection(
+            viewModel.uiState.collectAsStateWithLifecycle().value.tagUiModels,
+            selectedIds = selectedIds,
             modifier = Modifier.constrainAs(genreSection) {
-                start.linkTo(topBar.start, margin = localDimens.dp11)
-                end.linkTo(topBar.end, margin = localDimens.dp11)
-                top.linkTo(topBar.bottom, margin = localDimens.dp47)
-                width = Dimension.fillToConstraints
+                top.linkTo(topBar.bottom, localDimens.dp44)
+                start.linkTo(topBar.start)
+                end.linkTo(topBar.end)
+                width = Dimension.percent(0.7f)
             }
         )
         TextBetweenDividers(
             text = "Seçili Kategorilerde 24 Hikaye Var",
             textStyle = MaterialTheme.localTextStyles.filterScreenPinkText,
+            onClick = {},
             modifier = Modifier.constrainAs(info) {
                 bottom.linkTo(apply.top)
                 start.linkTo(parent.start)
@@ -73,138 +88,61 @@ fun FilterScreen(
         TextBetweenDividers(
             text = "SEÇİMLERE GÖRE LİSTELE",
             textStyle = MaterialTheme.localTextStyles.signInTextWhite,
+            onClick = { applyFilter.invoke(selectedIds) },
             modifier = Modifier
                 .constrainAs(apply) {
                     bottom.linkTo(bottomGuideLine)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                 }
-                .clickable { applyFilter.invoke(listOf()) }
         )
     }
 }
 
 @Composable
 private fun FilterScreenGenreItem(
-    text: String,
+    tag: Tag,
     isSelected: Boolean,
     modifier: Modifier = Modifier,
-    horizontalPadding: Dp = MaterialTheme.localDimens.default,
     selectedColor: Color = MaterialTheme.localColors.purple,
     unSelectedColor: Color = MaterialTheme.localColors.white_alpha05,
-    onClick: () -> Unit
+    onClick: (Int) -> Unit
 ) {
     Text(
-        text = text,
+        text = tag.name,
         textAlign = TextAlign.Center,
         style = MaterialTheme.localTextStyles.isStoryNewText,
         modifier = modifier
+            .clickable { onClick.invoke(tag.id) }
             .clip(MaterialTheme.localShapes.roundedDp4)
             .background(if (isSelected) selectedColor else unSelectedColor)
-            .padding(
-                vertical = MaterialTheme.localDimens.dp6, horizontal = horizontalPadding
-            )
+            .padding(vertical = MaterialTheme.localDimens.dp12_5)
     )
 }
 
 @Composable
 fun GenreSection(
+    tagList: List<Tag>,
+    selectedIds: SnapshotStateList<Int>,
     modifier: Modifier = Modifier
 ) {
-    ConstraintLayout(
+    LazyVerticalGrid(
+        columns = GridCells.Adaptive(MaterialTheme.localDimens.dp54_5),
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp8),
+        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp10),
         modifier = modifier
     ) {
-        val localDimens = MaterialTheme.localDimens
-        val (genre1, genre2, genre3, genre4, genre5, genre6, genre7, genre8, genre9, genre10, genre11, genre12) = createRefs()
-
-        createHorizontalChain(genre1, genre2, genre3, genre4, chainStyle = ChainStyle.SpreadInside)
-
-        FilterScreenGenreItem(text = stringResource(id = R.string.romantic),
-            isSelected = true,
-            horizontalPadding = MaterialTheme.localDimens.dp10,
-            modifier = Modifier.constrainAs(genre1) {
-                top.linkTo(parent.top)
-            }) {
-
+        items(tagList) { item ->
+            FilterScreenGenreItem(
+                tag = item, isSelected = selectedIds.contains(item.id)
+            ) { id ->
+                if (selectedIds.contains(id)) {
+                    selectedIds.remove(id)
+                }else {
+                    selectedIds.add(id)
+                }
+            }
         }
-        FilterScreenGenreItem(text = stringResource(id = R.string.teen),
-            isSelected = false,
-            horizontalPadding = MaterialTheme.localDimens.dp10,
-            modifier = Modifier.constrainAs(genre2) {
-                top.linkTo(genre1.top)
-            }) {}
-        FilterScreenGenreItem(text = stringResource(id = R.string.adventure),
-            isSelected = true,
-            horizontalPadding = MaterialTheme.localDimens.dp10,
-            modifier = Modifier.constrainAs(genre3) {
-                top.linkTo(genre1.top)
-            }) {}
-        FilterScreenGenreItem(text = stringResource(id = R.string.mystery),
-            isSelected = false,
-            horizontalPadding = MaterialTheme.localDimens.dp10,
-            modifier = Modifier.constrainAs(genre4) {
-                top.linkTo(genre1.top)
-            }) {}
-        FilterScreenGenreItem(text = stringResource(id = R.string.journey),
-            isSelected = true,
-            modifier = Modifier.constrainAs(genre5) {
-                start.linkTo(genre1.start)
-                end.linkTo(genre1.end)
-                top.linkTo(genre1.bottom, margin = localDimens.dp9)
-                width = Dimension.fillToConstraints
-            }) {}
-        FilterScreenGenreItem(text = stringResource(id = R.string.legend),
-            isSelected = false,
-            modifier = Modifier.constrainAs(genre6) {
-                start.linkTo(genre2.start)
-                end.linkTo(genre2.end)
-                top.linkTo(genre5.top)
-                width = Dimension.fillToConstraints
-            }) {}
-        FilterScreenGenreItem(text = stringResource(id = R.string.detective),
-            isSelected = true,
-            modifier = Modifier.constrainAs(genre7) {
-                start.linkTo(genre3.start)
-                end.linkTo(genre3.end)
-                top.linkTo(genre5.top)
-                width = Dimension.fillToConstraints
-            }) {}
-        FilterScreenGenreItem(text = stringResource(id = R.string.love),
-            isSelected = true,
-            modifier = Modifier.constrainAs(genre8) {
-                start.linkTo(genre4.start)
-                end.linkTo(genre4.end)
-                top.linkTo(genre5.top)
-                width = Dimension.fillToConstraints
-            }) {}
-        FilterScreenGenreItem(text = stringResource(id = R.string.high_school),
-            isSelected = false,
-            horizontalPadding = MaterialTheme.localDimens.dp16,
-            modifier = Modifier.constrainAs(genre9) {
-                start.linkTo(genre5.start)
-                top.linkTo(genre5.bottom, margin = localDimens.dp9)
-            }) {}
-        FilterScreenGenreItem(text = stringResource(id = R.string.sci_fi),
-            isSelected = true,
-            horizontalPadding = MaterialTheme.localDimens.dp10,
-            modifier = Modifier.constrainAs(genre10) {
-                end.linkTo(genre6.end)
-                top.linkTo(genre9.top)
-            }) {}
-        FilterScreenGenreItem(text = stringResource(id = R.string.space),
-            isSelected = true,
-            horizontalPadding = MaterialTheme.localDimens.dp14,
-            modifier = Modifier.constrainAs(genre11) {
-                start.linkTo(genre7.start)
-                top.linkTo(genre9.top)
-            }) {}
-        FilterScreenGenreItem(text = stringResource(id = R.string.funn),
-            isSelected = false,
-            horizontalPadding = MaterialTheme.localDimens.dp10,
-            modifier = Modifier.constrainAs(genre12) {
-                end.linkTo(genre8.end)
-                top.linkTo(genre9.top)
-            }) {}
     }
 }
 

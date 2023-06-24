@@ -24,7 +24,6 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -45,9 +44,12 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import com.baltroid.apps.R
+import com.baltroid.presentation.screens.home.HomeViewModel
 import com.baltroid.ui.common.HorizontalSpacer
 import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.VerticalSpacer
@@ -57,23 +59,33 @@ import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
-import com.baltroid.util.orEmpty
+import com.baltroid.util.orZero
 import com.hitreads.core.model.Original
 import com.hitreads.core.model.Tag
 
 @Composable
 fun HomeScreen(
-    uiStates: LazyPagingItems<Original>,
+    viewModel: HomeViewModel,
     openMenuScreen: () -> Unit,
     navigate: (route: String, item: Original?) -> Unit
 ) {
-    HomeScreenContent(uiStates = uiStates, openMenuScreen = openMenuScreen, navigate = navigate)
+    val uiStates = viewModel.uiState.collectAsStateWithLifecycle()
+        .value
+    val uiStatesFavorites = viewModel.uiStateFavorites.collectAsStateWithLifecycle()
+        .value
+    HomeScreenContent(
+        uiStates = uiStates.originals.collectAsLazyPagingItems(),
+        uiStatesFavorites = uiStatesFavorites.originals.collectAsLazyPagingItems(),
+        openMenuScreen = openMenuScreen,
+        navigate = navigate
+    )
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun HomeScreenContent(
     uiStates: LazyPagingItems<Original>,
+    uiStatesFavorites: LazyPagingItems<Original>,
     openMenuScreen: () -> Unit,
     navigate: (route: String, item: Original?) -> Unit
 ) {
@@ -99,7 +111,7 @@ private fun HomeScreenContent(
         HitReadsTopBar(
             iconResId = R.drawable.ic_bell_outlined,
             iconTint = MaterialTheme.localColors.white,
-            numberOfNotification = 12,
+            numberOfNotification = -1,
             onNotificationClick = {},
             onIconClick = {
                 navigate.invoke(HitReadsScreens.OnboardingScreen.route, null)
@@ -108,8 +120,8 @@ private fun HomeScreenContent(
         )
         VerticalSpacer(height = MaterialTheme.localDimens.dp18_5)
         HomeScreenTabs(
-            storiesSize = uiStates.itemCount,
-            favoritesSize = 12,
+            storiesSize = uiStates.itemSnapshotList.items.firstOrNull()?.dataCount.orZero(),
+            favoritesSize = uiStatesFavorites.itemSnapshotList.items.firstOrNull()?.dataCount.orZero(),
             selectedTab = tabState,
             modifier = Modifier.padding(start = MaterialTheme.localDimens.dp32)
         ) { selectedTab ->
@@ -119,18 +131,14 @@ private fun HomeScreenContent(
         Column(
             modifier = Modifier.verticalScroll(scrollState)
         ) {
-            if (tabState == HomeScreenTabs.AllStories) {
-                StoriesRow(
-                    state = pagerState,
-                    lazyPagingItems = uiStates,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.Start)
-                ) {
-                    navigate.invoke(HitReadsScreens.HomeDetailScreen.route, currentItem)
-                }
-            } else {
-                /*todo Favorites*/
+            StoriesRow(
+                state = pagerState,
+                lazyPagingItems = if (tabState == HomeScreenTabs.AllStories) uiStates else uiStatesFavorites,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.Start)
+            ) {
+                navigate.invoke(HitReadsScreens.HomeDetailScreen.route, currentItem)
             }
             VerticalSpacer(height = MaterialTheme.localDimens.dp28_5)
             if (uiStates.itemCount > 0) {
@@ -261,7 +269,7 @@ private fun StoriesRow(
         ) { page ->
             StoryImage(
                 imgUrl = lazyPagingItems[page]?.cover.toString(),
-                isNew = true,
+                isNew = lazyPagingItems[page]?.isNew ?: false,
                 onClick = { onClick.invoke() }
             )
         }

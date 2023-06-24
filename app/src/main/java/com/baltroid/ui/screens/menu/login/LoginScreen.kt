@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.Divider
@@ -23,7 +23,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.baltroid.apps.R
+import com.baltroid.presentation.screens.menu.login.LoginViewModel
 import com.baltroid.ui.common.SimpleImage
 import com.baltroid.ui.common.VerticalSpacer
 import com.baltroid.ui.theme.localColors
@@ -32,16 +35,22 @@ import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
 
 @Composable
-fun LoginScreen() {
-    LoginScreenContent {
+fun LoginScreen(
+    viewModel: LoginViewModel
+) {
+    LoginScreenContent(
+        loginViewModel = viewModel
+    ) {
 
     }
 }
 
 @Composable
 fun LoginScreenContent(
+    loginViewModel: LoginViewModel,
     forgotPassword: () -> Unit
 ) {
+    val loginData = loginViewModel.uiStateLoginFields.collectAsStateWithLifecycle().value
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -65,15 +74,15 @@ fun LoginScreenContent(
         VerticalSpacer(height = MaterialTheme.localDimens.dp16)
         UserInputArea(
             title = R.string.email,
-            value = "",
-            onValueChange = {},
+            value = loginData.email ?: "",
+            onValueChange = loginViewModel::updateEmail,
             modifier = Modifier.fillMaxWidth(0.7f)
         )
         VerticalSpacer(height = MaterialTheme.localDimens.dp20)
         UserInputArea(
             title = R.string.password,
-            value = "",
-            onValueChange = {},
+            value = loginData.password ?: "",
+            onValueChange = loginViewModel::updatePassword,
             modifier = Modifier.fillMaxWidth(0.7f)
         )
         VerticalSpacer(height = MaterialTheme.localDimens.dp36)
@@ -88,11 +97,13 @@ fun LoginScreenContent(
         ) {
             TextBetweenDividers(
                 text = stringResource(id = R.string.sign_in),
-                textStyle = MaterialTheme.localTextStyles.signInTextWhite
+                textStyle = MaterialTheme.localTextStyles.signInTextWhite,
+                onClick = { loginViewModel.login() }
             )
             TextBetweenDividers(
                 text = stringResource(id = R.string.sign_up),
-                textStyle = MaterialTheme.localTextStyles.signUpTextOrange
+                textStyle = MaterialTheme.localTextStyles.signUpTextOrange,
+                onClick = {}
             )
         }
     }
@@ -119,15 +130,17 @@ fun UserInputArea(
             onValueChange = onValueChange,
             textStyle = MaterialTheme.localTextStyles.profileScreenUserInfo,
             cursorBrush = SolidColor(MaterialTheme.localColors.white),
+            maxLines = 1,
+            singleLine = true,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(MaterialTheme.localDimens.dp43)
                 .clip(MaterialTheme.localShapes.roundedDp11_5)
                 .border(
                     width = MaterialTheme.localDimens.dp1,
                     color = MaterialTheme.localColors.white_alpha05,
                     shape = MaterialTheme.localShapes.roundedDp11_5
                 )
+                .padding(MaterialTheme.localDimens.dp10)
         )
     }
 }
@@ -136,10 +149,11 @@ fun UserInputArea(
 fun TextBetweenDividers(
     text: String,
     textStyle: TextStyle,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier,
+        modifier = modifier.clickable { onClick() },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Divider(
@@ -161,6 +175,6 @@ fun TextBetweenDividers(
 @Preview(widthDp = 360, heightDp = 540)
 @Composable
 fun LoginScreenPreview() {
-    LoginScreen()
+    LoginScreen(hiltViewModel())
 }
 

@@ -27,7 +27,7 @@ class BaltroidActivity : ComponentActivity() {
         setContent {
             val viewmodel: LoginViewModel = hiltViewModel()
             LaunchedEffect(Unit) {
-                viewmodel.login("demo@kitapkulubu.test","password")
+                viewmodel.loginTest("demo@kitapkulubu.test","password")
             }
             HitReadsTheme {
                 HitReadsNavHost(

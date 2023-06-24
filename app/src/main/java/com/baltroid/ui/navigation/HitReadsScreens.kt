@@ -14,6 +14,7 @@ sealed class HitReadsScreens(val route: String) {
     object ShopScreen : HitReadsScreens("shop")
     object AuthorScreen : HitReadsScreens("author")
     object FilterScreen : HitReadsScreens("filter")
+    object LoginScreen : HitReadsScreens("login")
 }
 
 enum class HitReadsGraphs(val route: String) {

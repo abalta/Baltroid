@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,31 +36,198 @@ import com.baltroid.ui.common.CroppedImage
 import com.baltroid.ui.common.HorizontalSpacer
 import com.baltroid.ui.common.RoundedIconCard
 import com.baltroid.ui.common.SimpleIcon
+import com.baltroid.ui.common.SimpleImage
 import com.baltroid.ui.common.VerticalSpacer
 import com.baltroid.ui.navigation.HitReadsScreens
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
+import com.baltroid.util.conditional
 
 @Composable
 fun MenuScreen(
     menuScreenState: MenuScreenState,
     onBackClick: () -> Unit,
+    isLoggedIn: Boolean,
     navigate: (route: String) -> Unit,
 ) {
-    MenuScreenContent(
-        balance = menuScreenState.diamondBalance,
-        currentUserName = menuScreenState.currentUserName,
-        imgUrl = menuScreenState.imgUrl,
-        scrollState = rememberScrollState(),
-        onBackClick = onBackClick,
-        navigate = navigate
-    )
+    if (isLoggedIn) {
+        MenuScreenLoggedInContent(
+            balance = menuScreenState.diamondBalance,
+            currentUserName = menuScreenState.currentUserName,
+            imgUrl = menuScreenState.imgUrl,
+            scrollState = rememberScrollState(),
+            onBackClick = onBackClick,
+            navigate = navigate
+        )
+    } else {
+        MenuScreenGuestContent(
+            balance = menuScreenState.diamondBalance,
+            currentUserName = menuScreenState.currentUserName,
+            imgUrl = menuScreenState.imgUrl,
+            scrollState = rememberScrollState(),
+            onBackClick = onBackClick,
+            navigate = navigate
+        )
+    }
 }
 
 @Composable
-private fun MenuScreenContent(
+fun MenuScreenGuestContent(
+    balance: Int,
+    currentUserName: String,
+    imgUrl: String,
+    scrollState: ScrollState,
+    onBackClick: () -> Unit,
+    navigate: (route: String) -> Unit
+) {
+    BoxWithConstraints(
+        modifier = Modifier
+            .background(MaterialTheme.localColors.black)
+    ) {
+        ConstraintLayout(
+            modifier = Modifier
+                .fillMaxSize()
+                .systemBarsPadding()
+        ) {
+            val (
+                diamond, image, name,
+                profileButton, close, divider,
+                scrollSection, themeButtons
+            ) = createRefs()
+
+            val bottomGuideLine = createGuidelineFromBottom(0.075f)
+            val localDimens = MaterialTheme.localDimens
+
+            RoundedIconCard(
+                text = "0",
+                iconResId = R.drawable.ic_diamond,
+                modifier = Modifier
+                    .constrainAs(diamond) {
+                        end.linkTo(image.start, margin = localDimens.dp23)
+                        top.linkTo(image.top)
+                        bottom.linkTo(image.bottom)
+                    }
+                    .clickable {
+                        navigate.invoke(HitReadsScreens.ShopScreen.route)
+                    }
+            )
+            SimpleImage(
+                imgResId = R.drawable.ic_member,
+                modifier = Modifier
+                    .constrainAs(image) {
+                        top.linkTo(parent.top, margin = localDimens.dp36)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
+                    .size(MaterialTheme.localDimens.dp111)
+                    .clip(MaterialTheme.localShapes.circleShape)
+            )
+            Text(
+                text = stringResource(id = R.string.member_login),
+                style = MaterialTheme.localTextStyles.subtitleGrotesk,
+                modifier = Modifier
+                    .constrainAs(profileButton) {
+                        top.linkTo(image.bottom, margin = localDimens.dp26)
+                        start.linkTo(image.start)
+                        end.linkTo(image.end)
+                    }
+                    .border(MaterialTheme.localDimens.dp1, MaterialTheme.localColors.white, MaterialTheme.localShapes.roundedDp4)
+                    .clip(MaterialTheme.localShapes.roundedDp4)
+                    .background(MaterialTheme.localColors.black)
+                    .clickable {
+                        navigate.invoke(HitReadsScreens.LoginScreen.route)//todo
+                    }
+                    .padding(
+                        vertical = MaterialTheme.localDimens.dp6,
+                        horizontal = MaterialTheme.localDimens.dp20
+                    )
+            )
+            SimpleIcon(
+                iconResId = R.drawable.ic_close, modifier = Modifier
+                    .constrainAs(close) {
+                        end.linkTo(parent.end, margin = localDimens.dp42)
+                        top.linkTo(image.top)
+                    }
+                    .clickable { onBackClick.invoke() }
+            )
+            Divider(
+                color = MaterialTheme.localColors.white,
+                thickness = MaterialTheme.localDimens.dp0_5,
+                modifier = Modifier.constrainAs(divider) {
+                    top.linkTo(profileButton.bottom, margin = localDimens.dp20)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    width = Dimension.percent(0.8f)
+                }
+            )
+            Column(
+                verticalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp16),
+                modifier = Modifier
+                    .constrainAs(scrollSection) {
+                        top.linkTo(divider.bottom, margin = localDimens.dp16)
+                        start.linkTo(divider.start)
+                        end.linkTo(divider.end)
+                        bottom.linkTo(themeButtons.top, margin = localDimens.dp16)
+                        width = Dimension.fillToConstraints
+                        height = Dimension.fillToConstraints
+                    }
+                    .verticalScroll(scrollState)
+
+            ) {
+                MenuItem(
+                    title = stringResource(id = R.string.all_stories_text),
+                    iconResId = R.drawable.ic_open_book,
+                    isEnabled = true,
+                    modifier = Modifier
+                ) {}
+                MenuItem(
+                    title = stringResource(id = R.string.place_marks),
+                    iconResId = R.drawable.ic_banner_filled,
+                    isEnabled = false,
+                    modifier = Modifier
+                ) {
+                    navigate.invoke(HitReadsScreens.PlaceMarksScreen.route)
+                }
+                MenuItem(
+                    title = stringResource(id = R.string.favorites),
+                    iconResId = R.drawable.ic_star,
+                    isEnabled = false,
+                    modifier = Modifier
+                ) {
+                    navigate.invoke(HitReadsScreens.FavoritesScreen.route)
+                }
+                MenuItem(
+                    title = stringResource(id = R.string.comments),
+                    iconResId = R.drawable.ic_chat_filled,
+                    isEnabled = false,
+                    modifier = Modifier
+                ) {}
+                MenuItem(
+                    title = stringResource(id = R.string.settings),
+                    iconResId = R.drawable.ic_settings,
+                    isEnabled = true,
+                    modifier = Modifier
+                ) {
+                    navigate.invoke(HitReadsScreens.SettingsScreen.route)
+                }
+            }
+            ThemeButtons(
+                modifier = Modifier
+                    .constrainAs(themeButtons) {
+                        bottom.linkTo(bottomGuideLine)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
+            )
+        }
+    }
+
+}
+
+@Composable
+private fun MenuScreenLoggedInContent(
     balance: Int,
     currentUserName: String,
     imgUrl: String,
@@ -172,11 +340,13 @@ private fun MenuScreenContent(
                 MenuItem(
                     title = stringResource(id = R.string.all_stories_text),
                     iconResId = R.drawable.ic_open_book,
+                    isEnabled = true,
                     modifier = Modifier
                 ) {}
                 MenuItem(
                     title = stringResource(id = R.string.place_marks),
                     iconResId = R.drawable.ic_banner_filled,
+                    isEnabled = true,
                     modifier = Modifier
                 ) {
                     navigate.invoke(HitReadsScreens.PlaceMarksScreen.route)
@@ -184,6 +354,7 @@ private fun MenuScreenContent(
                 MenuItem(
                     title = stringResource(id = R.string.favorites),
                     iconResId = R.drawable.ic_star,
+                    isEnabled = true,
                     modifier = Modifier
                 ) {
                     navigate.invoke(HitReadsScreens.FavoritesScreen.route)
@@ -191,11 +362,13 @@ private fun MenuScreenContent(
                 MenuItem(
                     title = stringResource(id = R.string.comments),
                     iconResId = R.drawable.ic_chat_filled,
+                    isEnabled = true,
                     modifier = Modifier
                 ) {}
                 MenuItem(
                     title = stringResource(id = R.string.settings),
                     iconResId = R.drawable.ic_settings,
+                    isEnabled = true,
                     modifier = Modifier
                 ) {
                     navigate.invoke(HitReadsScreens.SettingsScreen.route)
@@ -281,17 +454,21 @@ fun DarkThemeButton(
 fun MenuItem(
     title: String,
     @DrawableRes iconResId: Int,
+    isEnabled: Boolean,
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
     Column(
-        modifier = modifier.clickable { onClick.invoke() }
+        modifier = modifier.conditional(isEnabled) {
+            clickable { onClick.invoke() }
+        }
     ) {
         Box(
             modifier = Modifier.fillMaxWidth()
         ) {
             SimpleIcon(
                 iconResId = iconResId,
+                tint = if (!isEnabled) MaterialTheme.localColors.white_alpha03 else Color.Unspecified,
                 modifier = Modifier
                     .align(Alignment.CenterStart)
                     .padding(start = MaterialTheme.localDimens.dp11)
@@ -299,6 +476,7 @@ fun MenuItem(
             Text(
                 text = title,
                 style = MaterialTheme.localTextStyles.menuBarTitle,
+                color = if (!isEnabled) MaterialTheme.localColors.white_alpha03 else Color.Unspecified,
                 modifier = Modifier.align(Alignment.Center)
             )
         }
@@ -321,6 +499,7 @@ fun MenuScreenPreview() {
             "SELEN PEKMEZCİ",
             imgUrl = ""
         ),
+        isLoggedIn = false,
         onBackClick = {}
     ) {}
 }
