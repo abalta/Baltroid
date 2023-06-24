@@ -53,4 +53,9 @@
     <string name="space">UZAY</string>
     <string name="funn">EĞLENCE</string>
     <string name="send">GÖNDER</string>
+    <string name="new_user">YENİ ÜYELİK</string>
+    <string name="name_surname">ADI-SOYADI</string>
+    <string name="password_confirm">ŞİFRE TEKRAR</string>
+    <string name="save">KAYDET</string>
+    <string name="already_member">ZATEN ÜYEYİM</string>
 </resources>
