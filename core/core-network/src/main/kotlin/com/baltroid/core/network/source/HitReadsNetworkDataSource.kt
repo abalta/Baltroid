@@ -5,6 +5,7 @@ import com.baltroid.core.network.api.service.HitReadsService
 import com.baltroid.core.network.model.HitReadsResponse
 import com.baltroid.core.network.model.originals.NetworkOriginal
 import com.baltroid.core.network.model.originals.NetworkTag
+import com.baltroid.core.network.model.response.CommentDto
 import com.baltroid.core.network.model.response.EpisodeResponseDto
 import com.baltroid.core.network.model.response.LoginDto
 import com.baltroid.core.network.model.response.OriginalResponseDto
@@ -45,6 +46,8 @@ class HitReadsNetworkDataSource @Inject constructor(private val hitReadsService:
 
     suspend fun showEpisode(episodeId: Int): BaltroidResult<HitReadsResponse<EpisodeResponseDto>> =
         hitReadsService.showEpisode(episodeId)
+
+    suspend fun getComments(type: String, id: Int): BaltroidResult<HitReadsResponse<List<CommentDto>>> = hitReadsService.getComments(type, id)
 
     suspend fun fetchTextFromUrl(url: String): String {
         return withContext(Dispatchers.IO) {

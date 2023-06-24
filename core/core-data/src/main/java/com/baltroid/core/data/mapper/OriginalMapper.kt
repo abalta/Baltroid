@@ -6,8 +6,10 @@ import com.baltroid.core.network.model.originals.NetworkEpisode
 import com.baltroid.core.network.model.originals.NetworkOriginal
 import com.baltroid.core.network.model.originals.NetworkSeason
 import com.baltroid.core.network.model.originals.NetworkTag
+import com.baltroid.core.network.model.response.CommentDto
 import com.baltroid.core.network.model.user.NetworkUserData
 import com.hitreads.core.domain.model.AuthorModel
+import com.hitreads.core.domain.model.CommentModel
 import com.hitreads.core.domain.model.EpisodeModel
 import com.hitreads.core.domain.model.OriginalModel
 import com.hitreads.core.domain.model.SeasonModel
@@ -69,5 +71,18 @@ internal fun NetworkEpisode.asEpisodeModel(
     userPurchase = userPurchase,
     assetContents = episodeContent,
     xmlContents = xmlContent
+)
+
+internal fun CommentDto.asCommentModel() = CommentModel(
+    activeUserLike = activeUserLike ?: false,
+    author = AuthorModel(id = 0, name = ""),
+    content = content.orEmpty(),
+    createdAt = createdAt.orEmpty(),
+    id = id ?: 0,
+    isReply = isReply ?: false,
+    likesCount = likesCount ?: 0,
+    repliesCount = repliesCount ?: 0,
+    replyCommentId = replyCommentId ?: 0
+
 )
 

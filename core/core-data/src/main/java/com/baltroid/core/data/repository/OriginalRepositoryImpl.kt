@@ -27,24 +27,22 @@ class OriginalRepositoryImpl @Inject constructor(
     private val networkDataSource: HitReadsNetworkDataSource
 ) : OriginalRepository {
 
-    override fun getOriginals(filter: String?, getByFav: Boolean?): Flow<PagingData<OriginalModel>> = Pager(
-        config = defaultPagingConfig,
-        pagingSourceFactory = {
-            OriginalsPagingSource(
-                networkDataSource = networkDataSource,
-                filter,
-                getByFav
-            )
-        }
-    ).flow
+    override fun getOriginals(
+        filter: String?, getByFav: Boolean?
+    ): Flow<PagingData<OriginalModel>> = Pager(config = defaultPagingConfig, pagingSourceFactory = {
+        OriginalsPagingSource(
+            networkDataSource = networkDataSource, filter, getByFav
+        )
+    }).flow
 
     override fun likeOriginal(originalId: Int): Flow<BaltroidResult<Unit?>> = networkBoundResource {
         networkDataSource.likeOriginal(originalId)
     }
 
-    override fun unlikeOriginal(originalId: Int): Flow<BaltroidResult<Unit?>> = networkBoundResource {
-        networkDataSource.unlikeOriginal(originalId)
-    }
+    override fun unlikeOriginal(originalId: Int): Flow<BaltroidResult<Unit?>> =
+        networkBoundResource {
+            networkDataSource.unlikeOriginal(originalId)
+        }
 
     override fun showOriginal(originalId: Int): Flow<BaltroidResult<OriginalModel>> = flow {
         emit(BaltroidResult.loading())
@@ -66,31 +64,33 @@ class OriginalRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun showEpisode(episodeId: Int, type: String): Flow<BaltroidResult<EpisodeModel>> = flow {
-        emit(BaltroidResult.loading())
-        val response = networkDataSource.showEpisode(episodeId)
+    override fun showEpisode(episodeId: Int, type: String): Flow<BaltroidResult<EpisodeModel>> =
+        flow {
+            emit(BaltroidResult.loading())
+            val response = networkDataSource.showEpisode(episodeId)
 
-        when {
-            response.isSuccess() -> {
-                response.value.data?.let {
-                    val episodeContent = fetchEpisodeFromUrl(it.episode.assetContent.orEmpty())
-                    if (type == OriginalType.INTERACTIVE) {
-                        val xmlContent: XmlContent = Gson().fromJson(U.xmlToJson(episodeContent), XmlContent::class.java)
-                        emit(BaltroidResult.success(it.episode.asEpisodeModel(xmlContent = xmlContent)))
-                    } else {
-                        emit(BaltroidResult.success(it.episode.asEpisodeModel(episodeContent = episodeContent)))
+            when {
+                response.isSuccess() -> {
+                    response.value.data?.let {
+                        val episodeContent = fetchEpisodeFromUrl(it.episode.assetContent.orEmpty())
+                        if (type == OriginalType.INTERACTIVE) {
+                            val xmlContent: XmlContent =
+                                Gson().fromJson(U.xmlToJson(episodeContent), XmlContent::class.java)
+                            emit(BaltroidResult.success(it.episode.asEpisodeModel(xmlContent = xmlContent)))
+                        } else {
+                            emit(BaltroidResult.success(it.episode.asEpisodeModel(episodeContent = episodeContent)))
+                        }
                     }
                 }
-            }
 
-            response.isFailure() -> {
-                val throwable = response.error
-                emit(BaltroidResult.failure(throwable))
-            }
+                response.isFailure() -> {
+                    val throwable = response.error
+                    emit(BaltroidResult.failure(throwable))
+                }
 
-            else -> error("$MESSAGE_UNHANDLED_STATE $response")
+                else -> error("$MESSAGE_UNHANDLED_STATE $response")
+            }
         }
-    }
 
     override suspend fun fetchEpisodeFromUrl(url: String) = networkDataSource.fetchTextFromUrl(url)
 
