@@ -20,5 +20,6 @@ data class Original(
     val subtitle: String,
     val episodeCount: Int,
     val seasons: List<Season>,
+    val isNew: Boolean,
     val dataCount: Int
 )

@@ -24,6 +24,7 @@ data class OriginalModel(
     val episodeCount: Int,
     val hashtag: String,
     val seasons: List<SeasonModel>,
+    val isNew: Boolean,
     var dataCount: Int
 )
 

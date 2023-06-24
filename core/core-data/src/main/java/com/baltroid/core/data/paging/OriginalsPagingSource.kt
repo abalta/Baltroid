@@ -15,7 +15,8 @@ import java.io.IOException
 
 class OriginalsPagingSource(
     private val networkDataSource: HitReadsNetworkDataSource,
-    private val filter: String? = null
+    private val filter: String? = null,
+    private val getByFav: Boolean? = null
 ): PagingSource<Int, OriginalModel>() {
     override fun getRefreshKey(state: PagingState<Int, OriginalModel>) = state.anchorPosition
 
@@ -24,7 +25,8 @@ class OriginalsPagingSource(
             val currentPage = params.key ?: DEFAULT_PAGE
             val response = networkDataSource.getOriginals(
                 page = currentPage,
-                filter
+                filter,
+                getByFav
             )
 
             when {

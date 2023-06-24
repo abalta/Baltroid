@@ -34,6 +34,7 @@ internal fun NetworkOriginal.asOriginalModel() = OriginalModel(
     episodeCount = episodeCount,
     hashtag = hashtag,
     seasons = seasons?.map { it.asSeasonModel() }.orEmpty(),
+    isNew = isNew,
     dataCount = dataCount
 )
 

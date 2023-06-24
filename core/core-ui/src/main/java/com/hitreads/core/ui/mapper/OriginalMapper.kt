@@ -33,6 +33,7 @@ fun OriginalModel.asOriginal() = Original(
     subtitle = subtitle,
     episodeCount = episodeCount,
     seasons = seasons.map { it.asSeason() },
+    isNew = isNew,
     dataCount = dataCount
 )
 

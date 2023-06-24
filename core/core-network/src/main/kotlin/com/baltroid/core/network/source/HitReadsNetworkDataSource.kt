@@ -21,9 +21,10 @@ import javax.inject.Inject
 class HitReadsNetworkDataSource @Inject constructor(private val hitReadsService: HitReadsService) {
     suspend fun getOriginals(
         page: Int = DEFAULT_PAGE,
-        filter: String? = null
+        filter: String? = null,
+        getByFav: Boolean? = null
     ): BaltroidResult<HitReadsResponse<OriginalResponseDto>> =
-        hitReadsService.getOriginals(page, filter)
+        hitReadsService.getOriginals(page, filter, getByFav)
 
     suspend fun likeOriginal(
         originalId: Int

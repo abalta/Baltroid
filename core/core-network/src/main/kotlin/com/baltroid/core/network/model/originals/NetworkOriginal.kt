@@ -45,6 +45,8 @@ data class NetworkOriginal(
     val hashtag: String,
     @SerialName("seasons")
     val seasons: List<NetworkSeason>?,
+    @SerialName("is_new")
+    val isNew: Boolean,
     var dataCount: Int = 0
 )
 

@@ -27,12 +27,13 @@ class OriginalRepositoryImpl @Inject constructor(
     private val networkDataSource: HitReadsNetworkDataSource
 ) : OriginalRepository {
 
-    override fun getOriginals(filter: String?): Flow<PagingData<OriginalModel>> = Pager(
+    override fun getOriginals(filter: String?, getByFav: Boolean?): Flow<PagingData<OriginalModel>> = Pager(
         config = defaultPagingConfig,
         pagingSourceFactory = {
             OriginalsPagingSource(
                 networkDataSource = networkDataSource,
-                filter
+                filter,
+                getByFav
             )
         }
     ).flow

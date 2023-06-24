@@ -15,6 +15,7 @@ internal object Constants {
         internal const val TAG = "tag"
         internal const val EPISODE = "episode"
         internal const val SHOW = "show"
+        internal const val COMMENT = "comment"
     }
 
     internal object Fields {
@@ -51,6 +52,7 @@ internal object Constants {
         internal const val EPISODE = "episode"
         internal const val DIALOGUE = "dialogue"
         internal const val REPUTATION = "reputation"
+        internal const val GET_BY_FAV = "get_by_fav"
 
         private fun buildAppendToResponse(vararg fields: String) =
             fields.joinToString(separator = APPEND_TO_RESPONSE_SEPARATOR)

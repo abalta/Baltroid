@@ -4,14 +4,19 @@ import com.baltroid.core.common.result.BaltroidResult
 import com.baltroid.core.network.model.HitReadsResponse
 import com.baltroid.core.network.model.originals.NetworkOriginal
 import com.baltroid.core.network.model.originals.NetworkTag
+import com.baltroid.core.network.model.response.CommentDto
 import com.baltroid.core.network.model.response.EpisodeResponseDto
 import com.baltroid.core.network.model.response.LoginDto
 import com.baltroid.core.network.model.response.OriginalResponseDto
 import com.baltroid.core.network.util.Constants.DEFAULT_PAGE
 import com.baltroid.core.network.util.Constants.Fields.EMAIL
 import com.baltroid.core.network.util.Constants.Fields.FILTER_TAG
+import com.baltroid.core.network.util.Constants.Fields.GET_BY_FAV
+import com.baltroid.core.network.util.Constants.Fields.ID
 import com.baltroid.core.network.util.Constants.Fields.PAGE
 import com.baltroid.core.network.util.Constants.Fields.PASSWORD
+import com.baltroid.core.network.util.Constants.Fields.TYPE
+import com.baltroid.core.network.util.Constants.Path.COMMENT
 import com.baltroid.core.network.util.Constants.Path.EPISODE
 import com.baltroid.core.network.util.Constants.Path.LIKE
 import com.baltroid.core.network.util.Constants.Path.LOGIN
@@ -31,7 +36,8 @@ interface HitReadsService {
     @GET(ORIGINALS_INDEX)
     suspend fun getOriginals(
         @Query(PAGE) page: Int = DEFAULT_PAGE,
-        @Query(FILTER_TAG) filter: String? = null
+        @Query(FILTER_TAG) filter: String? = null,
+        @Query(GET_BY_FAV) getByFav: Boolean? = null
     ): BaltroidResult<HitReadsResponse<OriginalResponseDto>>
 
     @GET("$ORIGINALS_INDEX/{id}")
@@ -52,5 +58,9 @@ interface HitReadsService {
 
     @GET("$ORIGINALS_INDEX/$EPISODE/{id}/$SHOW")
     suspend fun showEpisode(@Path("id") id: Int): BaltroidResult<HitReadsResponse<EpisodeResponseDto>>
+
+    @FormUrlEncoded
+    @GET("$COMMENT")
+    suspend fun getComments(@Field("$TYPE") type: String, @Field("$ID") id: Int): BaltroidResult<HitReadsResponse<List<CommentDto>>>
 
 }
