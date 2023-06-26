@@ -54,6 +54,7 @@ class LoginViewModel @Inject constructor(
                 _uiState.update { state ->
                     state.copy(loginUiModel = it.asLogin(), isLoading = false)
                 }
+                _uiStateIsLogged.update { true }
             }
             onFailure(::handleFailure)
         }

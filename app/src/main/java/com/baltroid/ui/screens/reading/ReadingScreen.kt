@@ -184,6 +184,7 @@ private fun ReadingScreenContent(
                         HitReadsSideBar(
                             numberOfViews = 10,
                             numberOfComments = 10,
+                            hashTag = "#KGD",
                             hasSmallHeight = maxHeight < MaterialTheme.localDimens.minSideBarHeight,
                             isCommentsSelected = !isReadingSection,
                             onDotsClick = { isSideBarVisible = !isSideBarVisible },

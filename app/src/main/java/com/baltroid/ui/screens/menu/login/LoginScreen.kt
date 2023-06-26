@@ -15,6 +15,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,8 +37,16 @@ import com.baltroid.ui.theme.localTextStyles
 
 @Composable
 fun LoginScreen(
-    viewModel: LoginViewModel
+    viewModel: LoginViewModel,
+    onLoggedIn: () -> Unit
 ) {
+    val loginState = viewModel.uiState.collectAsStateWithLifecycle().value.loginUiModel
+    LaunchedEffect(loginState) {
+        if (loginState != null) {
+            onLoggedIn.invoke()
+        }
+    }
+
     LoginScreenContent(
         loginViewModel = viewModel
     ) {
@@ -175,6 +184,6 @@ fun TextBetweenDividers(
 @Preview(widthDp = 360, heightDp = 540)
 @Composable
 fun LoginScreenPreview() {
-    LoginScreen(hiltViewModel())
+    LoginScreen(hiltViewModel()) {}
 }
 

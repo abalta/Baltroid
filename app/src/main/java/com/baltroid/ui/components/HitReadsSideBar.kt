@@ -1,6 +1,7 @@
 package com.baltroid.ui.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -12,12 +13,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.baltroid.apps.R
 import com.baltroid.ui.common.IconWithTextBelow
 import com.baltroid.ui.common.SimpleIcon
@@ -31,6 +35,7 @@ fun HitReadsSideBar(
     modifier: Modifier = Modifier,
     numberOfViews: Int,
     numberOfComments: Int,
+    hashTag: String,
     hasSmallHeight: Boolean,
     isCommentsSelected: Boolean,
     onDotsClick: () -> Unit,
@@ -51,6 +56,7 @@ fun HitReadsSideBar(
                 numberOfComments = numberOfComments,
                 isCommentsSelected = isCommentsSelected,
                 onDotsClick = onDotsClick,
+                hashTag = hashTag,
                 onCommentsClick = onCommentsClick,
                 hasSmallHeight = hasSmallHeight, modifier = Modifier
                     .align(Alignment.TopCenter)
@@ -90,6 +96,7 @@ fun SideBarHorizontalDivider() {
 fun SideBarTopSection(
     modifier: Modifier = Modifier,
     numberOfViews: Int,
+    hashTag: String,
     numberOfComments: Int,
     hasSmallHeight: Boolean,
     isCommentsSelected: Boolean,
@@ -127,13 +134,16 @@ fun SideBarTopSection(
                 )
             )
             SideBarHorizontalDivider()
-            SimpleIcon(
-                iconResId = R.drawable.ic_hashtag,
-                modifier = Modifier.padding(
-                    vertical = MaterialTheme.localDimens.dp12,
-                    horizontal = MaterialTheme.localDimens.dp8
+            Column(
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.height(64.dp)
+            ) {
+                Text(
+                    text = hashTag,
+                    modifier = Modifier.rotate(-90f),
+                    style = MaterialTheme.localTextStyles.mediumTitle
                 )
-            )
+            }
         }
         SideBarHorizontalDivider()
         IconWithTextBelow(
@@ -225,6 +235,7 @@ fun HitReadsSideBarPreview() {
         onCommentsClick = {},
         isCommentsSelected = true,
         onDotsClick = {},
+        hashTag = "#KGD",
         addComment = {}
     )
 }

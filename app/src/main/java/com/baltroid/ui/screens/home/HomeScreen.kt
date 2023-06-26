@@ -27,6 +27,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -69,6 +70,10 @@ fun HomeScreen(
     openMenuScreen: () -> Unit,
     navigate: (route: String, item: Original?) -> Unit
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.loadOriginals()
+        viewModel.loadFavoriteOriginals()
+    }
     val uiStates = viewModel.uiState.collectAsStateWithLifecycle()
         .value
     val uiStatesFavorites = viewModel.uiStateFavorites.collectAsStateWithLifecycle()

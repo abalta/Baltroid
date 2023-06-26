@@ -3,6 +3,8 @@ package com.baltroid.ui.screens.reading
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.baltroid.core.common.result.handle
+import com.hitreads.core.domain.model.CommentModel
+import com.hitreads.core.domain.usecase.GetCommentsUseCase
 import com.hitreads.core.domain.usecase.LikeOriginalUseCase
 import com.hitreads.core.domain.usecase.ShowEpisodeUseCase
 import com.hitreads.core.domain.usecase.ShowOriginalUseCase
@@ -21,12 +23,15 @@ class ReadingViewModel @Inject constructor(
     private val likeOriginalUseCase: LikeOriginalUseCase,
     private val unlikeOriginalUseCase: UnlikeOriginalUseCase,
     private val showOriginalUseCase: ShowOriginalUseCase,
-    private val showEpisodeUseCase: ShowEpisodeUseCase
+    private val showEpisodeUseCase: ShowEpisodeUseCase,
+    private val getCommentsUseCase: GetCommentsUseCase
 ): ViewModel() {
 
     private val _uiState = MutableStateFlow(ReadingUiState())
     val uiState = _uiState.asStateFlow()
 
+    private val _uiStateComments = MutableStateFlow<List<CommentModel>>(listOf())
+    val uiStateComments = _uiStateComments.asStateFlow()
 
     fun likeOriginal(id: Int) = viewModelScope.launch {
         likeOriginalUseCase(id).handle {
@@ -74,6 +79,14 @@ class ReadingViewModel @Inject constructor(
                 _uiState.update { it.copy(episode = episodeModel.asEpisode(), isLoading = false) }
             }
             onFailure(::handleFailure)
+        }
+    }
+
+    fun getComments(id: Int, type: String) = viewModelScope.launch {
+        getCommentsUseCase(id = id, type = type).handle {
+            onSuccess { data ->
+                _uiStateComments.update { data }
+            }
         }
     }
 
