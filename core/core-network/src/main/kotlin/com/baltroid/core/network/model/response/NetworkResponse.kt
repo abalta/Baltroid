@@ -35,7 +35,7 @@ data class LoginDto(
     @SerialName(Constants.Fields.AVATAR)
     val avatar: String,
 
-    @SerialName(Constants.Fields.WALLET)
+    @SerialName(Constants.Fields.GEM)
     val wallet: Int,
 )
 

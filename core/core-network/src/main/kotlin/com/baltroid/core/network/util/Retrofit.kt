@@ -1,6 +1,5 @@
 package com.baltroid.core.network.util
 
-import androidx.datastore.core.DataStore
 import com.baltroid.core.datastore.PreferencesDataStoreDataSource
 import com.baltroid.core.network.api.BaltroidAuthInterceptor
 import com.baltroid.core.network.retrofit.ResultAdapterFactory

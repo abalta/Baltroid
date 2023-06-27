@@ -67,4 +67,12 @@ class HitReadsNetworkDataSource @Inject constructor(private val hitReadsService:
             }
         }
     }
+
+    suspend fun likeComment(
+        commentId: Int
+    ): BaltroidResult<HitReadsResponse<Unit>> = hitReadsService.likeComment(commentId)
+
+    suspend fun unlikeComment(
+        commentId: Int
+    ): BaltroidResult<HitReadsResponse<Unit>> = hitReadsService.unlikeComment(commentId)
 }

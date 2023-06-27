@@ -23,6 +23,7 @@ import com.baltroid.core.network.util.Constants.Path.LOGIN
 import com.baltroid.core.network.util.Constants.Path.ORIGINALS_INDEX
 import com.baltroid.core.network.util.Constants.Path.SHOW
 import com.baltroid.core.network.util.Constants.Path.TAG
+import com.baltroid.core.network.util.Constants.Path.UNLIKE
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
@@ -46,7 +47,7 @@ interface HitReadsService {
     @PUT("$ORIGINALS_INDEX/{id}/$LIKE")
     suspend fun likeOriginal(@Path("id") id: Int): BaltroidResult<HitReadsResponse<Unit>>
 
-    @PUT("$ORIGINALS_INDEX/{id}/$LIKE")
+    @PUT("$ORIGINALS_INDEX/{id}/$UNLIKE")
     suspend fun unlikeOriginal(@Path("id") id: Int): BaltroidResult<HitReadsResponse<Unit>>
 
     @FormUrlEncoded
@@ -62,5 +63,10 @@ interface HitReadsService {
     @FormUrlEncoded
     @GET("$COMMENT")
     suspend fun getComments(@Field("$TYPE") type: String, @Field("$ID") id: Int): BaltroidResult<HitReadsResponse<List<CommentDto>>>
+
+    @POST("$COMMENT/{id}/$LIKE")
+    suspend fun likeComment(@Path("id") id: Int): BaltroidResult<HitReadsResponse<Unit>>
+    @POST("$COMMENT/{id}/$UNLIKE")
+    suspend fun unlikeComment(@Path("id") id: Int): BaltroidResult<HitReadsResponse<Unit>>
 
 }

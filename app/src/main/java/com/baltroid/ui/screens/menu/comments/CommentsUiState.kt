@@ -7,3 +7,10 @@ data class CommentsUiState(
     val isLoading: Boolean = false,
     val error: Throwable? = null,
 )
+
+data class CommentsLikeUiState(
+    val isLike: Boolean? = null,
+    val isLoading: Boolean = false,
+    val error: Throwable? = null,
+)
+

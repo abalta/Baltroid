@@ -25,26 +25,32 @@ import com.baltroid.ui.screens.home.detail.HomeDetailScreen
 import com.baltroid.ui.screens.home.detail.HomeDetailViewModel
 import com.baltroid.ui.screens.home.filter.FilterScreen
 import com.baltroid.ui.screens.interactive.InteractiveScreen
+import com.baltroid.ui.screens.menu.comments.CommentViewModel
 import com.baltroid.ui.screens.onboarding.OnboardingScreen
 import com.baltroid.ui.screens.onboarding.OnboardingScreenState
+import com.baltroid.ui.screens.playground.PlaygroundScreen
 import com.baltroid.ui.screens.reading.ReadingScreen
 import com.baltroid.ui.theme.localColors
 import com.baltroid.util.orZero
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import com.hitreads.core.model.Comment
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun HitReadsNavHost(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberAnimatedNavController(),
-    openMenuScreen: () -> Unit = { navController.navigate(HitReadsScreens.MenuScreen.route) }
+    openMenuScreen: () -> Unit = { navController.navigate(HitReadsScreens.MenuScreen.route)
+       /* navController.navigate(HitReadsScreens.PlaygroundScreen.route)*/
+    }
 ) {
 
     val homeDetailViewModel: HomeDetailViewModel = hiltViewModel()
     val loginViewModel: LoginViewModel = hiltViewModel()
     val homeViewModel: HomeViewModel = hiltViewModel()
+    val commentViewModel: CommentViewModel = hiltViewModel()
     val isLoading = remember {
         mutableStateOf(false)
     }
@@ -123,6 +129,13 @@ fun HitReadsNavHost(
             ) {
                 InteractiveScreen(
                     openMenuScreen = openMenuScreen
+                )
+            }
+            composable(
+                route = HitReadsScreens.PlaygroundScreen.route
+            ) {
+                PlaygroundScreen(
+                    viewModel = commentViewModel
                 )
             }
         }
