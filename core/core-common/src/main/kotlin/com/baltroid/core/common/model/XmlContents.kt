@@ -28,5 +28,19 @@ data class DialogueXml(
     @SerializedName("talker")
     val talker: String?,
     @SerializedName("text")
-    val text: String?
+    val text: String?,
+    @SerializedName("op_count")
+    val optionCount: String?,
+    @SerializedName("op_1")
+    val optionOne: String?,
+    @SerializedName("op_1_next_line")
+    val optionOneNextLineId: String?,
+    @SerializedName("op_2")
+    val optionTwo: String?,
+    @SerializedName("op_2_next_line")
+    val optionTwoNextLineId: String?,
+    @SerializedName("op_3")
+    val optionThree: String?,
+    @SerializedName("op_3_next_line")
+    val optionThreeNextLineId: String?
 )

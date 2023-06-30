@@ -4,6 +4,7 @@ import com.hitreads.core.domain.model.AuthorModel
 import com.hitreads.core.domain.model.CommentModel
 import com.hitreads.core.domain.model.EpisodeModel
 import com.hitreads.core.domain.model.OriginalModel
+import com.hitreads.core.domain.model.PackageModel
 import com.hitreads.core.domain.model.SeasonModel
 import com.hitreads.core.domain.model.TagModel
 import com.hitreads.core.domain.model.UserDataModel
@@ -11,6 +12,7 @@ import com.hitreads.core.model.Author
 import com.hitreads.core.model.Comment
 import com.hitreads.core.model.Episode
 import com.hitreads.core.model.Original
+import com.hitreads.core.model.Package
 import com.hitreads.core.model.Season
 import com.hitreads.core.model.Tag
 import com.hitreads.core.model.UserData
@@ -24,7 +26,7 @@ fun OriginalModel.asOriginal() = Original(
     isActual = isActual,
     isLocked = isLocked,
     likeCount = likeCount,
-    `package` = `package`.orEmpty(),
+    `package` = `package`?.asPackage(),
     sort = sort,
     status = status,
     title = title,
@@ -37,6 +39,10 @@ fun OriginalModel.asOriginal() = Original(
     seasons = seasons.map { it.asSeason() },
     isNew = isNew,
     dataCount = dataCount
+)
+
+fun PackageModel.asPackage() = Package(
+    id, price, priceType
 )
 
 fun AuthorModel.asAuthor() = Author(

@@ -9,7 +9,7 @@ data class Original(
     val isActual: Boolean,
     val isLocked: Boolean,
     val likeCount: Int,
-    val `package`: String,
+    val `package`: Package?,
     val sort: Int,
     val status: Boolean,
     val title: String,

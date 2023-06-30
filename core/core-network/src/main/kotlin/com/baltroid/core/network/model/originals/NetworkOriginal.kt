@@ -2,8 +2,8 @@ package com.baltroid.core.network.model.originals
 
 import com.baltroid.core.network.model.author.NetworkAuthor
 import com.baltroid.core.network.model.user.NetworkUserData
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 @Serializable
 data class NetworkOriginal(
@@ -24,7 +24,7 @@ data class NetworkOriginal(
     @SerialName("like_count")
     val likeCount: Int,
     @SerialName("package")
-    val `package`: String?,
+    val `package`: NetworkPackage?,
     @SerialName("sort")
     val sort: Int,
     @SerialName("status")

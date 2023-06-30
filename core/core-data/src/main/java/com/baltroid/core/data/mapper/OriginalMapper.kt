@@ -4,6 +4,7 @@ import com.baltroid.core.common.model.XmlContent
 import com.baltroid.core.network.model.author.NetworkAuthor
 import com.baltroid.core.network.model.originals.NetworkEpisode
 import com.baltroid.core.network.model.originals.NetworkOriginal
+import com.baltroid.core.network.model.originals.NetworkPackage
 import com.baltroid.core.network.model.originals.NetworkSeason
 import com.baltroid.core.network.model.originals.NetworkTag
 import com.baltroid.core.network.model.response.CommentDto
@@ -12,6 +13,7 @@ import com.hitreads.core.domain.model.AuthorModel
 import com.hitreads.core.domain.model.CommentModel
 import com.hitreads.core.domain.model.EpisodeModel
 import com.hitreads.core.domain.model.OriginalModel
+import com.hitreads.core.domain.model.PackageModel
 import com.hitreads.core.domain.model.SeasonModel
 import com.hitreads.core.domain.model.TagModel
 import com.hitreads.core.domain.model.UserDataModel
@@ -29,7 +31,7 @@ internal fun NetworkOriginal.asOriginalModel() = OriginalModel(
     status = status,
     likeCount = likeCount,
     sort = sort,
-    `package` = `package`,
+    `package` = `package`?.asPackageModel(),
     userData = userData.asUserDataModel(),
     subtitle = subtitle.orEmpty(),
     tags = tags.map { it.asTagModel() },
@@ -71,6 +73,12 @@ internal fun NetworkEpisode.asEpisodeModel(
     userPurchase = userPurchase,
     assetContents = episodeContent,
     xmlContents = xmlContent
+)
+
+internal fun NetworkPackage.asPackageModel() = PackageModel(
+    id = id ?: 0,
+    price = price ?: 0,
+    priceType = priceType.orEmpty()
 )
 
 internal fun CommentDto.asCommentModel() = CommentModel(

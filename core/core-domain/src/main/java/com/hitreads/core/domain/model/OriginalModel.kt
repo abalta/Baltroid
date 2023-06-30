@@ -13,7 +13,7 @@ data class OriginalModel(
     val isActual: Boolean,
     val isLocked: Boolean,
     val likeCount: Int,
-    val `package`: String?,
+    val `package`: PackageModel?,
     val sort: Int,
     val status: Boolean,
     val title: String,
