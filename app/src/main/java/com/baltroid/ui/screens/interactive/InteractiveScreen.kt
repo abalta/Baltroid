@@ -23,12 +23,16 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,26 +54,43 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.baltroid.apps.R
+import com.baltroid.core.common.model.DialogueXml
 import com.baltroid.ui.common.CroppedImage
 import com.baltroid.ui.common.HorizontalSpacer
 import com.baltroid.ui.common.IconWithTextNextTo
 import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.VerticalSpacer
 import com.baltroid.ui.components.HitReadsTopBar
+import com.baltroid.ui.screens.reading.ReadingViewModel
 import com.baltroid.ui.screens.reading.Titles
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
+import com.hitreads.core.domain.model.OriginalType
+import kotlinx.coroutines.delay
 
 @Composable
 fun InteractiveScreen(
     openMenuScreen: () -> Unit
 ) {
 
-    var interactiveOrder by remember {
-        mutableStateOf(InteractiveScreenOrder.FIRST)
+    val viewModel: ReadingViewModel = hiltViewModel()
+
+    LaunchedEffect(Unit) {
+        delay(3000)
+        viewModel.showEpisode(761, OriginalType.INTERACTIVE)
+    }
+
+    val interactiveContent =
+        viewModel.uiState.collectAsStateWithLifecycle().value.episode?.xmlContent
+            ?.episode?.dialogue
+
+    var currentDialogue by remember(interactiveContent) {
+        mutableStateOf<DialogueXml?>(interactiveContent?.firstOrNull())
     }
 
     Box(
@@ -80,7 +101,8 @@ fun InteractiveScreen(
             modifier = Modifier.fillMaxSize()
         )
         Column(
-            modifier = Modifier.align(Alignment.BottomCenter)
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
         ) {
             HitReadsTopBar(
                 iconResId = R.drawable.ic_bell,
@@ -94,25 +116,49 @@ fun InteractiveScreen(
                     .weight(1f)
                     .padding(horizontal = MaterialTheme.localDimens.dp20)
             ) {
-                when (interactiveOrder) {
-                    InteractiveScreenOrder.FIRST -> {
+                currentDialogue?.let { dialogue ->
+                    if (dialogue.optionCount != null) {
+                        SecondInteractiveContent(
+                            listOf(
+                                InteractiveOptions(
+                                    dialogue.optionOne.toString(),
+                                    dialogue.optionOneNextLineId.toString()
+                                ),
+                                InteractiveOptions(
+                                    dialogue.optionTwo.toString(),
+                                    dialogue.optionTwoNextLineId.toString()
+                                ),
+                                InteractiveOptions(
+                                    dialogue.optionThree.toString(),
+                                    dialogue.optionThreeNextLineId.toString()
+                                ),
+                            )
+                        ) { nextLineId ->
+                            currentDialogue = interactiveContent?.firstOrNull { it?.lineId == nextLineId }
+                        }
+                    }
+                    if (dialogue.lineType == "NOT" || dialogue.lineType == null) {
                         FirstInteractiveContent(
-                            text = "Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean",
+                            model = dialogue,
+                            isButtonEnabled = dialogue.optionCount == null,
                             modifier = Modifier
                                 .fillMaxHeight()
                                 .wrapContentHeight(Alignment.Bottom)
-                        ) {
-                            interactiveOrder = InteractiveScreenOrder.SECOND
+                        ) { nextLineId ->
+                            currentDialogue =
+                                interactiveContent?.firstOrNull { it?.lineId == nextLineId }
+                        }
+                    } else if (dialogue.lineType == "SMS") {
+                        RemindingInfo(
+                            model = dialogue,
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .wrapContentHeight(Alignment.Bottom)
+                        ) { nextLineId ->
+                            currentDialogue =
+                                interactiveContent?.firstOrNull { it?.lineId == nextLineId }
                         }
                     }
-
-                    InteractiveScreenOrder.SECOND -> {
-                        SecondInteractiveContent()
-                    }
-
-                    InteractiveScreenOrder.THIRD -> TODO()
-                    InteractiveScreenOrder.FOURTH -> TODO()
-                    InteractiveScreenOrder.FIFTH -> TODO()
                 }
             }
 
@@ -126,18 +172,22 @@ fun InteractiveScreen(
 
 @Composable
 fun RemindingInfo(
-    text: String
+    model: DialogueXml,
+    modifier: Modifier = Modifier,
+    onClick: (nextLineId: String) -> Unit
 ) {
     Row(
-        modifier = Modifier.padding(
-            start = MaterialTheme.localDimens.dp35,
-            end = MaterialTheme.localDimens.dp20
-        )
+        modifier = modifier
+            .clickable { onClick.invoke(model.nextLineId.toString()) }
+            .padding(
+                start = MaterialTheme.localDimens.dp35,
+                end = MaterialTheme.localDimens.dp20
+            )
     ) {
         ImageWithNameCard()
         HorizontalSpacer(width = MaterialTheme.localDimens.dp13)
         TextBalloon(
-            text = text,
+            text = model.text.toString(),
             modifier = Modifier.align(Alignment.Bottom)
         )
     }
@@ -145,15 +195,17 @@ fun RemindingInfo(
 
 @Composable
 fun FirstInteractiveContent(
-    text: String,
+    model: DialogueXml,
     modifier: Modifier = Modifier,
-    onNextClick: () -> Unit,
+    isButtonEnabled: Boolean,
+    onNextClick: (nextLineId: String) -> Unit,
 ) {
     Column(
         modifier = modifier
+            .verticalScroll(rememberScrollState())
     ) {
         Text(
-            text = text,
+            text = model.text.toString(),
             style = MaterialTheme.localTextStyles.body,
             modifier = Modifier
                 .fillMaxWidth()
@@ -164,36 +216,40 @@ fun FirstInteractiveContent(
                     horizontal = MaterialTheme.localDimens.dp21
                 )
         )
-        VerticalSpacer(height = MaterialTheme.localDimens.dp15)
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentWidth(Alignment.End)
-                .padding(end = MaterialTheme.localDimens.dp4)
-                .clip(MaterialTheme.localShapes.roundedDp8_5)
-                .background(MaterialTheme.localColors.black)
-                .padding(
-                    start = MaterialTheme.localDimens.dp19,
-                    end = MaterialTheme.localDimens.dp13,
-                    top = MaterialTheme.localDimens.dp8,
-                    bottom = MaterialTheme.localDimens.dp8
+        if (isButtonEnabled) {
+            VerticalSpacer(height = MaterialTheme.localDimens.dp15)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentWidth(Alignment.End)
+                    .padding(end = MaterialTheme.localDimens.dp4)
+                    .clip(MaterialTheme.localShapes.roundedDp8_5)
+                    .background(MaterialTheme.localColors.black)
+                    .padding(
+                        start = MaterialTheme.localDimens.dp19,
+                        end = MaterialTheme.localDimens.dp13,
+                        top = MaterialTheme.localDimens.dp8,
+                        bottom = MaterialTheme.localDimens.dp8
+                    )
+            ) {
+                Text(
+                    text = stringResource(id = R.string.next),
+                    style = MaterialTheme.localTextStyles.subtitle,
+                    modifier = Modifier.clickable { onNextClick.invoke(model.nextLineId.toString()) }
                 )
-        ) {
-            Text(
-                text = stringResource(id = R.string.next),
-                style = MaterialTheme.localTextStyles.subtitle,
-                modifier = Modifier.clickable { onNextClick.invoke() }
-            )
-            HorizontalSpacer(width = MaterialTheme.localDimens.dp10)
-            SimpleIcon(iconResId = R.drawable.ic_arrow_forward)
+                HorizontalSpacer(width = MaterialTheme.localDimens.dp10)
+                SimpleIcon(iconResId = R.drawable.ic_arrow_forward)
+            }
         }
     }
 }
 
 @Composable
 fun SecondInteractiveContent(
-    modifier: Modifier = Modifier
+    items: List<InteractiveOptions>,
+    modifier: Modifier = Modifier,
+    onClick: (nextLineId: String) -> Unit
 ) {
     Column(
         modifier = modifier
@@ -206,50 +262,26 @@ fun SecondInteractiveContent(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f)
                 .padding(vertical = MaterialTheme.localDimens.dp12)
         ) {
-            item {
-                Text(
-                    text = "ORMANDA GÖRDÜĞÜM KLÜBEYE GİDERİM",
-                    style = MaterialTheme.localTextStyles.imageCardText,
-                    modifier = Modifier
-                        .clip(MaterialTheme.localShapes.roundedDp10)
-                        .background(MaterialTheme.localColors.black)
-                        .padding(
-                            vertical = MaterialTheme.localDimens.dp14,
-                            horizontal = MaterialTheme.localDimens.dp21
-                        )
-                )
-            }
-            item {
-                Text(
-                    text = "ORMANDA GÖRDÜĞÜM KLÜBEYE GİDERİM",
-                    style = MaterialTheme.localTextStyles.imageCardText,
-                    modifier = Modifier
-                        .clip(MaterialTheme.localShapes.roundedDp10)
-                        .background(MaterialTheme.localColors.black)
-                        .padding(
-                            vertical = MaterialTheme.localDimens.dp14,
-                            horizontal = MaterialTheme.localDimens.dp21
-                        )
-                )
-            }
-            item {
-                Text(
-                    text = "ORMANDA GÖRDÜĞÜM KLÜBEYE GİDERİM",
-                    style = MaterialTheme.localTextStyles.imageCardText,
-                    modifier = Modifier
-                        .clip(MaterialTheme.localShapes.roundedDp10)
-                        .background(MaterialTheme.localColors.black)
-                        .padding(
-                            vertical = MaterialTheme.localDimens.dp14,
-                            horizontal = MaterialTheme.localDimens.dp21
-                        )
-                )
+            items(items) { dialogue ->
+                if (dialogue.option != "null") {
+                    Text(
+                        text = dialogue.option,
+                        style = MaterialTheme.localTextStyles.imageCardText,
+                        modifier = Modifier
+                            .clickable { onClick.invoke(dialogue.nextLineId) }
+                            .fillMaxWidth()
+                            .clip(MaterialTheme.localShapes.roundedDp10)
+                            .background(MaterialTheme.localColors.black)
+                            .padding(
+                                vertical = MaterialTheme.localDimens.dp14,
+                                horizontal = MaterialTheme.localDimens.dp21
+                            )
+                    )
+                }
             }
         }
-        RemindingInfo(text = "ELİF ARTIK BİR KARAR VERMELİSİN")
     }
 }
 
@@ -525,6 +557,7 @@ fun TextBalloon(
                     end = if (isPointerLeft) 13.5.dp else bodyOffsetX + 13.dp,
                     bottom = 13.5.dp,
                 )
+                .verticalScroll(rememberScrollState())
         )
 
     }
@@ -535,13 +568,10 @@ enum class PointerLocation {
     RIGHT
 }
 
-enum class InteractiveScreenOrder {
-    FIRST,
-    SECOND,
-    THIRD,
-    FOURTH,
-    FIFTH
-}
+data class InteractiveOptions(
+    val option: String,
+    val nextLineId: String
+)
 
 @Preview(device = Devices.DEFAULT)
 @Preview(heightDp = 650)
