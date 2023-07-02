@@ -2,7 +2,7 @@ package com.baltroid.core.network.api.service
 
 import com.baltroid.core.common.result.BaltroidResult
 import com.baltroid.core.network.model.HitReadsResponse
-import com.baltroid.core.network.model.originals.NetworkOriginal
+import com.baltroid.core.network.model.originals.NetworkShowOriginal
 import com.baltroid.core.network.model.originals.NetworkTag
 import com.baltroid.core.network.model.response.CommentDto
 import com.baltroid.core.network.model.response.EpisodeResponseDto
@@ -42,7 +42,7 @@ interface HitReadsService {
     ): BaltroidResult<HitReadsResponse<OriginalResponseDto>>
 
     @GET("$ORIGINALS_INDEX/{id}")
-    suspend fun showOriginal(@Path("id") id: Int): BaltroidResult<HitReadsResponse<NetworkOriginal>>
+    suspend fun showOriginal(@Path("id") id: Int): BaltroidResult<HitReadsResponse<NetworkShowOriginal>>
 
     @PUT("$ORIGINALS_INDEX/{id}/$LIKE")
     suspend fun likeOriginal(@Path("id") id: Int): BaltroidResult<HitReadsResponse<Unit>>
@@ -76,7 +76,7 @@ interface HitReadsService {
     @POST("$COMMENT/{id}/$UNLIKE")
     suspend fun unlikeComment(@Path("id") id: Int): BaltroidResult<HitReadsResponse<Unit>>
 
-    @GET("$COMMENT")
+    @GET("WELCOME")
     suspend fun getWelcomeScreen(): BaltroidResult<HitReadsResponse<List<WelcomeDto>>>
 
 

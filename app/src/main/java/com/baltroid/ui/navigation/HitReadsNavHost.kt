@@ -9,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
@@ -27,7 +26,7 @@ import com.baltroid.ui.screens.home.filter.FilterScreen
 import com.baltroid.ui.screens.interactive.InteractiveScreen
 import com.baltroid.ui.screens.menu.comments.CommentViewModel
 import com.baltroid.ui.screens.onboarding.OnboardingScreen
-import com.baltroid.ui.screens.onboarding.OnboardingScreenState
+import com.baltroid.ui.screens.onboarding.OnboardingViewModel
 import com.baltroid.ui.screens.playground.PlaygroundScreen
 import com.baltroid.ui.screens.reading.ReadingScreen
 import com.baltroid.ui.theme.localColors
@@ -35,7 +34,6 @@ import com.baltroid.util.orZero
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
-import com.hitreads.core.model.Comment
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -54,8 +52,6 @@ fun HitReadsNavHost(
     val isLoading = remember {
         mutableStateOf(false)
     }
-    val isLogged = loginViewModel.uiStateIsLogged.collectAsStateWithLifecycle()
-        .value
 
     Box {
         AnimatedNavHost(
@@ -71,10 +67,12 @@ fun HitReadsNavHost(
             composable(
                 route = HitReadsScreens.OnboardingScreen.route
             ) {
-                val screenState = OnboardingScreenState(
-                    R.drawable.woods_image, messageText = stringResource(id = R.string.welcome)
-                )
-                OnboardingScreen(screenState = screenState) {
+                val viewModel: OnboardingViewModel = hiltViewModel()
+                val onboardingState = viewModel.uiStateOnboarding
+                    .collectAsStateWithLifecycle()
+                    .value
+
+                OnboardingScreen(screenState = onboardingState) {
                     navController.navigate(HitReadsScreens.HomeScreen.route) {
                         popUpToInclusive(HitReadsScreens.OnboardingScreen.route)
                         launchSingleTop = true
