@@ -10,7 +10,7 @@ import com.hitreads.core.domain.usecase.ShowEpisodeUseCase
 import com.hitreads.core.domain.usecase.ShowOriginalUseCase
 import com.hitreads.core.domain.usecase.UnlikeOriginalUseCase
 import com.hitreads.core.ui.mapper.asEpisode
-import com.hitreads.core.ui.mapper.asOriginal
+import com.hitreads.core.ui.mapper.asShowOriginal
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -61,10 +61,10 @@ class ReadingViewModel @Inject constructor(
     fun showOriginal(id: Int) = viewModelScope.launch {
         showOriginalUseCase(id).handle {
             onLoading { originalModel ->
-                _uiState.update { it.copy(original = originalModel?.asOriginal(), isLoading = true) }
+                _uiState.update { it.copy(original = originalModel?.asShowOriginal(), isLoading = true) }
             }
             onSuccess { originalModel ->
-                _uiState.update { it.copy(original = originalModel.asOriginal(), isLoading = false) }
+                _uiState.update { it.copy(original = originalModel.asShowOriginal(), isLoading = false) }
             }
             onFailure(::handleFailure)
         }

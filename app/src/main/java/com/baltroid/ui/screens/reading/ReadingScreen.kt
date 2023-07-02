@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
@@ -73,7 +74,7 @@ import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
 import com.baltroid.util.orEmpty
 import com.hitreads.core.domain.model.OriginalType
-import com.hitreads.core.model.Episode
+import com.hitreads.core.model.ShowEpisode
 
 @Composable
 fun ReadingScreen(
@@ -84,7 +85,7 @@ fun ReadingScreen(
     val original = viewModel.uiState.collectAsStateWithLifecycle().value
 
     LaunchedEffect(Unit) {
-        viewModel.showOriginal(originalId)
+        viewModel.showOriginal(2)
     }
 
     LaunchedEffect(original.original) {
@@ -144,10 +145,10 @@ private fun ReadingScreenContent(
                 ) {
                     TitleSection(
                         title = screenState.original?.title.orEmpty(),
-                        subtitle = screenState.original?.subtitle.orEmpty(),
+                        subtitle = screenState.original?.author?.name.orEmpty(),
                         isExpanded = !isSideBarVisible,
                         onDotsClick = { isSideBarVisible = !isSideBarVisible },
-                        isLiked = screenState.original?.userData?.isLike ?: false,
+                        isLiked = false /*todo isLiked*/,
                         onLikeClick = { onLikeClick(it) },
                         modifier = Modifier.padding(
                             top = MaterialTheme.localDimens.dp12,
@@ -182,8 +183,8 @@ private fun ReadingScreenContent(
                 AnimatedVisibility(visible = isSideBarVisible) {
                     BoxWithConstraints {
                         HitReadsSideBar(
-                            numberOfViews = 10,
-                            numberOfComments = 10,
+                            numberOfViews = -1,
+                            numberOfComments = -1,
                             hashTag = "#KGD",
                             hasSmallHeight = maxHeight < MaterialTheme.localDimens.minSideBarHeight,
                             isCommentsSelected = !isReadingSection,
@@ -197,7 +198,7 @@ private fun ReadingScreenContent(
             VerticalSpacer(height = MaterialTheme.localDimens.dp16)
             AnimatedVisibility(visible = if (isReadingSection) scrollState.isEpisodesVisible() else lazyScrollState.isEpisodesVisible()) {
                 EpisodeSection(
-                    episodes = screenState.original?.seasons?.firstOrNull()?.episodes.orEmpty(),
+                    episodes = screenState.original?.episodes.orEmpty(),
                     paddingValues = PaddingValues(start = MaterialTheme.localDimens.dp32)
                 )
             }
@@ -387,7 +388,7 @@ fun ReadingSection(
 
 @Composable
 fun EpisodeSection(
-    episodes: List<Episode>,
+    episodes: List<ShowEpisode>,
     paddingValues: PaddingValues,
     modifier: Modifier = Modifier
 ) {
@@ -396,16 +397,14 @@ fun EpisodeSection(
         contentPadding = paddingValues,
         modifier = modifier
     ) {
-        repeat(10) {
-            item {
-                EpisodeSectionItem(
-                    numberOfComment = (it + 12) * it + 1,
-                    episodeNumber = it + 11,
-                    isSelected = it == 0,
-                    hasBanner = it == 0 || it == 2,
-                    isLocked = it == 2
-                )
-            }
+        itemsIndexed(episodes) { index, item ->
+            EpisodeSectionItem(
+                numberOfComment = -1,
+                episodeNumber = index + 1,
+                isSelected = false,
+                hasBanner = false,
+                isLocked = false
+            )
         }
     }
 }

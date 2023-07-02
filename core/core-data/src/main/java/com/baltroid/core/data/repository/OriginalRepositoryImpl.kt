@@ -7,7 +7,7 @@ import com.baltroid.core.common.result.BaltroidResult
 import com.baltroid.core.common.result.isFailure
 import com.baltroid.core.common.result.isSuccess
 import com.baltroid.core.data.mapper.asEpisodeModel
-import com.baltroid.core.data.mapper.asOriginalModel
+import com.baltroid.core.data.mapper.asShowOriginalModel
 import com.baltroid.core.data.paging.OriginalsPagingSource
 import com.baltroid.core.data.util.defaultPagingConfig
 import com.baltroid.core.network.common.networkBoundResource
@@ -18,6 +18,7 @@ import com.google.gson.Gson
 import com.hitreads.core.domain.model.EpisodeModel
 import com.hitreads.core.domain.model.OriginalModel
 import com.hitreads.core.domain.model.OriginalType
+import com.hitreads.core.domain.model.ShowOriginalModel
 import com.hitreads.core.domain.repository.OriginalRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -44,14 +45,14 @@ class OriginalRepositoryImpl @Inject constructor(
             networkDataSource.unlikeOriginal(originalId)
         }
 
-    override fun showOriginal(originalId: Int): Flow<BaltroidResult<OriginalModel>> = flow {
+    override fun showOriginal(originalId: Int): Flow<BaltroidResult<ShowOriginalModel>> = flow {
         emit(BaltroidResult.loading())
         val response = networkDataSource.showOriginal(originalId)
 
         when {
             response.isSuccess() -> {
                 response.value.data?.let {
-                    emit(BaltroidResult.success(it.asOriginalModel()))
+                    emit(BaltroidResult.success(it.asShowOriginalModel()))
                 }
             }
 

@@ -6,6 +6,8 @@ import com.baltroid.core.network.model.originals.NetworkEpisode
 import com.baltroid.core.network.model.originals.NetworkOriginal
 import com.baltroid.core.network.model.originals.NetworkPackage
 import com.baltroid.core.network.model.originals.NetworkSeason
+import com.baltroid.core.network.model.originals.NetworkShowEpisode
+import com.baltroid.core.network.model.originals.NetworkShowOriginal
 import com.baltroid.core.network.model.originals.NetworkTag
 import com.baltroid.core.network.model.response.CommentDto
 import com.baltroid.core.network.model.response.WelcomeDto
@@ -16,6 +18,8 @@ import com.hitreads.core.domain.model.EpisodeModel
 import com.hitreads.core.domain.model.OriginalModel
 import com.hitreads.core.domain.model.PackageModel
 import com.hitreads.core.domain.model.SeasonModel
+import com.hitreads.core.domain.model.ShowEpisodeModel
+import com.hitreads.core.domain.model.ShowOriginalModel
 import com.hitreads.core.domain.model.TagModel
 import com.hitreads.core.domain.model.UserDataModel
 import com.hitreads.core.domain.model.WelcomeModel
@@ -42,6 +46,28 @@ internal fun NetworkOriginal.asOriginalModel() = OriginalModel(
     seasons = seasons?.map { it.asSeasonModel() }.orEmpty(),
     isNew = isNew,
     dataCount = dataCount
+)
+
+internal fun NetworkShowOriginal.asShowOriginalModel() = ShowOriginalModel(
+    id = id,
+    title = title,
+    cover = cover,
+    description = description,
+    isLocked = isLocked,
+    viewCount = viewCount,
+    commentsCount = commentsCount,
+    updatedAt = updatedAt,
+    episodes = episodes.map { it.asShowEpisodeModel() },
+    author = author.asAuthorModel()
+)
+
+internal fun NetworkShowEpisode.asShowEpisodeModel() = ShowEpisodeModel(
+    id = id,
+    seasonId = seasonId,
+    episodeName = episodeName,
+    price = price,
+    priceType = priceType,
+    userPurchase = userPurchase
 )
 
 internal fun NetworkAuthor.asAuthorModel() = AuthorModel(
