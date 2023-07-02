@@ -41,7 +41,7 @@ class HomeViewModel @Inject constructor(
         )
     }
 
-    fun loadFavoriteOriginals() = _uiState.update {
+    fun loadFavoriteOriginals() = _uiStateFavorites.update {
         val originals = getOriginalsUseCase(getByFav = true).pagingMap(OriginalModel::asOriginal)
             .cachedIn(viewModelScope)
 
