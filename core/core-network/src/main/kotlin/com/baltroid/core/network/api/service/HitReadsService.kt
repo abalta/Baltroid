@@ -25,6 +25,7 @@ import com.baltroid.core.network.util.Constants.Path.ORIGINALS_INDEX
 import com.baltroid.core.network.util.Constants.Path.SHOW
 import com.baltroid.core.network.util.Constants.Path.TAG
 import com.baltroid.core.network.util.Constants.Path.UNLIKE
+import com.baltroid.core.network.util.Constants.Path.WELCOME
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
@@ -76,7 +77,7 @@ interface HitReadsService {
     @POST("$COMMENT/{id}/$UNLIKE")
     suspend fun unlikeComment(@Path("id") id: Int): BaltroidResult<HitReadsResponse<Unit>>
 
-    @GET("WELCOME")
+    @GET("$WELCOME")
     suspend fun getWelcomeScreen(): BaltroidResult<HitReadsResponse<List<WelcomeDto>>>
 
 
