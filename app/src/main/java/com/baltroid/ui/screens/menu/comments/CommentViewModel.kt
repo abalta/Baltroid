@@ -10,6 +10,7 @@ import com.hitreads.core.domain.usecase.ShowEpisodeUseCase
 import com.hitreads.core.domain.usecase.ShowOriginalUseCase
 import com.hitreads.core.domain.usecase.UnlikeCommentUseCase
 import com.hitreads.core.domain.usecase.UnlikeOriginalUseCase
+import com.hitreads.core.domain.usecase.WelcomeUseCase
 import com.hitreads.core.ui.mapper.asComment
 import com.hitreads.core.ui.mapper.asEpisode
 import com.hitreads.core.ui.mapper.asOriginal
@@ -24,7 +25,7 @@ import javax.inject.Inject
 class CommentViewModel @Inject constructor(
     private val commentsUseCase: GetCommentsUseCase,
     private val commentLikeCommentUseCase: LikeCommentUseCase,
-    private val commentUnlikeCommentUseCase: UnlikeCommentUseCase
+    private val commentUnlikeCommentUseCase: UnlikeCommentUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CommentsUiState())

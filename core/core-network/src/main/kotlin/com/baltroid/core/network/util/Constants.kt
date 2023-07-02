@@ -16,6 +16,7 @@ internal object Constants {
         internal const val EPISODE = "episode"
         internal const val SHOW = "show"
         internal const val COMMENT = "comment"
+        internal const val WELCOME = "welcome-screen"
     }
 
     internal object Fields {

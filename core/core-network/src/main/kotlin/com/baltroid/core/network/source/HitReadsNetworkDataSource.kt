@@ -9,6 +9,7 @@ import com.baltroid.core.network.model.response.CommentDto
 import com.baltroid.core.network.model.response.EpisodeResponseDto
 import com.baltroid.core.network.model.response.LoginDto
 import com.baltroid.core.network.model.response.OriginalResponseDto
+import com.baltroid.core.network.model.response.WelcomeDto
 import com.baltroid.core.network.util.DEFAULT_PAGE
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -47,7 +48,10 @@ class HitReadsNetworkDataSource @Inject constructor(private val hitReadsService:
     suspend fun showEpisode(episodeId: Int): BaltroidResult<HitReadsResponse<EpisodeResponseDto>> =
         hitReadsService.showEpisode(episodeId)
 
-    suspend fun getComments(type: String, id: Int): BaltroidResult<HitReadsResponse<List<CommentDto>>> = hitReadsService.getComments(type, id)
+    suspend fun getComments(
+        type: String,
+        id: Int
+    ): BaltroidResult<HitReadsResponse<List<CommentDto>>> = hitReadsService.getComments(type, id)
 
     suspend fun fetchTextFromUrl(url: String): String {
         return withContext(Dispatchers.IO) {
@@ -75,4 +79,7 @@ class HitReadsNetworkDataSource @Inject constructor(private val hitReadsService:
     suspend fun unlikeComment(
         commentId: Int
     ): BaltroidResult<HitReadsResponse<Unit>> = hitReadsService.unlikeComment(commentId)
+
+    suspend fun getWelcomeScreen(): BaltroidResult<HitReadsResponse<List<WelcomeDto>>> =
+        hitReadsService.getWelcomeScreen()
 }

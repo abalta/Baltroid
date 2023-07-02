@@ -94,3 +94,13 @@ data class CommentDto(
     val replyCommentId: Int?
 )
 
+@Serializable
+data class WelcomeDto(
+    @SerialName("id")
+    val id: Int?,
+    @SerialName("message")
+    val message: String?,
+    @SerialName("path")
+    val path: String?
+)
+

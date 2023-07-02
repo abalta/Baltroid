@@ -8,6 +8,7 @@ import com.baltroid.core.network.model.originals.NetworkPackage
 import com.baltroid.core.network.model.originals.NetworkSeason
 import com.baltroid.core.network.model.originals.NetworkTag
 import com.baltroid.core.network.model.response.CommentDto
+import com.baltroid.core.network.model.response.WelcomeDto
 import com.baltroid.core.network.model.user.NetworkUserData
 import com.hitreads.core.domain.model.AuthorModel
 import com.hitreads.core.domain.model.CommentModel
@@ -17,6 +18,7 @@ import com.hitreads.core.domain.model.PackageModel
 import com.hitreads.core.domain.model.SeasonModel
 import com.hitreads.core.domain.model.TagModel
 import com.hitreads.core.domain.model.UserDataModel
+import com.hitreads.core.domain.model.WelcomeModel
 
 internal fun NetworkOriginal.asOriginalModel() = OriginalModel(
     type = type,
@@ -91,6 +93,11 @@ internal fun CommentDto.asCommentModel() = CommentModel(
     likesCount = likesCount ?: 0,
     repliesCount = repliesCount ?: 0,
     replyCommentId = replyCommentId ?: 0
+)
 
+internal fun WelcomeDto.asWelcomeModel() = WelcomeModel(
+    id = id ?: 0,
+    message = message.orEmpty(),
+    path = path.orEmpty()
 )
 

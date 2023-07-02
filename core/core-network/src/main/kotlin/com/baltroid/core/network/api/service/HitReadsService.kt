@@ -8,6 +8,7 @@ import com.baltroid.core.network.model.response.CommentDto
 import com.baltroid.core.network.model.response.EpisodeResponseDto
 import com.baltroid.core.network.model.response.LoginDto
 import com.baltroid.core.network.model.response.OriginalResponseDto
+import com.baltroid.core.network.model.response.WelcomeDto
 import com.baltroid.core.network.util.Constants.DEFAULT_PAGE
 import com.baltroid.core.network.util.Constants.Fields.EMAIL
 import com.baltroid.core.network.util.Constants.Fields.FILTER_TAG
@@ -33,7 +34,6 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface HitReadsService {
-
     @GET(ORIGINALS_INDEX)
     suspend fun getOriginals(
         @Query(PAGE) page: Int = DEFAULT_PAGE,
@@ -52,7 +52,10 @@ interface HitReadsService {
 
     @FormUrlEncoded
     @POST("$LOGIN")
-    suspend fun login(@Field("$EMAIL") email: String, @Field("$PASSWORD") password: String): BaltroidResult<HitReadsResponse<LoginDto>>
+    suspend fun login(
+        @Field("$EMAIL") email: String,
+        @Field("$PASSWORD") password: String
+    ): BaltroidResult<HitReadsResponse<LoginDto>>
 
     @GET("$TAG")
     suspend fun getTags(): BaltroidResult<HitReadsResponse<List<NetworkTag>>>
@@ -62,11 +65,19 @@ interface HitReadsService {
 
     @FormUrlEncoded
     @GET("$COMMENT")
-    suspend fun getComments(@Field("$TYPE") type: String, @Field("$ID") id: Int): BaltroidResult<HitReadsResponse<List<CommentDto>>>
+    suspend fun getComments(
+        @Field("$TYPE") type: String,
+        @Field("$ID") id: Int
+    ): BaltroidResult<HitReadsResponse<List<CommentDto>>>
 
     @POST("$COMMENT/{id}/$LIKE")
     suspend fun likeComment(@Path("id") id: Int): BaltroidResult<HitReadsResponse<Unit>>
+
     @POST("$COMMENT/{id}/$UNLIKE")
     suspend fun unlikeComment(@Path("id") id: Int): BaltroidResult<HitReadsResponse<Unit>>
+
+    @GET("$COMMENT")
+    suspend fun getWelcomeScreen(): BaltroidResult<HitReadsResponse<List<WelcomeDto>>>
+
 
 }
