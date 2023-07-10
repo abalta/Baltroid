@@ -4,6 +4,8 @@ import com.baltroid.core.common.result.BaltroidResult
 import com.baltroid.core.network.model.HitReadsResponse
 import com.baltroid.core.network.model.originals.NetworkShowOriginal
 import com.baltroid.core.network.model.originals.NetworkTag
+import com.baltroid.core.network.model.request.CreateBookmarkDto
+import com.baltroid.core.network.model.response.BookmarkDto
 import com.baltroid.core.network.model.response.CommentDto
 import com.baltroid.core.network.model.response.EpisodeResponseDto
 import com.baltroid.core.network.model.response.LoginDto
@@ -17,6 +19,7 @@ import com.baltroid.core.network.util.Constants.Fields.ID
 import com.baltroid.core.network.util.Constants.Fields.PAGE
 import com.baltroid.core.network.util.Constants.Fields.PASSWORD
 import com.baltroid.core.network.util.Constants.Fields.TYPE
+import com.baltroid.core.network.util.Constants.Path.BOOKMARK
 import com.baltroid.core.network.util.Constants.Path.COMMENT
 import com.baltroid.core.network.util.Constants.Path.EPISODE
 import com.baltroid.core.network.util.Constants.Path.LIKE
@@ -26,6 +29,7 @@ import com.baltroid.core.network.util.Constants.Path.SHOW
 import com.baltroid.core.network.util.Constants.Path.TAG
 import com.baltroid.core.network.util.Constants.Path.UNLIKE
 import com.baltroid.core.network.util.Constants.Path.WELCOME
+import retrofit2.http.Body
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
@@ -64,11 +68,10 @@ interface HitReadsService {
     @GET("$ORIGINALS_INDEX/$EPISODE/{id}/$SHOW")
     suspend fun showEpisode(@Path("id") id: Int): BaltroidResult<HitReadsResponse<EpisodeResponseDto>>
 
-    @FormUrlEncoded
     @GET("$COMMENT")
     suspend fun getComments(
-        @Field("$TYPE") type: String,
-        @Field("$ID") id: Int
+        @Query("$TYPE") type: String,
+        @Query("$ID") id: Int
     ): BaltroidResult<HitReadsResponse<List<CommentDto>>>
 
     @POST("$COMMENT/{id}/$LIKE")
@@ -79,6 +82,12 @@ interface HitReadsService {
 
     @GET("$WELCOME")
     suspend fun getWelcomeScreen(): BaltroidResult<HitReadsResponse<List<WelcomeDto>>>
+
+    @GET("$BOOKMARK")
+    suspend fun getBookmarks(): BaltroidResult<HitReadsResponse<List<BookmarkDto>>>
+
+    @POST("$BOOKMARK")
+    suspend fun createBookmark(@Body request: CreateBookmarkDto): BaltroidResult<HitReadsResponse<BookmarkDto>>
 
 
 }

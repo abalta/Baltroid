@@ -5,6 +5,8 @@ import com.baltroid.core.network.api.service.HitReadsService
 import com.baltroid.core.network.model.HitReadsResponse
 import com.baltroid.core.network.model.originals.NetworkShowOriginal
 import com.baltroid.core.network.model.originals.NetworkTag
+import com.baltroid.core.network.model.request.CreateBookmarkDto
+import com.baltroid.core.network.model.response.BookmarkDto
 import com.baltroid.core.network.model.response.CommentDto
 import com.baltroid.core.network.model.response.EpisodeResponseDto
 import com.baltroid.core.network.model.response.LoginDto
@@ -82,4 +84,14 @@ class HitReadsNetworkDataSource @Inject constructor(private val hitReadsService:
 
     suspend fun getWelcomeScreen(): BaltroidResult<HitReadsResponse<List<WelcomeDto>>> =
         hitReadsService.getWelcomeScreen()
+
+    suspend fun getBookmarkList(): BaltroidResult<HitReadsResponse<List<BookmarkDto>>> =
+        hitReadsService.getBookmarks()
+
+    suspend fun createBookmark(
+        originalId: Int,
+        episodeId: Int
+    ): BaltroidResult<HitReadsResponse<BookmarkDto>> = hitReadsService.createBookmark(
+        CreateBookmarkDto(originalId, episodeId)
+    )
 }

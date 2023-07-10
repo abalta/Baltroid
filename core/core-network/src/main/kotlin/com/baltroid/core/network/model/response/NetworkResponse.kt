@@ -104,3 +104,19 @@ data class WelcomeDto(
     val path: String?
 )
 
+@Serializable
+data class BookmarkDto(
+    @SerialName("id")
+    val id: Int?,
+    @SerialName("user")
+    val user: String?,
+    @SerialName("episode")
+    val episode: String?,
+    @SerialName("original")
+    val original: NetworkOriginal?,
+    @SerialName("content")
+    val content: String?,
+    @SerialName("cover")
+    val cover: String?
+)
+

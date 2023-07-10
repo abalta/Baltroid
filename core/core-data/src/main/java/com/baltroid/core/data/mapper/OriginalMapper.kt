@@ -9,10 +9,12 @@ import com.baltroid.core.network.model.originals.NetworkSeason
 import com.baltroid.core.network.model.originals.NetworkShowEpisode
 import com.baltroid.core.network.model.originals.NetworkShowOriginal
 import com.baltroid.core.network.model.originals.NetworkTag
+import com.baltroid.core.network.model.response.BookmarkDto
 import com.baltroid.core.network.model.response.CommentDto
 import com.baltroid.core.network.model.response.WelcomeDto
 import com.baltroid.core.network.model.user.NetworkUserData
 import com.hitreads.core.domain.model.AuthorModel
+import com.hitreads.core.domain.model.BookmarkModel
 import com.hitreads.core.domain.model.CommentModel
 import com.hitreads.core.domain.model.EpisodeModel
 import com.hitreads.core.domain.model.OriginalModel
@@ -125,5 +127,14 @@ internal fun WelcomeDto.asWelcomeModel() = WelcomeModel(
     id = id ?: 0,
     message = message.orEmpty(),
     path = path.orEmpty()
+)
+
+internal fun BookmarkDto.asBookmarkModel() = BookmarkModel(
+    id = id ?: 0,
+    user = user.orEmpty(),
+    episode = episode.orEmpty(),
+    original = original?.asOriginalModel(),
+    content = content.orEmpty(),
+    cover = cover.orEmpty()
 )
 
