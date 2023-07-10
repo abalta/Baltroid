@@ -94,4 +94,7 @@ class HitReadsNetworkDataSource @Inject constructor(private val hitReadsService:
     ): BaltroidResult<HitReadsResponse<BookmarkDto>> = hitReadsService.createBookmark(
         CreateBookmarkDto(originalId, episodeId)
     )
+
+    suspend fun deleteBookmark(bookmarkId: Int): BaltroidResult<HitReadsResponse<Unit>> =
+        hitReadsService.deleteBookmark(bookmarkId)
 }

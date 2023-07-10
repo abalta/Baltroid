@@ -30,6 +30,7 @@ import com.baltroid.core.network.util.Constants.Path.TAG
 import com.baltroid.core.network.util.Constants.Path.UNLIKE
 import com.baltroid.core.network.util.Constants.Path.WELCOME
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
@@ -89,5 +90,7 @@ interface HitReadsService {
     @POST("$BOOKMARK")
     suspend fun createBookmark(@Body request: CreateBookmarkDto): BaltroidResult<HitReadsResponse<BookmarkDto>>
 
+    @DELETE("$BOOKMARK/{id}")
+    suspend fun deleteBookmark(@Path("id") id: Int): BaltroidResult<HitReadsResponse<Unit>>
 
 }

@@ -7,4 +7,5 @@ import kotlinx.coroutines.flow.Flow
 interface BookmarkRepository {
     fun getBookmarkList(): Flow<BaltroidResult<List<BookmarkModel>>>
     fun createBookmark(originalId: Int, episodeId: Int): Flow<BaltroidResult<BookmarkModel>>
+    fun deleteBookmark(bookmarkId: Int): Flow<BaltroidResult<Unit>>
 }
