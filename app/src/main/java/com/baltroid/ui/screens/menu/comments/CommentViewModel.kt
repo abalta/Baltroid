@@ -3,17 +3,12 @@ package com.baltroid.ui.screens.menu.comments
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.baltroid.core.common.result.handle
+import com.hitreads.core.domain.usecase.CreateBookmarkUseCase
+import com.hitreads.core.domain.usecase.DeleteBookmarkUseCase
 import com.hitreads.core.domain.usecase.GetCommentsUseCase
 import com.hitreads.core.domain.usecase.LikeCommentUseCase
-import com.hitreads.core.domain.usecase.LikeOriginalUseCase
-import com.hitreads.core.domain.usecase.ShowEpisodeUseCase
-import com.hitreads.core.domain.usecase.ShowOriginalUseCase
 import com.hitreads.core.domain.usecase.UnlikeCommentUseCase
-import com.hitreads.core.domain.usecase.UnlikeOriginalUseCase
-import com.hitreads.core.domain.usecase.WelcomeUseCase
 import com.hitreads.core.ui.mapper.asComment
-import com.hitreads.core.ui.mapper.asEpisode
-import com.hitreads.core.ui.mapper.asOriginal
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,6 +21,8 @@ class CommentViewModel @Inject constructor(
     private val commentsUseCase: GetCommentsUseCase,
     private val commentLikeCommentUseCase: LikeCommentUseCase,
     private val commentUnlikeCommentUseCase: UnlikeCommentUseCase,
+    private val createBookmarkUseCase: CreateBookmarkUseCase,
+    private val deleteBookmarkUseCase: DeleteBookmarkUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CommentsUiState())
@@ -71,6 +68,22 @@ class CommentViewModel @Inject constructor(
                 _likeUiState.update { it.copy(isLike = false, isLoading = false) }
             }
             onFailure(::handleFailure)
+        }
+    }
+
+    private fun createBookMark(originalId: Int, episodeId: Int) = viewModelScope.launch {
+        createBookmarkUseCase.invoke(originalId, episodeId).handle {
+            onSuccess {
+
+            }
+        }
+    }
+
+    private fun deleteBookMark(bookmarkId: Int) = viewModelScope.launch {
+        deleteBookmarkUseCase.invoke(bookmarkId).handle {
+            onSuccess {
+
+            }
         }
     }
 

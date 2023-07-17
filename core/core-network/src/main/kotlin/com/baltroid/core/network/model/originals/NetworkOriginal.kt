@@ -23,6 +23,10 @@ data class NetworkOriginal(
     val isLocked: Boolean,
     @SerialName("like_count")
     val likeCount: Int,
+    @SerialName("comment_count")
+    val commentCount: Int,
+    @SerialName("view_count")
+    val viewCount: Int,
     @SerialName("package")
     val `package`: NetworkPackage?,
     @SerialName("sort")

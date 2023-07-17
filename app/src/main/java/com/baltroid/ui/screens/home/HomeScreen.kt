@@ -27,10 +27,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -50,7 +50,6 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import com.baltroid.apps.R
-import com.baltroid.presentation.screens.home.HomeViewModel
 import com.baltroid.ui.common.HorizontalSpacer
 import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.VerticalSpacer
@@ -63,6 +62,7 @@ import com.baltroid.ui.theme.localTextStyles
 import com.baltroid.util.orZero
 import com.hitreads.core.model.Original
 import com.hitreads.core.model.Tag
+import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
@@ -70,17 +70,13 @@ fun HomeScreen(
     openMenuScreen: () -> Unit,
     navigate: (route: String, item: Original?) -> Unit
 ) {
-    LaunchedEffect(Unit) {
-        viewModel.loadOriginals()
-        viewModel.loadFavoriteOriginals()
-    }
+
     val uiStates = viewModel.uiState.collectAsStateWithLifecycle()
         .value
-    val uiStatesFavorites = viewModel.uiStateFavorites.collectAsStateWithLifecycle()
-        .value
+
     HomeScreenContent(
         uiStates = uiStates.originals.collectAsLazyPagingItems(),
-        uiStatesFavorites = uiStatesFavorites.originals.collectAsLazyPagingItems(),
+        uiStatesFavorites = uiStates.favorites.collectAsLazyPagingItems(),
         openMenuScreen = openMenuScreen,
         navigate = navigate
     )
@@ -96,16 +92,21 @@ private fun HomeScreenContent(
 ) {
     val scrollState = rememberScrollState()
     val pagerState = rememberPagerState()
+    val scope = rememberCoroutineScope()
     var tabState by rememberSaveable {
         mutableStateOf(HomeScreenTabs.AllStories)
     }
-    var currentItem by remember(uiStates) {
-        if (uiStates.itemCount > 0) mutableStateOf(uiStates[pagerState.currentPage])
-        else mutableStateOf<Original?>(null)
-    }
-
-    if (uiStates.itemCount > 0) {
-        currentItem = uiStates[pagerState.currentPage]
+    var currentItem by remember(uiStates.itemCount, uiStatesFavorites.itemCount , tabState, pagerState.currentPage) {
+        when(tabState) {
+            HomeScreenTabs.AllStories -> {
+                if (uiStates.itemCount > 0) mutableStateOf(uiStates[pagerState.currentPage])
+                else mutableStateOf<Original?>(null)
+            }
+            HomeScreenTabs.Favorites -> {
+                if (uiStatesFavorites.itemCount > 0) mutableStateOf(uiStatesFavorites[pagerState.currentPage])
+                else mutableStateOf<Original?>(null)
+            }
+        }
     }
 
     Column(
@@ -130,6 +131,7 @@ private fun HomeScreenContent(
             selectedTab = tabState,
             modifier = Modifier.padding(start = MaterialTheme.localDimens.dp32)
         ) { selectedTab ->
+            scope.launch { pagerState.scrollToPage(0) }
             tabState = selectedTab
         }
         VerticalSpacer(height = MaterialTheme.localDimens.dp14)
@@ -142,8 +144,8 @@ private fun HomeScreenContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.Start)
-            ) {
-                navigate.invoke(HitReadsScreens.HomeDetailScreen.route, currentItem)
+            ) { original ->
+                navigate.invoke(HitReadsScreens.HomeDetailScreen.route, original)
             }
             VerticalSpacer(height = MaterialTheme.localDimens.dp28_5)
             if (uiStates.itemCount > 0) {
@@ -161,9 +163,9 @@ private fun HomeScreenContent(
                 )
                 SummarySection(
                     summary = currentItem?.description.toString(),
-                    numberOfStory = 12,
-                    numberOfViews = 12,
-                    numberOfComments = 12,
+                    numberOfStory = currentItem?.dataCount.orZero(),
+                    numberOfViews = currentItem?.viewCount.orZero(),
+                    numberOfComments = currentItem?.commentCount.orZero(),
                     onCommentsClick = {},
                     onFilterClick = { navigate.invoke(HitReadsScreens.FilterScreen.route, null) },
                     modifier = Modifier.padding(
@@ -258,7 +260,7 @@ private fun StoriesRow(
     lazyPagingItems: LazyPagingItems<Original>,
     state: PagerState,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit,
+    onClick: (Original?) -> Unit,
 ) {
     BoxWithConstraints {
         HorizontalPager(
@@ -275,7 +277,7 @@ private fun StoriesRow(
             StoryImage(
                 imgUrl = lazyPagingItems[page]?.cover.toString(),
                 isNew = lazyPagingItems[page]?.isNew ?: false,
-                onClick = { onClick.invoke() }
+                onClick = { onClick.invoke(lazyPagingItems[page]) }
             )
         }
     }

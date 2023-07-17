@@ -4,11 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.baltroid.core.common.result.handle
 import com.hitreads.core.domain.model.CommentModel
+import com.hitreads.core.domain.usecase.CreateBookmarkUseCase
 import com.hitreads.core.domain.usecase.GetCommentsUseCase
 import com.hitreads.core.domain.usecase.LikeOriginalUseCase
 import com.hitreads.core.domain.usecase.ShowEpisodeUseCase
 import com.hitreads.core.domain.usecase.ShowOriginalUseCase
 import com.hitreads.core.domain.usecase.UnlikeOriginalUseCase
+import com.hitreads.core.model.Original
 import com.hitreads.core.ui.mapper.asEpisode
 import com.hitreads.core.ui.mapper.asShowOriginal
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,7 +26,8 @@ class ReadingViewModel @Inject constructor(
     private val unlikeOriginalUseCase: UnlikeOriginalUseCase,
     private val showOriginalUseCase: ShowOriginalUseCase,
     private val showEpisodeUseCase: ShowEpisodeUseCase,
-    private val getCommentsUseCase: GetCommentsUseCase
+    private val getCommentsUseCase: GetCommentsUseCase,
+    private val createBookmarkUseCase: CreateBookmarkUseCase
 ): ViewModel() {
 
     private val _uiState = MutableStateFlow(ReadingUiState())
@@ -32,6 +35,9 @@ class ReadingViewModel @Inject constructor(
 
     private val _uiStateComments = MutableStateFlow<List<CommentModel>>(listOf())
     val uiStateComments = _uiStateComments.asStateFlow()
+
+    var interactiveOriginal: Original? = null
+    var textOriginal: Original? = null
 
     fun likeOriginal(id: Int) = viewModelScope.launch {
         likeOriginalUseCase(id).handle {
@@ -95,6 +101,22 @@ class ReadingViewModel @Inject constructor(
             error = error,
             isLoading = false
         )
+    }
+
+    fun createBookmark(originalId: Int, episodeInt: Int) = viewModelScope.launch {
+        createBookmarkUseCase(originalId, episodeInt).handle {
+            onSuccess {
+                //change icon color
+            }
+
+            onFailure {
+
+            }
+        }
+    }
+
+    fun deleteBookmark() {
+        //todo not implemented
     }
 
 }

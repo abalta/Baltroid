@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
@@ -23,11 +24,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
 import com.baltroid.apps.R
-import com.baltroid.ui.common.CroppedImage
 import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.VerticalSpacer
 import com.baltroid.ui.components.MenuBar
@@ -35,12 +39,15 @@ import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
+import com.hitreads.core.domain.model.BookmarkModel
 
 @Composable
 fun PlaceMarksScreen(
+    viewModel: BookmarkViewModel = hiltViewModel(),
     onBackClick: () -> Unit
 ) {
     PlaceMarsScreenContent(
+        state = viewModel.bookMarks.collectAsStateWithLifecycle().value.bookmarks,
         scrollState = rememberScrollState(),
         onBackClick = onBackClick
     )
@@ -48,6 +55,7 @@ fun PlaceMarksScreen(
 
 @Composable
 fun PlaceMarsScreenContent(
+    state: List<BookmarkModel>,
     scrollState: ScrollState,
     onBackClick: () -> Unit
 ) {
@@ -75,11 +83,12 @@ fun PlaceMarsScreenContent(
             )
             VerticalSpacer(height = MaterialTheme.localDimens.dp16)
             StoryItemList(
+                state,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = MaterialTheme.localDimens.dp35)
             )
-            VerticalSpacer(height = MaterialTheme.localDimens.dp18_5)
+           /* VerticalSpacer(height = MaterialTheme.localDimens.dp18_5)
             Text(
                 text = stringResource(id = R.string.marks),
                 style = MaterialTheme.localTextStyles.menuBarSubTitle,
@@ -87,57 +96,67 @@ fun PlaceMarsScreenContent(
             )
             VerticalSpacer(height = MaterialTheme.localDimens.dp21)
             MarkItemList(
+                state,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = MaterialTheme.localDimens.dp35)
-            )
+            )*/
         }
     }
 }
 
 @Composable
 fun StoryItemList(
+    state: List<BookmarkModel>,
     modifier: Modifier = Modifier
 ) {
     LazyRow(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp29)
     ) {
-        item { StoryItem("KİMSE GERÇEK DEĞİL", 25) }
-        item { StoryItem("KİMSE GERÇEK DEĞİL", 25) }
-        item { StoryItem("KİMSE GERÇEK DEĞİL", 25) }
-        item { StoryItem("KİMSE GERÇEK DEĞİL", 25) }
-        item { StoryItem("KİMSE GERÇEK DEĞİL", 25) }
+        items(state) { item ->
+            StoryItem(
+                title = item.original?.title.orEmpty(),
+                imgUrl = item.cover,
+                episodeNumber = item.episode
+            )
+        }
     }
 }
 
 @Composable
 fun MarkItemList(
+    state: List<BookmarkModel>,
     modifier: Modifier = Modifier
 ) {
     LazyRow(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp29)
     ) {
-        item { MarkItem("KİMSE GERÇEK DEĞİL", 25) }
-        item { MarkItem("KİMSE GERÇEK DEĞİL", 25) }
-        item { MarkItem("KİMSE GERÇEK DEĞİL", 25) }
-        item { MarkItem("KİMSE GERÇEK DEĞİL", 25) }
-        item { MarkItem("KİMSE GERÇEK DEĞİL", 25) }
+        items(state) { item ->
+            MarkItem(
+                title = item.original?.title.orEmpty(),
+                imgUrl = item.cover,
+                episodeNumber = item.episode.orEmpty()
+            )
+        }
     }
 }
 
 @Composable
 fun StoryItem(
     title: String,
-    episodeNumber: Int
+    imgUrl: String,
+    episodeNumber: String
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.width(IntrinsicSize.Min)
     ) {
-        CroppedImage(
-            imgResId = R.drawable.woods_image,
+        AsyncImage(
+            model = imgUrl,
+            contentDescription = null,
+            error = painterResource(id = R.drawable.hitreads_placeholder),
             modifier = Modifier
                 .size(
                     MaterialTheme.localDimens.dp127,
@@ -176,14 +195,17 @@ fun EpisodeBanner(
 @Composable
 fun MarkItem(
     title: String,
-    episodeNumber: Int
+    imgUrl: String,
+    episodeNumber: String
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.width(IntrinsicSize.Min)
     ) {
-        CroppedImage(
-            imgResId = R.drawable.woods_image,
+        AsyncImage(
+            model = imgUrl,
+            contentDescription = null,
+            error = painterResource(id = R.drawable.hitreads_placeholder),
             modifier = Modifier
                 .size(
                     MaterialTheme.localDimens.dp127,

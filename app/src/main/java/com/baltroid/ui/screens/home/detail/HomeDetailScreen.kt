@@ -79,7 +79,7 @@ private fun HomeDetailScreenContent(
         )
         HitReadsTopBar(
             iconResId = R.drawable.ic_bell,
-            numberOfNotification = 99,
+            numberOfNotification = -1,
             onMenuClick = openMenuScreen,
             onIconClick = {},
             onNotificationClick = {}
@@ -111,15 +111,19 @@ private fun HomeDetailScreenContent(
             GenreAndInteractions(
                 episodeSize = screenState?.episodeCount.orZero(),
                 genres = screenState?.tags.orEmpty(),
-                numberOfViews = 99,
-                numberOfComments = 99
+                numberOfViews = screenState?.viewCount.orZero(),
+                numberOfComments = screenState?.commentCount.orZero()
             )
             VerticalSpacer(height = MaterialTheme.localDimens.dp20_5)
             HomeDetailSummarySection(
                 summary = screenState?.description.orEmpty(),
                 modifier = Modifier.padding(start = MaterialTheme.localDimens.dp25)
             ) {
-                navigate.invoke(HitReadsScreens.ReadingScreen.route.plus("/${screenState?.id}"))
+                if (screenState?.type == "interactive") {
+                    navigate.invoke(HitReadsScreens.InteractiveScreen.route)
+                } else {
+                    navigate.invoke(HitReadsScreens.ReadingScreen.route.plus("/${screenState?.id}"))
+                }
             }
             if (this@BoxWithConstraints.maxHeight < MaterialTheme.localDimens.minDetailScreenHeight) {
                 VerticalSpacer(height = MaterialTheme.localDimens.dp50)

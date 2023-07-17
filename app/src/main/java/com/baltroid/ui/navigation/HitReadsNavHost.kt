@@ -16,10 +16,10 @@ import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.baltroid.apps.R
-import com.baltroid.presentation.screens.home.HomeViewModel
 import com.baltroid.presentation.screens.menu.login.LoginViewModel
 import com.baltroid.ui.common.CroppedImage
 import com.baltroid.ui.screens.home.HomeScreen
+import com.baltroid.ui.screens.home.HomeViewModel
 import com.baltroid.ui.screens.home.detail.HomeDetailScreen
 import com.baltroid.ui.screens.home.detail.HomeDetailViewModel
 import com.baltroid.ui.screens.home.filter.FilterScreen
@@ -29,6 +29,7 @@ import com.baltroid.ui.screens.onboarding.OnboardingScreen
 import com.baltroid.ui.screens.onboarding.OnboardingViewModel
 import com.baltroid.ui.screens.playground.PlaygroundScreen
 import com.baltroid.ui.screens.reading.ReadingScreen
+import com.baltroid.ui.screens.reading.ReadingViewModel
 import com.baltroid.ui.theme.localColors
 import com.baltroid.util.orZero
 import com.google.accompanist.navigation.animation.AnimatedNavHost
@@ -49,6 +50,7 @@ fun HitReadsNavHost(
     val loginViewModel: LoginViewModel = hiltViewModel()
     val homeViewModel: HomeViewModel = hiltViewModel()
     val commentViewModel: CommentViewModel = hiltViewModel()
+    val readingViewModel: ReadingViewModel = hiltViewModel()
     val isLoading = remember {
         mutableStateOf(false)
     }
@@ -110,6 +112,11 @@ fun HitReadsNavHost(
                     viewModel = homeDetailViewModel,
                     openMenuScreen = openMenuScreen,
                 ) { route ->
+                    if (homeDetailViewModel.homeDetailState.value?.type == "interactive") {
+                        readingViewModel.interactiveOriginal = homeDetailViewModel.homeDetailState.value
+                    } else {
+                        readingViewModel.textOriginal = homeDetailViewModel.homeDetailState.value
+                    }
                     navController.navigate(route)
                 }
             }
@@ -118,6 +125,7 @@ fun HitReadsNavHost(
                 arguments = listOf(navArgument("id") { type = NavType.IntType })
             ) { bacStackEntry ->
                 ReadingScreen(
+                    viewModel = readingViewModel,
                     originalId = bacStackEntry.arguments?.getInt("id").orZero(),
                     openMenuScreen = openMenuScreen
                 )
@@ -126,6 +134,7 @@ fun HitReadsNavHost(
                 route = HitReadsScreens.InteractiveScreen.route
             ) {
                 InteractiveScreen(
+                    viewModel = readingViewModel,
                     openMenuScreen = openMenuScreen
                 )
             }

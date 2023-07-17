@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
@@ -66,6 +67,7 @@ import com.baltroid.ui.common.VerticalSpacer
 import com.baltroid.ui.components.CommentWritingCard
 import com.baltroid.ui.components.HitReadsSideBar
 import com.baltroid.ui.components.HitReadsTopBar
+import com.baltroid.ui.screens.menu.comments.CommentViewModel
 import com.baltroid.ui.screens.menu.place_marks.EpisodeBanner
 import com.baltroid.ui.screens.reading.comments.CommentsTabState
 import com.baltroid.ui.theme.localColors
@@ -73,19 +75,26 @@ import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
 import com.baltroid.util.orEmpty
+import com.baltroid.util.orZero
 import com.hitreads.core.domain.model.OriginalType
+import com.hitreads.core.model.Comment
+import com.hitreads.core.model.Original
 import com.hitreads.core.model.ShowEpisode
 
 @Composable
 fun ReadingScreen(
     originalId: Int,
-    viewModel: ReadingViewModel = hiltViewModel(),
+    viewModel: ReadingViewModel,
+    commentViewModel: CommentViewModel = hiltViewModel(),
     openMenuScreen: () -> Unit
 ) {
     val original = viewModel.uiState.collectAsStateWithLifecycle().value
+    val comments = commentViewModel.uiState.collectAsStateWithLifecycle().value
 
     LaunchedEffect(Unit) {
         viewModel.showOriginal(2)
+        //original id
+        commentViewModel.getComments("original", 1)
     }
 
     LaunchedEffect(original.original) {
@@ -99,6 +108,9 @@ fun ReadingScreen(
 
     ReadingScreenContent(
         screenState = viewModel.uiState.collectAsStateWithLifecycle().value,
+        textOriginal = viewModel.textOriginal,
+        hashTag = viewModel.textOriginal?.hashtag ?: "",
+        comments = comments.commentList,
         onLikeClick = {
             if (it) viewModel.unlikeOriginal(originalId)
             else viewModel.likeOriginal(originalId)
@@ -110,6 +122,9 @@ fun ReadingScreen(
 @Composable
 private fun ReadingScreenContent(
     screenState: ReadingUiState,
+    textOriginal: Original?,
+    hashTag: String,
+    comments: List<Comment>,
     onLikeClick: (Boolean) -> Unit,
     openMenuScreen: () -> Unit
 ) {
@@ -147,8 +162,9 @@ private fun ReadingScreenContent(
                         title = screenState.original?.title.orEmpty(),
                         subtitle = screenState.original?.author?.name.orEmpty(),
                         isExpanded = !isSideBarVisible,
+                        episodeName = screenState.episode?.name.orEmpty(),
                         onDotsClick = { isSideBarVisible = !isSideBarVisible },
-                        isLiked = false /*todo isLiked*/,
+                        isLiked = textOriginal?.userData?.isLike ?: false,
                         onLikeClick = { onLikeClick(it) },
                         modifier = Modifier.padding(
                             top = MaterialTheme.localDimens.dp12,
@@ -174,6 +190,7 @@ private fun ReadingScreenContent(
                             CommentSection(
                                 lazyListState = lazyScrollState,
                                 tabState = CommentsTabState.AllComments,
+                                comments = comments,
                                 onTabSelect = {},
                                 modifier = Modifier.padding(start = MaterialTheme.localDimens.dp32)
                             )
@@ -183,9 +200,9 @@ private fun ReadingScreenContent(
                 AnimatedVisibility(visible = isSideBarVisible) {
                     BoxWithConstraints {
                         HitReadsSideBar(
-                            numberOfViews = -1,
-                            numberOfComments = -1,
-                            hashTag = "#KGD",
+                            numberOfViews = textOriginal?.viewCount.orZero(),
+                            numberOfComments = textOriginal?.commentCount.orZero(),
+                            hashTag = hashTag,
                             hasSmallHeight = maxHeight < MaterialTheme.localDimens.minSideBarHeight,
                             isCommentsSelected = !isReadingSection,
                             onDotsClick = { isSideBarVisible = !isSideBarVisible },
@@ -199,7 +216,7 @@ private fun ReadingScreenContent(
             AnimatedVisibility(visible = if (isReadingSection) scrollState.isEpisodesVisible() else lazyScrollState.isEpisodesVisible()) {
                 EpisodeSection(
                     episodes = screenState.original?.episodes.orEmpty(),
-                    paddingValues = PaddingValues(start = MaterialTheme.localDimens.dp32)
+                    paddingValues = PaddingValues(horizontal = MaterialTheme.localDimens.dp32)
                 )
             }
         }
@@ -303,6 +320,7 @@ fun TitleSection(
     title: String,
     subtitle: String,
     isExpanded: Boolean,
+    episodeName: String,
     isLiked: Boolean,
     onDotsClick: () -> Unit,
     onLikeClick: (Boolean) -> Unit,
@@ -314,7 +332,12 @@ fun TitleSection(
         Row(
             modifier = Modifier.height(IntrinsicSize.Min)
         ) {
-            Titles(title = title, subtitle = subtitle, modifier = Modifier.weight(1f))
+            Titles(
+                title = title,
+                subtitle = subtitle,
+                episodeTitle = "Bölüm -1 - $episodeName",
+                modifier = Modifier.weight(1f)
+            )
             SimpleIcon(
                 iconResId = if (isLiked) R.drawable.ic_star else R.drawable.ic_star_outlined,
                 tint = if (isLiked) MaterialTheme.localColors.yellow else Color.Unspecified,
@@ -361,13 +384,20 @@ fun TitleSection(
 fun Titles(
     title: String,
     subtitle: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    episodeTitle: String? = null
 ) {
     Column(
         modifier = modifier
     ) {
         Text(text = title, style = MaterialTheme.localTextStyles.title)
         Text(text = subtitle, style = MaterialTheme.localTextStyles.subtitle)
+        episodeTitle?.let {
+            Text(
+                text = episodeTitle,
+                style = MaterialTheme.localTextStyles.readingPurpleSubTitle
+            )
+        }
     }
 }
 
@@ -467,6 +497,7 @@ fun EpisodeSectionItem(
 @Composable
 fun CommentSection(
     lazyListState: LazyListState,
+    comments: List<Comment>,
     tabState: CommentsTabState,
     modifier: Modifier = Modifier,
     onTabSelect: (CommentsTabState) -> Unit
@@ -481,12 +512,13 @@ fun CommentSection(
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp15),
             contentPadding = PaddingValues(top = MaterialTheme.localDimens.dp14),
         ) {
-            items(15) {
+            items(comments) { comment ->
                 CommentItem(
-                    owner = "SELEN PEKMEZCİ",
-                    date = "04/01/2023 20:29",
+                    owner = comment.id.toString(),
+                    date = "",
+                    content = comment.content,
                     chatSize = 3,
-                    isSubComment = true,
+                    isSubComment = false,
                     isLiked = false,
                     isChatSelected = false
                 )
@@ -529,6 +561,7 @@ fun CommentSectionTabs(
 @Composable
 fun CommentItem(
     owner: String,
+    content: String,
     date: String,
     chatSize: Int,
     isSubComment: Boolean,
@@ -601,7 +634,7 @@ fun CommentItem(
             }
         }
         Text(
-            text = "First of all please publish this so I can buy it for my library! second, there definitely needs to be a part 2 or second book because I’m hooked.",
+            text = content,
             style = MaterialTheme.localTextStyles.commentText,
             modifier = Modifier.constrainAs(comment) {
                 start.linkTo(commentHeader.start)

@@ -69,7 +69,8 @@ data class TextStyles(
     val signUpTextOrange: TextStyle,
     val filterScreenPinkText: TextStyle,
     val commentsScreenTabText: TextStyle,
-    val passwordInfo: TextStyle
+    val passwordInfo: TextStyle,
+    val readingPurpleSubTitle: TextStyle
 )
 
 val DarkThemeTextStyles = TextStyles(
@@ -316,6 +317,12 @@ val DarkThemeTextStyles = TextStyles(
         fontWeight = FontWeight.Medium,
         fontSize = 14.sp,
         color = White_alpha03
+    ),
+    readingPurpleSubTitle = TextStyle(
+        fontFamily = Poppins,
+        fontWeight = FontWeight.Medium,
+        fontSize = 12.5.sp,
+        color = Purple_80
     )
 )
 
@@ -563,6 +570,12 @@ val LightThemeTextStyles = TextStyles(
         fontWeight = FontWeight.Medium,
         fontSize = 14.sp,
         color = White_alpha03
+    ),
+    readingPurpleSubTitle = TextStyle(
+        fontFamily = Poppins,
+        fontWeight = FontWeight.Medium,
+        fontSize = 12.5.sp,
+        color = Purple_80
     )
 )
 

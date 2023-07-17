@@ -13,6 +13,8 @@ data class OriginalModel(
     val isActual: Boolean,
     val isLocked: Boolean,
     val likeCount: Int,
+    val commentCount: Int,
+    val viewCount: Int,
     val `package`: PackageModel?,
     val sort: Int,
     val status: Boolean,

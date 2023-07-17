@@ -59,4 +59,8 @@ class BookmarkRepositoryImpl @Inject constructor(
             else -> error("$MESSAGE_UNHANDLED_STATE $response")
         }
     }
+
+    override fun deleteBookmark(bookmarkId: Int): Flow<BaltroidResult<Unit>> {
+        TODO("Not yet implemented")
+    }
 }

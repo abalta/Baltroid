@@ -4,6 +4,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -54,7 +55,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.baltroid.apps.R
 import com.baltroid.core.common.model.DialogueXml
@@ -70,24 +70,30 @@ import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
+import com.baltroid.util.orEmpty
 import com.hitreads.core.domain.model.OriginalType
+import com.hitreads.core.model.Episode
+import com.hitreads.core.model.Original
 import kotlinx.coroutines.delay
 
 @Composable
 fun InteractiveScreen(
+    viewModel: ReadingViewModel,
     openMenuScreen: () -> Unit
 ) {
 
-    val viewModel: ReadingViewModel = hiltViewModel()
+    val original = viewModel.interactiveOriginal
 
     LaunchedEffect(Unit) {
-        delay(3000)
+        delay(2000)
         viewModel.showEpisode(761, OriginalType.INTERACTIVE)
     }
 
     val interactiveContent =
         viewModel.uiState.collectAsStateWithLifecycle().value.episode?.xmlContent
             ?.episode?.dialogue
+
+    val episode = viewModel.uiState.collectAsStateWithLifecycle().value.episode
 
     var currentDialogue by remember(interactiveContent) {
         mutableStateOf<DialogueXml?>(interactiveContent?.firstOrNull())
@@ -134,7 +140,8 @@ fun InteractiveScreen(
                                 ),
                             )
                         ) { nextLineId ->
-                            currentDialogue = interactiveContent?.firstOrNull { it?.lineId == nextLineId }
+                            currentDialogue =
+                                interactiveContent?.firstOrNull { it?.lineId == nextLineId }
                         }
                     }
                     if (dialogue.lineType == "NOT" || dialogue.lineType == null) {
@@ -163,6 +170,8 @@ fun InteractiveScreen(
             }
 
             InteractiveScreenBottomSection(
+                original = original,
+                episode = episode,
                 modifier = Modifier
                     .background(MaterialTheme.localColors.black_alpha02)
             )
@@ -176,9 +185,17 @@ fun RemindingInfo(
     modifier: Modifier = Modifier,
     onClick: (nextLineId: String) -> Unit
 ) {
+    val interactionSource = remember {
+        MutableInteractionSource()
+    }
     Row(
         modifier = modifier
-            .clickable { onClick.invoke(model.nextLineId.toString()) }
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+            ) {
+                onClick.invoke(model.nextLineId.toString())
+            }
             .padding(
                 start = MaterialTheme.localDimens.dp35,
                 end = MaterialTheme.localDimens.dp20
@@ -287,12 +304,16 @@ fun SecondInteractiveContent(
 
 @Composable
 fun InteractiveScreenBottomSection(
-    modifier: Modifier = Modifier
+    original: Original?,
+    episode: Episode?,
+    modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier) {
         Column {
             VerticalSpacer(height = MaterialTheme.localDimens.dp30)
             InteractiveScreenBottomBar(
+                original = original,
+                episode = episode,
                 onAddCommentClicked = {},
                 onBannerClicked = {},
                 onCommentsClicked = {}
@@ -302,7 +323,11 @@ fun InteractiveScreenBottomSection(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 HorizontalSpacer(width = MaterialTheme.localDimens.dp31)
-                Titles(title = "PENAH", subtitle = "GAMZE KARACA", modifier = Modifier.weight(1f))
+                Titles(
+                    title = original?.title.orEmpty(),
+                    subtitle = original?.author?.name.orEmpty(),
+                    modifier = Modifier.weight(1f)
+                )
                 SimpleIcon(
                     iconResId = R.drawable.ic_star_outlined,
                     modifier = Modifier.align(Alignment.Bottom)
@@ -323,6 +348,8 @@ fun InteractiveScreenBottomSection(
 
 @Composable
 fun InteractiveScreenBottomBar(
+    original: Original?,
+    episode: Episode?,
     onCommentsClicked: () -> Unit,
     onAddCommentClicked: () -> Unit,
     onBannerClicked: () -> Unit
@@ -336,16 +363,19 @@ fun InteractiveScreenBottomBar(
                 .fillMaxWidth()
                 .height(IntrinsicSize.Min)
         ) {
-            Text(text = "#PNH", style = MaterialTheme.localTextStyles.interactiveHashtag)
+            Text(
+                text = original?.hashtag.orEmpty(),
+                style = MaterialTheme.localTextStyles.interactiveHashtag
+            )
             IconWithTextNextTo(
                 iconResId = R.drawable.ic_eye,
-                text = "17.450",
+                text = original?.viewCount.toString(),
                 textStyle = MaterialTheme.localTextStyles.sideBarIconText,
                 spacedBy = MaterialTheme.localDimens.dp9,
             )
             IconWithTextNextTo(
                 iconResId = R.drawable.ic_comment,
-                text = "12",
+                text = original?.commentCount.toString(),
                 textStyle = MaterialTheme.localTextStyles.sideBarIconText,
                 spacedBy = MaterialTheme.localDimens.dp9,
                 modifier = Modifier
@@ -373,7 +403,10 @@ fun InteractiveScreenBottomBar(
                         .width(MaterialTheme.localDimens.dp0_5)
                 )
             }
-            Text(text = "BÖLÜM 7", style = MaterialTheme.localTextStyles.interactiveEpisode)
+            Text(
+                text = "BÖLÜM ${episode?.id}",
+                style = MaterialTheme.localTextStyles.interactiveEpisode
+            )
             SimpleIcon(
                 iconResId = R.drawable.ic_banner_filled,
                 tint = MaterialTheme.localColors.purple
@@ -578,6 +611,5 @@ data class InteractiveOptions(
 @Preview(widthDp = 360, heightDp = 540)
 @Composable
 fun InteractiveScreenPreview() {
-    InteractiveScreen() {}
 }
 

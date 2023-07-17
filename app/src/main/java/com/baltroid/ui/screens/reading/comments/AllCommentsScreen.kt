@@ -100,6 +100,7 @@ fun AllCommentsScreen(
                         CommentSection(
                             lazyListState = lazyListState,
                             tabState = selectedTab,
+                            comments = emptyList(),
                             modifier = Modifier.padding(end = MaterialTheme.localDimens.dp8)
                         ) { newTab ->
                             selectedTab = newTab

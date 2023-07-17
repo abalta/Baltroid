@@ -75,18 +75,9 @@ fun FilterScreen(
                 width = Dimension.percent(0.7f)
             }
         )
+
         TextBetweenDividers(
-            text = "Seçili Kategorilerde 24 Hikaye Var",
-            textStyle = MaterialTheme.localTextStyles.filterScreenPinkText,
-            onClick = {},
-            modifier = Modifier.constrainAs(info) {
-                bottom.linkTo(apply.top)
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-            }
-        )
-        TextBetweenDividers(
-            text = "SEÇİMLERE GÖRE LİSTELE",
+            text = stringResource(id = R.string.txt_filter),
             textStyle = MaterialTheme.localTextStyles.signInTextWhite,
             onClick = { applyFilter.invoke(selectedIds) },
             modifier = Modifier
