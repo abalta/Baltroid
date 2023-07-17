@@ -52,4 +52,28 @@ class AuthRepositoryImpl @Inject constructor(
             error("$MESSAGE_UNHANDLED_STATE $token")
         }
     }
+
+    override fun register(
+        name: String,
+        email: String,
+        password: String
+    ): Flow<BaltroidResult<Any?>> = flow {
+        emit(BaltroidResult.loading())
+        val response = networkDataSource.register(name, email, password)
+
+        when {
+            response.isSuccess() -> {
+                response.value.data?.let {
+                    emit(BaltroidResult.success(it))
+                }
+            }
+
+            response.isFailure() -> {
+                val throwable = response.error
+                emit(BaltroidResult.failure(throwable))
+            }
+
+            else -> error("$MESSAGE_UNHANDLED_STATE $response")
+        }
+    }
 }

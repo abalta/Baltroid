@@ -24,12 +24,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.baltroid.apps.R
 import com.baltroid.presentation.screens.menu.login.LoginViewModel
 import com.baltroid.ui.common.SimpleImage
 import com.baltroid.ui.common.VerticalSpacer
+import com.baltroid.ui.navigation.HitReadsScreens
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localShapes
@@ -38,6 +38,7 @@ import com.baltroid.ui.theme.localTextStyles
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel,
+    navigate: (String) -> Unit,
     onLoggedIn: () -> Unit
 ) {
     val loginState = viewModel.uiState.collectAsStateWithLifecycle().value.loginUiModel
@@ -48,16 +49,17 @@ fun LoginScreen(
     }
 
     LoginScreenContent(
-        loginViewModel = viewModel
-    ) {
-
-    }
+        loginViewModel = viewModel,
+        forgotPassword = {},
+        navigate = navigate
+    )
 }
 
 @Composable
 fun LoginScreenContent(
     loginViewModel: LoginViewModel,
-    forgotPassword: () -> Unit
+    forgotPassword: () -> Unit,
+    navigate: (String) -> Unit
 ) {
     val loginData = loginViewModel.uiStateLoginFields.collectAsStateWithLifecycle().value
     Column(
@@ -112,7 +114,7 @@ fun LoginScreenContent(
             TextBetweenDividers(
                 text = stringResource(id = R.string.sign_up),
                 textStyle = MaterialTheme.localTextStyles.signUpTextOrange,
-                onClick = {}
+                onClick = { navigate.invoke(HitReadsScreens.RegisterScreen.route) }
             )
         }
     }
@@ -184,6 +186,6 @@ fun TextBetweenDividers(
 @Preview(widthDp = 360, heightDp = 540)
 @Composable
 fun LoginScreenPreview() {
-    LoginScreen(hiltViewModel()) {}
+
 }
 

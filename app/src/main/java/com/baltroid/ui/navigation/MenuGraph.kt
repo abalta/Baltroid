@@ -15,6 +15,7 @@ import com.baltroid.ui.screens.menu.favorites.FavoritesScreen
 import com.baltroid.ui.screens.menu.login.LoginScreen
 import com.baltroid.ui.screens.menu.place_marks.PlaceMarksScreen
 import com.baltroid.ui.screens.menu.profile.ProfileScreen
+import com.baltroid.ui.screens.menu.register.RegisterScreen
 import com.baltroid.ui.screens.menu.settings.SettingsScreen
 import com.baltroid.ui.screens.menu.shop.ShopScreen
 import com.baltroid.ui.screens.menu.shop.ShopScreenState
@@ -99,9 +100,15 @@ fun NavGraphBuilder.menuGraph(navController: NavController, loginViewModel: Logi
             )
         }
         composable(route = HitReadsScreens.LoginScreen.route) {
-            LoginScreen(loginViewModel) {
+            LoginScreen(
+                loginViewModel,
+                navigate = { navController.navigate(it) }
+            ) {
                 navController.popBackStack()
             }
+        }
+        composable(route = HitReadsScreens.RegisterScreen.route) {
+            RegisterScreen()
         }
     }
 }

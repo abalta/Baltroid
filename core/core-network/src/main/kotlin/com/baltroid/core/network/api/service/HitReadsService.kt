@@ -16,6 +16,7 @@ import com.baltroid.core.network.util.Constants.Fields.EMAIL
 import com.baltroid.core.network.util.Constants.Fields.FILTER_TAG
 import com.baltroid.core.network.util.Constants.Fields.GET_BY_FAV
 import com.baltroid.core.network.util.Constants.Fields.ID
+import com.baltroid.core.network.util.Constants.Fields.NAME
 import com.baltroid.core.network.util.Constants.Fields.PAGE
 import com.baltroid.core.network.util.Constants.Fields.PASSWORD
 import com.baltroid.core.network.util.Constants.Fields.TYPE
@@ -25,6 +26,7 @@ import com.baltroid.core.network.util.Constants.Path.EPISODE
 import com.baltroid.core.network.util.Constants.Path.LIKE
 import com.baltroid.core.network.util.Constants.Path.LOGIN
 import com.baltroid.core.network.util.Constants.Path.ORIGINALS_INDEX
+import com.baltroid.core.network.util.Constants.Path.REGISTER
 import com.baltroid.core.network.util.Constants.Path.SHOW
 import com.baltroid.core.network.util.Constants.Path.TAG
 import com.baltroid.core.network.util.Constants.Path.UNLIKE
@@ -62,6 +64,14 @@ interface HitReadsService {
         @Field("$EMAIL") email: String,
         @Field("$PASSWORD") password: String
     ): BaltroidResult<HitReadsResponse<LoginDto>>
+
+    @FormUrlEncoded
+    @POST("$REGISTER")
+    suspend fun register(
+        @Field("$EMAIL") email: String,
+        @Field("$PASSWORD") password: String,
+        @Field("$NAME") name: String
+    ): BaltroidResult<HitReadsResponse<Any?>>
 
     @GET("$TAG")
     suspend fun getTags(): BaltroidResult<HitReadsResponse<List<NetworkTag>>>
