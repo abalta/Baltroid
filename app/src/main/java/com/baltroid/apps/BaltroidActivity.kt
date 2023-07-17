@@ -24,10 +24,11 @@ class BaltroidActivity : ComponentActivity() {
         installSplashScreen()
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
+
         setContent {
             val viewmodel: LoginViewModel = hiltViewModel()
             LaunchedEffect(Unit) {
-                //viewmodel.loginTest("demo@kitapkulubu.test","password")
+                viewmodel.loginTest("demo@kitapkulubu.test", "password")
             }
             HitReadsTheme {
                 HitReadsNavHost(

@@ -19,6 +19,7 @@ internal object Constants {
         internal const val WELCOME = "welcome-screen"
         internal const val BOOKMARK = "bookmark"
         internal const val REGISTER = "register"
+        internal const val FAVORITE = "favorite"
     }
 
     internal object Fields {

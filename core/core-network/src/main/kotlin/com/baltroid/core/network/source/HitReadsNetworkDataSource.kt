@@ -45,7 +45,7 @@ class HitReadsNetworkDataSource @Inject constructor(private val hitReadsService:
         name: String,
         email: String,
         password: String
-    ): BaltroidResult<HitReadsResponse<Any?>> =
+    ): BaltroidResult<HitReadsResponse<Unit>> =
         hitReadsService.register(name, email, password)
 
     suspend fun showOriginal(originalId: Int): BaltroidResult<HitReadsResponse<NetworkShowOriginal>> =

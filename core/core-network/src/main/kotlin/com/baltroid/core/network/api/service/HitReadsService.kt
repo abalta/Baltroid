@@ -23,6 +23,7 @@ import com.baltroid.core.network.util.Constants.Fields.TYPE
 import com.baltroid.core.network.util.Constants.Path.BOOKMARK
 import com.baltroid.core.network.util.Constants.Path.COMMENT
 import com.baltroid.core.network.util.Constants.Path.EPISODE
+import com.baltroid.core.network.util.Constants.Path.FAVORITE
 import com.baltroid.core.network.util.Constants.Path.LIKE
 import com.baltroid.core.network.util.Constants.Path.LOGIN
 import com.baltroid.core.network.util.Constants.Path.ORIGINALS_INDEX
@@ -71,7 +72,7 @@ interface HitReadsService {
         @Field("$EMAIL") email: String,
         @Field("$PASSWORD") password: String,
         @Field("$NAME") name: String
-    ): BaltroidResult<HitReadsResponse<Any?>>
+    ): BaltroidResult<HitReadsResponse<Unit>>
 
     @GET("$TAG")
     suspend fun getTags(): BaltroidResult<HitReadsResponse<List<NetworkTag>>>
@@ -99,6 +100,13 @@ interface HitReadsService {
 
     @POST("$BOOKMARK")
     suspend fun createBookmark(@Body request: CreateBookmarkDto): BaltroidResult<HitReadsResponse<BookmarkDto>>
+
+    @FormUrlEncoded
+    @POST("$FAVORITE")
+    suspend fun createFavorite(
+        @Field("$TYPE") type: String,
+        @Field("$ID") id: Int
+    ): BaltroidResult<HitReadsResponse<Unit>>
 
     @DELETE("$BOOKMARK/{id}")
     suspend fun deleteBookmark(@Path("id") id: Int): BaltroidResult<HitReadsResponse<Unit>>
