@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="nickname">NICKNAME</string>
+    <string name="hitreads">HitReads</string>
 </resources>
