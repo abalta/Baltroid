@@ -120,3 +120,31 @@ data class BookmarkDto(
     val cover: String?
 )
 
+@Serializable
+data class FavoriteDto(
+    @SerialName("id")
+    val id: Int?,
+    @SerialName("original_id")
+    val originalId: Int?,
+    @SerialName("season_id")
+    val seasonId: Int?,
+    @SerialName("author_name")
+    val authorName: String?,
+    @SerialName("episode_name")
+    val episodeName: String?,
+    @SerialName("created_at")
+    val createdAt: String?,
+    @SerialName("updated_at")
+    val updatedAt: String?,
+    @SerialName("image")
+    val image: String?,
+    @SerialName("asset_contents")
+    val assetContents: String?,
+    @SerialName("price")
+    val price: Int?,
+    @SerialName("price_type")
+    val priceType: String?,
+    @SerialName("sort")
+    val sort: Int?
+)
+

@@ -8,6 +8,7 @@ import com.baltroid.core.network.model.request.CreateBookmarkDto
 import com.baltroid.core.network.model.response.BookmarkDto
 import com.baltroid.core.network.model.response.CommentDto
 import com.baltroid.core.network.model.response.EpisodeResponseDto
+import com.baltroid.core.network.model.response.FavoriteDto
 import com.baltroid.core.network.model.response.LoginDto
 import com.baltroid.core.network.model.response.OriginalResponseDto
 import com.baltroid.core.network.model.response.WelcomeDto
@@ -107,6 +108,11 @@ interface HitReadsService {
         @Field("$TYPE") type: String,
         @Field("$ID") id: Int
     ): BaltroidResult<HitReadsResponse<Unit>>
+
+    suspend fun getFavorites(
+        @Field("$TYPE") type: String,
+        @Field("$ID") id: Int?
+    ): BaltroidResult<HitReadsResponse<List<FavoriteDto>>>
 
     @DELETE("$BOOKMARK/{id}")
     suspend fun deleteBookmark(@Path("id") id: Int): BaltroidResult<HitReadsResponse<Unit>>

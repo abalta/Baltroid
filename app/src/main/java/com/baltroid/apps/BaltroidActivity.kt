@@ -11,13 +11,18 @@ import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.baltroid.core.network.api.service.HitReadsService
 import com.baltroid.presentation.screens.menu.login.LoginViewModel
 import com.baltroid.ui.navigation.HitReadsNavHost
 import com.baltroid.ui.theme.HitReadsTheme
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class BaltroidActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var api: HitReadsService
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -11,12 +11,14 @@ import com.baltroid.core.network.model.originals.NetworkShowOriginal
 import com.baltroid.core.network.model.originals.NetworkTag
 import com.baltroid.core.network.model.response.BookmarkDto
 import com.baltroid.core.network.model.response.CommentDto
+import com.baltroid.core.network.model.response.FavoriteDto
 import com.baltroid.core.network.model.response.WelcomeDto
 import com.baltroid.core.network.model.user.NetworkUserData
 import com.hitreads.core.domain.model.AuthorModel
 import com.hitreads.core.domain.model.BookmarkModel
 import com.hitreads.core.domain.model.CommentModel
 import com.hitreads.core.domain.model.EpisodeModel
+import com.hitreads.core.domain.model.FavoriteModel
 import com.hitreads.core.domain.model.OriginalModel
 import com.hitreads.core.domain.model.PackageModel
 import com.hitreads.core.domain.model.SeasonModel
@@ -138,5 +140,20 @@ internal fun BookmarkDto.asBookmarkModel() = BookmarkModel(
     original = original?.asOriginalModel(),
     content = content.orEmpty(),
     cover = cover.orEmpty()
+)
+
+internal fun FavoriteDto.asFavorite() = FavoriteModel(
+    id = id,
+    originalId = originalId,
+    seasonId = seasonId,
+    authorName = authorName,
+    episodeName = episodeName,
+    createdAt = createdAt,
+    updatedAt = updatedAt,
+    image = image,
+    assetContents = assetContents,
+    price = price,
+    priceType = priceType,
+    sort = sort
 )
 

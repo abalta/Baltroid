@@ -4,6 +4,7 @@ import com.hitreads.core.domain.model.AuthorModel
 import com.hitreads.core.domain.model.BookmarkModel
 import com.hitreads.core.domain.model.CommentModel
 import com.hitreads.core.domain.model.EpisodeModel
+import com.hitreads.core.domain.model.FavoriteModel
 import com.hitreads.core.domain.model.OriginalModel
 import com.hitreads.core.domain.model.PackageModel
 import com.hitreads.core.domain.model.SeasonModel
@@ -16,6 +17,7 @@ import com.hitreads.core.model.Author
 import com.hitreads.core.model.Bookmark
 import com.hitreads.core.model.Comment
 import com.hitreads.core.model.Episode
+import com.hitreads.core.model.Favorite
 import com.hitreads.core.model.Original
 import com.hitreads.core.model.Package
 import com.hitreads.core.model.Season
@@ -90,10 +92,25 @@ fun CommentModel.asComment() = Comment(id, content, repliesCount)
 fun WelcomeModel.asWelcome() = Welcome(id, message, path)
 
 fun BookmarkModel.asBookmark() = Bookmark(
-    id,
-    user,
-    episode,
-    original?.asOriginal(),
-    content,
-    cover
+    id = id,
+    user = user,
+    episode = episode,
+    original = original?.asOriginal(),
+    content = content,
+    cover = cover
+)
+
+fun FavoriteModel.asFavorite() = Favorite(
+    id = id,
+    originalId = originalId,
+    seasonId = seasonId,
+    authorName = authorName,
+    episodeName = episodeName,
+    createdAt = createdAt,
+    updatedAt = updatedAt,
+    image = image,
+    assetContents = assetContents,
+    price = price,
+    priceType = priceType,
+    sort = sort
 )

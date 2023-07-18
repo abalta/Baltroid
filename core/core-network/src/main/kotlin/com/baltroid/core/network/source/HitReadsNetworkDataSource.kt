@@ -9,6 +9,7 @@ import com.baltroid.core.network.model.request.CreateBookmarkDto
 import com.baltroid.core.network.model.response.BookmarkDto
 import com.baltroid.core.network.model.response.CommentDto
 import com.baltroid.core.network.model.response.EpisodeResponseDto
+import com.baltroid.core.network.model.response.FavoriteDto
 import com.baltroid.core.network.model.response.LoginDto
 import com.baltroid.core.network.model.response.OriginalResponseDto
 import com.baltroid.core.network.model.response.WelcomeDto
@@ -104,4 +105,13 @@ class HitReadsNetworkDataSource @Inject constructor(private val hitReadsService:
 
     suspend fun deleteBookmark(bookmarkId: Int): BaltroidResult<HitReadsResponse<Unit>> =
         hitReadsService.deleteBookmark(bookmarkId)
+
+    suspend fun createFavorite(type: String, id: Int): BaltroidResult<HitReadsResponse<Unit>> =
+        hitReadsService.createFavorite(type, id)
+
+    suspend fun getFavorites(
+        type: String,
+        id: Int?
+    ): BaltroidResult<HitReadsResponse<List<FavoriteDto>>> =
+        hitReadsService.getFavorites(type, id)
 }
