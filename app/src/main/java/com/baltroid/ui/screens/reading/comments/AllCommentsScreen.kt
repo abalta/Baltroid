@@ -27,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -63,9 +64,6 @@ fun AllCommentsScreen(
     var bottomBarVisibility by remember {
         mutableStateOf(true)
     }
-    var selectedTab by remember {
-        mutableStateOf(CommentsTabState.AllComments)
-    }
 
     BoxWithConstraints {
         Column(
@@ -87,7 +85,7 @@ fun AllCommentsScreen(
                 ) {
                     VerticalSpacer(height = MaterialTheme.localDimens.dp12)
                     Text(
-                        text = "YORUMLAR",
+                        text = stringResource(id = R.string.comments),
                         style = MaterialTheme.localTextStyles.title,
                         modifier = Modifier.padding(
                             start = MaterialTheme.localDimens.dp31,
@@ -109,12 +107,9 @@ fun AllCommentsScreen(
 
                         CommentSection(
                             lazyListState = lazyListState,
-                            tabState = selectedTab,
                             comments = comments.commentList,
                             modifier = Modifier.padding(end = MaterialTheme.localDimens.dp8)
-                        ) { newTab ->
-                            selectedTab = newTab
-                        }
+                        )
                     }
                 }
                 AnimatedVisibility(visible = sideBarVisibility) {
