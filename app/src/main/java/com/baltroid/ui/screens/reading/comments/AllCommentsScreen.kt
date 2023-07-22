@@ -20,6 +20,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,11 +28,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.baltroid.apps.R
 import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.VerticalSpacer
 import com.baltroid.ui.components.SideBarHorizontalDivider
 import com.baltroid.ui.components.SideBarVerticalDivider
+import com.baltroid.ui.screens.menu.comments.CommentViewModel
 import com.baltroid.ui.screens.reading.CommentSection
 import com.baltroid.ui.screens.reading.HashTagSection
 import com.baltroid.ui.screens.reading.HitReadsPageHeader
@@ -46,6 +50,12 @@ fun AllCommentsScreen(
 ) {
     val scrollState = rememberScrollState()
     val lazyListState = rememberLazyListState()
+    val viewModel: CommentViewModel = hiltViewModel()
+    val comments = viewModel.uiState.collectAsStateWithLifecycle().value
+
+    LaunchedEffect(Unit) {
+        viewModel.getAllComments("all", null)
+    }
 
     var sideBarVisibility by remember {
         mutableStateOf(true)
@@ -100,7 +110,7 @@ fun AllCommentsScreen(
                         CommentSection(
                             lazyListState = lazyListState,
                             tabState = selectedTab,
-                            comments = emptyList(),
+                            comments = comments.commentList,
                             modifier = Modifier.padding(end = MaterialTheme.localDimens.dp8)
                         ) { newTab ->
                             selectedTab = newTab

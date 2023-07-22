@@ -1,5 +1,6 @@
 package com.baltroid.core.network.model.response
 
+import com.baltroid.core.network.model.originals.NetworkCommentOriginal
 import com.baltroid.core.network.model.originals.NetworkEpisode
 import com.baltroid.core.network.model.originals.NetworkOriginal
 import com.baltroid.core.network.util.Constants
@@ -146,5 +147,31 @@ data class FavoriteDto(
     val priceType: String?,
     @SerialName("sort")
     val sort: Int?
+)
+
+@Serializable
+data class AllCommentsDto(
+    @SerialName("id")
+    val id: Int?,
+    @SerialName("content")
+    val content: String?,
+    @SerialName("Original")
+    val original: NetworkCommentOriginal?,
+    @SerialName("author")
+    val author: Author?,
+    @SerialName("is_reply")
+    val isReply: Boolean?,
+    @SerialName("likes_count")
+    val likesCount: Int?,
+    @SerialName("replies_count")
+    val repliesCount: Int?,
+    @SerialName("active_user_like")
+    val activeUserLike: Boolean?,
+    @SerialName("replies")
+    val replies: List<AllCommentsDto>?,
+    @SerialName("reply_comment_id")
+    val replyCommentId: Int?,
+    @SerialName("created_at")
+    val createdAt: String?,
 )
 

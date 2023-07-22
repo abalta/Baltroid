@@ -8,7 +8,7 @@ data class NetworkShowEpisode(
     @SerialName("id")
     val id: Int,
     @SerialName("season_id")
-    val seasonId: Int,
+    val seasonId: Int?,
     @SerialName("episode_name")
     val episodeName: String,
     @SerialName("price")

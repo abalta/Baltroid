@@ -5,6 +5,7 @@ import com.baltroid.core.network.model.HitReadsResponse
 import com.baltroid.core.network.model.originals.NetworkShowOriginal
 import com.baltroid.core.network.model.originals.NetworkTag
 import com.baltroid.core.network.model.request.CreateBookmarkDto
+import com.baltroid.core.network.model.response.AllCommentsDto
 import com.baltroid.core.network.model.response.BookmarkDto
 import com.baltroid.core.network.model.response.CommentDto
 import com.baltroid.core.network.model.response.EpisodeResponseDto
@@ -86,6 +87,13 @@ interface HitReadsService {
         @Query("$TYPE") type: String,
         @Query("$ID") id: Int
     ): BaltroidResult<HitReadsResponse<List<CommentDto>>>
+
+    @GET("$COMMENT")
+    suspend fun getAllComments(
+        @Query("$TYPE") type: String,
+        @Query("$ID") id: Int?
+    ): BaltroidResult<HitReadsResponse<List<AllCommentsDto>>>
+
 
     @POST("$COMMENT/{id}/$LIKE")
     suspend fun likeComment(@Path("id") id: Int): BaltroidResult<HitReadsResponse<Unit>>

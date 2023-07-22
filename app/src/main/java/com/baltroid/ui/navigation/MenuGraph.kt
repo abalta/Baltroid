@@ -19,6 +19,7 @@ import com.baltroid.ui.screens.menu.register.RegisterScreen
 import com.baltroid.ui.screens.menu.settings.SettingsScreen
 import com.baltroid.ui.screens.menu.shop.ShopScreen
 import com.baltroid.ui.screens.menu.shop.ShopScreenState
+import com.baltroid.ui.screens.reading.comments.AllCommentsScreen
 import com.google.accompanist.navigation.animation.composable
 
 
@@ -109,6 +110,11 @@ fun NavGraphBuilder.menuGraph(navController: NavController, loginViewModel: Logi
         }
         composable(route = HitReadsScreens.RegisterScreen.route) {
             RegisterScreen()
+        }
+        composable(route = HitReadsScreens.AllCommentsScreen.route) {
+            AllCommentsScreen {
+
+            }
         }
     }
 }

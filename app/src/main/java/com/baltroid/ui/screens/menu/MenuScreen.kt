@@ -133,7 +133,11 @@ fun MenuScreenGuestContent(
                         start.linkTo(image.start)
                         end.linkTo(image.end)
                     }
-                    .border(MaterialTheme.localDimens.dp1, MaterialTheme.localColors.white, MaterialTheme.localShapes.roundedDp4)
+                    .border(
+                        MaterialTheme.localDimens.dp1,
+                        MaterialTheme.localColors.white,
+                        MaterialTheme.localShapes.roundedDp4
+                    )
                     .clip(MaterialTheme.localShapes.roundedDp4)
                     .background(MaterialTheme.localColors.black)
                     .clickable {
@@ -364,7 +368,9 @@ private fun MenuScreenLoggedInContent(
                     iconResId = R.drawable.ic_chat_filled,
                     isEnabled = true,
                     modifier = Modifier
-                ) {}
+                ) {
+                    navigate.invoke(HitReadsScreens.AllCommentsScreen.route)
+                }
                 MenuItem(
                     title = stringResource(id = R.string.settings),
                     iconResId = R.drawable.ic_settings,

@@ -2,6 +2,7 @@ package com.baltroid.core.network.util
 
 internal object Constants {
     internal const val API_URL = "http://3.73.140.195/api/"
+    internal const val PROD = "http://3.76.153.71/api/"
     internal const val IMAGE_URL = ""
     internal const val API_KEY_QUERY_PARAM = "api_key"
     internal const val PAGE_SIZE = 20

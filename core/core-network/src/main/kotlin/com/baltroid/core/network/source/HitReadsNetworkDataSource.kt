@@ -6,6 +6,7 @@ import com.baltroid.core.network.model.HitReadsResponse
 import com.baltroid.core.network.model.originals.NetworkShowOriginal
 import com.baltroid.core.network.model.originals.NetworkTag
 import com.baltroid.core.network.model.request.CreateBookmarkDto
+import com.baltroid.core.network.model.response.AllCommentsDto
 import com.baltroid.core.network.model.response.BookmarkDto
 import com.baltroid.core.network.model.response.CommentDto
 import com.baltroid.core.network.model.response.EpisodeResponseDto
@@ -81,6 +82,12 @@ class HitReadsNetworkDataSource @Inject constructor(private val hitReadsService:
             }
         }
     }
+
+    suspend fun getAllComments(
+        type: String,
+        id: Int?
+    ): BaltroidResult<HitReadsResponse<List<AllCommentsDto>>> =
+        hitReadsService.getAllComments(type, id)
 
     suspend fun likeComment(
         commentId: Int

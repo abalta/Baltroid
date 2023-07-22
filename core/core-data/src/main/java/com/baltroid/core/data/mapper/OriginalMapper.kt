@@ -2,6 +2,7 @@ package com.baltroid.core.data.mapper
 
 import com.baltroid.core.common.model.XmlContent
 import com.baltroid.core.network.model.author.NetworkAuthor
+import com.baltroid.core.network.model.originals.NetworkCommentOriginal
 import com.baltroid.core.network.model.originals.NetworkEpisode
 import com.baltroid.core.network.model.originals.NetworkOriginal
 import com.baltroid.core.network.model.originals.NetworkPackage
@@ -9,11 +10,13 @@ import com.baltroid.core.network.model.originals.NetworkSeason
 import com.baltroid.core.network.model.originals.NetworkShowEpisode
 import com.baltroid.core.network.model.originals.NetworkShowOriginal
 import com.baltroid.core.network.model.originals.NetworkTag
+import com.baltroid.core.network.model.response.AllCommentsDto
 import com.baltroid.core.network.model.response.BookmarkDto
 import com.baltroid.core.network.model.response.CommentDto
 import com.baltroid.core.network.model.response.FavoriteDto
 import com.baltroid.core.network.model.response.WelcomeDto
 import com.baltroid.core.network.model.user.NetworkUserData
+import com.hitreads.core.domain.model.AllCommentsModel
 import com.hitreads.core.domain.model.AuthorModel
 import com.hitreads.core.domain.model.BookmarkModel
 import com.hitreads.core.domain.model.CommentModel
@@ -54,6 +57,32 @@ internal fun NetworkOriginal.asOriginalModel() = OriginalModel(
     dataCount = dataCount
 )
 
+internal fun NetworkCommentOriginal.asOriginalModel() = OriginalModel(
+    type = "",
+    id = id,
+    title = title,
+    description = description,
+    cover = cover,
+    banner = banner,
+    author = AuthorModel(authorId, "", emptyList()),
+    isLocked = isLocked,
+    isActual = false,
+    status = false,
+    likeCount = 0,
+    commentCount = 0,
+    viewCount = viewCount,
+    sort = sort,
+    `package` = null,
+    userData = UserDataModel(false, false),
+    subtitle = subtitle,
+    tags = emptyList(),
+    episodeCount = 0,
+    hashtag = hashtag.orEmpty(),
+    seasons = emptyList(),
+    isNew = false,
+    dataCount = 0
+)
+
 internal fun NetworkShowOriginal.asShowOriginalModel() = ShowOriginalModel(
     id = id,
     title = title,
@@ -69,7 +98,7 @@ internal fun NetworkShowOriginal.asShowOriginalModel() = ShowOriginalModel(
 
 internal fun NetworkShowEpisode.asShowEpisodeModel() = ShowEpisodeModel(
     id = id,
-    seasonId = seasonId,
+    seasonId = seasonId ?: 0,
     episodeName = episodeName,
     price = price,
     priceType = priceType,
@@ -125,6 +154,24 @@ internal fun CommentDto.asCommentModel() = CommentModel(
     likesCount = likesCount ?: 0,
     repliesCount = repliesCount ?: 0,
     replyCommentId = replyCommentId ?: 0
+)
+
+internal fun AllCommentsDto.asAllCommentsModel(): AllCommentsModel = AllCommentsModel(
+    id = id,
+    content = content,
+    original = original?.asOriginalModel(),
+    author = AuthorModel(
+        0,
+        author?.username.orEmpty(),
+        author?.avatar?.map { it.url.orEmpty() }.orEmpty()
+    ),
+    isReply = isReply,
+    likesCount = likesCount,
+    repliesCount = repliesCount,
+    activeUserLike = activeUserLike,
+    replies = replies?.map { it.asAllCommentsModel() },
+    replyCommentId = replyCommentId,
+    createdAt = createdAt
 )
 
 internal fun WelcomeDto.asWelcomeModel() = WelcomeModel(

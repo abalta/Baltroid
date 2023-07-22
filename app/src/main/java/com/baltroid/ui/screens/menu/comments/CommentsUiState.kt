@@ -1,9 +1,9 @@
 package com.baltroid.ui.screens.menu.comments
 
-import com.hitreads.core.model.Comment
+import com.hitreads.core.domain.model.AllCommentsModel
 
 data class CommentsUiState(
-    val commentList: List<Comment> = mutableListOf(),
+    val commentList: List<AllCommentsModel> = mutableListOf(),
     val isLoading: Boolean = false,
     val error: Throwable? = null,
 )

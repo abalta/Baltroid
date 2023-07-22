@@ -5,10 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.baltroid.core.common.result.handle
 import com.hitreads.core.domain.usecase.CreateBookmarkUseCase
 import com.hitreads.core.domain.usecase.DeleteBookmarkUseCase
+import com.hitreads.core.domain.usecase.GetAllCommentsUseCase
 import com.hitreads.core.domain.usecase.GetCommentsUseCase
 import com.hitreads.core.domain.usecase.LikeCommentUseCase
 import com.hitreads.core.domain.usecase.UnlikeCommentUseCase
-import com.hitreads.core.ui.mapper.asComment
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,6 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CommentViewModel @Inject constructor(
     private val commentsUseCase: GetCommentsUseCase,
+    private val getAllCommentsUseCase: GetAllCommentsUseCase,
     private val commentLikeCommentUseCase: LikeCommentUseCase,
     private val commentUnlikeCommentUseCase: UnlikeCommentUseCase,
     private val createBookmarkUseCase: CreateBookmarkUseCase,
@@ -31,16 +32,14 @@ class CommentViewModel @Inject constructor(
     private val _likeUiState = MutableStateFlow(CommentsLikeUiState())
     val likeUiState = _likeUiState.asStateFlow()
 
-    fun getComments(type: String, id: Int) = viewModelScope.launch {
-        commentsUseCase(type, id).handle {
+    fun getAllComments(type: String, id: Int?) = viewModelScope.launch {
+        getAllCommentsUseCase(type, id).handle {
             onLoading {
                 _uiState.update { it.copy(isLoading = true) }
             }
             onSuccess { commentList ->
                 _uiState.update {
-                    it.copy(commentList = commentList.map { model ->
-                        model.asComment()
-                    }, isLoading = false)
+                    it.copy(commentList = commentList, isLoading = false)
                 }
             }
             onFailure(::handleFailure)

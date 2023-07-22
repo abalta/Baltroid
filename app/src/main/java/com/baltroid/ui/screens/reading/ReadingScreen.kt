@@ -76,8 +76,8 @@ import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
 import com.baltroid.util.orEmpty
 import com.baltroid.util.orZero
+import com.hitreads.core.domain.model.AllCommentsModel
 import com.hitreads.core.domain.model.OriginalType
-import com.hitreads.core.model.Comment
 import com.hitreads.core.model.Original
 import com.hitreads.core.model.ShowEpisode
 
@@ -92,15 +92,14 @@ fun ReadingScreen(
     val comments = commentViewModel.uiState.collectAsStateWithLifecycle().value
 
     LaunchedEffect(Unit) {
-        viewModel.showOriginal(2)
-        //original id
-        commentViewModel.getComments("original", 1)
+        viewModel.showOriginal(originalId)
+        commentViewModel.getAllComments("original", originalId)
     }
 
     LaunchedEffect(original.original) {
-        if (original != null) {
+        if (original.original != null) {
             viewModel.showEpisode(
-                760,
+                original.original.episodes.firstOrNull()?.id.orZero(),
                 OriginalType.TEXT
             )
         }
@@ -124,7 +123,7 @@ private fun ReadingScreenContent(
     screenState: ReadingUiState,
     textOriginal: Original?,
     hashTag: String,
-    comments: List<Comment>,
+    comments: List<AllCommentsModel>,
     onLikeClick: (Boolean) -> Unit,
     openMenuScreen: () -> Unit
 ) {
@@ -497,7 +496,7 @@ fun EpisodeSectionItem(
 @Composable
 fun CommentSection(
     lazyListState: LazyListState,
-    comments: List<Comment>,
+    comments: List<AllCommentsModel>,
     tabState: CommentsTabState,
     modifier: Modifier = Modifier,
     onTabSelect: (CommentsTabState) -> Unit
@@ -514,14 +513,27 @@ fun CommentSection(
         ) {
             items(comments) { comment ->
                 CommentItem(
+                    model = comment,
                     owner = comment.id.toString(),
-                    date = "",
-                    content = comment.content,
-                    chatSize = 3,
-                    isSubComment = false,
-                    isLiked = false,
+                    date = comment.createdAt.toString(),
+                    content = comment.content.toString(),
+                    chatSize = comment.repliesCount.orZero(),
+                    isSubComment = comment.isReply ?: false,
+                    isLiked = comment.activeUserLike ?: false,
                     isChatSelected = false
                 )
+                comment.replies?.forEach { item ->
+                    CommentItem(
+                        model = item,
+                        owner = item.id.toString(),
+                        content = item.content.toString(),
+                        date = item.createdAt.toString(),
+                        chatSize = 0,
+                        isSubComment = true,
+                        isLiked = comment.activeUserLike ?: false,
+                        isChatSelected = false
+                    )
+                }
             }
         }
     }
@@ -560,6 +572,7 @@ fun CommentSectionTabs(
 
 @Composable
 fun CommentItem(
+    model: AllCommentsModel?,
     owner: String,
     content: String,
     date: String,
@@ -715,7 +728,9 @@ private fun ScrollState.isEpisodesVisible(): Boolean {
     var previousOffset by remember(this) { mutableStateOf(0) }
     return remember(this) {
         derivedStateOf {
-            if (value > previousOffset) {
+            if (value == 0) {
+                true
+            } else if (value > previousOffset) {
                 false
             } else {
                 value < maxValue
@@ -742,8 +757,6 @@ private fun LazyListState.isEpisodesVisible(): Boolean {
     }.value
 }
 
-@Preview(heightDp = 700)
-@Preview(heightDp = 530)
 @Preview
 @Composable
 fun ReadingScreenPreview() {
