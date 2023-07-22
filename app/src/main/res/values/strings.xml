@@ -3,7 +3,7 @@
     <string name="welcome">HitReads\'e Hoş Geldiniz.</string>
     <string name="menu">Menu</string>
     <string name="story_summary">TÜM KATEGORİLERDEKİ %1$d HİKAYE LİSTELENİYOR</string>
-    <string name="episode_size">%1$s Bölüm</string>
+    <string name="episode_size">Bölüm %1$s</string>
     <string name="all_stories">TÜM HİKAYELER (%1$d)</string>
     <string name="all_stories_text">TÜM HİKAYELER</string>
     <string name="favorites_with_size">FAVORİLER (%1$d)</string>

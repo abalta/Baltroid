@@ -5,38 +5,76 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
 import com.baltroid.apps.R
 import com.baltroid.ui.common.CroppedImage
 import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.VerticalSpacer
 import com.baltroid.ui.components.MenuBar
+import com.baltroid.ui.screens.reading.CommentSection
+import com.baltroid.ui.screens.reading.CommentSectionTabs
+import com.baltroid.ui.screens.reading.comments.CommentsTabState
+import com.baltroid.ui.theme.Poppins
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
+import com.hitreads.core.model.Comment
+import kotlin.random.Random
 
 @Composable
-fun CommentsScreen() {
+fun CommentsScreen(
+    viewModel: CommentViewModel,
+    onBackClick: () -> Unit
+) {
+
+    LaunchedEffect(Unit) {
+        viewModel.getAllComments("all", null)
+    }
+
+    CommentsScreenContent(
+        viewModel.uiState.collectAsStateWithLifecycle().value.commentList,
+        onBackClick
+    )
+}
+
+@Composable
+private fun CommentsScreenContent(
+    comments: List<Comment>,
+    onBackClick: () -> Unit
+) {
+
+    var selectedTab by remember {
+        mutableStateOf(CommentsTabState.AllComments)
+    }
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -47,14 +85,34 @@ fun CommentsScreen() {
         VerticalSpacer(height = MaterialTheme.localDimens.dp36)
         MenuBar(
             title = stringResource(id = R.string.comments),
-            iconResId = R.drawable.ic_comment
-        ) {}
+            iconResId = R.drawable.ic_chat_filled
+        ) {
+            onBackClick.invoke()
+        }
         VerticalSpacer(height = MaterialTheme.localDimens.dp24)
-        CommentsScreenTabs(
-            modifier = Modifier
-        )
+
+        CommentSectionTabs(tabState = selectedTab) {
+            selectedTab = it
+        }
+
         VerticalSpacer(height = MaterialTheme.localDimens.dp33)
-        Comments()
+        when (selectedTab) {
+            CommentsTabState.AllComments -> {
+                CommentSection(
+                    lazyListState = rememberLazyListState(),
+                    comments = comments,
+                    modifier = Modifier.padding(start = MaterialTheme.localDimens.dp30)
+                )
+            }
+
+            CommentsTabState.MyFavorites -> {
+                Comments()
+            }
+
+            CommentsTabState.MyComments -> {
+                Comments()
+            }
+        }
     }
 }
 
@@ -67,55 +125,6 @@ private fun Comments() {
         item { CommentItem(title = "KİMSE GERÇEK DEĞİL", numberOfComments = 220) }
         item { CommentItem(title = "KİMSE GERÇEK DEĞİL", numberOfComments = 220) }
         item { CommentItem(title = "KİMSE GERÇEK DEĞİL", numberOfComments = 220) }
-    }
-}
-
-@Composable
-fun CommentsScreenTabs(
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp21)
-    ) {
-        CommentsScreenTabItem(
-            tabTitle = stringResource(id = R.string.all_comments),
-            isSelected = true
-        )
-        CommentsScreenTabItem(
-            tabTitle = stringResource(id = R.string.my_favorite_comments),
-            isSelected = false
-        )
-        CommentsScreenTabItem(
-            tabTitle = stringResource(id = R.string.my_comments),
-            isSelected = false
-        )
-    }
-}
-
-@Composable
-fun CommentsScreenTabItem(
-    tabTitle: String,
-    isSelected: Boolean
-) {
-    Column(
-        modifier = Modifier.width(IntrinsicSize.Min),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = tabTitle,
-            style = MaterialTheme.localTextStyles.commentsScreenTabText,
-            modifier = Modifier.width(IntrinsicSize.Max)
-        )
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(MaterialTheme.localDimens.dp3)
-                .background(
-                    if (isSelected) MaterialTheme.localColors.white_alpha07
-                    else MaterialTheme.localColors.transparent
-                )
-        )
     }
 }
 
@@ -165,10 +174,51 @@ private fun CommentItem(
     }
 }
 
+@Composable
+fun CommentImage(
+    imgUrl: String,
+    letter: String
+) {
+
+    val randomColor by remember {
+        mutableStateOf(
+            Color(Random.nextInt(256), Random.nextInt(256), Random.nextInt(256))
+        )
+    }
+
+    if (imgUrl.isNotEmpty()) {
+        AsyncImage(
+            model = imgUrl,
+            contentDescription = null,
+            modifier = Modifier
+                .size(MaterialTheme.localDimens.dp48)
+                .clip(MaterialTheme.localShapes.circleShape),
+            contentScale = ContentScale.Crop
+        )
+    } else {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .size(MaterialTheme.localDimens.dp48)
+                .clip(MaterialTheme.localShapes.circleShape)
+                .background(color = randomColor)
+        ) {
+
+            Text(
+                text = letter.uppercase(),
+                color = MaterialTheme.localColors.white,
+                fontFamily = Poppins,
+                fontWeight = FontWeight.ExtraLight,
+                fontSize = 30.sp
+            )
+        }
+    }
+}
+
 @Preview(device = Devices.DEFAULT)
 @Preview(heightDp = 650)
 @Preview(widthDp = 360, heightDp = 540)
 @Composable
 fun CommentScreenPreview() {
-    CommentsScreen()
+
 }

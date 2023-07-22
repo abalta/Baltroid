@@ -9,5 +9,6 @@ data class CommentModel(
     val isReply: Boolean,
     val likesCount: Int,
     val repliesCount: Int,
-    val replyCommentId: Int
+    val replyCommentId: Int,
+    val replies: List<AllCommentsModel>
 )

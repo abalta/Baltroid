@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.baltroid.core.common.result.handle
 import com.hitreads.core.domain.usecase.BookmarkUseCase
+import com.hitreads.core.ui.mapper.asBookmark
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,7 +18,8 @@ class BookmarkViewModel @Inject constructor(
     private val bookmarkUseCase: BookmarkUseCase
 ) : ViewModel() {
 
-    private val _bookMarks: MutableStateFlow<BookmarkScreenStates> = MutableStateFlow(BookmarkScreenStates())
+    private val _bookMarks: MutableStateFlow<BookmarkScreenStates> =
+        MutableStateFlow(BookmarkScreenStates())
     val bookMarks: StateFlow<BookmarkScreenStates> = _bookMarks.asStateFlow()
 
     init {
@@ -27,7 +29,7 @@ class BookmarkViewModel @Inject constructor(
     private fun getBookmarks() = viewModelScope.launch {
         bookmarkUseCase().handle {
             onSuccess { bookMarkList ->
-                _bookMarks.update { it.copy(bookmarks = bookMarkList) }
+                _bookMarks.update { it.copy(bookmarks = bookMarkList.map { it.asBookmark() }) }
             }
         }
     }

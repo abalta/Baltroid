@@ -369,7 +369,7 @@ private fun MenuScreenLoggedInContent(
                     isEnabled = true,
                     modifier = Modifier
                 ) {
-                    navigate.invoke(HitReadsScreens.AllCommentsScreen.route)
+                    navigate.invoke(HitReadsScreens.CommentsScreen.route)
                 }
                 MenuItem(
                     title = stringResource(id = R.string.settings),

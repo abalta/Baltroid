@@ -15,6 +15,18 @@ data class NetworkEpisode(
     val priceType: String,
     @SerialName("user_purchase")
     val userPurchase: String?,
-    @SerialName("asset_contents")
-    val assetContent: String?
+    @SerialName("sort")
+    val sort: Int?,
+    @SerialName("created_at")
+    val createdAt: String?,
+    @SerialName("updated_at")
+    val updatedAt: String?,
+    @SerialName("favorites_count")
+    val favoritesCount: Int?,
+    @SerialName("original_id")
+    val originalId: Int?,
+    @SerialName("likes_count")
+    val likesCount: Int?,
+    @SerialName("season_id")
+    val seasonId: Int?
 )

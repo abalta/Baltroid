@@ -64,8 +64,8 @@ import com.baltroid.ui.common.IconWithTextNextTo
 import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.VerticalSpacer
 import com.baltroid.ui.components.HitReadsTopBar
-import com.baltroid.ui.screens.reading.ReadingViewModel
 import com.baltroid.ui.screens.reading.Titles
+import com.baltroid.ui.screens.viewmodels.OriginalViewModel
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localShapes
@@ -78,11 +78,11 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun InteractiveScreen(
-    viewModel: ReadingViewModel,
+    viewModel: OriginalViewModel,
     openMenuScreen: () -> Unit
 ) {
 
-    val original = viewModel.interactiveOriginal
+    val original = viewModel.sharedUIState.collectAsStateWithLifecycle().value
 
     LaunchedEffect(Unit) {
         delay(2000)
@@ -90,13 +90,13 @@ fun InteractiveScreen(
     }
 
     val interactiveContent =
-        viewModel.uiState.collectAsStateWithLifecycle().value.episode?.xmlContent
+        viewModel.uiStateReading.collectAsStateWithLifecycle().value.episode?.xmlContent
             ?.episode?.dialogue
 
-    val episode = viewModel.uiState.collectAsStateWithLifecycle().value.episode
+    val episode = viewModel.uiStateReading.collectAsStateWithLifecycle().value.episode
 
     var currentDialogue by remember(interactiveContent) {
-        mutableStateOf<DialogueXml?>(interactiveContent?.firstOrNull())
+        mutableStateOf(interactiveContent?.firstOrNull())
     }
 
     Box(

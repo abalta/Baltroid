@@ -153,7 +153,8 @@ internal fun CommentDto.asCommentModel() = CommentModel(
     isReply = isReply ?: false,
     likesCount = likesCount ?: 0,
     repliesCount = repliesCount ?: 0,
-    replyCommentId = replyCommentId ?: 0
+    replyCommentId = replyCommentId ?: 0,
+    replies = emptyList()
 )
 
 internal fun AllCommentsDto.asAllCommentsModel(): AllCommentsModel = AllCommentsModel(
@@ -183,7 +184,7 @@ internal fun WelcomeDto.asWelcomeModel() = WelcomeModel(
 internal fun BookmarkDto.asBookmarkModel() = BookmarkModel(
     id = id ?: 0,
     user = user.orEmpty(),
-    episode = episode.orEmpty(),
+    episode = episode?.asEpisodeModel(),
     original = original?.asOriginalModel(),
     content = content.orEmpty(),
     cover = cover.orEmpty()

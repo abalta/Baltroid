@@ -1,5 +1,5 @@
-import com.diffplug.gradle.spotless.SpotlessExtension
 import com.baltroid.apps.libs
+import com.diffplug.gradle.spotless.SpotlessExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure

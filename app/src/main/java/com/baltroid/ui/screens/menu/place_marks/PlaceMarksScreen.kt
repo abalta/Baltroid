@@ -40,6 +40,7 @@ import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
 import com.hitreads.core.domain.model.BookmarkModel
+import com.hitreads.core.model.Bookmark
 
 @Composable
 fun PlaceMarksScreen(
@@ -55,7 +56,7 @@ fun PlaceMarksScreen(
 
 @Composable
 fun PlaceMarsScreenContent(
-    state: List<BookmarkModel>,
+    state: List<Bookmark>,
     scrollState: ScrollState,
     onBackClick: () -> Unit
 ) {
@@ -88,26 +89,26 @@ fun PlaceMarsScreenContent(
                     .fillMaxWidth()
                     .padding(start = MaterialTheme.localDimens.dp35)
             )
-           /* VerticalSpacer(height = MaterialTheme.localDimens.dp18_5)
-            Text(
-                text = stringResource(id = R.string.marks),
-                style = MaterialTheme.localTextStyles.menuBarSubTitle,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-            VerticalSpacer(height = MaterialTheme.localDimens.dp21)
-            MarkItemList(
-                state,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = MaterialTheme.localDimens.dp35)
-            )*/
+            /* VerticalSpacer(height = MaterialTheme.localDimens.dp18_5)
+             Text(
+                 text = stringResource(id = R.string.marks),
+                 style = MaterialTheme.localTextStyles.menuBarSubTitle,
+                 modifier = Modifier.align(Alignment.CenterHorizontally)
+             )
+             VerticalSpacer(height = MaterialTheme.localDimens.dp21)
+             MarkItemList(
+                 state,
+                 modifier = Modifier
+                     .fillMaxWidth()
+                     .padding(start = MaterialTheme.localDimens.dp35)
+             )*/
         }
     }
 }
 
 @Composable
 fun StoryItemList(
-    state: List<BookmarkModel>,
+    state: List<Bookmark>,
     modifier: Modifier = Modifier
 ) {
     LazyRow(
@@ -118,7 +119,7 @@ fun StoryItemList(
             StoryItem(
                 title = item.original?.title.orEmpty(),
                 imgUrl = item.cover,
-                episodeNumber = item.episode
+                episodeNumber = item.episode?.id.toString()
             )
         }
     }
@@ -137,7 +138,7 @@ fun MarkItemList(
             MarkItem(
                 title = item.original?.title.orEmpty(),
                 imgUrl = item.cover,
-                episodeNumber = item.episode.orEmpty()
+                episodeNumber = item.episode?.id.toString()
             )
         }
     }

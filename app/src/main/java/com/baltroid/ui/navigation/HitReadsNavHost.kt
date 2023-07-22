@@ -19,17 +19,14 @@ import com.baltroid.apps.R
 import com.baltroid.presentation.screens.menu.login.LoginViewModel
 import com.baltroid.ui.common.CroppedImage
 import com.baltroid.ui.screens.home.HomeScreen
-import com.baltroid.ui.screens.home.HomeViewModel
 import com.baltroid.ui.screens.home.detail.HomeDetailScreen
-import com.baltroid.ui.screens.home.detail.HomeDetailViewModel
 import com.baltroid.ui.screens.home.filter.FilterScreen
 import com.baltroid.ui.screens.interactive.InteractiveScreen
-import com.baltroid.ui.screens.menu.comments.CommentViewModel
 import com.baltroid.ui.screens.onboarding.OnboardingScreen
 import com.baltroid.ui.screens.onboarding.OnboardingViewModel
 import com.baltroid.ui.screens.playground.PlaygroundScreen
 import com.baltroid.ui.screens.reading.ReadingScreen
-import com.baltroid.ui.screens.reading.ReadingViewModel
+import com.baltroid.ui.screens.viewmodels.OriginalViewModel
 import com.baltroid.ui.theme.localColors
 import com.baltroid.util.orZero
 import com.google.accompanist.navigation.animation.AnimatedNavHost
@@ -41,16 +38,14 @@ import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 fun HitReadsNavHost(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberAnimatedNavController(),
-    openMenuScreen: () -> Unit = { navController.navigate(HitReadsScreens.MenuScreen.route)
-       /* navController.navigate(HitReadsScreens.PlaygroundScreen.route)*/
+    openMenuScreen: () -> Unit = {
+        navController.navigate(HitReadsScreens.MenuScreen.route)
+        /* navController.navigate(HitReadsScreens.PlaygroundScreen.route)*/
     }
 ) {
 
-    val homeDetailViewModel: HomeDetailViewModel = hiltViewModel()
     val loginViewModel: LoginViewModel = hiltViewModel()
-    val homeViewModel: HomeViewModel = hiltViewModel()
-    val commentViewModel: CommentViewModel = hiltViewModel()
-    val readingViewModel: ReadingViewModel = hiltViewModel()
+    val originalViewModel: OriginalViewModel = hiltViewModel()
     val isLoading = remember {
         mutableStateOf(false)
     }
@@ -85,11 +80,11 @@ fun HitReadsNavHost(
                 route = HitReadsScreens.HomeScreen.route
             ) {
                 HomeScreen(
-                    viewModel = homeViewModel,
+                    viewModel = originalViewModel,
                     openMenuScreen = openMenuScreen,
                 ) { route, item ->
                     if (route == HitReadsScreens.HomeDetailScreen.route) {
-                        homeDetailViewModel.setHomeDetailState(item)
+                        originalViewModel.setSharedUIState(item)
                     }
                     navController.navigate(route)
                 }
@@ -109,14 +104,9 @@ fun HitReadsNavHost(
                 route = HitReadsScreens.HomeDetailScreen.route
             ) {
                 HomeDetailScreen(
-                    viewModel = homeDetailViewModel,
+                    viewModel = originalViewModel,
                     openMenuScreen = openMenuScreen,
                 ) { route ->
-                    if (homeDetailViewModel.homeDetailState.value?.type == "interactive") {
-                        readingViewModel.interactiveOriginal = homeDetailViewModel.homeDetailState.value
-                    } else {
-                        readingViewModel.textOriginal = homeDetailViewModel.homeDetailState.value
-                    }
                     navController.navigate(route)
                 }
             }
@@ -125,7 +115,7 @@ fun HitReadsNavHost(
                 arguments = listOf(navArgument("id") { type = NavType.IntType })
             ) { bacStackEntry ->
                 ReadingScreen(
-                    viewModel = readingViewModel,
+                    viewModel = originalViewModel,
                     originalId = bacStackEntry.arguments?.getInt("id").orZero(),
                     openMenuScreen = openMenuScreen
                 )
@@ -134,16 +124,14 @@ fun HitReadsNavHost(
                 route = HitReadsScreens.InteractiveScreen.route
             ) {
                 InteractiveScreen(
-                    viewModel = readingViewModel,
+                    viewModel = originalViewModel,
                     openMenuScreen = openMenuScreen
                 )
             }
             composable(
                 route = HitReadsScreens.PlaygroundScreen.route
             ) {
-                PlaygroundScreen(
-                    viewModel = commentViewModel
-                )
+                PlaygroundScreen()
             }
         }
         if (isLoading.value) {

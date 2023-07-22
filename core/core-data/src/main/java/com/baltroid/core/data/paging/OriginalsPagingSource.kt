@@ -17,7 +17,7 @@ class OriginalsPagingSource(
     private val networkDataSource: HitReadsNetworkDataSource,
     private val filter: String? = null,
     private val getByFav: Boolean? = null
-): PagingSource<Int, OriginalModel>() {
+) : PagingSource<Int, OriginalModel>() {
     override fun getRefreshKey(state: PagingState<Int, OriginalModel>) = state.anchorPosition
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, OriginalModel> {
@@ -46,6 +46,7 @@ class OriginalsPagingSource(
                         nextKey = nextPage
                     )
                 }
+
                 response.isFailure() -> return LoadResult.Error(response.error)
                 else -> error("${Constants.Messages.UNHANDLED_STATE} $response")
             }

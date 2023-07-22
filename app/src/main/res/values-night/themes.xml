@@ -1,5 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Theme.Baltroid" parent="android:Theme.Material.Light.NoActionBar">
+
+<style name="Theme.Baltroid" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:statusBarColor">@color/transparent</item>
         <item name="android:navigationBarColor">@color/transparent</item>
         <item name="android:windowLightStatusBar" tools:targetApi="23">false</item>

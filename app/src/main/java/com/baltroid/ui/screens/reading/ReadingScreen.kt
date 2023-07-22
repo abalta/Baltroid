@@ -14,14 +14,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -44,7 +42,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
@@ -67,29 +64,30 @@ import com.baltroid.ui.common.VerticalSpacer
 import com.baltroid.ui.components.CommentWritingCard
 import com.baltroid.ui.components.HitReadsSideBar
 import com.baltroid.ui.components.HitReadsTopBar
+import com.baltroid.ui.screens.menu.comments.CommentImage
 import com.baltroid.ui.screens.menu.comments.CommentViewModel
 import com.baltroid.ui.screens.menu.place_marks.EpisodeBanner
 import com.baltroid.ui.screens.reading.comments.CommentsTabState
+import com.baltroid.ui.screens.viewmodels.OriginalViewModel
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
-import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
 import com.baltroid.util.orEmpty
 import com.baltroid.util.orZero
-import com.hitreads.core.domain.model.AllCommentsModel
 import com.hitreads.core.domain.model.OriginalType
+import com.hitreads.core.model.Comment
 import com.hitreads.core.model.Original
 import com.hitreads.core.model.ShowEpisode
 
 @Composable
 fun ReadingScreen(
     originalId: Int,
-    viewModel: ReadingViewModel,
+    viewModel: OriginalViewModel,
     commentViewModel: CommentViewModel = hiltViewModel(),
     openMenuScreen: () -> Unit
 ) {
-    val original = viewModel.uiState.collectAsStateWithLifecycle().value
-    val comments = commentViewModel.uiState.collectAsStateWithLifecycle().value
+    val original = viewModel.uiStateReading.collectAsStateWithLifecycle().value
+    val sharedOriginal = viewModel.sharedUIState.collectAsStateWithLifecycle().value
 
     LaunchedEffect(Unit) {
         viewModel.showOriginal(originalId)
@@ -106,14 +104,11 @@ fun ReadingScreen(
     }
 
     ReadingScreenContent(
-        screenState = viewModel.uiState.collectAsStateWithLifecycle().value,
-        textOriginal = viewModel.textOriginal,
-        hashTag = viewModel.textOriginal?.hashtag ?: "",
-        comments = comments.commentList,
-        onLikeClick = {
-            if (it) viewModel.unlikeOriginal(originalId)
-            else viewModel.likeOriginal(originalId)
-        },
+        screenState = original,
+        textOriginal = sharedOriginal,
+        hashTag = sharedOriginal?.hashtag.orEmpty(),
+        comments = emptyList(),
+        onLikeClick = {},
         openMenuScreen
     )
 }
@@ -123,7 +118,7 @@ private fun ReadingScreenContent(
     screenState: ReadingUiState,
     textOriginal: Original?,
     hashTag: String,
-    comments: List<AllCommentsModel>,
+    comments: List<Comment>,
     onLikeClick: (Boolean) -> Unit,
     openMenuScreen: () -> Unit
 ) {
@@ -188,9 +183,7 @@ private fun ReadingScreenContent(
                         } else {
                             CommentSection(
                                 lazyListState = lazyScrollState,
-                                tabState = CommentsTabState.AllComments,
                                 comments = comments,
-                                onTabSelect = {},
                                 modifier = Modifier.padding(start = MaterialTheme.localDimens.dp32)
                             )
                         }
@@ -264,17 +257,6 @@ fun ScrollBar(
                     )
                 )
             }
-    )
-}
-
-@Composable
-fun ShadowBox(
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        modifier = modifier
-            .background(MaterialTheme.localColors.black_alpha05)
-            .aspectRatio(1f)
     )
 }
 
@@ -426,13 +408,11 @@ fun EpisodeSection(
         contentPadding = paddingValues,
         modifier = modifier
     ) {
-        itemsIndexed(episodes) { index, item ->
+        itemsIndexed(episodes) { index, _ ->
             EpisodeSectionItem(
-                numberOfComment = -1,
                 episodeNumber = index + 1,
                 isSelected = false,
                 hasBanner = false,
-                isLocked = false
             )
         }
     }
@@ -441,11 +421,9 @@ fun EpisodeSection(
 
 @Composable
 fun EpisodeSectionItem(
-    numberOfComment: Int,
     episodeNumber: Int,
     isSelected: Boolean,
     hasBanner: Boolean,
-    isLocked: Boolean,
     modifier: Modifier = Modifier
 ) {
     val episodeTextStyle = if (isSelected) MaterialTheme.localTextStyles.episodeSelectedText
@@ -455,27 +433,6 @@ fun EpisodeSectionItem(
         modifier
             .width(IntrinsicSize.Min)
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-        ) {
-            SimpleIcon(
-                iconResId = R.drawable.ic_comment,
-                tint = MaterialTheme.localColors.white_alpha04,
-                modifier = Modifier.size(MaterialTheme.localDimens.dp16)
-            )
-            HorizontalSpacer(width = MaterialTheme.localDimens.dp3)
-            Text(
-                text = numberOfComment.toString(),
-                style = MaterialTheme.localTextStyles.episodeSectionIconText,
-                modifier = Modifier.weight(1f)
-            )
-            if (isLocked) {
-                SimpleIcon(iconResId = R.drawable.ic_lock)
-            }
-        }
-
-        VerticalSpacer(height = MaterialTheme.localDimens.dp3_5)
         Row {
             Text(text = stringResource(id = R.string.episode), style = episodeTextStyle)
             HorizontalSpacer(width = MaterialTheme.localDimens.dp4)
@@ -496,16 +453,13 @@ fun EpisodeSectionItem(
 @Composable
 fun CommentSection(
     lazyListState: LazyListState,
-    comments: List<AllCommentsModel>,
-    tabState: CommentsTabState,
-    modifier: Modifier = Modifier,
-    onTabSelect: (CommentsTabState) -> Unit
+    comments: List<Comment>,
+    modifier: Modifier = Modifier
 ) {
 
     Column(
         modifier = modifier
     ) {
-        CommentSectionTabs(tabState = tabState, onTabSelect = onTabSelect)
         LazyColumn(
             state = lazyListState,
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp15),
@@ -514,23 +468,12 @@ fun CommentSection(
             items(comments) { comment ->
                 CommentItem(
                     model = comment,
-                    owner = comment.id.toString(),
-                    date = comment.createdAt.toString(),
-                    content = comment.content.toString(),
-                    chatSize = comment.repliesCount.orZero(),
-                    isSubComment = comment.isReply ?: false,
-                    isLiked = comment.activeUserLike ?: false,
                     isChatSelected = false
                 )
-                comment.replies?.forEach { item ->
+                VerticalSpacer(height = MaterialTheme.localDimens.dp12)
+                comment.replies.forEach { item ->
                     CommentItem(
                         model = item,
-                        owner = item.id.toString(),
-                        content = item.content.toString(),
-                        date = item.createdAt.toString(),
-                        chatSize = 0,
-                        isSubComment = true,
-                        isLiked = comment.activeUserLike ?: false,
                         isChatSelected = false
                     )
                 }
@@ -549,36 +492,58 @@ fun CommentSectionTabs(
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp9),
         modifier = Modifier.horizontalScroll(scrollState)
     ) {
+        TabItem(
+            title = stringResource(id = R.string.all_comments),
+            isSelected = tabState == CommentsTabState.AllComments
+        ) {
+            onTabSelect.invoke(CommentsTabState.AllComments)
+        }
+        TabItem(
+            title = stringResource(id = R.string.my_favorite_comments),
+            isSelected = tabState == CommentsTabState.MyFavorites
+        ) {
+            onTabSelect.invoke(CommentsTabState.MyFavorites)
+        }
+        TabItem(
+            title = stringResource(id = R.string.my_comments),
+            isSelected = tabState == CommentsTabState.MyComments
+        ) {
+            onTabSelect.invoke(CommentsTabState.MyComments)
+        }
+    }
+}
+
+@Composable
+private fun TabItem(
+    title: String,
+    isSelected: Boolean,
+    onTabSelect: (CommentsTabState) -> Unit
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier.width(IntrinsicSize.Max),
+    ) {
         Text(
-            text = stringResource(id = R.string.all_comments),
-            style = if (tabState == CommentsTabState.AllComments) MaterialTheme.localTextStyles.subtitle
+            text = title,
+            style = if (isSelected) MaterialTheme.localTextStyles.subtitle
             else MaterialTheme.localTextStyles.interactiveEpisode,
             modifier = Modifier.clickable { onTabSelect.invoke(CommentsTabState.AllComments) }
         )
-        Text(
-            text = stringResource(id = R.string.my_favorite_comments),
-            style = if (tabState == CommentsTabState.MyFavorites) MaterialTheme.localTextStyles.subtitle
-            else MaterialTheme.localTextStyles.interactiveEpisode,
-            modifier = Modifier.clickable { onTabSelect.invoke(CommentsTabState.MyFavorites) }
-        )
-        Text(
-            text = stringResource(id = R.string.my_comments),
-            style = if (tabState == CommentsTabState.MyComments) MaterialTheme.localTextStyles.subtitle
-            else MaterialTheme.localTextStyles.interactiveEpisode,
-            modifier = Modifier.clickable { onTabSelect.invoke(CommentsTabState.MyComments) }
-        )
+        if (isSelected) {
+            Box(
+                modifier = Modifier
+                    .background(MaterialTheme.localColors.white_alpha07)
+                    .fillMaxWidth()
+                    .height(MaterialTheme.localDimens.dp4)
+            )
+        }
     }
 }
 
 @Composable
 fun CommentItem(
-    model: AllCommentsModel?,
-    owner: String,
-    content: String,
-    date: String,
-    chatSize: Int,
-    isSubComment: Boolean,
-    isLiked: Boolean,
+    model: Comment,
     isChatSelected: Boolean,
     modifier: Modifier = Modifier
 ) {
@@ -586,7 +551,7 @@ fun CommentItem(
         modifier = Modifier.fillMaxWidth()
     ) {
         val (subCommentIcon, commentHeader, comment) = createRefs()
-        if (isSubComment) {
+        if (model.isReply) {
             SimpleIcon(
                 iconResId = R.drawable.ic_subcomment_arrow,
                 modifier = Modifier.constrainAs(subCommentIcon) {
@@ -600,7 +565,7 @@ fun CommentItem(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .constrainAs(commentHeader) {
-                    if (isSubComment) {
+                    if (model.isReply) {
                         start.linkTo(subCommentIcon.end, 11.dp)
                     } else {
                         start.linkTo(parent.start)
@@ -610,34 +575,29 @@ fun CommentItem(
                     width = Dimension.fillToConstraints
                 }
         ) {
-            CroppedImage(
-                imgResId = R.drawable.woods_image,
-                modifier
-                    .size(MaterialTheme.localDimens.dp48)
-                    .clip(MaterialTheme.localShapes.circleShape)
-            )
+            CommentImage(imgUrl = model.imgUrl, letter = model.authorName.firstOrNull().toString())
             HorizontalSpacer(width = MaterialTheme.localDimens.dp13)
             Column(
                 verticalArrangement = Arrangement.Bottom,
             ) {
-                Text(text = owner, style = MaterialTheme.localTextStyles.subtitle)
+                Text(text = model.authorName, style = MaterialTheme.localTextStyles.subtitle)
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     Text(
-                        text = date,
+                        text = model.createdAt,
                         style = MaterialTheme.localTextStyles.dateText
                     )
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp12),
                     ) {
-                        SimpleIcon(iconResId = if (isLiked) R.drawable.ic_heart_filled else R.drawable.ic_heart_outlined)
+                        SimpleIcon(iconResId = if (model.isLiked) R.drawable.ic_heart_filled else R.drawable.ic_heart_outlined)
                         IconWithTextNextTo(
                             iconResId = if (isChatSelected) R.drawable.ic_chat_filled else R.drawable.ic_chat_outlined,
-                            text = chatSize.toString(),
+                            text = model.repliesCount.toString(),
                             spacedBy = MaterialTheme.localDimens.dp6,
                             textStyle = MaterialTheme.localTextStyles.sideBarIconText
                         )
@@ -647,7 +607,7 @@ fun CommentItem(
             }
         }
         Text(
-            text = content,
+            text = model.content,
             style = MaterialTheme.localTextStyles.commentText,
             modifier = Modifier.constrainAs(comment) {
                 start.linkTo(commentHeader.start)

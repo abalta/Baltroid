@@ -27,6 +27,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,6 +56,7 @@ import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.VerticalSpacer
 import com.baltroid.ui.components.HitReadsTopBar
 import com.baltroid.ui.navigation.HitReadsScreens
+import com.baltroid.ui.screens.viewmodels.OriginalViewModel
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localShapes
@@ -66,13 +68,15 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel,
+    viewModel: OriginalViewModel,
     openMenuScreen: () -> Unit,
     navigate: (route: String, item: Original?) -> Unit
 ) {
+    val uiStates = viewModel.uiStateHome.collectAsStateWithLifecycle().value
 
-    val uiStates = viewModel.uiState.collectAsStateWithLifecycle()
-        .value
+    LaunchedEffect(Unit) {
+        viewModel.loadOriginals()
+    }
 
     HomeScreenContent(
         uiStates = uiStates.originals.collectAsLazyPagingItems(),
@@ -96,12 +100,18 @@ private fun HomeScreenContent(
     var tabState by rememberSaveable {
         mutableStateOf(HomeScreenTabs.AllStories)
     }
-    var currentItem by remember(uiStates.itemCount, uiStatesFavorites.itemCount , tabState, pagerState.currentPage) {
-        when(tabState) {
+    var currentItem by remember(
+        uiStates.itemCount,
+        uiStatesFavorites.itemCount,
+        tabState,
+        pagerState.currentPage
+    ) {
+        when (tabState) {
             HomeScreenTabs.AllStories -> {
                 if (uiStates.itemCount > 0) mutableStateOf(uiStates[pagerState.currentPage])
                 else mutableStateOf<Original?>(null)
             }
+
             HomeScreenTabs.Favorites -> {
                 if (uiStatesFavorites.itemCount > 0) mutableStateOf(uiStatesFavorites[pagerState.currentPage])
                 else mutableStateOf<Original?>(null)
@@ -207,7 +217,9 @@ private fun HomeScreenTabs(
             size = favoritesSize,
             isSelected = selectedTab == HomeScreenTabs.Favorites
         ) {
-            onTabSelected.invoke(HomeScreenTabs.Favorites)
+            if (favoritesSize > 0) {
+                onTabSelected.invoke(HomeScreenTabs.Favorites)
+            }
         }
     }
 }

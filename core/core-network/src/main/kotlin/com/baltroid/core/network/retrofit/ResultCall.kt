@@ -50,6 +50,7 @@ internal class ResultCall<T>(proxy: Call<T>) : CallDelegate<T, BaltroidResult<T>
                         cause = error
                     )
                 )
+
                 is IOException -> BaltroidResult.failure(error)
                 else -> BaltroidResult.failure(error)
             }

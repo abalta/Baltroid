@@ -129,7 +129,7 @@ fun GenreSection(
             ) { id ->
                 if (selectedIds.contains(id)) {
                     selectedIds.remove(id)
-                }else {
+                } else {
                     selectedIds.add(id)
                 }
             }

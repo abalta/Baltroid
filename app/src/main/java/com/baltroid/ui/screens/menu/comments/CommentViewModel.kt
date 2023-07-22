@@ -9,6 +9,7 @@ import com.hitreads.core.domain.usecase.GetAllCommentsUseCase
 import com.hitreads.core.domain.usecase.GetCommentsUseCase
 import com.hitreads.core.domain.usecase.LikeCommentUseCase
 import com.hitreads.core.domain.usecase.UnlikeCommentUseCase
+import com.hitreads.core.ui.mapper.asComment
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -39,7 +40,7 @@ class CommentViewModel @Inject constructor(
             }
             onSuccess { commentList ->
                 _uiState.update {
-                    it.copy(commentList = commentList, isLoading = false)
+                    it.copy(commentList = commentList.map { it.asComment() }, isLoading = false)
                 }
             }
             onFailure(::handleFailure)
@@ -67,22 +68,6 @@ class CommentViewModel @Inject constructor(
                 _likeUiState.update { it.copy(isLike = false, isLoading = false) }
             }
             onFailure(::handleFailure)
-        }
-    }
-
-    private fun createBookMark(originalId: Int, episodeId: Int) = viewModelScope.launch {
-        createBookmarkUseCase.invoke(originalId, episodeId).handle {
-            onSuccess {
-
-            }
-        }
-    }
-
-    private fun deleteBookMark(bookmarkId: Int) = viewModelScope.launch {
-        deleteBookmarkUseCase.invoke(bookmarkId).handle {
-            onSuccess {
-
-            }
         }
     }
 

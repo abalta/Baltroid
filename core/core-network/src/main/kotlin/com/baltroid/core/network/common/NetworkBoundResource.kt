@@ -16,9 +16,11 @@ inline fun <ResultType> networkBoundResource(
 
     when {
         response.isSuccess() -> {
-            emit(BaltroidResult.success(
-                response.value.data
-            ))
+            emit(
+                BaltroidResult.success(
+                    response.value.data
+                )
+            )
         }
 
         response.isFailure() -> {

@@ -32,6 +32,7 @@ import com.baltroid.ui.components.HitReadsTopBar
 import com.baltroid.ui.navigation.HitReadsScreens
 import com.baltroid.ui.screens.home.GenreSection
 import com.baltroid.ui.screens.home.TitleSection
+import com.baltroid.ui.screens.viewmodels.OriginalViewModel
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localTextStyles
@@ -43,12 +44,12 @@ import com.hitreads.core.model.Tag
 
 @Composable
 fun HomeDetailScreen(
-    viewModel: HomeDetailViewModel,
+    viewModel: OriginalViewModel,
     openMenuScreen: () -> Unit,
     navigate: (route: String) -> Unit
 ) {
     HomeDetailScreenContent(
-        screenState = viewModel.homeDetailState
+        screenState = viewModel.sharedUIState
             .collectAsStateWithLifecycle().value,
         openMenuScreen = openMenuScreen,
         navigate = navigate

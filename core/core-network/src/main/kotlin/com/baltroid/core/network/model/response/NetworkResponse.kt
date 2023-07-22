@@ -112,7 +112,7 @@ data class BookmarkDto(
     @SerialName("user")
     val user: String?,
     @SerialName("episode")
-    val episode: String?,
+    val episode: NetworkEpisode?,
     @SerialName("original")
     val original: NetworkOriginal?,
     @SerialName("content")

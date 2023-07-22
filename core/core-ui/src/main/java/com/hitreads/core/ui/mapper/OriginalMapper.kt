@@ -1,5 +1,6 @@
 package com.hitreads.core.ui.mapper
 
+import com.hitreads.core.domain.model.AllCommentsModel
 import com.hitreads.core.domain.model.AuthorModel
 import com.hitreads.core.domain.model.BookmarkModel
 import com.hitreads.core.domain.model.CommentModel
@@ -87,14 +88,40 @@ fun SeasonModel.asSeason() = Season(id, name, episodes.map { it.asEpisode() })
 fun EpisodeModel.asEpisode() =
     Episode(id, name, price, priceType, userPurchase.orEmpty(), assetContents, xmlContents)
 
-fun CommentModel.asComment() = Comment(id, content, repliesCount)
+fun CommentModel.asComment() = Comment(
+    id = id,
+    imgUrl = "",
+    content = content,
+    repliesCount = repliesCount,
+    authorName = author.name,
+    hashtag = "",
+    createdAt = createdAt,
+    isLiked = activeUserLike,
+    isReply = isReply,
+    replies = replies.map { it.asComment() },
+    episode = ""
+)
+
+fun AllCommentsModel.asComment(): Comment = Comment(
+    id = id ?: -1,
+    imgUrl = "",
+    content = content.orEmpty(),
+    repliesCount = repliesCount ?: 0,
+    authorName = author?.name.orEmpty(),
+    hashtag = "",
+    createdAt = createdAt.orEmpty(),
+    isLiked = activeUserLike ?: false,
+    isReply = isReply ?: false,
+    replies = replies?.map { it.asComment() }.orEmpty(),
+    episode = ""
+)
 
 fun WelcomeModel.asWelcome() = Welcome(id, message, path)
 
 fun BookmarkModel.asBookmark() = Bookmark(
     id = id,
     user = user,
-    episode = episode,
+    episode = episode?.asEpisode(),
     original = original?.asOriginal(),
     content = content,
     cover = cover
