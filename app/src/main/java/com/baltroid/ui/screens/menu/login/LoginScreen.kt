@@ -22,6 +22,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -93,6 +95,7 @@ fun LoginScreenContent(
         UserInputArea(
             title = R.string.password,
             value = loginData.password ?: "",
+            visualTransformation = PasswordVisualTransformation(),
             onValueChange = loginViewModel::updatePassword,
             modifier = Modifier.fillMaxWidth(0.7f)
         )
@@ -125,6 +128,7 @@ fun UserInputArea(
     @StringRes title: Int,
     value: String,
     modifier: Modifier = Modifier,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
     onValueChange: (String) -> Unit,
 ) {
     Column(
@@ -142,6 +146,7 @@ fun UserInputArea(
             textStyle = MaterialTheme.localTextStyles.profileScreenUserInfo,
             cursorBrush = SolidColor(MaterialTheme.localColors.white),
             maxLines = 1,
+            visualTransformation = visualTransformation,
             singleLine = true,
             modifier = Modifier
                 .fillMaxWidth()
