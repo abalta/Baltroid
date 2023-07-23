@@ -89,6 +89,9 @@ class HitReadsNetworkDataSource @Inject constructor(private val hitReadsService:
     ): BaltroidResult<HitReadsResponse<List<AllCommentsDto>>> =
         hitReadsService.getAllComments(type, id)
 
+    suspend fun getCommentsByMe(): BaltroidResult<HitReadsResponse<List<AllCommentsDto>>> =
+        hitReadsService.getCommentsByMe()
+
     suspend fun likeComment(
         commentId: Int
     ): BaltroidResult<HitReadsResponse<Unit>> = hitReadsService.likeComment(commentId)

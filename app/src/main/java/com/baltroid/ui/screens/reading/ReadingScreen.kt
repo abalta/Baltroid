@@ -116,8 +116,8 @@ fun ReadingScreen(
                 OriginalType.TEXT
             )
         },
-        onLikeClick = {
-            if (!it) {
+        onLikeClick = { isLiked ->
+            if (!isLiked) {
                 original.episode?.id?.let { it1 -> viewModel.createFavorite(it1) }
             } else {
 
@@ -182,7 +182,7 @@ private fun ReadingScreenContent(
                         isExpanded = !isSideBarVisible,
                         episodeName = screenState.episode?.name.orEmpty(),
                         onDotsClick = { isSideBarVisible = !isSideBarVisible },
-                        isLiked = textOriginal?.userData?.isLike ?: false,
+                        isLiked = screenState.episode?.isLiked ?: false,
                         onLikeClick = { onLikeClick(it) },
                         modifier = Modifier.padding(
                             top = MaterialTheme.localDimens.dp12,

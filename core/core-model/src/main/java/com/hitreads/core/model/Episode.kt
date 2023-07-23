@@ -9,5 +9,6 @@ data class Episode(
     val priceType: String,
     val userPurchase: String,
     val content: String?,
-    val xmlContent: XmlContent?
+    val xmlContent: XmlContent?,
+    val isLiked: Boolean
 )

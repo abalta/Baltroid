@@ -5,13 +5,17 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -26,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Devices
@@ -34,7 +39,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.baltroid.apps.R
-import com.baltroid.ui.common.CroppedImage
 import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.VerticalSpacer
 import com.baltroid.ui.components.MenuBar
@@ -112,38 +116,49 @@ private fun CommentsScreenContent(
             }
 
             CommentsTabState.MyFavorites -> {
-                Comments()
+                Comments(comments)
             }
 
             CommentsTabState.MyComments -> {
-                Comments()
+                Comments(comments)
             }
         }
     }
 }
 
 @Composable
-private fun Comments() {
+private fun Comments(
+    comments: List<Comment>
+) {
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp29),
-        contentPadding = PaddingValues(horizontal = MaterialTheme.localDimens.dp35)
+        contentPadding = PaddingValues(horizontal = MaterialTheme.localDimens.dp35),
+        modifier = Modifier.fillMaxWidth()
     ) {
-        item { CommentItem(title = "KİMSE GERÇEK DEĞİL", numberOfComments = 220) }
-        item { CommentItem(title = "KİMSE GERÇEK DEĞİL", numberOfComments = 220) }
-        item { CommentItem(title = "KİMSE GERÇEK DEĞİL", numberOfComments = 220) }
+        items(comments) { comment ->
+            CommentItem(
+                title = comment.original?.title.orEmpty(),
+                numberOfComments = comment.original?.commentCount ?: 0,
+                imgUrl = comment.original?.cover.orEmpty()
+            )
+        }
     }
 }
 
 @Composable
 private fun CommentItem(
     title: String,
-    numberOfComments: Int
+    numberOfComments: Int,
+    imgUrl: String
 ) {
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.width(IntrinsicSize.Min)
     ) {
-        CroppedImage(
-            imgResId = R.drawable.woods_image,
+        AsyncImage(
+            model = imgUrl,
+            contentDescription = null,
+            error = painterResource(id = R.drawable.hitreads_placeholder),
             modifier = Modifier
                 .size(
                     width = MaterialTheme.localDimens.dp127,

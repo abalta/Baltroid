@@ -23,6 +23,7 @@ import com.baltroid.core.network.util.Constants.Fields.PAGE
 import com.baltroid.core.network.util.Constants.Fields.PASSWORD
 import com.baltroid.core.network.util.Constants.Fields.TYPE
 import com.baltroid.core.network.util.Constants.Path.BOOKMARK
+import com.baltroid.core.network.util.Constants.Path.BY_ME
 import com.baltroid.core.network.util.Constants.Path.COMMENT
 import com.baltroid.core.network.util.Constants.Path.EPISODE
 import com.baltroid.core.network.util.Constants.Path.FAVORITE
@@ -93,6 +94,9 @@ interface HitReadsService {
         @Query("$TYPE") type: String,
         @Query("$ID") id: Int?
     ): BaltroidResult<HitReadsResponse<List<AllCommentsDto>>>
+
+    @GET("$COMMENT/$BY_ME")
+    suspend fun getCommentsByMe(): BaltroidResult<HitReadsResponse<List<AllCommentsDto>>>
 
 
     @POST("$COMMENT/{id}/$LIKE")

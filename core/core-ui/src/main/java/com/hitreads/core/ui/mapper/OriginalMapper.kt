@@ -86,7 +86,16 @@ fun TagModel.asTag() = Tag(id, name, icon)
 fun SeasonModel.asSeason() = Season(id, name, episodes.map { it.asEpisode() })
 
 fun EpisodeModel.asEpisode() =
-    Episode(id, name, price, priceType, userPurchase.orEmpty(), assetContents, xmlContents)
+    Episode(
+        id = id,
+        name = name,
+        price = price,
+        priceType = priceType,
+        userPurchase = userPurchase.orEmpty(),
+        content = assetContents,
+        xmlContent = xmlContents,
+        isLiked = isLiked
+    )
 
 fun CommentModel.asComment() = Comment(
     id = id,
@@ -99,7 +108,8 @@ fun CommentModel.asComment() = Comment(
     isLiked = activeUserLike,
     isReply = isReply,
     replies = replies.map { it.asComment() },
-    episode = ""
+    episode = "",
+    original = original?.asOriginal()
 )
 
 fun AllCommentsModel.asComment(): Comment = Comment(
@@ -113,7 +123,8 @@ fun AllCommentsModel.asComment(): Comment = Comment(
     isLiked = activeUserLike ?: false,
     isReply = isReply ?: false,
     replies = replies?.map { it.asComment() }.orEmpty(),
-    episode = ""
+    episode = "",
+    original = original?.asOriginal()
 )
 
 fun WelcomeModel.asWelcome() = Welcome(id, message, path)

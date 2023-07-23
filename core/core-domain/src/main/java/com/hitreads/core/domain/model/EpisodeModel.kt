@@ -9,5 +9,6 @@ data class EpisodeModel(
     val priceType: String,
     val userPurchase: String?,
     val assetContents: String?,
-    val xmlContents: XmlContent?
+    val xmlContents: XmlContent?,
+    val isLiked: Boolean
 )

@@ -110,7 +110,9 @@ fun NavGraphBuilder.menuGraph(navController: NavController, loginViewModel: Logi
             }
         }
         composable(route = HitReadsScreens.RegisterScreen.route) {
-            RegisterScreen()
+            RegisterScreen {
+                navController.popBackStack()
+            }
         }
         composable(route = HitReadsScreens.CommentsScreen.route) {
             CommentsScreen(

@@ -94,7 +94,7 @@ fun MenuScreenGuestContent(
             val (
                 diamond, image, name,
                 profileButton, close, divider,
-                scrollSection, themeButtons
+                scrollSection
             ) = createRefs()
 
             val bottomGuideLine = createGuidelineFromBottom(0.075f)
@@ -141,7 +141,7 @@ fun MenuScreenGuestContent(
                     .clip(MaterialTheme.localShapes.roundedDp4)
                     .background(MaterialTheme.localColors.black)
                     .clickable {
-                        navigate.invoke(HitReadsScreens.LoginScreen.route)//todo
+                        navigate.invoke(HitReadsScreens.LoginScreen.route)
                     }
                     .padding(
                         vertical = MaterialTheme.localDimens.dp6,
@@ -173,7 +173,7 @@ fun MenuScreenGuestContent(
                         top.linkTo(divider.bottom, margin = localDimens.dp16)
                         start.linkTo(divider.start)
                         end.linkTo(divider.end)
-                        bottom.linkTo(themeButtons.top, margin = localDimens.dp16)
+                        bottom.linkTo(parent.bottom)
                         width = Dimension.fillToConstraints
                         height = Dimension.fillToConstraints
                     }
@@ -217,14 +217,6 @@ fun MenuScreenGuestContent(
                     navigate.invoke(HitReadsScreens.SettingsScreen.route)
                 }
             }
-            ThemeButtons(
-                modifier = Modifier
-                    .constrainAs(themeButtons) {
-                        bottom.linkTo(bottomGuideLine)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    }
-            )
         }
     }
 
@@ -334,7 +326,7 @@ private fun MenuScreenLoggedInContent(
                         top.linkTo(divider.bottom, margin = localDimens.dp16)
                         start.linkTo(divider.start)
                         end.linkTo(divider.end)
-                        bottom.linkTo(themeButtons.top, margin = localDimens.dp16)
+                        bottom.linkTo(parent.bottom)
                         width = Dimension.fillToConstraints
                         height = Dimension.fillToConstraints
                     }
@@ -380,14 +372,6 @@ private fun MenuScreenLoggedInContent(
                     navigate.invoke(HitReadsScreens.SettingsScreen.route)
                 }
             }
-            ThemeButtons(
-                modifier = Modifier
-                    .constrainAs(themeButtons) {
-                        bottom.linkTo(bottomGuideLine)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    }
-            )
         }
     }
 }

@@ -30,9 +30,6 @@ class CommentViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(CommentsUiState())
     val uiState = _uiState.asStateFlow()
 
-    private val _likeUiState = MutableStateFlow(CommentsLikeUiState())
-    val likeUiState = _likeUiState.asStateFlow()
-
     fun getAllComments(type: String, id: Int?) = viewModelScope.launch {
         getAllCommentsUseCase(type, id).handle {
             onLoading {
@@ -49,11 +46,20 @@ class CommentViewModel @Inject constructor(
 
     fun likeComment(id: Int) = viewModelScope.launch {
         commentLikeCommentUseCase(id).handle {
-            onLoading {
-                _likeUiState.update { it.copy(isLike = null, isLoading = true) }
-            }
             onSuccess {
-                _likeUiState.update { it.copy(isLike = true, isLoading = false) }
+                _uiState.update { commentsUiState ->
+                    val updatedList =
+                        if (commentsUiState.commentList.firstOrNull { it.id == id } != null) {
+                            commentsUiState.commentList.map { if (it.id == id) it.copy(isLiked = true) else it }
+                        } else {
+                            commentsUiState.commentList.map {
+                                it.copy(replies = it.replies.map {
+                                    if (it.id == id) it.copy(isLiked = true) else it
+                                })
+                            }
+                        }
+                    commentsUiState.copy(commentList = updatedList)
+                }
             }
             onFailure(::handleFailure)
         }
@@ -61,11 +67,20 @@ class CommentViewModel @Inject constructor(
 
     fun unlikeComment(id: Int) = viewModelScope.launch {
         commentUnlikeCommentUseCase(id).handle {
-            onLoading {
-                _likeUiState.update { it.copy(isLike = null, isLoading = true) }
-            }
             onSuccess {
-                _likeUiState.update { it.copy(isLike = false, isLoading = false) }
+                _uiState.update { commentsUiState ->
+                    val updatedList =
+                        if (commentsUiState.commentList.firstOrNull { it.id == id } != null) {
+                            commentsUiState.commentList.map { if (it.id == id) it.copy(isLiked = false) else it }
+                        } else {
+                            commentsUiState.commentList.map {
+                                it.copy(replies = it.replies.map {
+                                    if (it.id == id) it.copy(isLiked = false) else it
+                                })
+                            }
+                        }
+                    commentsUiState.copy(commentList = updatedList)
+                }
             }
             onFailure(::handleFailure)
         }

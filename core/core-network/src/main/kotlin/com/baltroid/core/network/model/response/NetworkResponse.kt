@@ -92,7 +92,9 @@ data class CommentDto(
     @SerialName("replies_count")
     val repliesCount: Int?,
     @SerialName("reply_comment_id")
-    val replyCommentId: Int?
+    val replyCommentId: Int?,
+    @SerialName("Original")
+    val original: NetworkCommentOriginal?
 )
 
 @Serializable

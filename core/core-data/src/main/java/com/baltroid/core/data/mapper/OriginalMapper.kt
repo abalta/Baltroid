@@ -136,7 +136,8 @@ internal fun NetworkEpisode.asEpisodeModel(
     priceType = priceType,
     userPurchase = userPurchase,
     assetContents = episodeContent,
-    xmlContents = xmlContent
+    xmlContents = xmlContent,
+    isLiked = isLiked ?: false
 )
 
 internal fun NetworkPackage.asPackageModel() = PackageModel(
@@ -155,7 +156,8 @@ internal fun CommentDto.asCommentModel() = CommentModel(
     likesCount = likesCount ?: 0,
     repliesCount = repliesCount ?: 0,
     replyCommentId = replyCommentId ?: 0,
-    replies = emptyList()
+    replies = emptyList(),
+    original = original?.asOriginalModel()
 )
 
 internal fun AllCommentsDto.asAllCommentsModel(): AllCommentsModel = AllCommentsModel(

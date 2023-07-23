@@ -30,7 +30,9 @@ import com.baltroid.ui.theme.localTextStyles
 import com.baltroid.util.conditional
 
 @Composable
-fun RegisterScreen() {
+fun RegisterScreen(
+    onBackClick: () -> Unit
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -42,7 +44,7 @@ fun RegisterScreen() {
         IconlessMenuBar(
             modifier = Modifier.align(Alignment.CenterHorizontally),
             title = stringResource(id = R.string.new_user),
-            onBackClick = {}
+            onBackClick = onBackClick
         )
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -60,13 +62,6 @@ fun RegisterScreen() {
             Text(
                 text = "Bu alan boş bırakılamaz",
                 style = MaterialTheme.localTextStyles.signUpTextOrangeGrotesk
-            )
-            VerticalSpacer(height = MaterialTheme.localDimens.dp9)
-            UserInputArea(
-                title = R.string.nickname,
-                value = "",
-                onValueChange = {},
-                modifier = Modifier.fillMaxWidth(0.65f)
             )
             VerticalSpacer(height = MaterialTheme.localDimens.dp9)
             UserInputArea(
@@ -151,5 +146,5 @@ fun CheckBoxWithText(
 @Preview
 @Composable
 fun PreviewRegister() {
-    RegisterScreen()
+    RegisterScreen() {}
 }
