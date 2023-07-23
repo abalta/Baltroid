@@ -11,8 +11,9 @@ import com.hitreads.core.domain.model.FavoriteModel
 import com.hitreads.core.domain.repository.FavoriteRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import javax.inject.Inject
 
-class FavoriteRepositoryImpl(
+class FavoriteRepositoryImpl @Inject constructor(
     private val networkDataSource: HitReadsNetworkDataSource,
 ) : FavoriteRepository {
 

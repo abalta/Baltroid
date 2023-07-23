@@ -116,7 +116,13 @@ fun ReadingScreen(
                 OriginalType.TEXT
             )
         },
-        onLikeClick = {},
+        onLikeClick = {
+            if (!it) {
+                original.episode?.id?.let { it1 -> viewModel.createFavorite(it1) }
+            } else {
+
+            }
+        },
         openMenuScreen
     )
 }

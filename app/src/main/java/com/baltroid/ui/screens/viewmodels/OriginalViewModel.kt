@@ -7,6 +7,7 @@ import com.baltroid.core.common.result.handle
 import com.baltroid.ui.screens.home.HomeUiState
 import com.baltroid.ui.screens.reading.ReadingUiState
 import com.hitreads.core.domain.model.OriginalModel
+import com.hitreads.core.domain.usecase.CreateFavoriteUseCase
 import com.hitreads.core.domain.usecase.GetOriginalsUseCase
 import com.hitreads.core.domain.usecase.IsLoggedUseCase
 import com.hitreads.core.domain.usecase.ShowEpisodeUseCase
@@ -29,6 +30,7 @@ class OriginalViewModel @Inject constructor(
     private val showEpisodeUseCase: ShowEpisodeUseCase,
     private val getOriginalsUseCase: GetOriginalsUseCase,
     private val isLoggedUseCase: IsLoggedUseCase,
+    private val createFavoriteUseCase: CreateFavoriteUseCase,
 ) : ViewModel() {
 
     private val _uiStateReading = MutableStateFlow(ReadingUiState())
@@ -54,6 +56,17 @@ class OriginalViewModel @Inject constructor(
 
     init {
         isLogged()
+    }
+
+    fun createFavorite(id: Int) = viewModelScope.launch {
+        createFavoriteUseCase.invoke("episode", id).handle {
+            onSuccess {
+                println("")
+            }
+            onFailure {
+                println("")
+            }
+        }
     }
 
     private fun isLogged() = viewModelScope.launch {
