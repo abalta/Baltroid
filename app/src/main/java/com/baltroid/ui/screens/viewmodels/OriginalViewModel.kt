@@ -7,8 +7,8 @@ import com.baltroid.core.common.result.handle
 import com.baltroid.ui.screens.home.HomeUiState
 import com.baltroid.ui.screens.reading.ReadingUiState
 import com.hitreads.core.domain.model.OriginalModel
-import com.hitreads.core.domain.usecase.GetCommentsUseCase
 import com.hitreads.core.domain.usecase.GetOriginalsUseCase
+import com.hitreads.core.domain.usecase.IsLoggedUseCase
 import com.hitreads.core.domain.usecase.ShowEpisodeUseCase
 import com.hitreads.core.domain.usecase.ShowOriginalUseCase
 import com.hitreads.core.model.Original
@@ -27,8 +27,8 @@ import javax.inject.Inject
 class OriginalViewModel @Inject constructor(
     private val showOriginalUseCase: ShowOriginalUseCase,
     private val showEpisodeUseCase: ShowEpisodeUseCase,
-    private val getCommentsUseCase: GetCommentsUseCase,
     private val getOriginalsUseCase: GetOriginalsUseCase,
+    private val isLoggedUseCase: IsLoggedUseCase,
 ) : ViewModel() {
 
     private val _uiStateReading = MutableStateFlow(ReadingUiState())
@@ -40,6 +40,9 @@ class OriginalViewModel @Inject constructor(
     private val _sharedUIState = MutableStateFlow<Original?>(null)
     val sharedUIState = _sharedUIState.asStateFlow()
 
+    private val _uiStateIsLogged = MutableStateFlow(false)
+    val uiStateIsLogged = _uiStateIsLogged.asStateFlow()
+
     fun loadOriginals() = _uiStateHome.update {
         val originals = getOriginalsUseCase().pagingMap(OriginalModel::asOriginal)
             .cachedIn(viewModelScope)
@@ -49,8 +52,32 @@ class OriginalViewModel @Inject constructor(
         )
     }
 
+    init {
+        isLogged()
+    }
+
+    private fun isLogged() = viewModelScope.launch {
+        isLoggedUseCase().handle {
+            onSuccess {
+                _uiStateIsLogged.update { _ -> it }
+            }
+            onFailure {
+                _uiStateIsLogged.update { _ -> false }
+            }
+        }
+    }
+
     fun setSharedUIState(original: Original?) {
         _sharedUIState.update { original }
+    }
+
+    fun loadFavorites() = _uiStateHome.update {
+        val originals = getOriginalsUseCase(getByFav = true).pagingMap(OriginalModel::asOriginal)
+            .cachedIn(viewModelScope)
+
+        it.copy(
+            favorites = originals
+        )
     }
 
     fun showOriginal(id: Int) = viewModelScope.launch {

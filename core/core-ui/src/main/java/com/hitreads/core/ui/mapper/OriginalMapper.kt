@@ -63,12 +63,12 @@ fun ShowOriginalModel.asShowOriginal() = ShowOriginal(
     viewCount,
     commentsCount,
     updatedAt,
-    episodes.map { it.asShowEpisode() },
+    episodes.sortedBy { it.sort }.map { it.asShowEpisode() },
     author.asAuthor()
 )
 
 fun ShowEpisodeModel.asShowEpisode() = ShowEpisode(
-    id, seasonId, episodeName, price, priceType, userPurchase
+    id, seasonId, episodeName, price, priceType, userPurchase, sort
 )
 
 fun PackageModel.asPackage() = Package(

@@ -17,6 +17,8 @@ data class NetworkEpisode(
     val userPurchase: String?,
     @SerialName("sort")
     val sort: Int?,
+    @SerialName("asset_contents")
+    val assetContent: String?,
     @SerialName("created_at")
     val createdAt: String?,
     @SerialName("updated_at")

@@ -48,6 +48,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -55,8 +57,8 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
 import com.baltroid.apps.R
-import com.baltroid.ui.common.CroppedImage
 import com.baltroid.ui.common.HorizontalSpacer
 import com.baltroid.ui.common.IconWithTextNextTo
 import com.baltroid.ui.common.SimpleIcon
@@ -108,6 +110,12 @@ fun ReadingScreen(
         textOriginal = sharedOriginal,
         hashTag = sharedOriginal?.hashtag.orEmpty(),
         comments = emptyList(),
+        onEpisodeChange = {
+            viewModel.showEpisode(
+                original.original?.episodes?.get(it)?.id.orZero(),
+                OriginalType.TEXT
+            )
+        },
         onLikeClick = {},
         openMenuScreen
     )
@@ -119,6 +127,7 @@ private fun ReadingScreenContent(
     textOriginal: Original?,
     hashTag: String,
     comments: List<Comment>,
+    onEpisodeChange: (Int) -> Unit,
     onLikeClick: (Boolean) -> Unit,
     openMenuScreen: () -> Unit
 ) {
@@ -135,6 +144,14 @@ private fun ReadingScreenContent(
         mutableStateOf(false)
     }
 
+    var selectedEpisodeIndex by remember {
+        mutableStateOf(0)
+    }
+
+    LaunchedEffect(selectedEpisodeIndex) {
+        onEpisodeChange.invoke(selectedEpisodeIndex)
+    }
+
     Box {
         Column(
             modifier = Modifier
@@ -144,6 +161,7 @@ private fun ReadingScreenContent(
         ) {
             HitReadsPageHeader(
                 numberOfNotification = 10,
+                imgUrl = screenState.original?.cover.orEmpty(),
                 onMenuClick = openMenuScreen
             )
             Row(
@@ -208,7 +226,11 @@ private fun ReadingScreenContent(
             AnimatedVisibility(visible = if (isReadingSection) scrollState.isEpisodesVisible() else lazyScrollState.isEpisodesVisible()) {
                 EpisodeSection(
                     episodes = screenState.original?.episodes.orEmpty(),
-                    paddingValues = PaddingValues(horizontal = MaterialTheme.localDimens.dp32)
+                    paddingValues = PaddingValues(horizontal = MaterialTheme.localDimens.dp32),
+                    selectedEpisodeIndex = selectedEpisodeIndex,
+                    onEpisodeClick = { index ->
+                        selectedEpisodeIndex = index
+                    }
                 )
             }
         }
@@ -264,6 +286,7 @@ fun ScrollBar(
 fun HitReadsPageHeader(
     numberOfNotification: Int,
     onMenuClick: () -> Unit,
+    imgUrl: String,
     modifier: Modifier = Modifier
 ) {
     ConstraintLayout(
@@ -271,8 +294,11 @@ fun HitReadsPageHeader(
     ) {
         val (image, topBar) = createRefs()
         val localDimens = MaterialTheme.localDimens
-        CroppedImage(
-            imgResId = R.drawable.header_image,
+        AsyncImage(
+            model = imgUrl,
+            contentDescription = null,
+            error = painterResource(id = R.drawable.hitreads_placeholder),
+            contentScale = ContentScale.Crop,
             modifier = Modifier.constrainAs(image) {
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
@@ -316,7 +342,7 @@ fun TitleSection(
             Titles(
                 title = title,
                 subtitle = subtitle,
-                episodeTitle = "Bölüm -1 - $episodeName",
+                episodeTitle = episodeName,
                 modifier = Modifier.weight(1f)
             )
             SimpleIcon(
@@ -401,18 +427,21 @@ fun ReadingSection(
 fun EpisodeSection(
     episodes: List<ShowEpisode>,
     paddingValues: PaddingValues,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    selectedEpisodeIndex: Int,
+    onEpisodeClick: (index: Int) -> Unit
 ) {
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp13),
         contentPadding = paddingValues,
         modifier = modifier
     ) {
-        itemsIndexed(episodes) { index, _ ->
+        itemsIndexed(episodes) { index, item ->
             EpisodeSectionItem(
-                episodeNumber = index + 1,
-                isSelected = false,
+                episodeNumber = item.sort.orZero(),
                 hasBanner = false,
+                isSelected = index == selectedEpisodeIndex,
+                onClick = { onEpisodeClick(index) }
             )
         }
     }
@@ -424,7 +453,8 @@ fun EpisodeSectionItem(
     episodeNumber: Int,
     isSelected: Boolean,
     hasBanner: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
 ) {
     val episodeTextStyle = if (isSelected) MaterialTheme.localTextStyles.episodeSelectedText
     else MaterialTheme.localTextStyles.episodeUnselectedText
@@ -432,6 +462,7 @@ fun EpisodeSectionItem(
     Column(
         modifier
             .width(IntrinsicSize.Min)
+            .clickable { onClick.invoke() }
     ) {
         Row {
             Text(text = stringResource(id = R.string.episode), style = episodeTextStyle)

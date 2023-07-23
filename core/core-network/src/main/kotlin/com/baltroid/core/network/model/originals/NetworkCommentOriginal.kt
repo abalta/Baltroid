@@ -22,9 +22,9 @@ data class NetworkCommentOriginal(
     @SerialName("is_locked")
     val isLocked: Boolean,
     @SerialName("status")
-    val status: Int,
+    val status: Boolean,
     @SerialName("is_actual")
-    val isActual: Int,
+    val isActual: Boolean,
     @SerialName("sort")
     val sort: Int,
     @SerialName("created_at")
@@ -36,7 +36,7 @@ data class NetworkCommentOriginal(
     @SerialName("hashtag")
     val hashtag: String?,
     @SerialName("is_new")
-    val isNew: Int,
+    val isNew: Boolean,
     @SerialName("view_count")
     val viewCount: Int,
 )

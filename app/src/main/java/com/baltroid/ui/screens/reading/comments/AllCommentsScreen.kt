@@ -74,6 +74,7 @@ fun AllCommentsScreen(
         ) {
             HitReadsPageHeader(
                 numberOfNotification = 12,
+                imgUrl = "",
                 onMenuClick = { },
             )
             Row(

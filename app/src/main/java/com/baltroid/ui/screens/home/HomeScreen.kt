@@ -73,9 +73,11 @@ fun HomeScreen(
     navigate: (route: String, item: Original?) -> Unit
 ) {
     val uiStates = viewModel.uiStateHome.collectAsStateWithLifecycle().value
+    val isLogged = viewModel.uiStateIsLogged.collectAsStateWithLifecycle().value
 
     LaunchedEffect(Unit) {
         viewModel.loadOriginals()
+        viewModel.loadFavorites()
     }
 
     HomeScreenContent(
@@ -100,7 +102,8 @@ private fun HomeScreenContent(
     var tabState by rememberSaveable {
         mutableStateOf(HomeScreenTabs.AllStories)
     }
-    var currentItem by remember(
+
+    val currentItem by remember(
         uiStates.itemCount,
         uiStatesFavorites.itemCount,
         tabState,

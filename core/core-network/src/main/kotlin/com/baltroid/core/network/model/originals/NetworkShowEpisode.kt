@@ -16,5 +16,7 @@ data class NetworkShowEpisode(
     @SerialName("price_type")
     val priceType: String,
     @SerialName("user_purchase")
-    val userPurchase: String?
+    val userPurchase: String?,
+    @SerialName("sort")
+    val sort: Int?
 )

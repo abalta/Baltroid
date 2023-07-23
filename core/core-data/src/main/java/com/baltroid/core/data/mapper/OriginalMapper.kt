@@ -102,7 +102,8 @@ internal fun NetworkShowEpisode.asShowEpisodeModel() = ShowEpisodeModel(
     episodeName = episodeName,
     price = price,
     priceType = priceType,
-    userPurchase = userPurchase
+    userPurchase = userPurchase,
+    sort = sort
 )
 
 internal fun NetworkAuthor.asAuthorModel() = AuthorModel(

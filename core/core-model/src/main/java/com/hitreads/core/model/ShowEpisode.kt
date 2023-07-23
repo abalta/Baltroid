@@ -6,5 +6,6 @@ data class ShowEpisode(
     val episodeName: String,
     val price: Int,
     val priceType: String,
-    val userPurchase: String?
+    val userPurchase: String?,
+    val sort: Int?,
 )

@@ -74,7 +74,6 @@ import com.baltroid.util.orEmpty
 import com.hitreads.core.domain.model.OriginalType
 import com.hitreads.core.model.Episode
 import com.hitreads.core.model.Original
-import kotlinx.coroutines.delay
 
 @Composable
 fun InteractiveScreen(
@@ -84,9 +83,8 @@ fun InteractiveScreen(
 
     val original = viewModel.sharedUIState.collectAsStateWithLifecycle().value
 
-    LaunchedEffect(Unit) {
-        delay(2000)
-        viewModel.showEpisode(761, OriginalType.INTERACTIVE)
+    LaunchedEffect(original) {
+        original?.id?.let { viewModel.showEpisode(it, OriginalType.INTERACTIVE) }
     }
 
     val interactiveContent =
