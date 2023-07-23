@@ -208,7 +208,10 @@ private fun ReadingScreenContent(
                             CommentSection(
                                 lazyListState = lazyScrollState,
                                 comments = comments,
-                                modifier = Modifier.padding(start = MaterialTheme.localDimens.dp32)
+                                modifier = Modifier.padding(start = MaterialTheme.localDimens.dp32),
+                                onLikeClick = { isLiked, id ->
+
+                                }
                             )
                         }
                     }
@@ -491,7 +494,8 @@ fun EpisodeSectionItem(
 fun CommentSection(
     lazyListState: LazyListState,
     comments: List<Comment>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onLikeClick: (Boolean, Int) -> Unit
 ) {
 
     Column(
@@ -505,13 +509,15 @@ fun CommentSection(
             items(comments) { comment ->
                 CommentItem(
                     model = comment,
-                    isChatSelected = false
+                    isChatSelected = false,
+                    onLikeClick = onLikeClick
                 )
                 VerticalSpacer(height = MaterialTheme.localDimens.dp12)
                 comment.replies.forEach { item ->
                     CommentItem(
                         model = item,
-                        isChatSelected = false
+                        isChatSelected = false,
+                        onLikeClick = onLikeClick
                     )
                 }
             }
@@ -582,7 +588,8 @@ private fun TabItem(
 fun CommentItem(
     model: Comment,
     isChatSelected: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onLikeClick: (Boolean, Int) -> Unit
 ) {
     ConstraintLayout(
         modifier = Modifier.fillMaxWidth()
@@ -631,7 +638,15 @@ fun CommentItem(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp12),
                     ) {
-                        SimpleIcon(iconResId = if (model.isLiked) R.drawable.ic_heart_filled else R.drawable.ic_heart_outlined)
+                        SimpleIcon(
+                            iconResId = if (model.isLiked) R.drawable.ic_heart_filled else R.drawable.ic_heart_outlined,
+                            modifier = Modifier.clickable {
+                                onLikeClick.invoke(
+                                    model.isLiked,
+                                    model.id
+                                )
+                            }
+                        )
                         IconWithTextNextTo(
                             iconResId = if (isChatSelected) R.drawable.ic_chat_filled else R.drawable.ic_chat_outlined,
                             text = model.repliesCount.toString(),

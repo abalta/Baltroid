@@ -10,7 +10,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.baltroid.core.network.api.service.HitReadsService
+import com.baltroid.presentation.screens.menu.login.LoginViewModel
 import com.baltroid.ui.navigation.HitReadsNavHost
 import com.baltroid.ui.theme.HitReadsTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -29,9 +31,9 @@ class BaltroidActivity : ComponentActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
-            //val viewmodel: LoginViewModel = hiltViewModel()
+            val viewmodel: LoginViewModel = hiltViewModel()
             LaunchedEffect(Unit) {
-                //  viewmodel.loginTest("demo@kitapkulubu.test", "password")
+                viewmodel.loginTest("demo@kitapkulubu.test", "password")
             }
             HitReadsTheme {
                 HitReadsNavHost(

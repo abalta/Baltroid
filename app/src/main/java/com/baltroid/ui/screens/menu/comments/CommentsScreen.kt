@@ -61,14 +61,19 @@ fun CommentsScreen(
 
     CommentsScreenContent(
         viewModel.uiState.collectAsStateWithLifecycle().value.commentList,
-        onBackClick
+        onBackClick,
+        onLikeClick = { isLiked, id ->
+            if (!isLiked) viewModel.likeComment(id)
+            else viewModel.unlikeComment(id)
+        }
     )
 }
 
 @Composable
 private fun CommentsScreenContent(
     comments: List<Comment>,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onLikeClick: (Boolean, Int) -> Unit,
 ) {
 
     var selectedTab by remember {
@@ -101,7 +106,8 @@ private fun CommentsScreenContent(
                 CommentSection(
                     lazyListState = rememberLazyListState(),
                     comments = comments,
-                    modifier = Modifier.padding(start = MaterialTheme.localDimens.dp30)
+                    modifier = Modifier.padding(start = MaterialTheme.localDimens.dp30),
+                    onLikeClick = onLikeClick
                 )
             }
 
