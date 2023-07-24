@@ -12,6 +12,7 @@ import com.baltroid.core.network.model.response.EpisodeResponseDto
 import com.baltroid.core.network.model.response.FavoriteDto
 import com.baltroid.core.network.model.response.LoginDto
 import com.baltroid.core.network.model.response.OriginalResponseDto
+import com.baltroid.core.network.model.response.ProfileDto
 import com.baltroid.core.network.model.response.WelcomeDto
 import com.baltroid.core.network.util.Constants.DEFAULT_PAGE
 import com.baltroid.core.network.util.Constants.Fields.EMAIL
@@ -30,6 +31,7 @@ import com.baltroid.core.network.util.Constants.Path.FAVORITE
 import com.baltroid.core.network.util.Constants.Path.LIKE
 import com.baltroid.core.network.util.Constants.Path.LOGIN
 import com.baltroid.core.network.util.Constants.Path.ORIGINALS_INDEX
+import com.baltroid.core.network.util.Constants.Path.PROFILE
 import com.baltroid.core.network.util.Constants.Path.REGISTER
 import com.baltroid.core.network.util.Constants.Path.SHOW
 import com.baltroid.core.network.util.Constants.Path.TAG
@@ -128,5 +130,8 @@ interface HitReadsService {
 
     @DELETE("$BOOKMARK/{id}")
     suspend fun deleteBookmark(@Path("id") id: Int): BaltroidResult<HitReadsResponse<Unit>>
+
+    @GET("$PROFILE")
+    suspend fun getProfile(): BaltroidResult<HitReadsResponse<ProfileDto>>
 
 }

@@ -18,13 +18,17 @@ import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,6 +50,12 @@ fun CommentWritingCard(
     var comment by rememberSaveable {
         mutableStateOf("")
     }
+    val focusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+    }
+
     Box(
         modifier = Modifier
             .padding(
@@ -114,11 +124,12 @@ fun CommentWritingCard(
                 )
                 VerticalSpacer(height = MaterialTheme.localDimens.dp15)
                 BasicTextField(
-                    value = "First of all please publish this so I can buy it for my library! second, there definitely needs to be a part 2 or second book because I’m hooked.",
+                    value = comment,
                     onValueChange = { comment = if (comment.length < 1200) it else comment },
                     textStyle = MaterialTheme.localTextStyles.writingCardBody,
                     cursorBrush = SolidColor(MaterialTheme.localColors.white_alpha08),
                     modifier = Modifier
+                        .focusRequester(focusRequester)
                         .padding(
                             start = MaterialTheme.localDimens.dp27,
                             end = MaterialTheme.localDimens.dp39

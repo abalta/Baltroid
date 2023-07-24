@@ -26,19 +26,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
 import com.baltroid.apps.R
-import com.baltroid.ui.common.CroppedImage
 import com.baltroid.ui.common.HorizontalSpacer
 import com.baltroid.ui.common.RoundedIconCard
 import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.SimpleImage
 import com.baltroid.ui.common.VerticalSpacer
 import com.baltroid.ui.navigation.HitReadsScreens
+import com.baltroid.ui.screens.viewmodels.AuthenticationViewModel
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localShapes
@@ -47,25 +51,26 @@ import com.baltroid.util.conditional
 
 @Composable
 fun MenuScreen(
-    menuScreenState: MenuScreenState,
     onBackClick: () -> Unit,
     isLoggedIn: Boolean,
+    viewModel: AuthenticationViewModel = hiltViewModel(),
     navigate: (route: String) -> Unit,
 ) {
+    val uiState = viewModel.profileState.collectAsStateWithLifecycle().value
     if (isLoggedIn) {
         MenuScreenLoggedInContent(
-            balance = menuScreenState.diamondBalance,
-            currentUserName = menuScreenState.currentUserName,
-            imgUrl = menuScreenState.imgUrl,
+            balance = uiState.profile?.gem ?: 0,
+            currentUserName = uiState.profile?.userName.orEmpty(),
+            imgUrl = uiState.profile?.avatar.orEmpty(),
             scrollState = rememberScrollState(),
             onBackClick = onBackClick,
             navigate = navigate
         )
     } else {
         MenuScreenGuestContent(
-            balance = menuScreenState.diamondBalance,
-            currentUserName = menuScreenState.currentUserName,
-            imgUrl = menuScreenState.imgUrl,
+            balance = uiState.profile?.gem ?: 0,
+            currentUserName = uiState.profile?.userName.orEmpty(),
+            imgUrl = uiState.profile?.avatar.orEmpty(),
             scrollState = rememberScrollState(),
             onBackClick = onBackClick,
             navigate = navigate
@@ -262,8 +267,10 @@ private fun MenuScreenLoggedInContent(
                         navigate.invoke(HitReadsScreens.ShopScreen.route)
                     }
             )
-            CroppedImage(
-                imgResId = R.drawable.woods_image,
+            AsyncImage(
+                model = imgUrl,
+                error = painterResource(id = R.drawable.ic_profile),
+                contentDescription = null,
                 modifier = Modifier
                     .constrainAs(image) {
                         top.linkTo(parent.top, margin = localDimens.dp36)
@@ -484,11 +491,6 @@ fun MenuItem(
 @Composable
 fun MenuScreenPreview() {
     MenuScreen(
-        menuScreenState = MenuScreenState(
-            200,
-            "SELEN PEKMEZCİ",
-            imgUrl = ""
-        ),
         isLoggedIn = false,
         onBackClick = {}
     ) {}

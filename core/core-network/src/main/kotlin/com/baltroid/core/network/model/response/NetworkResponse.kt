@@ -41,6 +41,22 @@ data class LoginDto(
 )
 
 @Serializable
+data class ProfileDto(
+    @SerialName("username")
+    val userName: String?,
+    @SerialName("email")
+    val email: String?,
+    @SerialName("karma")
+    val karma: Int?,
+    @SerialName("avatar")
+    val avatar: String?,
+    @SerialName("is_beta")
+    val is_beta: Boolean?,
+    @SerialName("gem")
+    val gem: Int?,
+)
+
+@Serializable
 data class EpisodeResponseDto(
     @SerialName(Constants.Fields.EPISODE)
     val episode: NetworkEpisode,

@@ -370,7 +370,7 @@ fun InteractiveScreenBottomBar(
                 text = original?.viewCount.toString(),
                 textStyle = MaterialTheme.localTextStyles.sideBarIconText,
                 spacedBy = MaterialTheme.localDimens.dp9,
-            )
+            ) {}
             IconWithTextNextTo(
                 iconResId = R.drawable.ic_comment,
                 text = original?.commentCount.toString(),
@@ -378,7 +378,7 @@ fun InteractiveScreenBottomBar(
                 spacedBy = MaterialTheme.localDimens.dp9,
                 modifier = Modifier
                     .clickable { onCommentsClicked.invoke() }
-            )
+            ) {}
             Row {
                 Divider(
                     color = MaterialTheme.localColors.white,

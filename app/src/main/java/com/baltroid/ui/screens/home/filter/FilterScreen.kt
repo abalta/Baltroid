@@ -12,9 +12,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -24,11 +22,11 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.baltroid.apps.R
 import com.baltroid.ui.components.MenuBar
 import com.baltroid.ui.screens.menu.login.TextBetweenDividers
+import com.baltroid.ui.screens.viewmodels.OriginalViewModel
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localShapes
@@ -37,13 +35,16 @@ import com.hitreads.core.model.Tag
 
 @Composable
 fun FilterScreen(
-    applyFilter: (selectedGenres: List<Int>) -> Unit,
+    viewModel: OriginalViewModel,
     onBackClick: () -> Unit
 ) {
-    val viewModel: FilterViewModel = hiltViewModel()
-    val selectedIds = remember {
-        mutableStateListOf<Int>()
+
+    LaunchedEffect(Unit) {
+        viewModel.loadFilters()
     }
+
+    val filter = viewModel.filter
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -66,8 +67,14 @@ fun FilterScreen(
             }
         )
         GenreSection(
-            viewModel.uiState.collectAsStateWithLifecycle().value.tagUiModels,
-            selectedIds = selectedIds,
+            viewModel.uiStateFilter.collectAsStateWithLifecycle().value.tagUiModels,
+            selectedIds = filter,
+            remove = { id ->
+                filter.remove(id)
+            },
+            add = { id ->
+                filter.add(id)
+            },
             modifier = Modifier.constrainAs(genreSection) {
                 top.linkTo(topBar.bottom, localDimens.dp44)
                 start.linkTo(topBar.start)
@@ -79,7 +86,9 @@ fun FilterScreen(
         TextBetweenDividers(
             text = stringResource(id = R.string.txt_filter),
             textStyle = MaterialTheme.localTextStyles.signInTextWhite,
-            onClick = { applyFilter.invoke(selectedIds) },
+            onClick = {
+                onBackClick.invoke()
+            },
             modifier = Modifier
                 .constrainAs(apply) {
                     bottom.linkTo(bottomGuideLine)
@@ -114,7 +123,9 @@ private fun FilterScreenGenreItem(
 @Composable
 fun GenreSection(
     tagList: List<Tag>,
-    selectedIds: SnapshotStateList<Int>,
+    selectedIds: List<Int>,
+    remove: (Int) -> Unit,
+    add: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyVerticalGrid(
@@ -128,9 +139,9 @@ fun GenreSection(
                 tag = item, isSelected = selectedIds.contains(item.id)
             ) { id ->
                 if (selectedIds.contains(id)) {
-                    selectedIds.remove(id)
+                    remove(id)
                 } else {
-                    selectedIds.add(id)
+                    add(id)
                 }
             }
         }
@@ -142,6 +153,6 @@ fun GenreSection(
 @Preview(widthDp = 360, heightDp = 540)
 @Composable
 fun FilterScreenPreview() {
-    FilterScreen(onBackClick = {}, applyFilter = {})
+
 }
 

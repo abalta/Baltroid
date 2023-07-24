@@ -110,7 +110,8 @@ fun AllCommentsScreen(
                             lazyListState = lazyListState,
                             comments = comments.commentList,
                             modifier = Modifier.padding(end = MaterialTheme.localDimens.dp8),
-                            onLikeClick = { _, _ -> }
+                            onLikeClick = { _, _ -> },
+                            onReplyClick = {}
                         )
                     }
                 }

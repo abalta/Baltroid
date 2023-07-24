@@ -2,6 +2,7 @@ package com.baltroid.ui.common
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -49,14 +50,21 @@ fun IconWithTextNextTo(
     textStyle: TextStyle = TextStyle.Default,
     spacedBy: Dp = 0.dp,
     tint: Color = Color.Unspecified,
+    isTextVisible: Boolean = true,
+    onIconClick: () -> Unit
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
     ) {
-        SimpleIcon(iconResId = iconResId, tint = tint)
+        SimpleIcon(
+            iconResId = iconResId,
+            tint = tint,
+            modifier = Modifier.clickable { onIconClick.invoke() })
         HorizontalSpacer(width = spacedBy)
-        Text(text = text, style = textStyle)
+        if (isTextVisible) {
+            Text(text = text, style = textStyle)
+        }
     }
 }
 

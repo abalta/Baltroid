@@ -1,14 +1,17 @@
 package com.baltroid.ui.screens.viewmodels
 
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import com.baltroid.core.common.result.handle
 import com.baltroid.ui.screens.home.HomeUiState
+import com.baltroid.ui.screens.home.filter.FilterUiState
 import com.baltroid.ui.screens.reading.ReadingUiState
 import com.hitreads.core.domain.model.OriginalModel
 import com.hitreads.core.domain.usecase.CreateFavoriteUseCase
 import com.hitreads.core.domain.usecase.GetOriginalsUseCase
+import com.hitreads.core.domain.usecase.GetTagsUseCase
 import com.hitreads.core.domain.usecase.IsLoggedUseCase
 import com.hitreads.core.domain.usecase.ShowEpisodeUseCase
 import com.hitreads.core.domain.usecase.ShowOriginalUseCase
@@ -16,6 +19,7 @@ import com.hitreads.core.model.Original
 import com.hitreads.core.ui.mapper.asEpisode
 import com.hitreads.core.ui.mapper.asOriginal
 import com.hitreads.core.ui.mapper.asShowOriginal
+import com.hitreads.core.ui.mapper.asTag
 import com.hitreads.core.ui.mapper.pagingMap
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,6 +35,7 @@ class OriginalViewModel @Inject constructor(
     private val getOriginalsUseCase: GetOriginalsUseCase,
     private val isLoggedUseCase: IsLoggedUseCase,
     private val createFavoriteUseCase: CreateFavoriteUseCase,
+    private val getTagsUseCase: GetTagsUseCase,
 ) : ViewModel() {
 
     private val _uiStateReading = MutableStateFlow(ReadingUiState())
@@ -45,8 +50,16 @@ class OriginalViewModel @Inject constructor(
     private val _uiStateIsLogged = MutableStateFlow(false)
     val uiStateIsLogged = _uiStateIsLogged.asStateFlow()
 
+    private val _uiStateFilter = MutableStateFlow(FilterUiState())
+    val uiStateFilter = _uiStateFilter.asStateFlow()
+
+    val filter = mutableStateListOf<Int>()
+
     fun loadOriginals() = _uiStateHome.update {
-        val originals = getOriginalsUseCase().pagingMap(OriginalModel::asOriginal)
+        val originals = getOriginalsUseCase(
+            if (filter.isEmpty()) null
+            else filter.joinToString { it.toString() }
+        ).pagingMap(OriginalModel::asOriginal)
             .cachedIn(viewModelScope)
 
         it.copy(
@@ -61,10 +74,8 @@ class OriginalViewModel @Inject constructor(
     fun createFavorite(id: Int) = viewModelScope.launch {
         createFavoriteUseCase.invoke("episode", id).handle {
             onSuccess {
-                println("")
             }
             onFailure {
-                println("")
             }
         }
     }
@@ -132,6 +143,26 @@ class OriginalViewModel @Inject constructor(
                         episode = episodeModel.asEpisode(),
                         isLoading = false
                     )
+                }
+            }
+            onFailure(::handleFailure)
+        }
+    }
+
+    fun loadFilters() = viewModelScope.launch {
+        getTagsUseCase().handle {
+            onLoading { list ->
+                _uiStateFilter.update { state ->
+                    state.copy(tagUiModels = list?.map {
+                        it.asTag()
+                    }.orEmpty(), isLoading = true)
+                }
+            }
+            onSuccess { list ->
+                _uiStateFilter.update { state ->
+                    state.copy(tagUiModels = list.map {
+                        it.asTag()
+                    }, isLoading = true)
                 }
             }
             onFailure(::handleFailure)

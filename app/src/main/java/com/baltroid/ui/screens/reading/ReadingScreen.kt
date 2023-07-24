@@ -211,6 +211,9 @@ private fun ReadingScreenContent(
                                 modifier = Modifier.padding(start = MaterialTheme.localDimens.dp32),
                                 onLikeClick = { isLiked, id ->
 
+                                },
+                                onReplyClick = {
+
                                 }
                             )
                         }
@@ -495,7 +498,8 @@ fun CommentSection(
     lazyListState: LazyListState,
     comments: List<Comment>,
     modifier: Modifier = Modifier,
-    onLikeClick: (Boolean, Int) -> Unit
+    onLikeClick: (Boolean, Int) -> Unit,
+    onReplyClick: (Int) -> Unit
 ) {
 
     Column(
@@ -510,14 +514,16 @@ fun CommentSection(
                 CommentItem(
                     model = comment,
                     isChatSelected = false,
-                    onLikeClick = onLikeClick
+                    onLikeClick = onLikeClick,
+                    onReplyClick = onReplyClick
                 )
                 VerticalSpacer(height = MaterialTheme.localDimens.dp12)
                 comment.replies.forEach { item ->
                     CommentItem(
                         model = item,
                         isChatSelected = false,
-                        onLikeClick = onLikeClick
+                        onLikeClick = onLikeClick,
+                        onReplyClick = onReplyClick
                     )
                 }
             }
@@ -589,7 +595,8 @@ fun CommentItem(
     model: Comment,
     isChatSelected: Boolean,
     modifier: Modifier = Modifier,
-    onLikeClick: (Boolean, Int) -> Unit
+    onLikeClick: (Boolean, Int) -> Unit,
+    onReplyClick: (Int) -> Unit
 ) {
     ConstraintLayout(
         modifier = Modifier.fillMaxWidth()
@@ -651,7 +658,9 @@ fun CommentItem(
                             iconResId = if (isChatSelected) R.drawable.ic_chat_filled else R.drawable.ic_chat_outlined,
                             text = model.repliesCount.toString(),
                             spacedBy = MaterialTheme.localDimens.dp6,
-                            textStyle = MaterialTheme.localTextStyles.sideBarIconText
+                            textStyle = MaterialTheme.localTextStyles.sideBarIconText,
+                            isTextVisible = !model.isReply,
+                            onIconClick = { onReplyClick.invoke(model.id) },
                         )
                         SimpleIcon(iconResId = R.drawable.ic_menu_horizontal)
                     }
@@ -707,6 +716,7 @@ fun HasTagItem(
             spacedBy = MaterialTheme.localDimens.dp3,
             tint = MaterialTheme.localColors.white_alpha04,
             textStyle = MaterialTheme.localTextStyles.episodeSectionIconText,
+            onIconClick = {},
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.Start)

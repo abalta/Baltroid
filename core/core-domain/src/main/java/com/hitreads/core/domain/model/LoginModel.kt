@@ -5,5 +5,6 @@ data class LoginModel(
     val token: String,
     val username: String,
     val avatar: String,
-    val wallet: Int
+    val wallet: Int,
+    val imgUrl: String
 )

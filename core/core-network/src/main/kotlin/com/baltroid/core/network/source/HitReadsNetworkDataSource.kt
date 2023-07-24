@@ -13,6 +13,7 @@ import com.baltroid.core.network.model.response.EpisodeResponseDto
 import com.baltroid.core.network.model.response.FavoriteDto
 import com.baltroid.core.network.model.response.LoginDto
 import com.baltroid.core.network.model.response.OriginalResponseDto
+import com.baltroid.core.network.model.response.ProfileDto
 import com.baltroid.core.network.model.response.WelcomeDto
 import com.baltroid.core.network.util.DEFAULT_PAGE
 import kotlinx.coroutines.Dispatchers
@@ -124,4 +125,7 @@ class HitReadsNetworkDataSource @Inject constructor(private val hitReadsService:
         id: Int?
     ): BaltroidResult<HitReadsResponse<List<FavoriteDto>>> =
         hitReadsService.getFavorites(type, id)
+
+    suspend fun getProfile(): BaltroidResult<HitReadsResponse<ProfileDto>> =
+        hitReadsService.getProfile()
 }

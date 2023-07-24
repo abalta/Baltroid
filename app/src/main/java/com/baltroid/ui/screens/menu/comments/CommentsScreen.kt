@@ -2,6 +2,7 @@ package com.baltroid.ui.screens.menu.comments
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,6 +42,7 @@ import coil.compose.AsyncImage
 import com.baltroid.apps.R
 import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.VerticalSpacer
+import com.baltroid.ui.components.CommentWritingCard
 import com.baltroid.ui.components.MenuBar
 import com.baltroid.ui.screens.reading.CommentSection
 import com.baltroid.ui.screens.reading.CommentSectionTabs
@@ -84,51 +86,75 @@ private fun CommentsScreenContent(
         mutableStateOf(CommentsTabState.AllComments)
     }
 
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.localColors.black)
-            .systemBarsPadding()
+    var isCommentWriteActive by remember {
+        mutableStateOf(false)
+    }
+
+    Box(
+        contentAlignment = Alignment.Center
     ) {
-        VerticalSpacer(height = MaterialTheme.localDimens.dp36)
-        MenuBar(
-            title = stringResource(id = R.string.comments),
-            iconResId = R.drawable.ic_chat_filled
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.localColors.black)
+                .systemBarsPadding()
         ) {
-            onBackClick.invoke()
+            VerticalSpacer(height = MaterialTheme.localDimens.dp36)
+            MenuBar(
+                title = stringResource(id = R.string.comments),
+                iconResId = R.drawable.ic_chat_filled
+            ) {
+                onBackClick.invoke()
+            }
+            VerticalSpacer(height = MaterialTheme.localDimens.dp24)
+
+            CommentSectionTabs(tabState = selectedTab) {
+                selectedTab = it
+            }
+
+            VerticalSpacer(height = MaterialTheme.localDimens.dp33)
+            when (selectedTab) {
+                CommentsTabState.AllComments -> {
+                    CommentSection(
+                        lazyListState = rememberLazyListState(),
+                        comments = comments,
+                        modifier = Modifier.padding(start = MaterialTheme.localDimens.dp30),
+                        onLikeClick = onLikeClick,
+                        onReplyClick = { id ->
+                            isCommentWriteActive = true
+                        }
+                    )
+                }
+
+                CommentsTabState.MyFavorites -> {
+                    Comments(comments) {
+
+                    }
+                }
+
+                CommentsTabState.MyComments -> {
+                    Comments(comments) {
+
+                    }
+                }
+            }
         }
-        VerticalSpacer(height = MaterialTheme.localDimens.dp24)
+        if (isCommentWriteActive) {
+            CommentWritingCard(
+                onBackClick = { isCommentWriteActive = false },
+                sendComment = {
 
-        CommentSectionTabs(tabState = selectedTab) {
-            selectedTab = it
-        }
-
-        VerticalSpacer(height = MaterialTheme.localDimens.dp33)
-        when (selectedTab) {
-            CommentsTabState.AllComments -> {
-                CommentSection(
-                    lazyListState = rememberLazyListState(),
-                    comments = comments,
-                    modifier = Modifier.padding(start = MaterialTheme.localDimens.dp30),
-                    onLikeClick = onLikeClick
-                )
-            }
-
-            CommentsTabState.MyFavorites -> {
-                Comments(comments)
-            }
-
-            CommentsTabState.MyComments -> {
-                Comments(comments)
-            }
+                }
+            )
         }
     }
 }
 
 @Composable
 private fun Comments(
-    comments: List<Comment>
+    comments: List<Comment>,
+    onReplyClick: (Int) -> Unit
 ) {
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp29),
@@ -137,9 +163,8 @@ private fun Comments(
     ) {
         items(comments) { comment ->
             CommentItem(
-                title = comment.original?.title.orEmpty(),
-                numberOfComments = comment.original?.commentCount ?: 0,
-                imgUrl = comment.original?.cover.orEmpty()
+                comment = comment,
+                onReplyClick = onReplyClick
             )
         }
     }
@@ -147,16 +172,15 @@ private fun Comments(
 
 @Composable
 private fun CommentItem(
-    title: String,
-    numberOfComments: Int,
-    imgUrl: String
+    comment: Comment,
+    onReplyClick: (Int) -> Unit
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.width(IntrinsicSize.Min)
     ) {
         AsyncImage(
-            model = imgUrl,
+            model = comment.original?.cover.orEmpty(),
             contentDescription = null,
             error = painterResource(id = R.drawable.hitreads_placeholder),
             modifier = Modifier
@@ -167,7 +191,10 @@ private fun CommentItem(
                 .clip(MaterialTheme.localShapes.roundedDp18)
         )
         VerticalSpacer(height = MaterialTheme.localDimens.dp13)
-        Text(text = title, style = MaterialTheme.localTextStyles.storyItemTitle)
+        Text(
+            text = comment.original?.title.orEmpty(),
+            style = MaterialTheme.localTextStyles.storyItemTitle
+        )
         VerticalSpacer(height = MaterialTheme.localDimens.dp10)
         Row(
             horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp3),
@@ -185,12 +212,15 @@ private fun CommentItem(
         ) {
             SimpleIcon(
                 iconResId = R.drawable.ic_comment,
-                tint = MaterialTheme.localColors.white_alpha04
+                tint = MaterialTheme.localColors.white_alpha04,
+                modifier = Modifier.clickable { onReplyClick.invoke(comment.id) }
             )
-            Text(
-                text = numberOfComments.toString(),
-                style = MaterialTheme.localTextStyles.episodeSectionIconText
-            )
+            if (!comment.isReply) {
+                Text(
+                    text = comment.original?.commentCount.toString(),
+                    style = MaterialTheme.localTextStyles.episodeSectionIconText
+                )
+            }
         }
     }
 }

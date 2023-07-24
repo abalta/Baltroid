@@ -22,6 +22,7 @@ internal object Constants {
         internal const val BOOKMARK = "bookmark"
         internal const val REGISTER = "register"
         internal const val FAVORITE = "favorite"
+        internal const val PROFILE = "profile"
     }
 
     internal object Fields {

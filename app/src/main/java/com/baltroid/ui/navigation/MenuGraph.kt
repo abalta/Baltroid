@@ -10,7 +10,6 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navigation
 import com.baltroid.presentation.screens.menu.login.LoginViewModel
 import com.baltroid.ui.screens.menu.MenuScreen
-import com.baltroid.ui.screens.menu.MenuScreenState
 import com.baltroid.ui.screens.menu.author.AuthorScreen
 import com.baltroid.ui.screens.menu.comments.CommentsScreen
 import com.baltroid.ui.screens.menu.favorites.FavoritesScreen
@@ -53,13 +52,7 @@ fun NavGraphBuilder.menuGraph(navController: NavController, loginViewModel: Logi
                 )
             }
         ) {
-            val screenState = MenuScreenState(
-                diamondBalance = 4500,
-                currentUserName = "SELEN PEKMEZCİ",
-                imgUrl = "",
-            )
             MenuScreen(
-                menuScreenState = screenState,
                 isLoggedIn = loginViewModel.uiStateIsLogged.collectAsStateWithLifecycle().value,
                 onBackClick = { navController.popBackStack() }
             ) { route ->

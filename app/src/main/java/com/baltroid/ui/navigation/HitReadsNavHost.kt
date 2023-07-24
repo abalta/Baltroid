@@ -93,10 +93,8 @@ fun HitReadsNavHost(
                 route = HitReadsScreens.FilterScreen.route
             ) {
                 FilterScreen(
-                    applyFilter = {
-                        //homeViewModel.loadFilteredOriginals(it)
-                        navController.popBackStack()
-                    }) {
+                    originalViewModel
+                ) {
                     navController.popBackStack()
                 }
             }

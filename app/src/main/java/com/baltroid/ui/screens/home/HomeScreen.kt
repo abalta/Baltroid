@@ -73,7 +73,6 @@ fun HomeScreen(
     navigate: (route: String, item: Original?) -> Unit
 ) {
     val uiStates = viewModel.uiStateHome.collectAsStateWithLifecycle().value
-    val isLogged = viewModel.uiStateIsLogged.collectAsStateWithLifecycle().value
 
     LaunchedEffect(Unit) {
         viewModel.loadOriginals()
