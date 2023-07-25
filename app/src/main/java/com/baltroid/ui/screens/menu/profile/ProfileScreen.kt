@@ -87,7 +87,7 @@ fun ProfileScreenContent(
                     modifier = Modifier.fillMaxWidth()
                 )
                 VerticalSpacer(height = MaterialTheme.localDimens.dp40)
-                ProfileItem(title = profile?.userName.orEmpty()) {
+                ProfileItem(title = profile?.name.orEmpty()) {
 
                 }
                 VerticalSpacer(height = MaterialTheme.localDimens.dp33)

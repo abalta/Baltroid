@@ -10,6 +10,7 @@ fun LoginModel.asLogin() = Login(
 )
 
 fun ProfileModel.asProfile() = Profile(
+    name = name,
     userName = userName,
     email = email,
     karma = karma,

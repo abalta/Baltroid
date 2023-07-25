@@ -32,5 +32,9 @@ data class NetworkEpisode(
     @SerialName("season_id")
     val seasonId: Int?,
     @SerialName("is_liked")
-    val isLiked: Boolean?
+    val isLiked: Boolean?,
+    @SerialName("is_fav")
+    val isFav: Boolean?,
+    @SerialName("is_bookmarked")
+    val isBookmarked: Boolean?,
 )

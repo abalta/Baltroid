@@ -68,7 +68,16 @@ fun ShowOriginalModel.asShowOriginal() = ShowOriginal(
 )
 
 fun ShowEpisodeModel.asShowEpisode() = ShowEpisode(
-    id, seasonId, episodeName, price, priceType, userPurchase, sort
+    id = id,
+    originalId = originalId,
+    seasonId = seasonId,
+    episodeName = episodeName,
+    assetContent = assetContent,
+    price = price,
+    priceType = priceType,
+    sort = sort,
+    createdAt = createdAt,
+    updatedAt = updatedAt
 )
 
 fun PackageModel.asPackage() = Package(
@@ -94,7 +103,9 @@ fun EpisodeModel.asEpisode() =
         userPurchase = userPurchase.orEmpty(),
         content = assetContents,
         xmlContent = xmlContents,
-        isLiked = isLiked
+        isLiked = isLiked,
+        isBookmarked = isBookmarked,
+        isFav = isFav
     )
 
 fun CommentModel.asComment() = Comment(

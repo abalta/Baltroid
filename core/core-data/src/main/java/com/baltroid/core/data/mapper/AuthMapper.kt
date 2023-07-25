@@ -15,6 +15,7 @@ internal fun LoginDto.asLoginModel() = LoginModel(
 )
 
 internal fun ProfileDto.asProfileModel() = ProfileModel(
+    name = name.orEmpty(),
     userName = userName.orEmpty(),
     email = email.orEmpty(),
     karma = karma ?: 0,

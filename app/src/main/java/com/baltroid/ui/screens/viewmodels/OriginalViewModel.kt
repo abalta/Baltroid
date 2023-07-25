@@ -74,8 +74,10 @@ class OriginalViewModel @Inject constructor(
     fun createFavorite(id: Int) = viewModelScope.launch {
         createFavoriteUseCase.invoke("episode", id).handle {
             onSuccess {
+                print("")
             }
             onFailure {
+                println("")
             }
         }
     }

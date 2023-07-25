@@ -1,6 +1,7 @@
 package com.hitreads.core.model
 
 data class Profile(
+    val name: String,
     val userName: String,
     val email: String,
     val karma: Int,

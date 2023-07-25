@@ -10,5 +10,7 @@ data class Episode(
     val userPurchase: String,
     val content: String?,
     val xmlContent: XmlContent?,
-    val isLiked: Boolean
+    val isLiked: Boolean,
+    val isBookmarked: Boolean,
+    val isFav: Boolean
 )

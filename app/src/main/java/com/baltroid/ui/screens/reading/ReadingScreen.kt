@@ -120,7 +120,7 @@ fun ReadingScreen(
             if (!isLiked) {
                 original.episode?.id?.let { it1 -> viewModel.createFavorite(it1) }
             } else {
-
+                original.episode?.id?.let { it1 -> viewModel.createFavorite(it1) }
             }
         },
         openMenuScreen
@@ -182,7 +182,7 @@ private fun ReadingScreenContent(
                         isExpanded = !isSideBarVisible,
                         episodeName = screenState.episode?.name.orEmpty(),
                         onDotsClick = { isSideBarVisible = !isSideBarVisible },
-                        isLiked = screenState.episode?.isLiked ?: false,
+                        isLiked = screenState.episode?.isFav ?: false,
                         onLikeClick = { onLikeClick(it) },
                         modifier = Modifier.padding(
                             top = MaterialTheme.localDimens.dp12,

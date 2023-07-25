@@ -98,12 +98,15 @@ internal fun NetworkShowOriginal.asShowOriginalModel() = ShowOriginalModel(
 
 internal fun NetworkShowEpisode.asShowEpisodeModel() = ShowEpisodeModel(
     id = id,
-    seasonId = seasonId ?: 0,
+    originalId = originalId,
+    seasonId = seasonId,
     episodeName = episodeName,
+    assetContent = assetContent,
     price = price,
     priceType = priceType,
-    userPurchase = userPurchase,
-    sort = sort
+    sort = sort,
+    createdAt = createdAt,
+    updatedAt = updatedAt
 )
 
 internal fun NetworkAuthor.asAuthorModel() = AuthorModel(
@@ -137,7 +140,9 @@ internal fun NetworkEpisode.asEpisodeModel(
     userPurchase = userPurchase,
     assetContents = episodeContent,
     xmlContents = xmlContent,
-    isLiked = isLiked ?: false
+    isLiked = isLiked ?: false,
+    isFav = isFav ?: false,
+    isBookmarked = isBookmarked ?: false
 )
 
 internal fun NetworkPackage.asPackageModel() = PackageModel(

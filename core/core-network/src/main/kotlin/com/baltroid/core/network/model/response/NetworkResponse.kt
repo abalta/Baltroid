@@ -42,6 +42,8 @@ data class LoginDto(
 
 @Serializable
 data class ProfileDto(
+    @SerialName("name")
+    val name: String?,
     @SerialName("username")
     val userName: String?,
     @SerialName("email")
