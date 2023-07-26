@@ -70,7 +70,7 @@ private fun HomeDetailScreenContent(
             .fillMaxSize()
     ) {
         AsyncImage(
-            model = screenState?.banner,
+            model = screenState?.cover,
             contentDescription = null,
             fallback = painterResource(id = R.drawable.hitreads_placeholder),
             placeholder = painterResource(id = R.drawable.hitreads_placeholder),
