@@ -76,6 +76,7 @@ fun AllCommentsScreen(
                 numberOfNotification = 12,
                 imgUrl = "",
                 onMenuClick = { },
+                onIconCLicked = {},
             )
             Row(
                 modifier = Modifier.weight(1f)

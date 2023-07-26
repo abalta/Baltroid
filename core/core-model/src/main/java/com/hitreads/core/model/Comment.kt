@@ -10,7 +10,8 @@ data class Comment(
     val createdAt: String,
     val isLiked: Boolean,
     val isReply: Boolean,
-    val replies: List<Comment>,
+    var replies: List<Comment>,
     val episode: String,
     val original: Original?,
+    var isExpanded: Boolean = false,
 )

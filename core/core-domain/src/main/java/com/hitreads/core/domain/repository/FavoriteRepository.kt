@@ -7,4 +7,5 @@ import kotlinx.coroutines.flow.Flow
 interface FavoriteRepository {
     fun getFavorites(type: String, id: Int?): Flow<BaltroidResult<List<FavoriteModel>>>
     fun createFavorite(type: String, id: Int): Flow<BaltroidResult<Unit?>>
+    fun deleteFavorite(type: String, id: Int): Flow<BaltroidResult<Unit?>>
 }

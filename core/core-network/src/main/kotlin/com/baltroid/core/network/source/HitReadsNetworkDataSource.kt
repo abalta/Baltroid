@@ -129,6 +129,9 @@ class HitReadsNetworkDataSource @Inject constructor(private val hitReadsService:
     suspend fun createFavorite(type: String, id: Int): BaltroidResult<HitReadsResponse<Unit>> =
         hitReadsService.createFavorite(type, id)
 
+    suspend fun deleteFavorite(type: String, id: Int): BaltroidResult<HitReadsResponse<Unit>> =
+        hitReadsService.deleteFavorite(type, id)
+
     suspend fun getFavorites(
         type: String,
         id: Int?

@@ -44,4 +44,9 @@ class FavoriteRepositoryImpl @Inject constructor(
         networkBoundResource {
             networkDataSource.createFavorite(type, id)
         }
+
+    override fun deleteFavorite(type: String, id: Int): Flow<BaltroidResult<Unit?>> =
+        networkBoundResource {
+            networkDataSource.deleteFavorite(type, id)
+        }
 }

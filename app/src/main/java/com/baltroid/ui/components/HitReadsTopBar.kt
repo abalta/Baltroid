@@ -61,7 +61,7 @@ fun HitReadsTopBar(
             iconTint = iconTint,
             iconResId = iconResId,
             onMenuClick = onMenuClick,
-            numberOfNotification = numberOfNotification,
+            numberOfNotification = 0,
             onNotificationClick = onNotificationClick
         )
     }

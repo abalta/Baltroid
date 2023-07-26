@@ -44,6 +44,8 @@ import com.baltroid.ui.theme.localTextStyles
 
 @Composable
 fun CommentWritingCard(
+    author: String,
+    hashTag: String,
     onBackClick: () -> Unit,
     sendComment: (comment: String) -> Unit
 ) {
@@ -104,11 +106,11 @@ fun CommentWritingCard(
                             .align(Alignment.Bottom)
                     ) {
                         Text(
-                            text = "#KGD B12",
+                            text = hashTag,
                             style = MaterialTheme.localTextStyles.writingCardInfo
                         )
                         Text(
-                            text = "SELEN PEKMEZCİ",
+                            text = author,
                             style = MaterialTheme.localTextStyles.subtitle
                         )
                     }
@@ -179,6 +181,6 @@ fun CommentWritingCard(
 @Preview(widthDp = 300, heightDp = 400)
 @Composable
 fun CommentWritingCardPreview() {
-    CommentWritingCard({}) {}
+    CommentWritingCard("SELEN PEKMEZCİ", "#KGD B12", {}) {}
 }
 

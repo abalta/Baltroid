@@ -45,6 +45,7 @@ import com.hitreads.core.model.Tag
 @Composable
 fun HomeDetailScreen(
     viewModel: OriginalViewModel,
+    navigateBack: () -> Unit,
     openMenuScreen: () -> Unit,
     navigate: (route: String) -> Unit
 ) {
@@ -52,6 +53,7 @@ fun HomeDetailScreen(
         screenState = viewModel.sharedUIState
             .collectAsStateWithLifecycle().value,
         openMenuScreen = openMenuScreen,
+        navigateBack = navigateBack,
         navigate = navigate
     )
 }
@@ -59,6 +61,7 @@ fun HomeDetailScreen(
 @Composable
 private fun HomeDetailScreenContent(
     screenState: Original?,
+    navigateBack: () -> Unit,
     openMenuScreen: () -> Unit,
     navigate: (route: String) -> Unit
 ) {
@@ -82,7 +85,7 @@ private fun HomeDetailScreenContent(
             iconResId = R.drawable.ic_bell,
             numberOfNotification = -1,
             onMenuClick = openMenuScreen,
-            onIconClick = {},
+            onIconClick = navigateBack,
             onNotificationClick = {}
         )
         Column(

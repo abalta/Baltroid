@@ -103,6 +103,7 @@ fun HitReadsNavHost(
             ) {
                 HomeDetailScreen(
                     viewModel = originalViewModel,
+                    navigateBack = { navController.popBackStack() },
                     openMenuScreen = openMenuScreen,
                 ) { route ->
                     navController.navigate(route)
@@ -115,7 +116,10 @@ fun HitReadsNavHost(
                 ReadingScreen(
                     viewModel = originalViewModel,
                     originalId = bacStackEntry.arguments?.getInt("id").orZero(),
-                    openMenuScreen = openMenuScreen
+                    openMenuScreen = openMenuScreen,
+                    navigate = {
+                        navController.navigate(it)
+                    }
                 )
             }
             composable(

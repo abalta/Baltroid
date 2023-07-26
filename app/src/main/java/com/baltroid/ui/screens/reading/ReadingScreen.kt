@@ -1,5 +1,7 @@
 package com.baltroid.ui.screens.reading
 
+import android.content.Context
+import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -50,6 +52,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -67,6 +70,7 @@ import com.baltroid.ui.common.VerticalSpacer
 import com.baltroid.ui.components.CommentWritingCard
 import com.baltroid.ui.components.HitReadsSideBar
 import com.baltroid.ui.components.HitReadsTopBar
+import com.baltroid.ui.navigation.HitReadsScreens
 import com.baltroid.ui.screens.menu.comments.CommentImage
 import com.baltroid.ui.screens.menu.comments.CommentViewModel
 import com.baltroid.ui.screens.menu.place_marks.EpisodeBanner
@@ -88,10 +92,12 @@ fun ReadingScreen(
     originalId: Int,
     viewModel: OriginalViewModel,
     commentViewModel: CommentViewModel = hiltViewModel(),
-    openMenuScreen: () -> Unit
+    openMenuScreen: () -> Unit,
+    navigate: (String) -> Unit
 ) {
     val screenState = viewModel.uiStateReading.collectAsStateWithLifecycle().value
     val sharedOriginal = viewModel.sharedUIState.collectAsStateWithLifecycle().value
+    val comments = commentViewModel.uiState.collectAsStateWithLifecycle().value.commentList
 
     LaunchedEffect(Unit) {
         viewModel.showOriginal(originalId)
@@ -108,10 +114,11 @@ fun ReadingScreen(
     }
 
     ReadingScreenContent(
+        commentViewModel,
         screenState = screenState,
         textOriginal = sharedOriginal,
         hashTag = sharedOriginal?.hashtag.orEmpty(),
-        comments = emptyList(),
+        comments = comments,
         onEpisodeChange = {
             viewModel.showEpisode(
                 screenState.original?.episodes?.get(it)?.id.orZero(),
@@ -122,7 +129,7 @@ fun ReadingScreen(
             if (!isLiked) {
                 screenState.episode?.id?.let { it1 -> viewModel.createFavorite(it1) }
             } else {
-                // todo deletefavorite
+                screenState.episode?.id?.let { it1 -> viewModel.deleteFavorite(it1) }
             }
         },
         sendComment = { content, id ->
@@ -135,12 +142,14 @@ fun ReadingScreen(
                 //todo delete bookmark
             }
         },
+        navigate = navigate,
         openMenuScreen
     )
 }
 
 @Composable
 private fun ReadingScreenContent(
+    commentVM: CommentViewModel,
     screenState: ReadingUiState,
     textOriginal: Original?,
     hashTag: String,
@@ -149,7 +158,8 @@ private fun ReadingScreenContent(
     onLikeClick: (Boolean) -> Unit,
     sendComment: (String, Int) -> Unit,
     onMarkClicked: (Boolean) -> Unit,
-    openMenuScreen: () -> Unit
+    navigate: (String) -> Unit,
+    openMenuScreen: () -> Unit,
 ) {
     val scrollState = rememberScrollState()
     val lazyScrollState = rememberLazyListState()
@@ -168,9 +178,11 @@ private fun ReadingScreenContent(
         mutableStateOf(0)
     }
 
-    var selectedCommentId by rememberSaveable {
-        mutableStateOf(0)
+    var selectedComment by rememberSaveable {
+        mutableStateOf<Comment?>(null)
     }
+
+    val context = LocalContext.current
 
     LaunchedEffect(selectedEpisodeIndex) {
         onEpisodeChange.invoke(selectedEpisodeIndex)
@@ -186,7 +198,8 @@ private fun ReadingScreenContent(
             HitReadsPageHeader(
                 numberOfNotification = 10,
                 imgUrl = screenState.original?.cover.orEmpty(),
-                onMenuClick = openMenuScreen
+                onMenuClick = openMenuScreen,
+                onIconCLicked = { navigate.invoke(HitReadsScreens.HomeScreen.route) }
             )
             Row(
                 modifier = Modifier.weight(1f)
@@ -228,9 +241,15 @@ private fun ReadingScreenContent(
                                 comments = comments,
                                 modifier = Modifier.padding(start = MaterialTheme.localDimens.dp32),
                                 onLikeClick = { isLiked, id ->
-
+                                    if (isLiked) {
+                                        commentVM.unlikeComment(id)
+                                    } else {
+                                        commentVM.likeComment(id)
+                                    }
                                 },
-                                onReplyClick = { id ->
+                                onReplyClick = { comment ->
+                                    isWriteCardShown = true
+                                    selectedComment = comment
                                 }
                             )
                         }
@@ -248,6 +267,9 @@ private fun ReadingScreenContent(
                             onCommentsClick = { isReadingSection = !isReadingSection },
                             isMarked = screenState.episode?.isBookmarked ?: false,
                             onMarkClicked = onMarkClicked,
+                            onShareClicked = {
+                                share(screenState.original?.title, context)
+                            },
                             addComment = { isWriteCardShown = true }
                         )
                     }
@@ -268,11 +290,27 @@ private fun ReadingScreenContent(
         }
         AnimatedVisibility(visible = isWriteCardShown, enter = fadeIn(), exit = fadeOut()) {
             CommentWritingCard(
+                author = selectedComment?.authorName.orEmpty(),
+                textOriginal?.hashtag.orEmpty() + " " + "B${selectedEpisodeIndex}",
                 onBackClick = { isWriteCardShown = !isWriteCardShown }
             ) {
-                sendComment.invoke(it, selectedCommentId)
+                commentVM.createComment(
+                    selectedComment?.original?.id.orZero(),
+                    it,
+                    selectedComment?.id.orZero()
+                )
+                isWriteCardShown = false
             }
         }
+    }
+}
+
+fun share(title: String?, ctx: Context) {
+    Intent(Intent.ACTION_SEND).apply {
+        type = "text/plain"
+        putExtra(Intent.EXTRA_SUBJECT, R.string.app_name)
+        putExtra(Intent.EXTRA_TEXT, title)
+        ctx.startActivity(Intent.createChooser(this, "Original"))
     }
 }
 
@@ -318,6 +356,7 @@ fun ScrollBar(
 fun HitReadsPageHeader(
     numberOfNotification: Int,
     onMenuClick: () -> Unit,
+    onIconCLicked: () -> Unit,
     imgUrl: String,
     modifier: Modifier = Modifier
 ) {
@@ -349,7 +388,8 @@ fun HitReadsPageHeader(
             onNotificationClick = {},
             iconResId = R.drawable.ic_bell,
             numberOfNotification = numberOfNotification,
-            onMenuClick = onMenuClick
+            onMenuClick = onMenuClick,
+            onIconClick = onIconCLicked
         )
     }
 }
@@ -539,7 +579,7 @@ fun CommentSection(
                     onReplyClick = { onReplyClick.invoke(comment) }
                 )
                 VerticalSpacer(height = MaterialTheme.localDimens.dp12)
-                comment.replies.forEach { item ->
+                comment.replies.forEachIndexed { index, item ->
                     CommentItem(
                         model = item,
                         isChatSelected = false,
@@ -548,6 +588,7 @@ fun CommentSection(
                             onReplyClick.invoke(comment)
                         }
                     )
+                    VerticalSpacer(height = MaterialTheme.localDimens.dp14)
                 }
             }
         }
@@ -690,6 +731,7 @@ fun CommentItem(
                 }
             }
         }
+        VerticalSpacer(height = MaterialTheme.localDimens.dp14)
         Text(
             text = model.content,
             style = MaterialTheme.localTextStyles.commentText,

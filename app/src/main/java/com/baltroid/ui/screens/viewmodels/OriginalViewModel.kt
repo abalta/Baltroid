@@ -12,6 +12,7 @@ import com.hitreads.core.domain.model.OriginalModel
 import com.hitreads.core.domain.usecase.CreateBookmarkUseCase
 import com.hitreads.core.domain.usecase.CreateFavoriteUseCase
 import com.hitreads.core.domain.usecase.DeleteBookmarkUseCase
+import com.hitreads.core.domain.usecase.DeleteFavoriteUseCase
 import com.hitreads.core.domain.usecase.GetOriginalsUseCase
 import com.hitreads.core.domain.usecase.GetTagsUseCase
 import com.hitreads.core.domain.usecase.IsLoggedUseCase
@@ -37,6 +38,7 @@ class OriginalViewModel @Inject constructor(
     private val getOriginalsUseCase: GetOriginalsUseCase,
     private val isLoggedUseCase: IsLoggedUseCase,
     private val createFavoriteUseCase: CreateFavoriteUseCase,
+    private val deleteFavoriteUseCase: DeleteFavoriteUseCase,
     private val getTagsUseCase: GetTagsUseCase,
     private val createBookmarkUseCase: CreateBookmarkUseCase,
     private val deleteBookmarkUseCase: DeleteBookmarkUseCase
@@ -94,6 +96,15 @@ class OriginalViewModel @Inject constructor(
             }
         }
     }
+
+    fun deleteFavorite(id: Int) = viewModelScope.launch {
+        createFavoriteUseCase.invoke("episode", id).handle {
+            onSuccess {
+                _uiStateReading.update { it.copy(episode = it.episode?.copy(isFav = false)) }
+            }
+        }
+    }
+
 
     private fun isLogged() = viewModelScope.launch {
         isLoggedUseCase().handle {

@@ -157,9 +157,12 @@ private fun CommentsScreenContent(
         }
         if (isCommentWriteActive) {
             CommentWritingCard(
+                author = selectedComment?.authorName.orEmpty(),
+                hashTag = selectedComment?.original?.hashtag.orEmpty(),
                 onBackClick = { isCommentWriteActive = false },
                 sendComment = { comment ->
                     createComment.invoke(selectedComment, comment)
+                    isCommentWriteActive = false
                 }
             )
         }

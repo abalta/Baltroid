@@ -40,6 +40,7 @@ fun HitReadsSideBar(
     isMarked: Boolean,
     hasSmallHeight: Boolean,
     isCommentsSelected: Boolean,
+    onShareClicked: () -> Unit,
     onMarkClicked: (Boolean) -> Unit,
     onDotsClick: () -> Unit,
     onCommentsClick: () -> Unit,
@@ -61,6 +62,7 @@ fun HitReadsSideBar(
                 onDotsClick = onDotsClick,
                 hashTag = hashTag,
                 onCommentsClick = onCommentsClick,
+                onShareClicked = onShareClicked,
                 hasSmallHeight = hasSmallHeight, modifier = Modifier
                     .align(Alignment.TopCenter)
                     .fillMaxWidth()
@@ -68,6 +70,7 @@ fun HitReadsSideBar(
             SideBarBottomSection(
                 addComment = addComment,
                 isMarked = isMarked,
+                onShareClicked,
                 onMarkClicked,
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
@@ -105,6 +108,7 @@ fun SideBarTopSection(
     numberOfComments: Int,
     hasSmallHeight: Boolean,
     isCommentsSelected: Boolean,
+    onShareClicked: () -> Unit,
     onCommentsClick: () -> Unit,
     onDotsClick: () -> Unit
 ) {
@@ -183,6 +187,7 @@ fun SideBarTopSection(
 fun SideBarBottomSection(
     addComment: () -> Unit,
     isMarked: Boolean,
+    onShareClicked: () -> Unit,
     onMarkClicked: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -205,10 +210,14 @@ fun SideBarBottomSection(
         SideBarHorizontalDivider()
         SimpleIcon(
             iconResId = R.drawable.ic_share,
-            modifier = Modifier.padding(
-                vertical = MaterialTheme.localDimens.dp12,
-                horizontal = MaterialTheme.localDimens.dp8
-            )
+            modifier = Modifier
+                .padding(
+                    vertical = MaterialTheme.localDimens.dp12,
+                    horizontal = MaterialTheme.localDimens.dp8
+                )
+                .clickable {
+                    onShareClicked.invoke()
+                }
         )
         SideBarHorizontalDivider()
         SimpleIcon(
@@ -247,6 +256,7 @@ fun HitReadsSideBarPreview() {
         hashTag = "#KGD",
         isMarked = true,
         onMarkClicked = {},
+        onShareClicked = {},
         addComment = {}
     )
 }

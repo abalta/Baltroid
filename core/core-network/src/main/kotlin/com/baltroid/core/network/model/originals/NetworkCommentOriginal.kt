@@ -6,37 +6,37 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class NetworkCommentOriginal(
     @SerialName("id")
-    val id: Int,
+    val id: Int?,
     @SerialName("title")
-    val title: String,
+    val title: String?,
     @SerialName("description")
-    val description: String,
+    val description: String?,
     @SerialName("author_id")
-    val authorId: Int,
+    val authorId: Int?,
     @SerialName("cover")
-    val cover: String,
+    val cover: String?,
     @SerialName("banner")
-    val banner: String,
+    val banner: String?,
     @SerialName("type")
-    val type: Int,
+    val type: String?,
     @SerialName("is_locked")
-    val isLocked: Boolean,
+    val isLocked: Boolean?,
     @SerialName("status")
-    val status: Boolean,
+    val status: Boolean?,
     @SerialName("is_actual")
-    val isActual: Boolean,
+    val isActual: Boolean?,
     @SerialName("sort")
-    val sort: Int,
+    val sort: Int?,
     @SerialName("created_at")
-    val createdAt: String,
+    val createdAt: String?,
     @SerialName("updated_at")
-    val updatedAt: String,
+    val updatedAt: String?,
     @SerialName("subtitle")
-    val subtitle: String,
+    val subtitle: String?,
     @SerialName("hashtag")
     val hashtag: String?,
     @SerialName("is_new")
-    val isNew: Boolean,
+    val isNew: Boolean?,
     @SerialName("view_count")
-    val viewCount: Int,
+    val viewCount: Int?,
 )

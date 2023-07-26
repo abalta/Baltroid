@@ -7,6 +7,7 @@ import com.hitreads.core.domain.usecase.CreateCommentUseCase
 import com.hitreads.core.domain.usecase.GetAllCommentsUseCase
 import com.hitreads.core.domain.usecase.LikeCommentUseCase
 import com.hitreads.core.domain.usecase.UnlikeCommentUseCase
+import com.hitreads.core.model.Comment
 import com.hitreads.core.ui.mapper.asComment
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,9 +21,10 @@ class CommentViewModel @Inject constructor(
     private val getAllCommentsUseCase: GetAllCommentsUseCase,
     private val commentLikeCommentUseCase: LikeCommentUseCase,
     private val commentUnlikeCommentUseCase: UnlikeCommentUseCase,
-    private val createCommentUseCase: CreateCommentUseCase
+    private val createCommentUseCase: CreateCommentUseCase,
 
-) : ViewModel() {
+
+    ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CommentsUiState())
     val uiState = _uiState.asStateFlow()
@@ -48,8 +50,31 @@ class CommentViewModel @Inject constructor(
             content,
             responseId
         ).handle {
-            onSuccess {
-
+            onSuccess { newComment ->
+                _uiState.update {
+                    val oldList = it.commentList.toMutableList()
+                    val newReplies =
+                        it.commentList.firstOrNull { it.id == responseId }?.replies?.toMutableList()
+                    newReplies?.add(
+                        Comment(
+                            id = 0,
+                            imgUrl = "",
+                            content = "RARARARARARARAR",
+                            repliesCount = 0,
+                            authorName = "12321321",
+                            hashtag = "asd",
+                            createdAt = "SADAASD",
+                            isLiked = false,
+                            isReply = true,
+                            replies = listOf(),
+                            episode = "",
+                            original = null
+                        )
+                    )
+                    oldList[it.commentList.indexOfFirst { it.id == responseId }].replies =
+                        newReplies?.toList().orEmpty()
+                    it.copy(commentList = oldList)
+                }
             }
             onFailure {
 
