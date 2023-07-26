@@ -3,10 +3,8 @@ package com.baltroid.ui.screens.menu.comments
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.baltroid.core.common.result.handle
-import com.hitreads.core.domain.usecase.CreateBookmarkUseCase
-import com.hitreads.core.domain.usecase.DeleteBookmarkUseCase
+import com.hitreads.core.domain.usecase.CreateCommentUseCase
 import com.hitreads.core.domain.usecase.GetAllCommentsUseCase
-import com.hitreads.core.domain.usecase.GetCommentsUseCase
 import com.hitreads.core.domain.usecase.LikeCommentUseCase
 import com.hitreads.core.domain.usecase.UnlikeCommentUseCase
 import com.hitreads.core.ui.mapper.asComment
@@ -19,12 +17,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CommentViewModel @Inject constructor(
-    private val commentsUseCase: GetCommentsUseCase,
     private val getAllCommentsUseCase: GetAllCommentsUseCase,
     private val commentLikeCommentUseCase: LikeCommentUseCase,
     private val commentUnlikeCommentUseCase: UnlikeCommentUseCase,
-    private val createBookmarkUseCase: CreateBookmarkUseCase,
-    private val deleteBookmarkUseCase: DeleteBookmarkUseCase
+    private val createCommentUseCase: CreateCommentUseCase
+
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CommentsUiState())
@@ -41,6 +38,22 @@ class CommentViewModel @Inject constructor(
                 }
             }
             onFailure(::handleFailure)
+        }
+    }
+
+    fun createComment(id: Int, content: String, responseId: Int?) = viewModelScope.launch {
+        createCommentUseCase(
+            type = "original",
+            id,
+            content,
+            responseId
+        ).handle {
+            onSuccess {
+
+            }
+            onFailure {
+
+            }
         }
     }
 

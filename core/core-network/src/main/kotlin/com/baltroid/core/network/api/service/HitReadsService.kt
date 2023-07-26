@@ -15,6 +15,7 @@ import com.baltroid.core.network.model.response.OriginalResponseDto
 import com.baltroid.core.network.model.response.ProfileDto
 import com.baltroid.core.network.model.response.WelcomeDto
 import com.baltroid.core.network.util.Constants.DEFAULT_PAGE
+import com.baltroid.core.network.util.Constants.Fields.CONTENT
 import com.baltroid.core.network.util.Constants.Fields.EMAIL
 import com.baltroid.core.network.util.Constants.Fields.FILTER_TAG
 import com.baltroid.core.network.util.Constants.Fields.GET_BY_FAV
@@ -22,6 +23,7 @@ import com.baltroid.core.network.util.Constants.Fields.ID
 import com.baltroid.core.network.util.Constants.Fields.NAME
 import com.baltroid.core.network.util.Constants.Fields.PAGE
 import com.baltroid.core.network.util.Constants.Fields.PASSWORD
+import com.baltroid.core.network.util.Constants.Fields.RESPONSE_ID
 import com.baltroid.core.network.util.Constants.Fields.TYPE
 import com.baltroid.core.network.util.Constants.Path.BOOKMARK
 import com.baltroid.core.network.util.Constants.Path.BY_ME
@@ -115,6 +117,15 @@ interface HitReadsService {
 
     @POST("$BOOKMARK")
     suspend fun createBookmark(@Body request: CreateBookmarkDto): BaltroidResult<HitReadsResponse<BookmarkDto>>
+
+    @FormUrlEncoded
+    @POST("$COMMENT")
+    suspend fun createComment(
+        @Field("$TYPE") type: String,
+        @Field("$ID") id: Int,
+        @Field("$CONTENT") content: String,
+        @Field("$RESPONSE_ID") responseId: Int?
+    ): BaltroidResult<HitReadsResponse<Unit>>
 
     @FormUrlEncoded
     @POST("$FAVORITE")

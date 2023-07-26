@@ -84,6 +84,15 @@ class HitReadsNetworkDataSource @Inject constructor(private val hitReadsService:
         }
     }
 
+    suspend fun createComment(
+        type: String,
+        id: Int,
+        content: String,
+        responseId: Int?
+    ): BaltroidResult<HitReadsResponse<Unit>> =
+        hitReadsService.createComment(type, id, content, responseId)
+
+
     suspend fun getAllComments(
         type: String,
         id: Int?

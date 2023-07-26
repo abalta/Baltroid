@@ -9,7 +9,9 @@ import com.baltroid.ui.screens.home.HomeUiState
 import com.baltroid.ui.screens.home.filter.FilterUiState
 import com.baltroid.ui.screens.reading.ReadingUiState
 import com.hitreads.core.domain.model.OriginalModel
+import com.hitreads.core.domain.usecase.CreateBookmarkUseCase
 import com.hitreads.core.domain.usecase.CreateFavoriteUseCase
+import com.hitreads.core.domain.usecase.DeleteBookmarkUseCase
 import com.hitreads.core.domain.usecase.GetOriginalsUseCase
 import com.hitreads.core.domain.usecase.GetTagsUseCase
 import com.hitreads.core.domain.usecase.IsLoggedUseCase
@@ -36,6 +38,8 @@ class OriginalViewModel @Inject constructor(
     private val isLoggedUseCase: IsLoggedUseCase,
     private val createFavoriteUseCase: CreateFavoriteUseCase,
     private val getTagsUseCase: GetTagsUseCase,
+    private val createBookmarkUseCase: CreateBookmarkUseCase,
+    private val deleteBookmarkUseCase: DeleteBookmarkUseCase
 ) : ViewModel() {
 
     private val _uiStateReading = MutableStateFlow(ReadingUiState())
@@ -71,13 +75,22 @@ class OriginalViewModel @Inject constructor(
         isLogged()
     }
 
+    fun createBookmark(originalId: Int, episodeId: Int) = viewModelScope.launch {
+        createBookmarkUseCase(originalId, episodeId).handle {
+            onSuccess {
+                _uiStateReading.update { it.copy(episode = it.episode?.copy(isBookmarked = true)) }
+            }
+        }
+    }
+
+    fun deleteBookmark(id: Int) = viewModelScope.launch {
+
+    }
+
     fun createFavorite(id: Int) = viewModelScope.launch {
         createFavoriteUseCase.invoke("episode", id).handle {
             onSuccess {
-                print("")
-            }
-            onFailure {
-                println("")
+                _uiStateReading.update { it.copy(episode = it.episode?.copy(isFav = true)) }
             }
         }
     }

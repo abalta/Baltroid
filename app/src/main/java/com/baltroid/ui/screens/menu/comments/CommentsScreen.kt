@@ -25,6 +25,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,6 +53,7 @@ import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
+import com.baltroid.util.orZero
 import com.hitreads.core.model.Comment
 import kotlin.random.Random
 
@@ -68,6 +70,13 @@ fun CommentsScreen(
     CommentsScreenContent(
         viewModel.uiState.collectAsStateWithLifecycle().value.commentList,
         onBackClick,
+        createComment = { comment, content ->
+            viewModel.createComment(
+                id = comment?.original?.id.orZero(),
+                content = content,
+                responseId = comment?.id
+            )
+        },
         onLikeClick = { isLiked, id ->
             if (!isLiked) viewModel.likeComment(id)
             else viewModel.unlikeComment(id)
@@ -79,6 +88,7 @@ fun CommentsScreen(
 private fun CommentsScreenContent(
     comments: List<Comment>,
     onBackClick: () -> Unit,
+    createComment: (Comment?, String) -> Unit,
     onLikeClick: (Boolean, Int) -> Unit,
 ) {
 
@@ -88,6 +98,10 @@ private fun CommentsScreenContent(
 
     var isCommentWriteActive by remember {
         mutableStateOf(false)
+    }
+
+    var selectedComment by rememberSaveable {
+        mutableStateOf<Comment?>(null)
     }
 
     Box(
@@ -121,8 +135,9 @@ private fun CommentsScreenContent(
                         comments = comments,
                         modifier = Modifier.padding(start = MaterialTheme.localDimens.dp30),
                         onLikeClick = onLikeClick,
-                        onReplyClick = { id ->
+                        onReplyClick = {
                             isCommentWriteActive = true
+                            selectedComment = it
                         }
                     )
                 }
@@ -143,8 +158,8 @@ private fun CommentsScreenContent(
         if (isCommentWriteActive) {
             CommentWritingCard(
                 onBackClick = { isCommentWriteActive = false },
-                sendComment = {
-
+                sendComment = { comment ->
+                    createComment.invoke(selectedComment, comment)
                 }
             )
         }

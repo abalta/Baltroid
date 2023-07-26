@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.baltroid.apps.R
@@ -36,8 +37,10 @@ fun HitReadsSideBar(
     numberOfViews: Int,
     numberOfComments: Int,
     hashTag: String,
+    isMarked: Boolean,
     hasSmallHeight: Boolean,
     isCommentsSelected: Boolean,
+    onMarkClicked: (Boolean) -> Unit,
     onDotsClick: () -> Unit,
     onCommentsClick: () -> Unit,
     addComment: () -> Unit
@@ -64,6 +67,8 @@ fun HitReadsSideBar(
             )
             SideBarBottomSection(
                 addComment = addComment,
+                isMarked = isMarked,
+                onMarkClicked,
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
@@ -177,6 +182,8 @@ fun SideBarTopSection(
 @Composable
 fun SideBarBottomSection(
     addComment: () -> Unit,
+    isMarked: Boolean,
+    onMarkClicked: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -215,12 +222,14 @@ fun SideBarBottomSection(
         )
         SideBarHorizontalDivider()
         SimpleIcon(
-            iconResId = R.drawable.ic_banner_filled,
-            tint = MaterialTheme.localColors.purple,
-            modifier = Modifier.padding(
-                vertical = MaterialTheme.localDimens.dp12,
-                horizontal = MaterialTheme.localDimens.dp8
-            )
+            iconResId = if (isMarked) R.drawable.ic_banner_filled else R.drawable.ic_banner_outlined,
+            tint = if (isMarked) MaterialTheme.localColors.purple else Color.Unspecified,
+            modifier = Modifier
+                .clickable { onMarkClicked.invoke(isMarked) }
+                .padding(
+                    vertical = MaterialTheme.localDimens.dp12,
+                    horizontal = MaterialTheme.localDimens.dp8
+                )
         )
     }
 }
@@ -236,6 +245,8 @@ fun HitReadsSideBarPreview() {
         isCommentsSelected = true,
         onDotsClick = {},
         hashTag = "#KGD",
+        isMarked = true,
+        onMarkClicked = {},
         addComment = {}
     )
 }
