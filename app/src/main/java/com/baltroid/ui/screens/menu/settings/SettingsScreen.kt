@@ -23,7 +23,6 @@ import androidx.constraintlayout.compose.Dimension
 import com.baltroid.apps.R
 import com.baltroid.ui.common.VerticalSpacer
 import com.baltroid.ui.components.MenuBar
-import com.baltroid.ui.screens.menu.ThemeButtons
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localTextStyles
@@ -102,14 +101,6 @@ fun SettingsScreenContent(
                     modifier = Modifier
                 )
             }
-            ThemeButtons(
-                modifier = Modifier
-                    .constrainAs(themeButtons) {
-                        bottom.linkTo(bottomGuideLine)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    }
-            )
         }
     }
 }
