@@ -249,7 +249,7 @@ fun CommentImage(
     letter: String
 ) {
 
-    val randomColor by rememberSaveable {
+    val randomColor by remember {
         mutableStateOf(
             Color(Random.nextInt(256), Random.nextInt(256), Random.nextInt(256))
         )
