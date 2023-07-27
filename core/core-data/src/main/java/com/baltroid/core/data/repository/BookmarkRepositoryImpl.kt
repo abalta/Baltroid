@@ -60,7 +60,22 @@ class BookmarkRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun deleteBookmark(bookmarkId: Int): Flow<BaltroidResult<Unit>> {
-        TODO("Not yet implemented")
+    override fun deleteBookmark(bookmarkId: Int): Flow<BaltroidResult<Unit>> = flow {
+        emit(BaltroidResult.loading())
+        val response = networkDataSource.deleteBookmark(bookmarkId)
+        when {
+            response.isSuccess() -> {
+                response.value.data?.let {
+                    emit(BaltroidResult.Companion.success(Unit))
+                }
+            }
+
+            response.isFailure() -> {
+                val throwable = response.error
+                emit(BaltroidResult.failure(throwable))
+            }
+
+            else -> error("$MESSAGE_UNHANDLED_STATE $response")
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.baltroid.core.network.api.service
 
 import com.baltroid.core.common.result.BaltroidResult
 import com.baltroid.core.network.model.HitReadsResponse
+import com.baltroid.core.network.model.originals.NetworkCreateCommentResponse
 import com.baltroid.core.network.model.originals.NetworkShowOriginal
 import com.baltroid.core.network.model.originals.NetworkTag
 import com.baltroid.core.network.model.request.CreateBookmarkDto
@@ -145,7 +146,7 @@ interface HitReadsService {
         @Field("$ID") id: Int,
         @Field("$CONTENT") content: String,
         @Field("$RESPONSE_ID") responseId: Int?
-    ): BaltroidResult<HitReadsResponse<Unit>>
+    ): BaltroidResult<HitReadsResponse<NetworkCreateCommentResponse>>
 
     @FormUrlEncoded
     @POST("$FAVORITE")

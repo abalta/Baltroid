@@ -25,6 +25,8 @@ data class NetworkEpisode(
     val updatedAt: String?,
     @SerialName("favorites_count")
     val favoritesCount: Int?,
+    @SerialName("favorite")
+    val favorite: NetworkFavoriteInfo?,
     @SerialName("original_id")
     val originalId: Int?,
     @SerialName("likes_count")

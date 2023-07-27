@@ -73,14 +73,14 @@ class CommentRepositoryImpl @Inject constructor(
         id: Int,
         content: String,
         responseId: Int?
-    ): Flow<BaltroidResult<Unit>> = flow {
+    ): Flow<BaltroidResult<CommentModel>> = flow {
         emit(BaltroidResult.loading())
         val response = networkDataSource.createComment(type, id, content, responseId)
 
         when {
             response.isSuccess() -> {
                 response.value.data?.let {
-                    emit(BaltroidResult.success(Unit))
+                    emit(BaltroidResult.success(it.asCommentModel()))
                 }
             }
 

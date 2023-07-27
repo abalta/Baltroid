@@ -3,6 +3,7 @@ package com.baltroid.core.network.source
 import com.baltroid.core.common.result.BaltroidResult
 import com.baltroid.core.network.api.service.HitReadsService
 import com.baltroid.core.network.model.HitReadsResponse
+import com.baltroid.core.network.model.originals.NetworkCreateCommentResponse
 import com.baltroid.core.network.model.originals.NetworkShowOriginal
 import com.baltroid.core.network.model.originals.NetworkTag
 import com.baltroid.core.network.model.request.CreateBookmarkDto
@@ -89,7 +90,7 @@ class HitReadsNetworkDataSource @Inject constructor(private val hitReadsService:
         id: Int,
         content: String,
         responseId: Int?
-    ): BaltroidResult<HitReadsResponse<Unit>> =
+    ): BaltroidResult<HitReadsResponse<NetworkCreateCommentResponse>> =
         hitReadsService.createComment(type, id, content, responseId)
 
 

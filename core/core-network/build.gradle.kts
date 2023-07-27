@@ -15,4 +15,6 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.bundles.retrofit)
     implementation(libs.javax.inject)
+    debugImplementation(libs.chucker.debug)
+    releaseImplementation(libs.chucker.release)
 }

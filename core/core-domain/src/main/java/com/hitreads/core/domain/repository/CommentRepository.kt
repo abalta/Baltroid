@@ -16,5 +16,5 @@ interface CommentRepository {
         id: Int,
         content: String,
         responseId: Int?
-    ): Flow<BaltroidResult<Unit>>
+    ): Flow<BaltroidResult<CommentModel>>
 }

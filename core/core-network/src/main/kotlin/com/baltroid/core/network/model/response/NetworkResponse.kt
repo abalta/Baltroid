@@ -112,7 +112,7 @@ data class CommentDto(
     @SerialName("reply_comment_id")
     val replyCommentId: Int?,
     @SerialName("Original")
-    val original: NetworkCommentOriginal?
+    val original: NetworkCommentOriginal?,
 )
 
 @Serializable

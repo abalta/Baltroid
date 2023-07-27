@@ -139,7 +139,7 @@ fun ReadingScreen(
                 screenState.original?.id.orZero(),
                 screenState.episode?.id.orZero()
             ) else {
-                //todo delete bookmark
+                viewModel.deleteBookmark(screenState.episode?.favoriteId.orZero())
             }
         },
         navigate = navigate,
@@ -571,7 +571,7 @@ fun CommentSection(
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp15),
             contentPadding = PaddingValues(top = MaterialTheme.localDimens.dp14),
         ) {
-            items(comments) { comment ->
+            items(comments, key = { it.id }) { comment ->
                 CommentItem(
                     model = comment,
                     isChatSelected = false,
@@ -690,7 +690,10 @@ fun CommentItem(
                     width = Dimension.fillToConstraints
                 }
         ) {
-            CommentImage(imgUrl = model.imgUrl, letter = model.authorName.firstOrNull().toString())
+            CommentImage(
+                imgUrl = model.imgUrl,
+                letter = model.authorName.first().toString()
+            )
             HorizontalSpacer(width = MaterialTheme.localDimens.dp13)
             Column(
                 verticalArrangement = Arrangement.Bottom,

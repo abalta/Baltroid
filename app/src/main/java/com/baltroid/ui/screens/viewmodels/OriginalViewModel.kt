@@ -86,7 +86,11 @@ class OriginalViewModel @Inject constructor(
     }
 
     fun deleteBookmark(id: Int) = viewModelScope.launch {
-
+        deleteBookmarkUseCase.invoke(id).handle {
+            onSuccess {
+                _uiStateReading.update { it.copy(episode = it.episode?.copy(isFav = false)) }
+            }
+        }
     }
 
     fun createFavorite(id: Int) = viewModelScope.launch {

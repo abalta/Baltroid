@@ -53,17 +53,18 @@ class CommentViewModel @Inject constructor(
             onSuccess { newComment ->
                 _uiState.update {
                     val oldList = it.commentList.toMutableList()
-                    val newReplies =
-                        it.commentList.firstOrNull { it.id == responseId }?.replies?.toMutableList()
+                    val oldComment = it.commentList.firstOrNull { it.id == responseId }
+                    val oldReplies = it.commentList.firstOrNull { it.id == responseId }?.replies
+                    val newReplies = oldReplies?.toMutableList()
                     newReplies?.add(
                         Comment(
-                            id = 0,
+                            id = newComment.id,
                             imgUrl = "",
-                            content = "RARARARARARARAR",
-                            repliesCount = 0,
-                            authorName = "12321321",
-                            hashtag = "asd",
-                            createdAt = "SADAASD",
+                            content = newComment.content,
+                            repliesCount = newComment.repliesCount,
+                            authorName = newComment.author.name,
+                            hashtag = "",
+                            createdAt = newComment.createdAt,
                             isLiked = false,
                             isReply = true,
                             replies = listOf(),
@@ -71,13 +72,16 @@ class CommentViewModel @Inject constructor(
                             original = null
                         )
                     )
-                    oldList[it.commentList.indexOfFirst { it.id == responseId }].replies =
-                        newReplies?.toList().orEmpty()
+                    val index = it.commentList.indexOfFirst { it.id == responseId }
+                    oldList.removeAt(index)
+                    oldComment?.copy(replies = newReplies?.toList().orEmpty())?.let { it1 ->
+                        oldList.add(
+                            index,
+                            it1
+                        )
+                    }
                     it.copy(commentList = oldList)
                 }
-            }
-            onFailure {
-
             }
         }
     }

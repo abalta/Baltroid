@@ -3,6 +3,7 @@ package com.baltroid.core.data.mapper
 import com.baltroid.core.common.model.XmlContent
 import com.baltroid.core.network.model.author.NetworkAuthor
 import com.baltroid.core.network.model.originals.NetworkCommentOriginal
+import com.baltroid.core.network.model.originals.NetworkCreateCommentResponse
 import com.baltroid.core.network.model.originals.NetworkEpisode
 import com.baltroid.core.network.model.originals.NetworkOriginal
 import com.baltroid.core.network.model.originals.NetworkPackage
@@ -142,7 +143,8 @@ internal fun NetworkEpisode.asEpisodeModel(
     xmlContents = xmlContent,
     isLiked = isLiked ?: false,
     isFav = isFav ?: false,
-    isBookmarked = isBookmarked ?: false
+    isBookmarked = isBookmarked ?: false,
+    favoriteId = favorite?.id ?: 0
 )
 
 internal fun NetworkPackage.asPackageModel() = PackageModel(
@@ -163,6 +165,20 @@ internal fun CommentDto.asCommentModel() = CommentModel(
     replyCommentId = replyCommentId ?: 0,
     replies = emptyList(),
     original = original?.asOriginalModel()
+)
+
+internal fun NetworkCreateCommentResponse.asCommentModel() = CommentModel(
+    activeUserLike = false,
+    author = AuthorModel(id = 0, name = comment?.user?.username.orEmpty()),
+    content = comment?.content.orEmpty(),
+    createdAt = comment?.createdAt.orEmpty(),
+    id = comment?.id ?: 0,
+    isReply = true,
+    likesCount = 0,
+    repliesCount = 0,
+    replyCommentId = 0,
+    replies = emptyList(),
+    original = null
 )
 
 internal fun AllCommentsDto.asAllCommentsModel(): AllCommentsModel = AllCommentsModel(

@@ -105,7 +105,8 @@ fun EpisodeModel.asEpisode() =
         xmlContent = xmlContents,
         isLiked = isLiked,
         isBookmarked = isBookmarked,
-        isFav = isFav
+        isFav = isFav,
+        favoriteId = favoriteId
     )
 
 fun CommentModel.asComment() = Comment(
