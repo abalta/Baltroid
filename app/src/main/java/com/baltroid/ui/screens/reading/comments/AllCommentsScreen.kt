@@ -112,7 +112,10 @@ fun AllCommentsScreen(
                             comments = comments.commentList,
                             modifier = Modifier.padding(end = MaterialTheme.localDimens.dp8),
                             onLikeClick = { _, _ -> },
-                            onReplyClick = {}
+                            onReplyClick = {},
+                            onExpanseClicked = {
+                                viewModel.expanseComment(it)
+                            }
                         )
                     }
                 }

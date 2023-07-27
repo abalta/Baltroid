@@ -43,6 +43,14 @@ class CommentViewModel @Inject constructor(
         }
     }
 
+    fun expanseComment(id: Int) {
+        _uiState.update {
+            it.copy(commentList = it.commentList.map {
+                if (it.id == id) it.copy(isExpanded = true) else it
+            })
+        }
+    }
+
     fun createComment(id: Int, content: String, responseId: Int?) = viewModelScope.launch {
         createCommentUseCase(
             type = "original",

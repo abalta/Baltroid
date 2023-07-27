@@ -13,5 +13,5 @@ data class Comment(
     val replies: List<Comment>,
     val episode: String,
     val original: Original?,
-    var isExpanded: Boolean = false,
+    val isExpanded: Boolean = false,
 )

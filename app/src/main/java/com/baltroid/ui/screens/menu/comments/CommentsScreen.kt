@@ -80,6 +80,9 @@ fun CommentsScreen(
         onLikeClick = { isLiked, id ->
             if (!isLiked) viewModel.likeComment(id)
             else viewModel.unlikeComment(id)
+        },
+        onExpanseClicked = {
+            viewModel.expanseComment(it)
         }
     )
 }
@@ -90,6 +93,7 @@ private fun CommentsScreenContent(
     onBackClick: () -> Unit,
     createComment: (Comment?, String) -> Unit,
     onLikeClick: (Boolean, Int) -> Unit,
+    onExpanseClicked: (Int) -> Unit,
 ) {
 
     var selectedTab by remember {
@@ -138,7 +142,8 @@ private fun CommentsScreenContent(
                         onReplyClick = {
                             isCommentWriteActive = true
                             selectedComment = it
-                        }
+                        },
+                        onExpanseClicked = onExpanseClicked
                     )
                 }
 

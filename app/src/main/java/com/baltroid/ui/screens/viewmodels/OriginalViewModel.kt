@@ -10,6 +10,7 @@ import com.baltroid.ui.screens.home.filter.FilterUiState
 import com.baltroid.ui.screens.reading.ReadingUiState
 import com.hitreads.core.domain.model.OriginalModel
 import com.hitreads.core.domain.usecase.CreateBookmarkUseCase
+import com.hitreads.core.domain.usecase.CreateCommentUseCase
 import com.hitreads.core.domain.usecase.CreateFavoriteUseCase
 import com.hitreads.core.domain.usecase.DeleteBookmarkUseCase
 import com.hitreads.core.domain.usecase.DeleteFavoriteUseCase
@@ -41,7 +42,8 @@ class OriginalViewModel @Inject constructor(
     private val deleteFavoriteUseCase: DeleteFavoriteUseCase,
     private val getTagsUseCase: GetTagsUseCase,
     private val createBookmarkUseCase: CreateBookmarkUseCase,
-    private val deleteBookmarkUseCase: DeleteBookmarkUseCase
+    private val deleteBookmarkUseCase: DeleteBookmarkUseCase,
+    private val createCommentUseCase: CreateCommentUseCase
 ) : ViewModel() {
 
     private val _uiStateReading = MutableStateFlow(ReadingUiState())
@@ -196,6 +198,21 @@ class OriginalViewModel @Inject constructor(
                 }
             }
             onFailure(::handleFailure)
+        }
+    }
+
+    fun createComment(id: Int, content: String, responseId: Int?) = viewModelScope.launch {
+        createCommentUseCase(
+            type = "original",
+            id,
+            content,
+            responseId
+        ).handle {
+            onSuccess { newComment ->
+                _sharedUIState.update {
+                    it?.copy(commentCount = it.commentCount + 1)
+                }
+            }
         }
     }
 

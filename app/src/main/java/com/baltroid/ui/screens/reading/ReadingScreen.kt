@@ -57,6 +57,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -76,6 +77,7 @@ import com.baltroid.ui.screens.menu.comments.CommentViewModel
 import com.baltroid.ui.screens.menu.place_marks.EpisodeBanner
 import com.baltroid.ui.screens.reading.comments.CommentsTabState
 import com.baltroid.ui.screens.viewmodels.OriginalViewModel
+import com.baltroid.ui.theme.Poppins
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localTextStyles
@@ -115,6 +117,7 @@ fun ReadingScreen(
 
     ReadingScreenContent(
         commentViewModel,
+        originalViewModel = viewModel,
         screenState = screenState,
         textOriginal = sharedOriginal,
         hashTag = sharedOriginal?.hashtag.orEmpty(),
@@ -143,13 +146,17 @@ fun ReadingScreen(
             }
         },
         navigate = navigate,
-        openMenuScreen
+        openMenuScreen,
+        onExpanseClicked = {
+            commentViewModel.expanseComment(it)
+        },
     )
 }
 
 @Composable
 private fun ReadingScreenContent(
     commentVM: CommentViewModel,
+    originalViewModel: OriginalViewModel,
     screenState: ReadingUiState,
     textOriginal: Original?,
     hashTag: String,
@@ -160,6 +167,7 @@ private fun ReadingScreenContent(
     onMarkClicked: (Boolean) -> Unit,
     navigate: (String) -> Unit,
     openMenuScreen: () -> Unit,
+    onExpanseClicked: (Int) -> Unit,
 ) {
     val scrollState = rememberScrollState()
     val lazyScrollState = rememberLazyListState()
@@ -247,6 +255,7 @@ private fun ReadingScreenContent(
                                         commentVM.likeComment(id)
                                     }
                                 },
+                                onExpanseClicked = onExpanseClicked,
                                 onReplyClick = { comment ->
                                     isWriteCardShown = true
                                     selectedComment = comment
@@ -294,11 +303,19 @@ private fun ReadingScreenContent(
                 textOriginal?.hashtag.orEmpty() + " " + "B${selectedEpisodeIndex}",
                 onBackClick = { isWriteCardShown = !isWriteCardShown }
             ) {
-                commentVM.createComment(
-                    selectedComment?.original?.id.orZero(),
-                    it,
-                    selectedComment?.id.orZero()
-                )
+                if (isReadingSection) {
+                    originalViewModel.createComment(
+                        screenState.original?.id.orZero(),
+                        it,
+                        null
+                    )
+                } else {
+                    originalViewModel.createComment(
+                        selectedComment?.original?.id.orZero(),
+                        it,
+                        selectedComment?.id.orZero()
+                    )
+                }
                 isWriteCardShown = false
             }
         }
@@ -560,7 +577,8 @@ fun CommentSection(
     comments: List<Comment>,
     modifier: Modifier = Modifier,
     onLikeClick: (Boolean, Int) -> Unit,
-    onReplyClick: (Comment) -> Unit
+    onReplyClick: (Comment) -> Unit,
+    onExpanseClicked: (Int) -> Unit
 ) {
 
     Column(
@@ -571,7 +589,7 @@ fun CommentSection(
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp15),
             contentPadding = PaddingValues(top = MaterialTheme.localDimens.dp14),
         ) {
-            items(comments, key = { it.id }) { comment ->
+            items(comments) { comment ->
                 CommentItem(
                     model = comment,
                     isChatSelected = false,
@@ -579,16 +597,32 @@ fun CommentSection(
                     onReplyClick = { onReplyClick.invoke(comment) }
                 )
                 VerticalSpacer(height = MaterialTheme.localDimens.dp12)
-                comment.replies.forEachIndexed { index, item ->
-                    CommentItem(
-                        model = item,
-                        isChatSelected = false,
-                        onLikeClick = onLikeClick,
-                        onReplyClick = {
-                            onReplyClick.invoke(comment)
+                CommentItem(
+                    model = comment.replies.firstOrNull() ?: return@items,
+                    isChatSelected = false,
+                    onLikeClick = onLikeClick,
+                    onReplyClick = {
+                        onReplyClick.invoke(comment)
+                    }
+                )
+                if (!comment.isExpanded && comment.replies.size > 1) {
+                    SeeAll {
+                        onExpanseClicked.invoke(comment.id)
+                    }
+                }
+                if (comment.isExpanded) {
+                    comment.replies.forEachIndexed { index, comment ->
+                        if (index != 0) {
+                            CommentItem(
+                                model = comment,
+                                isChatSelected = false,
+                                onLikeClick = onLikeClick,
+                                onReplyClick = {
+                                    onReplyClick.invoke(comment)
+                                }
+                            )
                         }
-                    )
-                    VerticalSpacer(height = MaterialTheme.localDimens.dp14)
+                    }
                 }
             }
         }
@@ -692,7 +726,8 @@ fun CommentItem(
         ) {
             CommentImage(
                 imgUrl = model.imgUrl,
-                letter = model.authorName.first().toString()
+                letter = if (model.authorName.isNotEmpty()) model.authorName.first()
+                    .toString() else "?"
             )
             HorizontalSpacer(width = MaterialTheme.localDimens.dp13)
             Column(
@@ -845,6 +880,39 @@ private fun LazyListState.isEpisodesVisible(): Boolean {
             }
         }
     }.value
+}
+
+@Composable
+fun SeeAll(
+    onClick: () -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.clickable { onClick.invoke() }
+    ) {
+        Box(
+            modifier = Modifier
+                .height(1.dp)
+                .width(100.dp)
+                .background(MaterialTheme.localColors.white_alpha07)
+                .fillMaxWidth()
+        )
+        HorizontalSpacer(width = 12.dp)
+        Text(
+            text = "Tüm Cevapları Göster",
+            color = MaterialTheme.localColors.white_alpha07,
+            fontFamily = Poppins,
+            fontSize = 10.sp
+        )
+        HorizontalSpacer(width = 12.dp)
+        Box(
+            modifier = Modifier
+                .height(1.dp)
+                .width(100.dp)
+                .background(MaterialTheme.localColors.white_alpha07)
+                .fillMaxWidth()
+        )
+    }
 }
 
 @Preview
