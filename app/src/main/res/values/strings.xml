@@ -61,4 +61,10 @@
     <string name="txt_filter">SEÇİMLERE GÖRE LİSTELE</string>
     <string name="nickname">NICKNAME</string>
     <string name="hitreads">HitReads</string>
+    <string name="no_empty_field">"Bu alan boş bırakılamaz. "</string>
+    <string name="invalid_email">Geçerli bir e-posta adresi giriniz.</string>
+    <string name="invalid_password">Şifreniz 8 haneli olmalı ve büyük harf, küçük harf, sayı ve simge içermelidir.</string>
+    <string name="invalid_confirm_password">Şifre eşleşmiyor.</string>
+    <string name="privacy_policy_error">Kullanım şartları kabul edilmedilir.</string>
+    <string name="cookie_policy_error">Çerez politikası kabul edilmelidir</string>
 </resources>

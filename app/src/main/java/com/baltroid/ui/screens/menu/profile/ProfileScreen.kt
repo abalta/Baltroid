@@ -19,6 +19,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -49,6 +50,10 @@ fun ProfileScreen(
     viewModel: AuthenticationViewModel = hiltViewModel(),
     onBackClick: () -> Unit
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.getProfile()
+    }
+
     val profile = viewModel.profileState.collectAsStateWithLifecycle().value.profile
     ProfileScreenContent(profile = profile, onBackClick = onBackClick)
 }

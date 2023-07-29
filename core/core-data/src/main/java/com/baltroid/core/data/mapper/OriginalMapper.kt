@@ -214,7 +214,7 @@ internal fun BookmarkDto.asBookmarkModel() = BookmarkModel(
     cover = cover.orEmpty()
 )
 
-internal fun FavoriteDto.asFavorite() = FavoriteModel(
+internal fun FavoriteDto.asFavoriteModel() = FavoriteModel(
     id = id,
     originalId = originalId,
     seasonId = seasonId,

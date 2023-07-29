@@ -38,7 +38,6 @@ import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.VerticalSpacer
 import com.baltroid.ui.components.IconlessMenuBar
 import com.baltroid.ui.screens.menu.favorites.NamelessAuthorItem
-import com.baltroid.ui.screens.menu.favorites.StoryItemFavorites
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localShapes
@@ -93,9 +92,7 @@ fun AuthorScreenContent(
             modifier = Modifier.padding(start = MaterialTheme.localDimens.dp54_5),
             horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp30)
         ) {
-            item { StoryItemFavorites("KİMSE GERÇEK DEĞİL") }
-            item { StoryItemFavorites("KİMSE GERÇEK DEĞİL") }
-            item { StoryItemFavorites("KİMSE GERÇEK DEĞİL") }
+
         }
     }
 }

@@ -3,7 +3,7 @@ package com.baltroid.core.data.repository
 import com.baltroid.core.common.result.BaltroidResult
 import com.baltroid.core.common.result.isFailure
 import com.baltroid.core.common.result.isSuccess
-import com.baltroid.core.data.mapper.asFavorite
+import com.baltroid.core.data.mapper.asFavoriteModel
 import com.baltroid.core.network.common.networkBoundResource
 import com.baltroid.core.network.source.HitReadsNetworkDataSource
 import com.baltroid.core.network.util.MESSAGE_UNHANDLED_STATE
@@ -26,7 +26,7 @@ class FavoriteRepositoryImpl @Inject constructor(
                 response.isSuccess() -> {
                     response.value.data?.let {
                         emit(BaltroidResult.success(it.map { favoriteDto ->
-                            favoriteDto.asFavorite()
+                            favoriteDto.asFavoriteModel()
                         }))
                     }
                 }

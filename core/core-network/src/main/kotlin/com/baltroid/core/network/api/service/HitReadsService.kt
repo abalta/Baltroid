@@ -164,8 +164,8 @@ interface HitReadsService {
 
     @GET("$FAVORITE")
     suspend fun getFavorites(
-        @Field("$TYPE") type: String,
-        @Field("$ID") id: Int?
+        @Query("$TYPE") type: String,
+        @Query("$ID") id: Int?
     ): BaltroidResult<HitReadsResponse<List<FavoriteDto>>>
 
     @DELETE("$BOOKMARK/{id}")

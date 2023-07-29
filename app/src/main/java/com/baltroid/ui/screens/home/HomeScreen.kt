@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -14,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -42,12 +42,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import com.baltroid.apps.R
@@ -62,8 +60,10 @@ import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
 import com.baltroid.util.orZero
+import com.hitreads.core.model.Author
 import com.hitreads.core.model.Original
 import com.hitreads.core.model.Tag
+import com.hitreads.core.model.UserData
 import kotlinx.coroutines.launch
 
 @Composable
@@ -80,8 +80,8 @@ fun HomeScreen(
     }
 
     HomeScreenContent(
-        uiStates = uiStates.originals.collectAsLazyPagingItems(),
-        uiStatesFavorites = uiStates.favorites.collectAsLazyPagingItems(),
+        uiStates = uiStates.originals.collectAsLazyPagingItems().itemSnapshotList.items,
+        uiStatesFavorites = uiStates.favorites.collectAsLazyPagingItems().itemSnapshotList.items,
         openMenuScreen = openMenuScreen,
         navigate = navigate
     )
@@ -90,8 +90,8 @@ fun HomeScreen(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun HomeScreenContent(
-    uiStates: LazyPagingItems<Original>,
-    uiStatesFavorites: LazyPagingItems<Original>,
+    uiStates: List<Original>,
+    uiStatesFavorites: List<Original>,
     openMenuScreen: () -> Unit,
     navigate: (route: String, item: Original?) -> Unit
 ) {
@@ -103,19 +103,19 @@ private fun HomeScreenContent(
     }
 
     val currentItem by remember(
-        uiStates.itemCount,
-        uiStatesFavorites.itemCount,
+        uiStates.size,
+        uiStatesFavorites.size,
         tabState,
         pagerState.currentPage
     ) {
         when (tabState) {
             HomeScreenTabs.AllStories -> {
-                if (uiStates.itemCount > 0) mutableStateOf(uiStates[pagerState.currentPage])
+                if (uiStates.isNotEmpty()) mutableStateOf(uiStates[pagerState.currentPage])
                 else mutableStateOf<Original?>(null)
             }
 
             HomeScreenTabs.Favorites -> {
-                if (uiStatesFavorites.itemCount > 0) mutableStateOf(uiStatesFavorites[pagerState.currentPage])
+                if (uiStatesFavorites.isNotEmpty()) mutableStateOf(uiStatesFavorites[pagerState.currentPage])
                 else mutableStateOf<Original?>(null)
             }
         }
@@ -138,8 +138,8 @@ private fun HomeScreenContent(
         )
         VerticalSpacer(height = MaterialTheme.localDimens.dp18_5)
         HomeScreenTabs(
-            storiesSize = uiStates.itemSnapshotList.items.firstOrNull()?.dataCount.orZero(),
-            favoritesSize = uiStatesFavorites.itemSnapshotList.items.firstOrNull()?.dataCount.orZero(),
+            storiesSize = uiStates.firstOrNull()?.dataCount.orZero(),
+            favoritesSize = uiStatesFavorites.firstOrNull()?.dataCount.orZero(),
             selectedTab = tabState,
             modifier = Modifier.padding(start = MaterialTheme.localDimens.dp32)
         ) { selectedTab ->
@@ -148,7 +148,9 @@ private fun HomeScreenContent(
         }
         VerticalSpacer(height = MaterialTheme.localDimens.dp14)
         Column(
-            modifier = Modifier.verticalScroll(scrollState)
+            modifier = Modifier
+                .weight(1f)
+                .verticalScroll(scrollState)
         ) {
             StoriesRow(
                 state = pagerState,
@@ -160,7 +162,7 @@ private fun HomeScreenContent(
                 navigate.invoke(HitReadsScreens.HomeDetailScreen.route, original)
             }
             VerticalSpacer(height = MaterialTheme.localDimens.dp28_5)
-            if (uiStates.itemCount > 0) {
+            if (uiStates.isNotEmpty()) {
                 TitleSection(
                     author = currentItem?.author?.name.toString(),
                     title = currentItem?.title.toString(),
@@ -175,23 +177,34 @@ private fun HomeScreenContent(
                 )
                 SummarySection(
                     summary = currentItem?.description.toString(),
-                    numberOfStory = currentItem?.dataCount.orZero(),
                     numberOfViews = currentItem?.viewCount.orZero(),
                     numberOfComments = currentItem?.commentCount.orZero(),
                     onCommentsClick = {},
-                    onFilterClick = { navigate.invoke(HitReadsScreens.FilterScreen.route, null) },
                     modifier = Modifier.padding(
                         top = MaterialTheme.localDimens.dp9,
                         start = MaterialTheme.localDimens.dp25,
                         end = MaterialTheme.localDimens.dp39
                     )
                 )
-                VerticalSpacer(
-                    height = MaterialTheme.localDimens.dp50,
-                    modifier = Modifier.navigationBarsPadding()
-                )
             }
         }
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = MaterialTheme.localDimens.dp24)
+        ) {
+            Text(
+                text = stringResource(id = R.string.story_summary, currentItem?.dataCount.orZero()),
+                style = MaterialTheme.localTextStyles.summaryInfoText
+            )
+            SimpleIcon(
+                iconResId = R.drawable.ic_list,
+                modifier = Modifier
+                    .clickable { navigate.invoke(HitReadsScreens.FilterScreen.route, null) }
+            )
+        }
+        VerticalSpacer(height = MaterialTheme.localDimens.dp24)
     }
 }
 
@@ -271,14 +284,14 @@ private fun HomeScreenTabItem(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun StoriesRow(
-    lazyPagingItems: LazyPagingItems<Original>,
+    lazyPagingItems: List<Original>,
     state: PagerState,
     modifier: Modifier = Modifier,
     onClick: (Original?) -> Unit,
 ) {
     BoxWithConstraints {
         HorizontalPager(
-            pageCount = lazyPagingItems.itemCount,
+            pageCount = lazyPagingItems.size,
             state = state,
             contentPadding = PaddingValues(
                 start = MaterialTheme.localDimens.dp25,
@@ -289,8 +302,8 @@ private fun StoriesRow(
             modifier = modifier,
         ) { page ->
             StoryImage(
-                imgUrl = lazyPagingItems[page]?.cover.toString(),
-                isNew = lazyPagingItems[page]?.isNew ?: false,
+                imgUrl = lazyPagingItems[page].cover.toString(),
+                isNew = lazyPagingItems[page].isNew ?: false,
                 onClick = { onClick.invoke(lazyPagingItems[page]) }
             )
         }
@@ -417,12 +430,10 @@ fun GenreItem(
 @Composable
 private fun SummarySection(
     summary: String,
-    numberOfStory: Int,
     numberOfViews: Int,
     numberOfComments: Int,
     modifier: Modifier = Modifier,
     onCommentsClick: () -> Unit,
-    onFilterClick: () -> Unit
 ) {
     val localDimens = MaterialTheme.localDimens
 
@@ -480,34 +491,74 @@ private fun SummarySection(
                 style = MaterialTheme.localTextStyles.summaryIconText
             )
         }
-        Text(
-            text = stringResource(id = R.string.story_summary, numberOfStory),
-            style = MaterialTheme.localTextStyles.summaryInfoText,
-            modifier = Modifier.constrainAs(info) {
-                top.linkTo(summaryText.bottom, localDimens.dp36)
-                start.linkTo(parent.start)
-                end.linkTo(listIcon.start, localDimens.dp26)
-                width = Dimension.fillToConstraints
-            }
-        )
-        SimpleIcon(
-            iconResId = R.drawable.ic_list,
-            modifier = Modifier
-                .clickable { onFilterClick.invoke() }
-                .constrainAs(listIcon) {
-                    top.linkTo(info.top)
-                    bottom.linkTo(info.bottom)
-                    start.linkTo(comments.start)
-                    end.linkTo(comments.end)
-                }
-        )
     }
 }
 
-@Preview(device = Devices.DEFAULT)
-@Preview(heightDp = 650)
-@Preview(widthDp = 360, heightDp = 540)
+@Preview
 @Composable
 fun HomeScreenPreview() {
-
+    HomeScreenContent(
+        uiStates = listOf(
+            Original(
+                author = Author(id = 3007, name = "ZEYNEP SEY"),
+                banner = "",
+                cover = "",
+                description = "Kim olduğunu sorguladıkça dünyasının sahtelikten İbaret olduğunu anlamaya başlayan Işıl Özsoydan, öğrendiği gerçeklerİ...",
+                id = 6090,
+                isActual = false,
+                isLocked = false,
+                likeCount = 3807,
+                commentCount = 142,
+                viewCount = 17450,
+                `package` = null,
+                sort = 2498,
+                status = false,
+                title = "KİMSE GERÇEK DEĞİL",
+                type = "",
+                userData = UserData(isLike = false, isPurchase = false),
+                tags = listOf(
+                    Tag(0, "Romantik", ""),
+                    Tag(0, "Gençlik", "")
+                ),
+                hashtag = "",
+                subtitle = "Araf, Aydınlık ve Aşık",
+                episodeCount = 35,
+                seasons = listOf(),
+                isNew = false,
+                dataCount = 24
+            )
+        ),
+        uiStatesFavorites = listOf(
+            Original(
+                author = Author(id = 3007, name = "ZEYNEP SEY"),
+                banner = "",
+                cover = "",
+                description = "Kim olduğunu sorguladıkça dünyasının sahtelikten İbaret olduğunu anlamaya başlayan Işıl Özsoydan, öğrendiği gerçeklerİ...",
+                id = 6090,
+                isActual = false,
+                isLocked = false,
+                likeCount = 3807,
+                commentCount = 142,
+                viewCount = 17450,
+                `package` = null,
+                sort = 2498,
+                status = false,
+                title = "KİMSE GERÇEK DEĞİL",
+                type = "",
+                userData = UserData(isLike = false, isPurchase = false),
+                tags = listOf(
+                    Tag(0, "Romantik", ""),
+                    Tag(0, "Gençlik", "")
+                ),
+                hashtag = "",
+                subtitle = "Araf, Aydınlık ve Aşık",
+                episodeCount = 35,
+                seasons = listOf(),
+                isNew = false,
+                dataCount = 24
+            )
+        ),
+        openMenuScreen = { },
+        navigate = { _, _ -> }
+    )
 }

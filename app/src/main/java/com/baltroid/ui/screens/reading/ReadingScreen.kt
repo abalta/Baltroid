@@ -310,7 +310,7 @@ private fun ReadingScreenContent(
                         null
                     )
                 } else {
-                    originalViewModel.createComment(
+                    commentVM.createComment(
                         selectedComment?.original?.id.orZero(),
                         it,
                         selectedComment?.id.orZero()

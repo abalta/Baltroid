@@ -52,7 +52,7 @@ fun SettingsScreenContent(
             val localDimens = MaterialTheme.localDimens
 
             val (
-                userInfo, menuBar, themeButtons,
+                userInfo, menuBar,
             ) = createRefs()
 
             val bottomGuideLine = createGuidelineFromBottom(0.075f)
@@ -74,7 +74,7 @@ fun SettingsScreenContent(
                         top.linkTo(menuBar.bottom, margin = localDimens.dp35)
                         start.linkTo(menuBar.start)
                         end.linkTo(menuBar.end)
-                        bottom.linkTo(themeButtons.top, margin = localDimens.dp16)
+                        bottom.linkTo(parent.bottom, margin = localDimens.dp16)
                         width = Dimension.fillToConstraints
                         height = Dimension.fillToConstraints
                     }

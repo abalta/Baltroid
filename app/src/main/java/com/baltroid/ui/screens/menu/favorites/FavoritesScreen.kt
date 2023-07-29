@@ -13,18 +13,25 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
 import com.baltroid.apps.R
 import com.baltroid.ui.common.CroppedImage
 import com.baltroid.ui.common.SimpleIcon
@@ -34,13 +41,25 @@ import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
+import com.baltroid.util.orZero
+import com.hitreads.core.model.Favorite
 
 @Composable
 fun FavoritesScreen(
+    viewModel: FavoritesViewModel = hiltViewModel(),
     onBackClick: () -> Unit
 ) {
+
+    LaunchedEffect(Unit) {
+        viewModel.getFavoriteAuthors()
+        viewModel.getFavoriteEpisodes()
+    }
+
+    val favorites = viewModel.uiStateFavorites.collectAsStateWithLifecycle().value
     FavoritesScreenContent(
         scrollState = rememberScrollState(),
+        authors = favorites.authors,
+        episodes = favorites.episodes,
         onBackClick = onBackClick
     )
 }
@@ -48,6 +67,8 @@ fun FavoritesScreen(
 @Composable
 fun FavoritesScreenContent(
     scrollState: ScrollState,
+    authors: List<Favorite>,
+    episodes: List<Favorite>,
     onBackClick: () -> Unit
 ) {
     Column(
@@ -73,7 +94,9 @@ fun FavoritesScreenContent(
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
             VerticalSpacer(height = MaterialTheme.localDimens.dp22)
-            StoryItemFavoritesList()
+            StoryItemFavoritesList(
+                episodes = episodes
+            )
             VerticalSpacer(height = MaterialTheme.localDimens.dp25)
             Text(
                 text = stringResource(id = R.string.authors),
@@ -81,27 +104,32 @@ fun FavoritesScreenContent(
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
             VerticalSpacer(height = MaterialTheme.localDimens.dp25)
-            AuthorsFavoritesList()
+            AuthorsFavoritesList(
+                authors = authors
+            )
         }
     }
 }
 
 @Composable
 fun AuthorsItem(
-    author: String
+    favoriteAuthor: Favorite
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        CroppedImage(
-            imgResId = R.drawable.woods_image,
+        AsyncImage(
+            model = favoriteAuthor.image,
+            error = painterResource(id = R.drawable.hitreads_placeholder),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
             modifier = Modifier
                 .size(MaterialTheme.localDimens.dp111)
                 .clip(MaterialTheme.localShapes.circleShape)
         )
         VerticalSpacer(height = MaterialTheme.localDimens.dp20)
         Text(
-            text = author,
+            text = favoriteAuthor.authorName.orEmpty(),
             style = MaterialTheme.localTextStyles.authorText,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
@@ -131,6 +159,7 @@ fun NamelessAuthorItem(
 
 @Composable
 fun AuthorsFavoritesList(
+    authors: List<Favorite>,
     modifier: Modifier = Modifier
 ) {
     LazyRow(
@@ -138,16 +167,18 @@ fun AuthorsFavoritesList(
         contentPadding = PaddingValues(horizontal = MaterialTheme.localDimens.dp35),
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp30)
     ) {
-        item { AuthorsItem("ZEYNEP SEY") }
-        item { AuthorsItem("ZEYNEP SEY") }
-        item { AuthorsItem("ZEYNEP SEY") }
-        item { AuthorsItem("ZEYNEP SEY") }
-        item { AuthorsItem("ZEYNEP SEY") }
+        items(
+            authors,
+            key = { it.id.orZero() }
+        ) { author ->
+            AuthorsItem(favoriteAuthor = author)
+        }
     }
 }
 
 @Composable
 fun StoryItemFavoritesList(
+    episodes: List<Favorite>,
     modifier: Modifier = Modifier
 ) {
     LazyRow(
@@ -155,11 +186,12 @@ fun StoryItemFavoritesList(
         contentPadding = PaddingValues(horizontal = MaterialTheme.localDimens.dp35),
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp30)
     ) {
-        item { StoryItemFavorites("KİMSE GERÇEK DEĞİL") }
-        item { StoryItemFavorites("KİMSE GERÇEK DEĞİL") }
-        item { StoryItemFavorites("KİMSE GERÇEK DEĞİL") }
-        item { StoryItemFavorites("KİMSE GERÇEK DEĞİL") }
-        item { StoryItemFavorites("KİMSE GERÇEK DEĞİL") }
+        items(
+            episodes,
+            key = { it.id.orZero() }
+        ) { item ->
+            StoryItemFavorites(favoriteEpisode = item)
+        }
     }
 }
 
@@ -185,14 +217,17 @@ fun YellowStarBox(
 
 @Composable
 fun StoryItemFavorites(
-    title: String
+    favoriteEpisode: Favorite
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.width(IntrinsicSize.Min)
     ) {
-        CroppedImage(
-            imgResId = R.drawable.woods_image,
+        AsyncImage(
+            model = favoriteEpisode.assetContents,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            error = painterResource(id = R.drawable.hitreads_placeholder),
             modifier = Modifier
                 .size(
                     MaterialTheme.localDimens.dp127,
@@ -201,7 +236,10 @@ fun StoryItemFavorites(
                 .clip(MaterialTheme.localShapes.roundedDp18)
         )
         VerticalSpacer(height = MaterialTheme.localDimens.dp13)
-        Text(text = title, style = MaterialTheme.localTextStyles.storyItemTitle)
+        Text(
+            text = favoriteEpisode.episodeName.orEmpty(),
+            style = MaterialTheme.localTextStyles.storyItemTitle
+        )
         VerticalSpacer(height = MaterialTheme.localDimens.dp11)
         YellowStarBox(modifier = Modifier.align(Alignment.CenterHorizontally))
     }
