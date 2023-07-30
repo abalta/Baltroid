@@ -6,6 +6,7 @@ import com.baltroid.core.network.model.originals.NetworkCreateCommentResponse
 import com.baltroid.core.network.model.originals.NetworkShowOriginal
 import com.baltroid.core.network.model.originals.NetworkTag
 import com.baltroid.core.network.model.request.CreateBookmarkDto
+import com.baltroid.core.network.model.request.RegisterRequestBody
 import com.baltroid.core.network.model.response.AllCommentsDto
 import com.baltroid.core.network.model.response.BookmarkDto
 import com.baltroid.core.network.model.response.CommentDto
@@ -16,26 +17,15 @@ import com.baltroid.core.network.model.response.OriginalResponseDto
 import com.baltroid.core.network.model.response.ProfileDto
 import com.baltroid.core.network.model.response.WelcomeDto
 import com.baltroid.core.network.util.Constants.DEFAULT_PAGE
-import com.baltroid.core.network.util.Constants.Fields.ACCEPT_RECEIVE_MARKETING_MAIL
-import com.baltroid.core.network.util.Constants.Fields.ACCOUNT_TYPE
-import com.baltroid.core.network.util.Constants.Fields.BIRTH_DATE
-import com.baltroid.core.network.util.Constants.Fields.CLARIFICATION_TEXT
 import com.baltroid.core.network.util.Constants.Fields.CONTENT
-import com.baltroid.core.network.util.Constants.Fields.DEVICE
 import com.baltroid.core.network.util.Constants.Fields.EMAIL
 import com.baltroid.core.network.util.Constants.Fields.FILTER_TAG
 import com.baltroid.core.network.util.Constants.Fields.GET_BY_FAV
 import com.baltroid.core.network.util.Constants.Fields.ID
-import com.baltroid.core.network.util.Constants.Fields.IDENTIFIER
-import com.baltroid.core.network.util.Constants.Fields.KARMA
-import com.baltroid.core.network.util.Constants.Fields.NAME
 import com.baltroid.core.network.util.Constants.Fields.PAGE
 import com.baltroid.core.network.util.Constants.Fields.PASSWORD
-import com.baltroid.core.network.util.Constants.Fields.PASSWORD_CONFIRMATION
-import com.baltroid.core.network.util.Constants.Fields.PRIVACY_POLICY
 import com.baltroid.core.network.util.Constants.Fields.RESPONSE_ID
 import com.baltroid.core.network.util.Constants.Fields.TYPE
-import com.baltroid.core.network.util.Constants.Fields.USER_AGREEMENT
 import com.baltroid.core.network.util.Constants.Path.BOOKMARK
 import com.baltroid.core.network.util.Constants.Path.BY_ME
 import com.baltroid.core.network.util.Constants.Path.COMMENT
@@ -84,22 +74,9 @@ interface HitReadsService {
         @Field("$PASSWORD") password: String
     ): BaltroidResult<HitReadsResponse<LoginDto>>
 
-    @FormUrlEncoded
     @POST("$REGISTER")
     suspend fun register(
-        @Field("$NAME") name: String,
-        @Field("$EMAIL") email: String,
-        @Field("$PASSWORD") password: String,
-        @Field("$PASSWORD_CONFIRMATION") passwordConfirmation: String = password,
-        @Field("$ACCOUNT_TYPE") accountType: String = "user",
-        @Field("$KARMA") karma: String = "1",
-        @Field("$DEVICE") device: String = "1",
-        @Field("$IDENTIFIER") identifier: String = "1",
-        @Field("$USER_AGREEMENT") user_agreement: Boolean = true,
-        @Field("$PRIVACY_POLICY") privacy_policy: Boolean = true,
-        @Field("$CLARIFICATION_TEXT") clarificationText: Boolean = true,
-        @Field("$ACCEPT_RECEIVE_MARKETING_MAIL") acceptReceiveMarketingMail: Boolean = true,
-        @Field("$BIRTH_DATE") birthDate: String = "1993-01-01",
+        @Body requestBody: RegisterRequestBody
     ): BaltroidResult<HitReadsResponse<Unit>>
 
     @GET("$TAG")

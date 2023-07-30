@@ -67,4 +67,8 @@
     <string name="invalid_confirm_password">Şifre eşleşmiyor.</string>
     <string name="privacy_policy_error">Kullanım şartları kabul edilmedilir.</string>
     <string name="cookie_policy_error">Çerez politikası kabul edilmelidir</string>
+    <string name="accept_privacy_policy">Kullanım şartlarını kabul ediyorum</string>
+    <string name="accept_cookie_policy">Çerez politikası</string>
+    <string name="something_went_wrong">Bir şeyler ters gitti. Lütfen daha sonra tekrar deneyiniz</string>
+    <string name="register_success">Başarıyla kayıt olundu mail adresinize gelen bağlantıyı onaylayın.</string>
 </resources>

@@ -58,10 +58,18 @@ class AuthRepositoryImpl @Inject constructor(
     override fun register(
         name: String,
         email: String,
-        password: String
-    ): Flow<BaltroidResult<Any?>> = flow {
+        password: String,
+        userAgreement: Boolean,
+        privacyPolicy: Boolean,
+    ): Flow<BaltroidResult<Unit?>> = flow {
         emit(BaltroidResult.loading())
-        val response = networkDataSource.register(name, email, password)
+        val response = networkDataSource.register(
+            name,
+            email,
+            password,
+            userAgreement = userAgreement,
+            privacyPolicy = privacyPolicy
+        )
 
         when {
             response.isSuccess() -> {

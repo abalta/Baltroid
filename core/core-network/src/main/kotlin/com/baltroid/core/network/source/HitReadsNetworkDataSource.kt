@@ -7,6 +7,7 @@ import com.baltroid.core.network.model.originals.NetworkCreateCommentResponse
 import com.baltroid.core.network.model.originals.NetworkShowOriginal
 import com.baltroid.core.network.model.originals.NetworkTag
 import com.baltroid.core.network.model.request.CreateBookmarkDto
+import com.baltroid.core.network.model.request.RegisterRequestBody
 import com.baltroid.core.network.model.response.AllCommentsDto
 import com.baltroid.core.network.model.response.BookmarkDto
 import com.baltroid.core.network.model.response.CommentDto
@@ -48,9 +49,27 @@ class HitReadsNetworkDataSource @Inject constructor(private val hitReadsService:
     suspend fun register(
         name: String,
         email: String,
-        password: String
-    ): BaltroidResult<HitReadsResponse<Unit>> =
-        hitReadsService.register(name, email, password)
+        password: String,
+        userAgreement: Boolean,
+        privacyPolicy: Boolean,
+    ): BaltroidResult<HitReadsResponse<Unit>> = hitReadsService.register(
+        RegisterRequestBody(
+            name = name,
+            email = email,
+            password = password,
+            passwordConfirmation = password,
+            accountType = "user",
+            karma = "1",
+            device = "1",
+            identifier = "1",
+            user_agreement = userAgreement,
+            privacy_policy = privacyPolicy,
+            clarificationText = true,
+            acceptReceiveMarketingMail = true,
+            birthDate = "1993-01-01"
+        )
+    )
+
 
     suspend fun showOriginal(originalId: Int): BaltroidResult<HitReadsResponse<NetworkShowOriginal>> =
         hitReadsService.showOriginal(originalId)

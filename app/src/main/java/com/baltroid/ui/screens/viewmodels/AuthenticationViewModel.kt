@@ -55,6 +55,10 @@ class AuthenticationViewModel @Inject constructor(
         _uiStateRegister.update { it.copy(passwordConfirm = it.passwordConfirm.copy(fieldValue = value)) }
     }
 
+    fun clearSuccess() {
+        _uiStateRegister.update { it.copy(isSuccess = false) }
+    }
+
     fun updatePrivacyPolicy(isChecked: Boolean) {
         _uiStateRegister.update {
             it.copy(
@@ -75,7 +79,7 @@ class AuthenticationViewModel @Inject constructor(
         }
     }
 
-    fun regiter() {
+    fun register() {
         viewModelScope.launch {
             if (inputsAreValid()) {
                 val fields = _uiStateRegister.value
@@ -83,13 +87,22 @@ class AuthenticationViewModel @Inject constructor(
                     fields.name.fieldValue,
                     fields.email.fieldValue,
                     fields.password.fieldValue,
+                    privacyPolicy = fields.isPrivacyPolicyChecked.isChecked,
+                    userAgreement = fields.isCookiePolicyChecked.isChecked,
                 ).handle {
                     onSuccess {
-
+                        _uiStateRegister.update { it.copy(isSuccess = true) }
+                    }
+                    onFailure {
+                        _uiStateRegister.update { it.copy(errorMsg = R.string.something_went_wrong) }
                     }
                 }
             }
         }
+    }
+
+    fun clearErrorMessage() {
+        _uiStateRegister.update { it.copy(errorMsg = null) }
     }
 
     private fun inputsAreValid(): Boolean = with(_uiStateRegister.value) {

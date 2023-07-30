@@ -8,7 +8,9 @@ data class RegisterScreenUIState(
     val password: InputFieldState = InputFieldState(),
     val passwordConfirm: InputFieldState = InputFieldState(),
     val isPrivacyPolicyChecked: CheckBoxState = CheckBoxState(),
-    val isCookiePolicyChecked: CheckBoxState = CheckBoxState()
+    val isCookiePolicyChecked: CheckBoxState = CheckBoxState(),
+    @StringRes val errorMsg: Int? = null,
+    val isSuccess: Boolean = false
 )
 
 data class InputFieldState(
