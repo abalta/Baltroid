@@ -658,7 +658,9 @@ data class Dimensions(
     val dp127: Dp = 127.dp,
     val dp155: Dp = 155.dp,
     val dp177: Dp = 177.dp,
+    val dp200: Dp = 200.dp,
     val dp244: Dp = 244.dp,
+    val dp225: Dp = 225.dp,
     val dp249: Dp = 249.dp,
     val dp348: Dp = 348.dp,
 )

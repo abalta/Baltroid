@@ -52,7 +52,6 @@ import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -604,10 +603,83 @@ data class InteractiveOptions(
     val nextLineId: String
 )
 
-@Preview(device = Devices.DEFAULT)
-@Preview(heightDp = 650)
-@Preview(widthDp = 360, heightDp = 540)
+@Composable
+fun InteractiveTextBox(
+    text: String,
+    title: String? = null,
+    isNextButtonEnabled: Boolean = true
+) {
+    Box(
+        Modifier
+            .fillMaxWidth()
+            .height(MaterialTheme.localDimens.dp225)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(MaterialTheme.localDimens.dp155)
+                .background(MaterialTheme.localColors.black)
+                .align(Alignment.BottomCenter)
+        ) {
+            Column {
+                title?.let {
+                    Text(
+                        text = title,
+                        style = MaterialTheme.localTextStyles.imageCardText,
+                        modifier = Modifier.padding(
+                            top = MaterialTheme.localDimens.dp9,
+                            start = MaterialTheme.localDimens.dp31
+                        )
+                    )
+                }
+                Row {
+                    Text(
+                        text = text,
+                        style = MaterialTheme.localTextStyles.body,
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                            .padding(
+                                start = MaterialTheme.localDimens.dp31,
+                                top = MaterialTheme.localDimens.dp15
+                            )
+                    )
+                    if (isNextButtonEnabled) {
+                        SimpleIcon(
+                            iconResId = R.drawable.ic_arrow_forward,
+                            modifier = Modifier
+                                .padding(
+                                    bottom = MaterialTheme.localDimens.dp18,
+                                    end = MaterialTheme.localDimens.dp22
+                                )
+                                .size(MaterialTheme.localDimens.dp19)
+                                .fillMaxHeight()
+                                .align(Alignment.Bottom)
+                        )
+                    }
+                }
+            }
+        }
+        CroppedImage(
+            imgResId = R.drawable.woods_image,
+            modifier = Modifier
+                .padding(end = MaterialTheme.localDimens.dp20)
+                .size(MaterialTheme.localDimens.dp111)
+                .clip(
+                    CircleShape
+                )
+                .align(Alignment.TopEnd)
+        )
+    }
+}
+
+@Preview
 @Composable
 fun InteractiveScreenPreview() {
+    InteractiveTextBox(
+        text = "Far far away, behind the word mountains, far from the countries Vokalia abehind the word mountains, far from the countries Vokalia abehind the word mountains, far from the countries Vokalia abehind the word mountains, far from the countries Vokalia abehind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean",
+        title = "ANLATICI"
+    )
 }
 
