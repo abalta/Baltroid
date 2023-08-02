@@ -71,8 +71,10 @@ import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
 import com.baltroid.util.orEmpty
 import com.hitreads.core.domain.model.OriginalType
+import com.hitreads.core.model.Author
 import com.hitreads.core.model.Episode
 import com.hitreads.core.model.Original
+import com.hitreads.core.model.UserData
 
 @Composable
 fun InteractiveScreen(
@@ -83,7 +85,7 @@ fun InteractiveScreen(
     val original = viewModel.sharedUIState.collectAsStateWithLifecycle().value
 
     LaunchedEffect(original) {
-        original?.id?.let { viewModel.showEpisode(it, OriginalType.INTERACTIVE) }
+        original?.id?.let { viewModel.showEpisode(761, OriginalType.INTERACTIVE) }
     }
 
     val interactiveContent =
@@ -96,6 +98,10 @@ fun InteractiveScreen(
         mutableStateOf(interactiveContent?.firstOrNull())
     }
 
+    LaunchedEffect(currentDialogue) {
+        println(currentDialogue)
+    }
+
     Box(
         modifier = Modifier.navigationBarsPadding()
     ) {
@@ -103,6 +109,13 @@ fun InteractiveScreen(
             imgResId = R.drawable.woods_image,
             modifier = Modifier.fillMaxSize()
         )
+        if (currentDialogue?.focus != null) {
+            Image(
+                painter = painterResource(id = R.drawable.mock_focus),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -117,11 +130,10 @@ fun InteractiveScreen(
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(horizontal = MaterialTheme.localDimens.dp20)
             ) {
                 currentDialogue?.let { dialogue ->
                     if (dialogue.optionCount != null) {
-                        SecondInteractiveContent(
+                        Options(
                             listOf(
                                 InteractiveOptions(
                                     dialogue.optionOne.toString(),
@@ -141,36 +153,21 @@ fun InteractiveScreen(
                                 interactiveContent?.firstOrNull { it?.lineId == nextLineId }
                         }
                     }
-                    if (dialogue.lineType == "NOT" || dialogue.lineType == null) {
-                        FirstInteractiveContent(
-                            model = dialogue,
-                            isButtonEnabled = dialogue.optionCount == null,
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .wrapContentHeight(Alignment.Bottom)
-                        ) { nextLineId ->
-                            currentDialogue =
-                                interactiveContent?.firstOrNull { it?.lineId == nextLineId }
-                        }
-                    } else if (dialogue.lineType == "SMS") {
-                        RemindingInfo(
-                            model = dialogue,
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .wrapContentHeight(Alignment.Bottom)
-                        ) { nextLineId ->
-                            currentDialogue =
-                                interactiveContent?.firstOrNull { it?.lineId == nextLineId }
-                        }
+                    InteractiveTextBox(
+                        model = dialogue,
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .wrapContentHeight(Alignment.Bottom)
+                    ) { nextLineId ->
+                        currentDialogue =
+                            interactiveContent?.firstOrNull { it?.lineId == nextLineId }
                     }
+
                 }
             }
-
             InteractiveScreenBottomSection(
                 original = original,
-                episode = episode,
-                modifier = Modifier
-                    .background(MaterialTheme.localColors.black_alpha02)
+                episode = episode
             )
         }
     }
@@ -260,7 +257,7 @@ fun FirstInteractiveContent(
 }
 
 @Composable
-fun SecondInteractiveContent(
+fun Options(
     items: List<InteractiveOptions>,
     modifier: Modifier = Modifier,
     onClick: (nextLineId: String) -> Unit
@@ -303,43 +300,45 @@ fun SecondInteractiveContent(
 fun InteractiveScreenBottomSection(
     original: Original?,
     episode: Episode?,
-    modifier: Modifier = Modifier,
 ) {
-    Box(modifier = modifier) {
-        Column {
-            VerticalSpacer(height = MaterialTheme.localDimens.dp30)
-            InteractiveScreenBottomBar(
-                original = original,
-                episode = episode,
-                onAddCommentClicked = {},
-                onBannerClicked = {},
-                onCommentsClicked = {}
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Divider(
+            thickness = 0.5.dp,
+            color = MaterialTheme.localColors.white
+        )
+        VerticalSpacer(height = MaterialTheme.localDimens.dp7)
+        SimpleIcon(iconResId = R.drawable.ic_menu_horizontal)
+        VerticalSpacer(height = MaterialTheme.localDimens.dp12)
+        Row(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            HorizontalSpacer(width = MaterialTheme.localDimens.dp31)
+            Titles(
+                title = original?.title.orEmpty(),
+                subtitle = original?.author?.name.orEmpty(),
+                modifier = Modifier.weight(1f)
             )
-            VerticalSpacer(height = MaterialTheme.localDimens.dp12)
-            Row(
-                modifier = Modifier.fillMaxWidth()
+            IconWithTextNextTo(
+                iconResId = R.drawable.ic_comment,
+                text = "12",
+                textStyle = MaterialTheme.localTextStyles.summaryIconText,
+                spacedBy = MaterialTheme.localDimens.dp10,
+                modifier = Modifier.align(Alignment.Bottom)
             ) {
-                HorizontalSpacer(width = MaterialTheme.localDimens.dp31)
-                Titles(
-                    title = original?.title.orEmpty(),
-                    subtitle = original?.author?.name.orEmpty(),
-                    modifier = Modifier.weight(1f)
-                )
-                SimpleIcon(
-                    iconResId = R.drawable.ic_star_outlined,
-                    modifier = Modifier.align(Alignment.Bottom)
-                )
-                HorizontalSpacer(width = MaterialTheme.localDimens.dp19)
-                SimpleIcon(
-                    iconResId = R.drawable.ic_menu,
-                    modifier = Modifier.align(Alignment.Bottom)
-                )
-                HorizontalSpacer(
-                    width = MaterialTheme.localDimens.dp21
-                )
+
             }
-            VerticalSpacer(height = MaterialTheme.localDimens.dp50)
+            HorizontalSpacer(width = MaterialTheme.localDimens.dp19)
+            SimpleIcon(
+                iconResId = R.drawable.ic_star_outlined,
+                modifier = Modifier.align(Alignment.Bottom)
+            )
+            HorizontalSpacer(
+                width = MaterialTheme.localDimens.dp21
+            )
         }
+        VerticalSpacer(height = MaterialTheme.localDimens.dp34)
     }
 }
 
@@ -605,12 +604,12 @@ data class InteractiveOptions(
 
 @Composable
 fun InteractiveTextBox(
-    text: String,
-    title: String? = null,
-    isNextButtonEnabled: Boolean = true
+    model: DialogueXml,
+    modifier: Modifier = Modifier,
+    onClick: (nextLineId: String) -> Unit
 ) {
     Box(
-        Modifier
+        modifier
             .fillMaxWidth()
             .height(MaterialTheme.localDimens.dp225)
     ) {
@@ -622,9 +621,9 @@ fun InteractiveTextBox(
                 .align(Alignment.BottomCenter)
         ) {
             Column {
-                title?.let {
+                model.talker?.let {
                     Text(
-                        text = title,
+                        text = "Talker: $it",
                         style = MaterialTheme.localTextStyles.imageCardText,
                         modifier = Modifier.padding(
                             top = MaterialTheme.localDimens.dp9,
@@ -634,7 +633,7 @@ fun InteractiveTextBox(
                 }
                 Row {
                     Text(
-                        text = text,
+                        text = model.text.orEmpty(),
                         style = MaterialTheme.localTextStyles.body,
                         modifier = Modifier
                             .weight(1f)
@@ -645,7 +644,7 @@ fun InteractiveTextBox(
                                 top = MaterialTheme.localDimens.dp15
                             )
                     )
-                    if (isNextButtonEnabled) {
+                    if (model.optionCount == null) {
                         SimpleIcon(
                             iconResId = R.drawable.ic_arrow_forward,
                             modifier = Modifier
@@ -656,30 +655,69 @@ fun InteractiveTextBox(
                                 .size(MaterialTheme.localDimens.dp19)
                                 .fillMaxHeight()
                                 .align(Alignment.Bottom)
+                                .clickable { onClick.invoke(model.nextLineId.orEmpty()) }
                         )
                     }
                 }
             }
         }
-        CroppedImage(
-            imgResId = R.drawable.woods_image,
-            modifier = Modifier
-                .padding(end = MaterialTheme.localDimens.dp20)
-                .size(MaterialTheme.localDimens.dp111)
-                .clip(
-                    CircleShape
-                )
-                .align(Alignment.TopEnd)
-        )
+        if (model.talker != null) {
+            CroppedImage(
+                imgResId = R.drawable.mock_talker,
+                modifier = Modifier
+                    .padding(end = MaterialTheme.localDimens.dp20)
+                    .size(MaterialTheme.localDimens.dp111)
+                    .clip(
+                        CircleShape
+                    )
+                    .align(Alignment.TopEnd)
+            )
+        }
     }
 }
 
 @Preview
 @Composable
 fun InteractiveScreenPreview() {
-    InteractiveTextBox(
-        text = "Far far away, behind the word mountains, far from the countries Vokalia abehind the word mountains, far from the countries Vokalia abehind the word mountains, far from the countries Vokalia abehind the word mountains, far from the countries Vokalia abehind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean",
-        title = "ANLATICI"
+    InteractiveScreenBottomSection(
+        Original(
+            author = Author(id = 2213, name = "Eddy Hewitt"),
+            banner = "ipsum",
+            cover = "definitionem",
+            description = "idque",
+            id = 7391,
+            isActual = false,
+            isLocked = false,
+            likeCount = 5261,
+            commentCount = 8102,
+            viewCount = 1789,
+            `package` = null,
+            sort = 5490,
+            status = false,
+            title = "at",
+            type = "pertinax",
+            userData = UserData(isLike = false, isPurchase = false),
+            tags = listOf(),
+            hashtag = "salutatus",
+            subtitle = "aeque",
+            episodeCount = 3147,
+            seasons = listOf(),
+            isNew = false,
+            dataCount = 6877
+        ),
+        Episode(
+            id = 6941,
+            name = "Thomas Stephens",
+            price = 3718,
+            priceType = "eos",
+            userPurchase = "elaboraret",
+            content = null,
+            xmlContent = null,
+            isLiked = false,
+            isBookmarked = false,
+            isFav = false,
+            favoriteId = 3512
+        )
     )
 }
 
