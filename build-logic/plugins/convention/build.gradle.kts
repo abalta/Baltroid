@@ -73,5 +73,13 @@ gradlePlugin {
             id = "baltroid.android.hilt"
             implementationClass = "AndroidHiltConventionPlugin"
         }
+        register("androidFirebase") {
+            id = "baltroid.android.application.firebase"
+            implementationClass = "AndroidApplicationFirebaseConventionPlugin"
+        }
+        register("jvmLibrary") {
+            id = "baltroid.jvm.library"
+            implementationClass = "JvmLibraryConventionPlugin"
+        }
     }
 }

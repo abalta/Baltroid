@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "845198708253",
+    "project_id": "mallquest",
+    "storage_bucket": "mallquest.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:845198708253:android:a5fc7ce6717a110bc600f4",
+        "android_client_info": {
+          "package_name": "com.baltroid.mallquest"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "845198708253-gts2jnv7ao2cqin6fje6jcvlbks954pv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDSfjbEYOmOwVgN0CQ05bQYARfOS8jS-0o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "845198708253-gts2jnv7ao2cqin6fje6jcvlbks954pv.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "845198708253-kgpmjf9au9vlp04r5n5g0bo26qu24n51.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "orgIdentifier.iosApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

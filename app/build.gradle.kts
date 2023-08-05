@@ -7,11 +7,12 @@ plugins {
     id("baltroid.android.hilt")
     id("baltroid.android.lint")
     id("baltroid.android.signingconfig")
+    id("baltroid.android.application.firebase")
 }
 
 android {
     defaultConfig {
-        applicationId = "com.baltroid.apps"
+        applicationId = "com.baltroid.mallquest"
         versionCode = 1
         versionName = "0.0.1" // X.Y.Z; X = Major, Y = minor, Z = Patch level
 
@@ -31,7 +32,6 @@ android {
 
             // To publish on the Play store a private signing key is required, but to allow anyone
             // who clones the code to sign and run the release variant, use the debug signing key.
-            // TODO: Abstract the signing configuration to a separate file to avoid hardcoding this.
             signingConfig = signingConfigs.getByName("debug")
         }
         create("benchmark") {
@@ -58,6 +58,10 @@ android {
 
 
 dependencies {
+    implementation(project(":core:data"))
+    implementation(project(":core:model"))
+    implementation(project(":core:common"))
+
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core.ktx)

@@ -5,7 +5,7 @@ package com.baltroid.apps
  */
 @Suppress("unused")
 enum class BaltroidBuildType(val applicationIdSuffix: String? = null) {
-    DEBUG(".debug"),
+    DEBUG,
     RELEASE,
     BENCHMARK(".benchmark")
 }
