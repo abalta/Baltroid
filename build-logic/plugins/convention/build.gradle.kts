@@ -1,21 +1,26 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     `kotlin-dsl`
 }
 
-group = "com.baltroid.app.buildlogic"
+group = "com.baltroid.apps.buildlogic"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
 }
+tasks.withType<KotlinCompile>().configureEach {
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_17.toString()
+    }
+}
+
 
 dependencies {
-    compileOnly(libs.android.gradle.plugin)
-    compileOnly(libs.kotlin.gradle.plugin)
-    compileOnly(libs.spotless.gradle.plugin)
-    compileOnly(libs.detekt.gradle.plugin)
-
-    compileOnly(files(libs.javaClass.superclass.protectionDomain.codeSource.location))
+    compileOnly(libs.android.gradlePlugin)
+    compileOnly(libs.kotlin.gradlePlugin)
+    compileOnly(libs.ksp.gradlePlugin)
 }
 
 gradlePlugin {
@@ -52,6 +57,10 @@ gradlePlugin {
             id = "baltroid.android.signingconfig"
             implementationClass = "AndroidSigningConfigConventionPlugin"
         }
+        register("androidFlavors") {
+            id = "baltroid.android.application.flavors"
+            implementationClass = "AndroidApplicationFlavorsConventionPlugin"
+        }
         register("spotless") {
             id = "baltroid.spotless"
             implementationClass = "SpotlessConventionPlugin"
@@ -59,6 +68,10 @@ gradlePlugin {
         register("detekt") {
             id = "baltroid.detekt"
             implementationClass = "DetektConventionPlugin"
+        }
+        register("androidHilt") {
+            id = "baltroid.android.hilt"
+            implementationClass = "AndroidHiltConventionPlugin"
         }
     }
 }

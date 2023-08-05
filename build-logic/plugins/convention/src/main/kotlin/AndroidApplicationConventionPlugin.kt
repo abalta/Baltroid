@@ -1,46 +1,29 @@
-import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
+import com.android.build.api.dsl.ApplicationExtension
+import com.android.build.api.variant.ApplicationAndroidComponentsExtension
+import com.baltroid.apps.configureGradleManagedDevices
 import com.baltroid.apps.configureKotlinAndroid
-import com.baltroid.apps.libs
+import com.baltroid.apps.configurePrintApksTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 
 class AndroidApplicationConventionPlugin : Plugin<Project> {
-    override fun apply(target: Project) = with(target) {
-        with(pluginManager) {
-            apply(libs.plugins.android.application.get().pluginId)
-            apply(libs.plugins.kotlin.android.get().pluginId)
-        }
+    override fun apply(target: Project) {
+        with(target) {
+            with(pluginManager) {
+                apply("com.android.application")
+                apply("org.jetbrains.kotlin.android")
+            }
 
-        extensions.configure<BaseAppModuleExtension> {
-            configureKotlinAndroid(this)
-
-            defaultConfig {
-                targetSdk = libs.versions.android.targetSdk.get().toInt()
-
-                buildTypes {
-                    release {
-                        isMinifyEnabled = true
-                        isShrinkResources = true
-                        proguardFiles(
-                            getDefaultProguardFile("proguard-android-optimize.txt"),
-                            "proguard-rules.pro"
-                        )
-
-                        packagingOptions.resources.excludes += "DebugProbesKt.bin"
-                    }
-
-                    create("benchmark") {
-                        initWith(getByName("release"))
-                        signingConfig = signingConfigs.getByName("debug")
-                        matchingFallbacks.add("release")
-                        isDebuggable = false
-                        proguardFiles("baseline-profiles-rules.pro")
-                    }
-                }
-
-                packagingOptions.resources.excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            extensions.configure<ApplicationExtension> {
+                configureKotlinAndroid(this)
+                defaultConfig.targetSdk = 34
+                configureGradleManagedDevices(this)
+            }
+            extensions.configure<ApplicationAndroidComponentsExtension> {
+                configurePrintApksTask(this)
             }
         }
     }
+
 }
