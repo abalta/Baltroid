@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="banner_title_no_mall">AVM Bulunamadı!</string>
+    <string name="banner_body_no_mall">Bu şehir için alışveriş merkezi eklemek istiyorsanız, lütfen tıklayınız.</string>
+</resources>
