@@ -20,9 +20,9 @@ import androidx.compose.ui.unit.dp
 import com.baltroid.core.designsystem.R
 
 @Composable
-fun Banner() {
+fun Banner(modifier: Modifier) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(170.dp)
             .clip(RoundedCornerShape(8.dp))
@@ -42,5 +42,5 @@ fun Banner() {
 @Composable
 @Preview
 fun previewBanner() {
-    Banner()
+    Banner(Modifier.padding(horizontal = 20.dp))
 }

@@ -7,7 +7,7 @@ android {
     buildFeatures {
         buildConfig = true
     }
-    namespace = "com.baltroid.apps.core.firestore"
+    namespace = "com.baltroid.core.firestore"
 }
 
 dependencies {

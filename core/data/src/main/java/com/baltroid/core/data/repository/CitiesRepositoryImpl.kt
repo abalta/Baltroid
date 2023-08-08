@@ -3,8 +3,10 @@ package com.baltroid.core.data.repository
 import com.baltroid.core.common.dispatcher.BaltroidDispatchers
 import com.baltroid.core.common.dispatcher.Dispatcher
 import com.baltroid.core.data.model.asCity
+import com.baltroid.core.data.model.asMall
 import com.baltroid.core.firestore.MallQuestFirestore
 import com.baltroid.model.City
+import com.baltroid.model.Mall
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -18,6 +20,12 @@ class CitiesRepositoryImpl @Inject constructor(
     override fun getCities(): Flow<List<City>> = flow {
         emit(firestore.getCities().map {
             it.asCity()
+        })
+    }.flowOn(ioDispatcher)
+
+    override fun getMalls(): Flow<List<Mall>> = flow {
+        emit(firestore.getMalls().map {
+            it.asMall()
         })
     }.flowOn(ioDispatcher)
 }

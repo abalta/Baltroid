@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.baltroid.apps.core.common"
+    namespace = "com.baltroid.core.common"
 }
 
 dependencies {

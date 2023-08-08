@@ -3,6 +3,7 @@ package com.baltroid.apps.ui.main
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.baltroid.core.data.repository.CitiesRepository
+import com.baltroid.domain.GetMallsWithCitiesUseCase
 import com.baltroid.model.City
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
@@ -13,10 +14,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    citiesRepository: CitiesRepository
+    getMallsWithCitiesUseCase: GetMallsWithCitiesUseCase
 ): ViewModel() {
 
-    val mainState: StateFlow<MainUiState> = citiesRepository.getCities().map(MainUiState::Success).stateIn(
+    val mainState: StateFlow<MainUiState> = getMallsWithCitiesUseCase.invoke().map(MainUiState::Success).stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = MainUiState.Loading

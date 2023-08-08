@@ -8,7 +8,7 @@ android {
     buildFeatures {
         buildConfig = true
     }
-    namespace = "com.baltroid.apps.core.network"
+    namespace = "com.baltroid.core.network"
 }
 
 dependencies {

@@ -10,6 +10,7 @@ import javax.inject.Singleton
 
 private interface FirestoreApi {
     suspend fun getCities(): List<NetworkCity>
+    suspend fun getMalls(): List<NetworkMall>
 }
 
 @Singleton
@@ -32,20 +33,13 @@ class MallQuestFirestore @Inject constructor(
     }*/
 
     override suspend fun getCities(): List<NetworkCity> {
-        val startTime = System.currentTimeMillis()
         val citiesRef = firestore.collection("cities").get().await()
-        val cityList = citiesRef.toObjects(NetworkCity::class.java)
+        return citiesRef.toObjects(NetworkCity::class.java)
+    }
 
+    override suspend fun getMalls(): List<NetworkMall> {
         val mallRef = firestore.collectionGroup("malls").get().await()
-        val mallList = mallRef.toObjects(NetworkMall::class.java)
-
-        mallList.forEach { mall ->
-            cityList.find {
-                it.code == mall.cityCode
-            }?.malls?.add(mall)
-        }
-        Log.i("Firestore", (System.currentTimeMillis() - startTime).toString())
-        return cityList
+        return mallRef.toObjects(NetworkMall::class.java)
     }
 
 }

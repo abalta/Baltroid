@@ -28,12 +28,6 @@
         android:fillColor="#FF7058"
         android:fillType="evenOdd"/>
     <path
-        android:strokeWidth="1"
-        android:pathData="M107.5,204C107.5,204 -62.5,177 167.5,162C397.5,147 326,222.5 300.5,110C275,-2.5 356.5,178.5 330,95C303.5,11.5 491,71 359.5,8C228,-55 327.5,112 192.5,61.5C57.5,11 76,-80 76,-80"
-        android:fillColor="#00000000"
-        android:strokeColor="#868686"
-        android:strokeLineCap="round"/>
-    <path
         android:pathData="M335.06,57.85C346.48,62.68 352.02,75.92 347.34,87.51C342.58,99.29 329.21,104.89 317.53,100.16C305.94,95.48 300.23,82.39 304.73,70.72L326.33,79.45L335.06,57.85Z"
         android:fillColor="#FF7058"/>
     <path
