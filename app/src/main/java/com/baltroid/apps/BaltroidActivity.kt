@@ -19,16 +19,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.ImageLoader
 import com.baltroid.apps.ui.main.MainUiState
 import com.baltroid.apps.ui.main.MainViewModel
 import com.baltroid.designsystem.component.Banner
 import com.baltroid.designsystem.component.CardMedium
 import com.baltroid.designsystem.component.H3Title
 import com.baltroid.designsystem.theme.MqTheme
+import com.google.firebase.storage.FirebaseStorage
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class BaltroidActivity: ComponentActivity() {
+
+    @Inject
+    lateinit var imageLoader: ImageLoader
+
+    @Inject
+    lateinit var fireStorage: FirebaseStorage
 
     private val viewModel by viewModels<MainViewModel>()
 
@@ -65,7 +74,7 @@ class BaltroidActivity: ComponentActivity() {
                                     } else {
                                         LazyRow(contentPadding = PaddingValues(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
                                             items(items = city.malls, itemContent = { mall ->
-                                                CardMedium(avmName = mall.name)
+                                                CardMedium(avmName = mall.name, imageLoader, fireStorage.getReferenceFromUrl(mall.logo))
                                             })
                                         }
                                     }

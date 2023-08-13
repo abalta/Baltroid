@@ -12,6 +12,7 @@ fun NetworkMall.asMall() = Mall(
     name = name.orEmpty(),
     phone = phone.orEmpty(),
     services = services.orEmpty(),
-    web = web.orEmpty()
+    web = web.orEmpty(),
+    logo = logo.orEmpty()
 
 )

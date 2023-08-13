@@ -9,5 +9,6 @@ data class Mall(
     val name: String,
     val phone: String,
     val services: List<Int>,
-    val web: String
+    val web: String,
+    val logo: String
 )

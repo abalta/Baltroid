@@ -17,7 +17,9 @@ class GetMallsWithCitiesUseCase @Inject constructor(
             malls.forEach { mall ->
                 cities.firstOrNull { it.code == mall.cityCode }?.malls?.add(mall)
             }
-            cities
+            cities.sortedByDescending {
+                it.malls.size
+            }
         }
     }
 }

@@ -11,5 +11,6 @@ data class NetworkMall(
     val name: String? = null,
     val phone: String? = null,
     val services: List<Int>? = null,
-    val web: String? = null
+    val web: String? = null,
+    val logo: String? = null
 )

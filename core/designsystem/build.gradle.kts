@@ -1,6 +1,7 @@
 plugins {
     id("baltroid.android.library")
     id("baltroid.android.library.compose")
+    id("baltroid.android.feature")
 }
 
 android {
@@ -23,7 +24,8 @@ dependencies {
     api(libs.androidx.compose.ui.util)
 
     debugApi(libs.androidx.compose.ui.tooling)
-
+    implementation(platform(libs.firebase.bom))
     implementation(libs.androidx.core.ktx)
     implementation(libs.coil.kt.compose)
+    implementation(libs.firebase.storage)
 }
