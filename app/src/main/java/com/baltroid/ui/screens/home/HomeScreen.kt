@@ -11,27 +11,23 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PageSize
 import androidx.compose.foundation.pager.PagerState
-import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -46,25 +42,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import com.baltroid.apps.R
 import com.baltroid.ui.common.HorizontalSpacer
 import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.VerticalSpacer
 import com.baltroid.ui.components.HitReadsTopBar
-import com.baltroid.ui.navigation.HitReadsScreens
 import com.baltroid.ui.screens.viewmodels.OriginalViewModel
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
-import com.baltroid.util.orZero
-import com.hitreads.core.model.Author
+import com.hitreads.core.domain.model.ProfileModel
 import com.hitreads.core.model.Original
 import com.hitreads.core.model.Tag
-import com.hitreads.core.model.UserData
-import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
@@ -73,6 +64,7 @@ fun HomeScreen(
     navigate: (route: String, item: Original?) -> Unit
 ) {
     val uiStates = viewModel.uiStateHome.collectAsStateWithLifecycle().value
+    val profile = viewModel.uiStateProfile.collectAsStateWithLifecycle().value
 
     LaunchedEffect(Unit) {
         viewModel.loadOriginals()
@@ -80,14 +72,61 @@ fun HomeScreen(
     }
 
     HomeScreenContent(
-        uiStates = uiStates.originals.collectAsLazyPagingItems().itemSnapshotList.items,
-        uiStatesFavorites = uiStates.favorites.collectAsLazyPagingItems().itemSnapshotList.items,
-        openMenuScreen = openMenuScreen,
-        navigate = navigate
+        profileModel = profile
+        //uiStates = uiStates.originals.collectAsLazyPagingItems().itemSnapshotList.items,
+        //uiStatesFavorites = uiStates.favorites.collectAsLazyPagingItems().itemSnapshotList.items,
+        //openMenuScreen = openMenuScreen,
+        //navigate = navigate
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun HomeScreenContent(
+    profileModel: ProfileModel
+) {
+    var tabState by rememberSaveable {
+        mutableStateOf(HomeScreenTabs.AllStories)
+    }
+
+    Column {
+        HitReadsTopBar(
+            iconResId = R.drawable.ic_bell_outlined,
+            numberOfNotification = 0,
+            isGemEnabled = true,
+            gemCount = profileModel.gem,
+            onMenuClick = { /*TODO*/ }
+        ) {
+
+        }
+        VerticalSpacer(height = MaterialTheme.localDimens.dp18_5)
+        HomeScreenTabs(
+            selectedTab = tabState, modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = MaterialTheme.localDimens.dp32
+                )
+        ) {
+            tabState = it
+        }
+        VerticalSpacer(height = MaterialTheme.localDimens.dp31)
+    }
+}
+
+@Composable
+private fun Originals(
+    state: LazyListState,
+    modifier: Modifier = Modifier
+) {
+    LazyColumn(
+        modifier = modifier,
+        state = state,
+        contentPadding = PaddingValues(start = MaterialTheme.localDimens.dp24)
+    ) {
+
+    }
+}
+
+/*@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun HomeScreenContent(
     uiStates: List<Original>,
@@ -131,9 +170,11 @@ private fun HomeScreenContent(
             iconTint = MaterialTheme.localColors.white,
             numberOfNotification = -1,
             onNotificationClick = {},
+            isGemEnabled = true,
             onIconClick = {
                 navigate.invoke(HitReadsScreens.OnboardingScreen.route, null)
             },
+            gemCount = 4500,
             onMenuClick = openMenuScreen
         )
         VerticalSpacer(height = MaterialTheme.localDimens.dp18_5)
@@ -206,48 +247,50 @@ private fun HomeScreenContent(
         }
         VerticalSpacer(height = MaterialTheme.localDimens.dp24)
     }
-}
+}*/
 
 @Composable
 private fun HomeScreenTabs(
-    storiesSize: Int,
-    favoritesSize: Int,
     selectedTab: HomeScreenTabs,
     modifier: Modifier = Modifier,
     onTabSelected: (HomeScreenTabs) -> Unit
 ) {
     Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
         modifier = modifier
     ) {
         HomeScreenTabItem(
             title = R.string.all_stories,
-            size = storiesSize,
             isSelected = selectedTab == HomeScreenTabs.AllStories
         ) {
             onTabSelected.invoke(HomeScreenTabs.AllStories)
         }
-        HorizontalSpacer(width = MaterialTheme.localDimens.dp28)
         HomeScreenTabItem(
             title = R.string.favorites_with_size,
-            size = favoritesSize,
             isSelected = selectedTab == HomeScreenTabs.Favorites
         ) {
-            if (favoritesSize > 0) {
-                onTabSelected.invoke(HomeScreenTabs.Favorites)
-            }
+            //todo
+            onTabSelected.invoke(HomeScreenTabs.Favorites)
+        }
+        HomeScreenTabItem(
+            title = R.string.continue_reading,
+            isSelected = selectedTab == HomeScreenTabs.ContinueReading
+        ) {
+            onTabSelected.invoke(HomeScreenTabs.ContinueReading)
         }
     }
 }
 
 enum class HomeScreenTabs {
     AllStories,
-    Favorites
+    Favorites,
+    ContinueReading
 }
 
 @Composable
 private fun HomeScreenTabItem(
     @StringRes title: Int,
-    size: Int,
     isSelected: Boolean,
     modifier: Modifier = Modifier,
     onClick: () -> Unit
@@ -258,11 +301,11 @@ private fun HomeScreenTabItem(
             .clickable { onClick.invoke() }
     ) {
         Text(
-            text = stringResource(id = title, size),
+            text = stringResource(id = title),
             style = MaterialTheme.localTextStyles.homeScreenTabText,
             modifier = Modifier
                 .width(IntrinsicSize.Max)
-                .padding(bottom = MaterialTheme.localDimens.dp6_5)
+                .padding(bottom = MaterialTheme.localDimens.dp2)
 
         )
         Box(
@@ -497,68 +540,5 @@ private fun SummarySection(
 @Preview
 @Composable
 fun HomeScreenPreview() {
-    HomeScreenContent(
-        uiStates = listOf(
-            Original(
-                author = Author(id = 3007, name = "ZEYNEP SEY"),
-                banner = "",
-                cover = "",
-                description = "Kim olduğunu sorguladıkça dünyasının sahtelikten İbaret olduğunu anlamaya başlayan Işıl Özsoydan, öğrendiği gerçeklerİ...",
-                id = 6090,
-                isActual = false,
-                isLocked = false,
-                likeCount = 3807,
-                commentCount = 142,
-                viewCount = 17450,
-                `package` = null,
-                sort = 2498,
-                status = false,
-                title = "KİMSE GERÇEK DEĞİL",
-                type = "",
-                userData = UserData(isLike = false, isPurchase = false),
-                tags = listOf(
-                    Tag(0, "Romantik", ""),
-                    Tag(0, "Gençlik", "")
-                ),
-                hashtag = "",
-                subtitle = "Araf, Aydınlık ve Aşık",
-                episodeCount = 35,
-                seasons = listOf(),
-                isNew = false,
-                dataCount = 24
-            )
-        ),
-        uiStatesFavorites = listOf(
-            Original(
-                author = Author(id = 3007, name = "ZEYNEP SEY"),
-                banner = "",
-                cover = "",
-                description = "Kim olduğunu sorguladıkça dünyasının sahtelikten İbaret olduğunu anlamaya başlayan Işıl Özsoydan, öğrendiği gerçeklerİ...",
-                id = 6090,
-                isActual = false,
-                isLocked = false,
-                likeCount = 3807,
-                commentCount = 142,
-                viewCount = 17450,
-                `package` = null,
-                sort = 2498,
-                status = false,
-                title = "KİMSE GERÇEK DEĞİL",
-                type = "",
-                userData = UserData(isLike = false, isPurchase = false),
-                tags = listOf(
-                    Tag(0, "Romantik", ""),
-                    Tag(0, "Gençlik", "")
-                ),
-                hashtag = "",
-                subtitle = "Araf, Aydınlık ve Aşık",
-                episodeCount = 35,
-                seasons = listOf(),
-                isNew = false,
-                dataCount = 24
-            )
-        ),
-        openMenuScreen = { },
-        navigate = { _, _ -> }
-    )
+
 }

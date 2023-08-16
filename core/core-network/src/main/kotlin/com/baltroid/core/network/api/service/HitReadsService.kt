@@ -13,6 +13,7 @@ import com.baltroid.core.network.model.response.CommentDto
 import com.baltroid.core.network.model.response.EpisodeResponseDto
 import com.baltroid.core.network.model.response.FavoriteDto
 import com.baltroid.core.network.model.response.LoginDto
+import com.baltroid.core.network.model.response.NotificationDto
 import com.baltroid.core.network.model.response.OriginalResponseDto
 import com.baltroid.core.network.model.response.ProfileDto
 import com.baltroid.core.network.model.response.WelcomeDto
@@ -33,6 +34,7 @@ import com.baltroid.core.network.util.Constants.Path.EPISODE
 import com.baltroid.core.network.util.Constants.Path.FAVORITE
 import com.baltroid.core.network.util.Constants.Path.LIKE
 import com.baltroid.core.network.util.Constants.Path.LOGIN
+import com.baltroid.core.network.util.Constants.Path.NOTIFICATION
 import com.baltroid.core.network.util.Constants.Path.ORIGINALS_INDEX
 import com.baltroid.core.network.util.Constants.Path.PROFILE
 import com.baltroid.core.network.util.Constants.Path.REGISTER
@@ -150,5 +152,8 @@ interface HitReadsService {
 
     @GET("$PROFILE")
     suspend fun getProfile(): BaltroidResult<HitReadsResponse<ProfileDto>>
+
+    @GET("$NOTIFICATION")
+    suspend fun getAllNotifications(): BaltroidResult<HitReadsResponse<NotificationDto>>
 
 }

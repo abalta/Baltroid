@@ -4,6 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,6 +28,7 @@ import com.baltroid.apps.R
 import com.baltroid.ui.common.HorizontalSpacer
 import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.SimpleImage
+import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
@@ -37,6 +39,8 @@ fun HitReadsTopBar(
     numberOfNotification: Int,
     modifier: Modifier = Modifier,
     iconTint: Color = Color.Unspecified,
+    gemCount: Int = 0,
+    isGemEnabled: Boolean = false,
     onIconClick: () -> Unit = {},
     onMenuClick: () -> Unit,
     onNotificationClick: () -> Unit
@@ -62,6 +66,8 @@ fun HitReadsTopBar(
             iconResId = iconResId,
             onMenuClick = onMenuClick,
             numberOfNotification = 0,
+            gemCount = gemCount,
+            isGemEnabled = isGemEnabled,
             onNotificationClick = onNotificationClick
         )
     }
@@ -73,6 +79,8 @@ fun MenuAndNotification(
     numberOfNotification: Int,
     modifier: Modifier = Modifier,
     iconTint: Color = Color.Unspecified,
+    gemCount: Int,
+    isGemEnabled: Boolean = false,
     onMenuClick: () -> Unit,
     onNotificationClick: () -> Unit
 ) {
@@ -81,6 +89,26 @@ fun MenuAndNotification(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
     ) {
+        if (isGemEnabled) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp3),
+                modifier = Modifier
+                    .border(
+                        MaterialTheme.localDimens.dp0_5,
+                        MaterialTheme.localColors.white,
+                        MaterialTheme.localShapes.roundedDp30
+                    )
+                    .padding(
+                        vertical = MaterialTheme.localDimens.dp5,
+                        horizontal = MaterialTheme.localDimens.dp15
+                    )
+            ) {
+                Text(text = gemCount.toString(), style = MaterialTheme.localTextStyles.episodeText)
+                SimpleIcon(iconResId = R.drawable.ic_diamond)
+            }
+            HorizontalSpacer(width = MaterialTheme.localDimens.dp26)
+        }
         MenuButton(onMenuClick)
         HorizontalSpacer(width = MaterialTheme.localDimens.dp13_5)
         IconWithBadge(
@@ -159,7 +187,7 @@ fun IconWithBadge(
     )
 }
 
-fun iconWithBadgeMeasurePolicy() = MeasurePolicy { measurable, constraints ->
+private fun iconWithBadgeMeasurePolicy() = MeasurePolicy { measurable, constraints ->
     val iconPlaceable = measurable.first {
         it.layoutId == "icon"
     }.measure(
@@ -203,6 +231,8 @@ fun HitReadsTopBarPreview() {
         onNotificationClick = {},
         iconResId = R.drawable.ic_bell,
         numberOfNotification = 12,
+        gemCount = 4500,
+        isGemEnabled = true,
         onIconClick = {},
         onMenuClick = {}
     )

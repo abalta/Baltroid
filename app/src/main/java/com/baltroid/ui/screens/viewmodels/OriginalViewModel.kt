@@ -9,6 +9,7 @@ import com.baltroid.ui.screens.home.HomeUiState
 import com.baltroid.ui.screens.home.filter.FilterUiState
 import com.baltroid.ui.screens.reading.ReadingUiState
 import com.hitreads.core.domain.model.OriginalModel
+import com.hitreads.core.domain.model.ProfileModel
 import com.hitreads.core.domain.usecase.CreateBookmarkUseCase
 import com.hitreads.core.domain.usecase.CreateCommentUseCase
 import com.hitreads.core.domain.usecase.CreateFavoriteUseCase
@@ -17,6 +18,7 @@ import com.hitreads.core.domain.usecase.DeleteFavoriteUseCase
 import com.hitreads.core.domain.usecase.GetOriginalsUseCase
 import com.hitreads.core.domain.usecase.GetTagsUseCase
 import com.hitreads.core.domain.usecase.IsLoggedUseCase
+import com.hitreads.core.domain.usecase.ProfileUseCase
 import com.hitreads.core.domain.usecase.ShowEpisodeUseCase
 import com.hitreads.core.domain.usecase.ShowOriginalUseCase
 import com.hitreads.core.model.Original
@@ -43,7 +45,8 @@ class OriginalViewModel @Inject constructor(
     private val getTagsUseCase: GetTagsUseCase,
     private val createBookmarkUseCase: CreateBookmarkUseCase,
     private val deleteBookmarkUseCase: DeleteBookmarkUseCase,
-    private val createCommentUseCase: CreateCommentUseCase
+    private val createCommentUseCase: CreateCommentUseCase,
+    private val profileUseCase: ProfileUseCase
 ) : ViewModel() {
 
     private val _uiStateReading = MutableStateFlow(ReadingUiState())
@@ -61,6 +64,19 @@ class OriginalViewModel @Inject constructor(
     private val _uiStateFilter = MutableStateFlow(FilterUiState())
     val uiStateFilter = _uiStateFilter.asStateFlow()
 
+    private val _uiStateProfile: MutableStateFlow<ProfileModel> = MutableStateFlow(
+        ProfileModel(
+            name = "",
+            userName = "",
+            email = "",
+            karma = 0,
+            avatar = "",
+            is_beta = false,
+            gem = 0
+        )
+    )
+    val uiStateProfile = _uiStateProfile.asStateFlow()
+
     val filter = mutableStateListOf<Int>()
 
     fun loadOriginals() = _uiStateHome.update {
@@ -73,6 +89,16 @@ class OriginalViewModel @Inject constructor(
         it.copy(
             originals = originals
         )
+    }
+
+    private fun getProfile() {
+        viewModelScope.launch {
+            profileUseCase().handle {
+                onSuccess { profile ->
+                    _uiStateProfile.update { profile }
+                }
+            }
+        }
     }
 
     init {
@@ -116,6 +142,7 @@ class OriginalViewModel @Inject constructor(
         isLoggedUseCase().handle {
             onSuccess {
                 _uiStateIsLogged.update { _ -> it }
+                getProfile()
             }
             onFailure {
                 _uiStateIsLogged.update { _ -> false }

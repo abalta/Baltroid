@@ -1,5 +1,6 @@
 package com.baltroid.core.network.model.response
 
+import com.baltroid.core.network.model.notification.NetworkView
 import com.baltroid.core.network.model.originals.NetworkCommentOriginal
 import com.baltroid.core.network.model.originals.NetworkEpisode
 import com.baltroid.core.network.model.originals.NetworkOriginal
@@ -217,5 +218,21 @@ data class AllCommentsDto(
     val replyCommentId: Int?,
     @SerialName("created_at")
     val createdAt: String?,
+)
+
+@Serializable
+data class NotificationDto(
+    @SerialName("id")
+    val id: Int?,
+    @SerialName("type")
+    val type: String?,
+    @SerialName("message")
+    val message: String?,
+    @SerialName("view")
+    val view: NetworkView?,
+    @SerialName("detail")
+    val detail: String?,//todo needs object
+    @SerialName("created_at")
+    val created_at: String?,
 )
 

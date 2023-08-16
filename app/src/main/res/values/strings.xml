@@ -4,9 +4,9 @@
     <string name="menu">Menu</string>
     <string name="story_summary">TÜM KATEGORİLERDEKİ %1$d HİKAYE LİSTELENİYOR</string>
     <string name="episode_size">Bölüm %1$s</string>
-    <string name="all_stories">TÜM HİKAYELER (%1$d)</string>
+    <string name="all_stories">TÜM HİKAYELER</string>
     <string name="all_stories_text">TÜM HİKAYELER</string>
-    <string name="favorites_with_size">FAVORİLER (%1$d)</string>
+    <string name="favorites_with_size">FAVORİLER</string>
     <string name="favorites">FAVORİLER</string>
     <string name="new_">Yeni</string>
     <string name="hashtag_kgd">#KGD</string>
@@ -72,4 +72,5 @@
     <string name="something_went_wrong">Bir şeyler ters gitti. Lütfen daha sonra tekrar deneyiniz</string>
     <string name="register_success">Başarıyla kayıt olundu mail adresinize gelen bağlantıyı onaylayın.</string>
     <string name="episodes">BÖLÜMLER</string>
+    <string name="continue_reading">OKUMAYA DEVAM ET</string>
 </resources>
