@@ -10,16 +10,40 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class OriginalResponseDto(
     @SerialName(Constants.Fields.DATA_COUNT)
-    val dataCount: Int,
+    val dataCount: Int?,
 
     @SerialName(Constants.Fields.ORIGINALS)
     val originals: List<NetworkOriginal>,
 
     @SerialName(Constants.Fields.ACTIVE_PAGE)
-    val totalPages: Int,
+    val totalPages: Int?,
 
     @SerialName(Constants.Fields.TOTAL_PAGE)
-    val totalResults: Int,
+    val totalResults: Int?,
+)
+
+@Serializable
+data class TagsDto(
+    @SerialName("Gençlik")
+    val youth: TagDetail?,
+    @SerialName("Romantik")
+    val romance: TagDetail?,
+    @SerialName("Macera")
+    val adventure: TagDetail?,
+    @SerialName("Bilim Kurgu")
+    val sciFi: TagDetail?,
+    @SerialName("Dram")
+    val drama: TagDetail?,
+    @SerialName("Fantastik")
+    val fantastic: TagDetail?,
+)
+
+@Serializable
+data class TagDetail(
+    @SerialName("tag_name")
+    val tagName: String?,
+    @SerialName("originals")
+    val originals: List<List<NetworkOriginal>?>?
 )
 
 @Serializable

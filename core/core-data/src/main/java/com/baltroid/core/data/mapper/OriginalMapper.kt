@@ -55,7 +55,7 @@ internal fun NetworkOriginal.asOriginalModel() = OriginalModel(
     hashtag = hashtag,
     seasons = seasons?.map { it.asSeasonModel() }.orEmpty(),
     isNew = isNew,
-    dataCount = dataCount
+    dataCount = dataCount ?: 0
 )
 
 internal fun NetworkCommentOriginal.asOriginalModel() = OriginalModel(
