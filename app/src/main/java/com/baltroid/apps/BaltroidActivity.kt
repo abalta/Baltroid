@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
+import com.baltroid.apps.navigation.MqNavHost
 import com.baltroid.apps.ui.main.MainUiState
 import com.baltroid.apps.ui.main.MainViewModel
 import com.baltroid.designsystem.component.Banner
@@ -33,56 +34,13 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class BaltroidActivity: ComponentActivity() {
 
-    @Inject
-    lateinit var imageLoader: ImageLoader
-
-    @Inject
-    lateinit var fireStorage: FirebaseStorage
-
-    private val viewModel by viewModels<MainViewModel>()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
-        /*lifecycleScope.launch {
-            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.mainState.collect {state ->
-                    when(state) {
-                        is MainUiState.Loading -> Log.i("DENEME", "LOADING")
-                        is MainUiState.Success -> {
-                            state.cityList.forEach {
-                                Log.i("DENEME", "Kod: ${it.code} İsim: ${it.name}")
-                            }
-                        }
-                    }
-
-                }
-            }
-        }*/
         setContent {
-            val mainState by viewModel.mainState.collectAsStateWithLifecycle()
             MqTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    when(mainState) {
-                        is MainUiState.Success -> {
-                            LazyColumn(contentPadding = PaddingValues(vertical = 24.dp), verticalArrangement = Arrangement.spacedBy(34.dp)) {
-                                items((mainState as MainUiState.Success).cityList) { city ->
-                                    H3Title("${city.name}", modifier = Modifier.padding(horizontal = 20.dp))
-                                    Spacer(modifier = Modifier.height(24.dp))
-                                    if(city.malls.isEmpty()) {
-                                        Banner(modifier = Modifier.padding(horizontal = 20.dp))
-                                    } else {
-                                        LazyRow(contentPadding = PaddingValues(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                                            items(items = city.malls, itemContent = { mall ->
-                                                CardMedium(avmName = mall.name, imageLoader, fireStorage.getReferenceFromUrl(mall.logo))
-                                            })
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        else -> {}
-                    }
+                    MqNavHost()
                 }
             }
         }

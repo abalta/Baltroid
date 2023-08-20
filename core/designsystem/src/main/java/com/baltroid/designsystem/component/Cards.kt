@@ -3,6 +3,7 @@ package com.baltroid.designsystem.component
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,11 +22,13 @@ import com.baltroid.core.designsystem.R
 import com.google.firebase.storage.StorageReference
 
 @Composable
-fun CardMedium(avmName: String, imageLoader: ImageLoader, storageReference: StorageReference) {
+fun CardMedium(avmName: String, imageLoader: ImageLoader, storageReference: StorageReference, onMallClick: () -> Unit) {
     Column(
         modifier = Modifier
             .width(200.dp)
-            .height(254.dp)
+            .height(254.dp).clickable {
+                onMallClick()
+            }
     ) {
         Image(
             modifier = Modifier
