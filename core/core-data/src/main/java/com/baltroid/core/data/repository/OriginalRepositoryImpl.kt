@@ -8,6 +8,7 @@ import com.baltroid.core.common.result.isFailure
 import com.baltroid.core.common.result.isSuccess
 import com.baltroid.core.data.mapper.asEpisodeModel
 import com.baltroid.core.data.mapper.asShowOriginalModel
+import com.baltroid.core.data.mapper.asTagsWithOriginalsModel
 import com.baltroid.core.data.paging.OriginalsPagingSource
 import com.baltroid.core.data.util.defaultPagingConfig
 import com.baltroid.core.network.common.networkBoundResource
@@ -16,9 +17,9 @@ import com.baltroid.core.network.util.MESSAGE_UNHANDLED_STATE
 import com.github.underscore.U
 import com.google.gson.Gson
 import com.hitreads.core.domain.model.EpisodeModel
-import com.hitreads.core.domain.model.OriginalModel
 import com.hitreads.core.domain.model.OriginalType
 import com.hitreads.core.domain.model.ShowOriginalModel
+import com.hitreads.core.domain.model.TagsWithOriginalsModel
 import com.hitreads.core.domain.repository.OriginalRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -30,11 +31,32 @@ class OriginalRepositoryImpl @Inject constructor(
 
     override fun getOriginals(
         filter: String?, getByFav: Boolean?
-    ): Flow<PagingData<OriginalModel>> = Pager(config = defaultPagingConfig, pagingSourceFactory = {
-        OriginalsPagingSource(
-            networkDataSource = networkDataSource, filter, getByFav
-        )
-    }).flow
+    ): Flow<PagingData<TagsWithOriginalsModel>> =
+        Pager(config = defaultPagingConfig, pagingSourceFactory = {
+            OriginalsPagingSource(
+                networkDataSource = networkDataSource, filter, getByFav
+            )
+        }).flow
+
+    override fun getOriginals(getByFav: Boolean?): Flow<BaltroidResult<List<TagsWithOriginalsModel>>> =
+        flow {
+            emit(BaltroidResult.loading())
+            val response = networkDataSource.getOriginals()
+            when {
+                response.isSuccess() -> {
+                    response.value.data?.let {
+                        emit(BaltroidResult.success(it.map { it.asTagsWithOriginalsModel() }))
+                    }
+                }
+
+                response.isFailure() -> {
+                    val throwable = response.error
+                    emit(BaltroidResult.failure(throwable))
+                }
+
+                else -> error("$MESSAGE_UNHANDLED_STATE $response")
+            }
+        }
 
     override fun likeOriginal(originalId: Int): Flow<BaltroidResult<Unit?>> = networkBoundResource {
         networkDataSource.likeOriginal(originalId)

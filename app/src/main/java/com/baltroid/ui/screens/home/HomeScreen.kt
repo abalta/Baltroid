@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -14,14 +15,20 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PageSize
 import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -38,6 +45,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
@@ -48,6 +56,8 @@ import com.baltroid.ui.common.HorizontalSpacer
 import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.VerticalSpacer
 import com.baltroid.ui.components.HitReadsTopBar
+import com.baltroid.ui.navigation.HitReadsScreens
+import com.baltroid.ui.screens.menu.favorites.YellowStarBox
 import com.baltroid.ui.screens.viewmodels.OriginalViewModel
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
@@ -56,6 +66,7 @@ import com.baltroid.ui.theme.localTextStyles
 import com.hitreads.core.domain.model.ProfileModel
 import com.hitreads.core.model.Original
 import com.hitreads.core.model.Tag
+import com.hitreads.core.model.TagsWithOriginals
 
 @Composable
 fun HomeScreen(
@@ -68,11 +79,13 @@ fun HomeScreen(
 
     LaunchedEffect(Unit) {
         viewModel.loadOriginals()
-        viewModel.loadFavorites()
     }
 
     HomeScreenContent(
-        profileModel = profile
+        profileModel = profile,
+        uiState = uiStates,
+        openMenuScreen = openMenuScreen,
+        navigate = navigate
         //uiStates = uiStates.originals.collectAsLazyPagingItems().itemSnapshotList.items,
         //uiStatesFavorites = uiStates.favorites.collectAsLazyPagingItems().itemSnapshotList.items,
         //openMenuScreen = openMenuScreen,
@@ -82,19 +95,24 @@ fun HomeScreen(
 
 @Composable
 fun HomeScreenContent(
-    profileModel: ProfileModel
+    profileModel: ProfileModel,
+    uiState: HomeUiState,
+    openMenuScreen: () -> Unit,
+    navigate: (route: String, item: Original?) -> Unit
 ) {
     var tabState by rememberSaveable {
         mutableStateOf(HomeScreenTabs.AllStories)
     }
 
-    Column {
+    Column(
+        modifier = Modifier.navigationBarsPadding()
+    ) {
         HitReadsTopBar(
             iconResId = R.drawable.ic_bell_outlined,
             numberOfNotification = 0,
             isGemEnabled = true,
             gemCount = profileModel.gem,
-            onMenuClick = { /*TODO*/ }
+            onMenuClick = openMenuScreen
         ) {
 
         }
@@ -109,20 +127,164 @@ fun HomeScreenContent(
             tabState = it
         }
         VerticalSpacer(height = MaterialTheme.localDimens.dp31)
+        when (tabState) {
+            HomeScreenTabs.AllStories -> {
+                Originals(
+                    originals = uiState.originals,
+                    state = rememberLazyListState(),
+                    modifier = Modifier.weight(1f)
+                ) {
+                    navigate.invoke(HitReadsScreens.HomeDetailScreen.route, it)
+                }
+            }
+
+            HomeScreenTabs.Favorites -> {
+                FavoriteOriginals(originals = uiState.favorites, state = rememberLazyListState()) {
+
+                }
+            }
+
+            HomeScreenTabs.ContinueReading -> {
+
+            }
+        }
     }
 }
 
 @Composable
 private fun Originals(
+    originals: List<TagsWithOriginals>,
     state: LazyListState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onItemClicked: (Original?) -> Unit
 ) {
     LazyColumn(
         modifier = modifier,
         state = state,
-        contentPadding = PaddingValues(start = MaterialTheme.localDimens.dp24)
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp30),
     ) {
+        itemsIndexed(originals) { index, item ->
+            GenreItem(
+                text = item.tagName.orEmpty(), if (index % 2 == 0) MaterialTheme.localColors.purple
+                else MaterialTheme.localColors.pink,
+                modifier = Modifier.padding(start = MaterialTheme.localDimens.dp24)
+            )
+            VerticalSpacer(height = MaterialTheme.localDimens.dp16)
+            LazyRow(
+                contentPadding = PaddingValues(horizontal = MaterialTheme.localDimens.dp24),
+                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp16)
+            ) {
+                items(item.originals.orEmpty()) { original ->
+                    OriginalItem(original = original) {
+                        onItemClicked.invoke(original)
+                    }
+                }
+            }
+        }
+    }
+}
 
+@Composable
+private fun FavoriteOriginals(
+    originals: List<Original>,
+    state: LazyListState,
+    modifier: Modifier = Modifier,
+    onItemClicked: (Original?) -> Unit
+) {
+    LazyRow(
+        modifier = modifier,
+        state = state,
+        contentPadding = PaddingValues(horizontal = MaterialTheme.localDimens.dp24),
+        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp30),
+    ) {
+        items(originals) { original ->
+            FavoriteOriginalItem(original = original) {
+                onItemClicked.invoke(original)
+            }
+        }
+    }
+}
+
+@Composable
+private fun OriginalItem(
+    original: Original,
+    onClick: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .width(IntrinsicSize.Min)
+            .height(MaterialTheme.localDimens.dp244)
+            .clickable { onClick.invoke() }
+    ) {
+        Box {
+            AsyncImage(
+                model = original.cover,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                placeholder = painterResource(id = R.drawable.hitreads_placeholder),
+                error = painterResource(id = R.drawable.hitreads_placeholder),
+                modifier = Modifier
+                    .size(MaterialTheme.localDimens.dp129, MaterialTheme.localDimens.dp180)
+                    .clip(MaterialTheme.localShapes.roundedDp9)
+            )
+            if (original.isNew) {
+                Text(
+                    text = stringResource(id = R.string.new_),
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(
+                            bottom = MaterialTheme.localDimens.dp12,
+                            end = MaterialTheme.localDimens.dp14
+                        )
+                        .clip(MaterialTheme.localShapes.roundedDp4)
+                        .background(MaterialTheme.localColors.orange)
+                        .padding(
+                            vertical = MaterialTheme.localDimens.dp6,
+                            horizontal = MaterialTheme.localDimens.dp10
+                        )
+                )
+            }
+        }
+        VerticalSpacer(height = MaterialTheme.localDimens.dp6)
+        Text(
+            text = original.title,
+            style = MaterialTheme.localTextStyles.originalItemTitle,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
+        Text(text = original.author.name, style = MaterialTheme.localTextStyles.summaryIconText)
+    }
+}
+
+@Composable
+fun FavoriteOriginalItem(
+    original: Original,
+    onClick: () -> Unit
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.width(IntrinsicSize.Min)
+    ) {
+        AsyncImage(
+            model = original.cover,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            placeholder = painterResource(id = R.drawable.hitreads_placeholder),
+            error = painterResource(id = R.drawable.hitreads_placeholder),
+            modifier = Modifier
+                .size(MaterialTheme.localDimens.dp129, MaterialTheme.localDimens.dp180)
+                .clip(MaterialTheme.localShapes.roundedDp9)
+        )
+        VerticalSpacer(height = MaterialTheme.localDimens.dp13)
+        Text(
+            text = original.title,
+            style = MaterialTheme.localTextStyles.originalItemTitle,
+            maxLines = 2,
+            minLines = 2,
+            textAlign = TextAlign.Center,
+        )
+        VerticalSpacer(height = MaterialTheme.localDimens.dp28)
+        YellowStarBox()
     }
 }
 
@@ -257,8 +419,8 @@ private fun HomeScreenTabs(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = modifier
+        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp34),
+        modifier = modifier.horizontalScroll(rememberScrollState())
     ) {
         HomeScreenTabItem(
             title = R.string.all_stories,
@@ -421,15 +583,13 @@ fun GenreSection(
     Row(
         modifier = modifier
     ) {
-        genres?.forEachIndexed { index, tag ->
+        genres?.firstOrNull()?.let {
             GenreItem(
-                tag.name,
-                color = if (index % 2 == 0) MaterialTheme.localColors.purple
-                else MaterialTheme.localColors.pink
+                it.name,
+                color = MaterialTheme.localColors.purple
             )
-            HorizontalSpacer(width = MaterialTheme.localDimens.dp10_5)
+            HorizontalSpacer(width = MaterialTheme.localDimens.dp19)
         }
-        HorizontalSpacer(width = MaterialTheme.localDimens.dp12_5)
         Column(
             modifier = Modifier
                 .width(IntrinsicSize.Min)
@@ -454,13 +614,14 @@ fun GenreSection(
 @Composable
 fun GenreItem(
     text: String,
-    color: Color
+    color: Color,
+    modifier: Modifier = Modifier
 ) {
     Text(
         text = text,
         textAlign = TextAlign.Center,
         style = MaterialTheme.localTextStyles.isStoryNewText,
-        modifier = Modifier
+        modifier = modifier
             .clip(MaterialTheme.localShapes.roundedDp4)
             .background(color)
             .padding(

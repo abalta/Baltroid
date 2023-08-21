@@ -243,20 +243,103 @@ fun SideBarBottomSection(
     }
 }
 
-@Preview
+@Composable
+fun HitReadsSideBar(
+    numberOfComments: Int,
+    modifier: Modifier = Modifier,
+    onVisibilityChange: () -> Unit,
+    onShowComments: () -> Unit,
+    onCreateComment: () -> Unit,
+    onShowEpisodes: () -> Unit
+) {
+    Row {
+        Divider(
+            modifier = Modifier
+                .fillMaxHeight()
+                .width(MaterialTheme.localDimens.dp0_5),
+            color = MaterialTheme.localColors.white
+        )
+        Column(
+            verticalArrangement = Arrangement.Center
+        ) {
+            SimpleIcon(
+                iconResId = R.drawable.ic_menu,
+                Modifier
+                    .padding(
+                        start = MaterialTheme.localDimens.dp12,
+                        bottom = MaterialTheme.localDimens.dp11,
+                        top = MaterialTheme.localDimens.dp11
+                    )
+                    .clickable {
+                        onVisibilityChange.invoke()
+                    }
+            )
+            Divider(
+                thickness = MaterialTheme.localDimens.dp0_5,
+                color = MaterialTheme.localColors.white
+            )
+            IconWithTextBelow(
+                iconResId = R.drawable.ic_comment,
+                text = numberOfComments.toString(),
+                textStyle = MaterialTheme.localTextStyles.sideBarIconText,
+                modifier = Modifier
+                    .padding(
+                        start = MaterialTheme.localDimens.dp12,
+                        bottom = MaterialTheme.localDimens.dp9,
+                        top = MaterialTheme.localDimens.dp9
+                    )
+                    .clickable {
+                        onShowComments.invoke()
+                    }
+            )
+            Divider(
+                thickness = MaterialTheme.localDimens.dp0_5,
+                color = MaterialTheme.localColors.white
+            )
+            SimpleIcon(
+                iconResId = R.drawable.ic_add_comment,
+                Modifier
+                    .padding(
+                        start = MaterialTheme.localDimens.dp12,
+                        bottom = MaterialTheme.localDimens.dp22,
+                        top = MaterialTheme.localDimens.dp22
+                    )
+                    .clickable {
+                        onCreateComment.invoke()
+                    }
+            )
+            Divider(
+                thickness = MaterialTheme.localDimens.dp0_5,
+                color = MaterialTheme.localColors.white
+            )
+            SimpleIcon(
+                iconResId = R.drawable.ic_filter,
+                Modifier
+                    .padding(
+                        start = MaterialTheme.localDimens.dp12,
+                        bottom = MaterialTheme.localDimens.dp22,
+                        top = MaterialTheme.localDimens.dp22
+                    )
+                    .clickable {
+                        onShowEpisodes.invoke()
+                    }
+            )
+            Divider(
+                thickness = MaterialTheme.localDimens.dp0_5,
+                color = MaterialTheme.localColors.white
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0x000000)
 @Composable
 fun HitReadsSideBarPreview() {
     HitReadsSideBar(
-        numberOfViews = 12,
-        numberOfComments = 12,
-        hasSmallHeight = false,
-        onCommentsClick = {},
-        isCommentsSelected = true,
-        onDotsClick = {},
-        hashTag = "#KGD",
-        isMarked = true,
-        onMarkClicked = {},
-        onShareClicked = {},
-        addComment = {}
-    )
+        12,
+        onVisibilityChange = { /*TODO*/ },
+        onShowComments = { /*TODO*/ },
+        onCreateComment = { /*TODO*/ }) {
+
+    }
 }

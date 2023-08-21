@@ -4,20 +4,30 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,9 +35,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.baltroid.apps.R
@@ -44,13 +51,11 @@ import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
-import com.baltroid.util.conditional
 import com.baltroid.util.orEmpty
 import com.baltroid.util.orZero
-import com.hitreads.core.model.Author
 import com.hitreads.core.model.Original
+import com.hitreads.core.model.ShowEpisode
 import com.hitreads.core.model.Tag
-import com.hitreads.core.model.UserData
 
 @Composable
 fun HomeDetailScreen(
@@ -59,16 +64,20 @@ fun HomeDetailScreen(
     openMenuScreen: () -> Unit,
     navigate: (route: String) -> Unit
 ) {
+
+    val episodes = viewModel.uiStateReading.collectAsStateWithLifecycle().value.original?.episodes
+    LaunchedEffect(Unit) {
+        viewModel.sharedUIState.value?.id?.let { viewModel.showOriginal(it) }
+    }
     HomeDetailScreenContent(
+        episodes = episodes.orEmpty(),
+        navigate = navigate,
         screenState = viewModel.sharedUIState
             .collectAsStateWithLifecycle().value,
-        openMenuScreen = openMenuScreen,
-        navigateBack = navigateBack,
-        navigate = navigate
     )
 }
 
-@Composable
+/*@Composable
 private fun HomeDetailScreenContent(
     screenState: Original?,
     navigateBack: () -> Unit,
@@ -144,7 +153,7 @@ private fun HomeDetailScreenContent(
             }
         }
     }
-}
+}*/
 
 @Composable
 fun Interactions(
@@ -191,15 +200,16 @@ fun GenreAndInteractions(
     episodeSize: Int,
     genres: List<Tag>,
     numberOfViews: Int,
-    numberOfComments: Int
+    numberOfComments: Int,
+    modifier: Modifier = Modifier,
 ) {
     Row(
+        modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
         GenreSection(
             episodeSize = episodeSize,
             genres = genres,
-            modifier = Modifier.padding(start = MaterialTheme.localDimens.dp22)
         )
         HorizontalSpacer(width = MaterialTheme.localDimens.dp13)
         Interactions(
@@ -207,6 +217,8 @@ fun GenreAndInteractions(
             numberOfComments = numberOfComments,
             modifier = Modifier.align(Alignment.Bottom)
         )
+        HorizontalSpacer(width = MaterialTheme.localDimens.dp15)
+        SimpleIcon(iconResId = R.drawable.ic_info)
     }
 }
 
@@ -236,140 +248,323 @@ private fun HomeDetailSummarySection(
 }
 
 @Composable
-fun Example(
-    screenState: Original?
+fun HomeDetailScreenContent(
+    screenState: Original?,
+    episodes: List<ShowEpisode>,
+    navigate: (route: String) -> Unit
 ) {
-    Box {
+
+    var isEpisodesEnabled by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    Box(
+        modifier = Modifier.navigationBarsPadding()
+    ) {
         AsyncImage(
-            model = "screenState?.cover",
+            model = screenState?.cover,
             contentDescription = null,
-            fallback = painterResource(id = R.drawable.hitreads_placeholder),
-            placeholder = painterResource(id = R.drawable.hitreads_placeholder),
-            error = painterResource(id = R.drawable.hitreads_placeholder),
+            fallback = painterResource(id = R.drawable.woods_image),
+            placeholder = painterResource(id = R.drawable.woods_image),
+            error = painterResource(id = R.drawable.woods_image),
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
         )
-        ConstraintLayout(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            val (toolbar, image, leftArrow, background, episodes, content) = createRefs()
-            HitReadsTopBar(
-                iconResId = R.drawable.ic_bell,
-                numberOfNotification = -1,
-                onMenuClick = {},
-                onIconClick = {},
-                onNotificationClick = {},
-                modifier = Modifier.constrainAs(toolbar) {
-                    top.linkTo(parent.top)
-                    width = Dimension.matchParent
-                }
-            )
+        Box(
+            Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.localColors.black_alpha05)
+        )
+
+        if (!isEpisodesEnabled) {
             Box(
                 modifier = Modifier
                     .background(MaterialTheme.localColors.black_alpha05)
-                    .constrainAs(background) {
-                        bottom.linkTo(parent.bottom)
-                        width = Dimension.matchParent
-                        height = Dimension.percent(0.7f)
-                    }
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.65f)
+                    .align(Alignment.BottomCenter)
             )
-            AsyncImage(
-                model = "screenState?.cover",
-                contentDescription = null,
-                fallback = painterResource(id = R.drawable.hitreads_placeholder),
-                placeholder = painterResource(id = R.drawable.woods_image),
-                error = painterResource(id = R.drawable.hitreads_placeholder),
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .clip(MaterialTheme.localShapes.roundedDp9)
-                    .size(MaterialTheme.localDimens.dp219, MaterialTheme.localDimens.dp308)
-                    .constrainAs(image) {
-                        top.linkTo(toolbar.bottom, 18.dp)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    }
-            )
-            SimpleImage(
-                imgResId = R.drawable.ic_arrow_left,
-                modifier = Modifier.constrainAs(leftArrow) {
-                    top.linkTo(background.top)
-                    start.linkTo(parent.start)
-                    end.linkTo(image.start)
-                    bottom.linkTo(image.bottom)
-                }
-            )
-            Column(
-                modifier = Modifier.constrainAs(content) {
-                    top.linkTo(image.bottom)
-                    width = Dimension.matchParent
-                    bottom.linkTo(episodes.top, 16.dp)
-                    height = Dimension.fillToConstraints
-                }
-            ) {
-                TitleSection(
-                    author = screenState?.author?.name.orEmpty(),
-                    title = screenState?.title.orEmpty(),
-                    subTitle = screenState?.subtitle.orEmpty(),
-                    modifier = Modifier.padding(start = MaterialTheme.localDimens.dp23)
+        }
+        if (!isEpisodesEnabled) {
+            Column {
+                HitReadsTopBar(
+                    iconResId = R.drawable.ic_bell,
+                    numberOfNotification = -1,
+                    onMenuClick = {},
+                    onIconClick = {},
+                    iconTint = MaterialTheme.localColors.white,
+                    onNotificationClick = {},
                 )
-                VerticalSpacer(height = MaterialTheme.localDimens.dp10_5)
-                GenreAndInteractions(
-                    episodeSize = screenState?.episodeCount.orZero(),
-                    genres = screenState?.tags.orEmpty(),
-                    numberOfViews = screenState?.viewCount.orZero(),
-                    numberOfComments = screenState?.commentCount.orZero()
+                VerticalSpacer(height = MaterialTheme.localDimens.dp18)
+                AsyncImage(
+                    model = screenState?.cover,
+                    contentDescription = null,
+                    fallback = painterResource(id = R.drawable.hitreads_placeholder),
+                    placeholder = painterResource(id = R.drawable.woods_image),
+                    error = painterResource(id = R.drawable.hitreads_placeholder),
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentWidth(Alignment.CenterHorizontally)
+                        .clip(MaterialTheme.localShapes.roundedDp9)
+                        .size(MaterialTheme.localDimens.dp219, MaterialTheme.localDimens.dp308)
                 )
-                VerticalSpacer(height = MaterialTheme.localDimens.dp20_5)
-                Text(
-                    text = screenState?.description.orEmpty(),
-                    style = MaterialTheme.localTextStyles.detailSummaryText,
-                    modifier = Modifier.padding(start = MaterialTheme.localDimens.dp24)
-                )
-                VerticalSpacer(height = MaterialTheme.localDimens.dp8)
+                VerticalSpacer(height = MaterialTheme.localDimens.dp16)
                 Column(
-                    modifier = Modifier.padding(start = MaterialTheme.localDimens.dp24)
+                    Modifier
+                        .weight(1f)
+                        .verticalScroll(rememberScrollState())
                 ) {
-                    Text(
-                        text = "#kimsegercekdegil",
-                        style = MaterialTheme.localTextStyles.subtitleGrotesk
+                    TitleSection(
+                        author = screenState?.author?.name.orEmpty(),
+                        title = screenState?.title.orEmpty(),
+                        subTitle = screenState?.subtitle.orEmpty(),
+                        modifier = Modifier.padding(start = MaterialTheme.localDimens.dp23)
                     )
+                    VerticalSpacer(height = MaterialTheme.localDimens.dp10_5)
+                    Column(
+                        Modifier
+                            .padding(start = MaterialTheme.localDimens.dp24)
+                            .width(IntrinsicSize.Min)
+                    ) {
+                        GenreAndInteractions(
+                            episodeSize = screenState?.episodeCount.orZero(),
+                            genres = screenState?.tags.orEmpty(),
+                            numberOfViews = screenState?.viewCount.orZero(),
+                            numberOfComments = screenState?.commentCount.orZero(),
+                            modifier = Modifier.width(IntrinsicSize.Max)
+                        )
+                        VerticalSpacer(height = MaterialTheme.localDimens.dp20_5)
+                        Text(
+                            text = screenState?.description.orEmpty(),
+                            style = MaterialTheme.localTextStyles.detailSummaryText,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                        VerticalSpacer(height = MaterialTheme.localDimens.dp8)
+                        Text(
+                            text = "#kimsegercekdegil",
+                            style = MaterialTheme.localTextStyles.subtitleGrotesk
+                        )
+                    }
+
                     VerticalSpacer(height = MaterialTheme.localDimens.dp7)
                     Row(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(end = MaterialTheme.localDimens.dp47)
+                            .padding(
+                                start = MaterialTheme.localDimens.dp24,
+                                end = MaterialTheme.localDimens.dp47
+                            )
                     ) {
                         Row(
-                            modifier = Modifier.align(Alignment.Bottom)
+                            modifier = Modifier
+                                .align(Alignment.Bottom)
                         ) {
                             SimpleIcon(iconResId = R.drawable.ic_lock)
+                            HorizontalSpacer(width = MaterialTheme.localDimens.dp8)
                             Text(
-                                text = "tüm kİtabı satın al",
+                                text = screenState?.hashtag.orEmpty(),
                                 style = MaterialTheme.localTextStyles.episodeText
                             )
                         }
-                        SimpleImage(imgResId = R.drawable.ic_read)
+                        SimpleImage(imgResId = R.drawable.ic_read, modifier = Modifier.clickable {
+                            if (screenState?.type == "interactive") {
+                                navigate.invoke(HitReadsScreens.InteractiveScreen.route)
+                            } else {
+                                navigate.invoke(HitReadsScreens.ReadingScreen.route.plus("/${screenState?.id}"))
+                            }
+                        })
                     }
+                    VerticalSpacer(height = MaterialTheme.localDimens.dp30)
+                }
+                DetailEpisodes {
+                    isEpisodesEnabled = true
                 }
             }
-            DetailEpisodes(
-                modifier = Modifier.constrainAs(episodes) {
-                    bottom.linkTo(parent.bottom)
-                    width = Dimension.matchParent
+        } else {
+            EpisodeSheet(
+                episodes = episodes,
+                Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.7f)
+                    .background(MaterialTheme.localColors.black_alpha05)
+                    .align(Alignment.BottomCenter),
+                closeSheet = {
+                    isEpisodesEnabled = false
                 }
             )
+        }
+
+    }
+}
+/*Box {
+    AsyncImage(
+        model = "screenState?.cover",
+        contentDescription = null,
+        fallback = painterResource(id = R.drawable.woods_image),
+        placeholder = painterResource(id = R.drawable.woods_image),
+        error = painterResource(id = R.drawable.woods_image),
+        contentScale = ContentScale.Crop,
+        modifier = Modifier.fillMaxSize()
+    )
+    Box(
+        Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.localColors.black_alpha05)
+    )
+    ConstraintLayout(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        val (toolbar, image, background, episodes, content) = createRefs()
+        HitReadsTopBar(
+            iconResId = R.drawable.ic_bell,
+            numberOfNotification = -1,
+            onMenuClick = {},
+            onIconClick = {},
+            iconTint = MaterialTheme.localColors.white,
+            onNotificationClick = {},
+            modifier = Modifier.constrainAs(toolbar) {
+                top.linkTo(parent.top)
+                width = Dimension.matchParent
+            }
+        )
+        Box(
+            modifier = Modifier
+                .background(MaterialTheme.localColors.black_alpha05)
+                .constrainAs(background) {
+                    bottom.linkTo(parent.bottom)
+                    width = Dimension.matchParent
+                    height = Dimension.percent(0.7f)
+                }
+        )
+        AsyncImage(
+            model = "screenState?.cover",
+            contentDescription = null,
+            fallback = painterResource(id = R.drawable.hitreads_placeholder),
+            placeholder = painterResource(id = R.drawable.woods_image),
+            error = painterResource(id = R.drawable.hitreads_placeholder),
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .clip(MaterialTheme.localShapes.roundedDp9)
+                .size(MaterialTheme.localDimens.dp219, MaterialTheme.localDimens.dp308)
+                .constrainAs(image) {
+                    top.linkTo(toolbar.bottom, 18.dp)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+        )
+        Column(
+            modifier = Modifier.constrainAs(content) {
+                top.linkTo(image.bottom)
+                width = Dimension.matchParent
+                bottom.linkTo(episodes.top, 16.dp)
+                height = Dimension.fillToConstraints
+            }
+        ) {
+            TitleSection(
+                author = screenState?.author?.name.orEmpty(),
+                title = screenState?.title.orEmpty(),
+                subTitle = screenState?.subtitle.orEmpty(),
+                modifier = Modifier.padding(start = MaterialTheme.localDimens.dp23)
+            )
+            VerticalSpacer(height = MaterialTheme.localDimens.dp10_5)
+            GenreAndInteractions(
+                episodeSize = screenState?.episodeCount.orZero(),
+                genres = screenState?.tags.orEmpty(),
+                numberOfViews = screenState?.viewCount.orZero(),
+                numberOfComments = screenState?.commentCount.orZero(),
+                modifier = Modifier
+            )
+            VerticalSpacer(height = MaterialTheme.localDimens.dp20_5)
+            Text(
+                text = screenState?.description.orEmpty(),
+                style = MaterialTheme.localTextStyles.detailSummaryText,
+                modifier = Modifier,
+            )
+            VerticalSpacer(height = MaterialTheme.localDimens.dp8)
+            Column(
+                modifier = Modifier.padding(start = MaterialTheme.localDimens.dp24)
+            ) {
+                Text(
+                    text = "#kimsegercekdegil",
+                    style = MaterialTheme.localTextStyles.subtitleGrotesk
+                )
+                VerticalSpacer(height = MaterialTheme.localDimens.dp7)
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(end = MaterialTheme.localDimens.dp47)
+                ) {
+                    Row(
+                        modifier = Modifier.align(Alignment.Bottom)
+                    ) {
+                        SimpleIcon(iconResId = R.drawable.ic_lock)
+                        Text(
+                            text = "tüm kİtabı satın al",
+                            style = MaterialTheme.localTextStyles.episodeText
+                        )
+                    }
+                    SimpleImage(imgResId = R.drawable.ic_read)
+                }
+            }
+        }
+        DetailEpisodes(
+            modifier = Modifier.constrainAs(episodes) {
+                bottom.linkTo(parent.bottom)
+                width = Dimension.matchParent
+            }
+        )
+    }
+}*/
+
+@Composable
+fun EpisodeSheet(
+    episodes: List<ShowEpisode>,
+    modifier: Modifier = Modifier,
+    closeSheet: () -> Unit
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
+    ) {
+        VerticalSpacer(height = MaterialTheme.localDimens.dp19)
+        Text(
+            text = stringResource(id = R.string.episodes),
+            style = MaterialTheme.localTextStyles.episodesSheet
+        )
+        VerticalSpacer(height = MaterialTheme.localDimens.dp6)
+        SimpleIcon(
+            iconResId = R.drawable.ic_menu_horizontal,
+            tint = MaterialTheme.localColors.white_bb,
+            modifier = Modifier.clickable { closeSheet.invoke() }
+        )
+        VerticalSpacer(height = MaterialTheme.localDimens.dp33)
+        LazyColumn(
+            Modifier.fillMaxWidth()
+        ) {
+            items(episodes) { episode ->
+                EpisodeItem(episode = episode) {
+
+                }
+                Divider(
+                    color = MaterialTheme.localColors.white,
+                    thickness = MaterialTheme.localDimens.dp1
+                )
+            }
         }
     }
 }
 
 @Composable
 fun DetailEpisodes(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier
+        modifier = modifier.clickable { onClick.invoke() }
     ) {
         Divider(
             thickness = MaterialTheme.localDimens.dp0_5,
@@ -386,15 +581,50 @@ fun DetailEpisodes(
     }
 }
 
+@Composable
+fun EpisodeItem(
+    episode: ShowEpisode,
+    onClick: (Int) -> Unit,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .clickable { onClick.invoke(episode.id.orZero()) }
+            .padding(
+                start = MaterialTheme.localDimens.dp28,
+                end = MaterialTheme.localDimens.dp22,
+                top = MaterialTheme.localDimens.dp12,
+                bottom = MaterialTheme.localDimens.dp12
+            )
+    ) {
+        Text(
+            text = stringResource(id = R.string.episode_number, episode.sort.orZero()),
+            style = MaterialTheme.localTextStyles.episodeSheetEpisode
+        )
+        HorizontalSpacer(width = MaterialTheme.localDimens.dp20)
+        Text(
+            text = episode.episodeName.orEmpty(),
+            style = MaterialTheme.localTextStyles.detailSummaryText,
+            modifier = Modifier.weight(1f)
+        )
+        if (episode.isLocked) {
+            SimpleIcon(
+                iconResId = R.drawable.ic_lock,
+                modifier = Modifier.padding(end = MaterialTheme.localDimens.dp22)
+            )
+        }
+    }
+}
+
 @Preview
 @Composable
 fun HomeDetailScreenPreview() {
-    Example(
+    /*HomeDetailScreenContent(
         screenState = Original(
             author = Author(id = 8088, name = "Tommy Simmons"),
             banner = "maximus",
             cover = "invenire",
-            description = "sinwqeqweqwewqeqwewqsaddasdasdasdsadsadsadsadsadasdasqwewqeqwewqsaddasdasdasdsadsadsadsadsadasdasqwewqeqwewqsaddasdasdasdsadsadsadsadsadasdasqwewqeqwewqsaddasdasdasdsadsadsadsadsadasdasqwewqeqwewqsaddasdasdasdsadsadsadsadsadasdasdasdsadasgulis",
+            description = "as dsadas dsadasndsadas dsadas dsadass dsadasndsadas dsadas dsadass dsadasndsadas dsadas ddas dsadass dsadasndsadas dsadas dsadass dsadasndsadas dsadas ddas dsadass dsadasndsadas dsadas dsadass dsadasndsadas dsadas ddas dsadass dsadasndsadas dsadas dsadass dsadasndsadas dsadas ddas dsadass dsadasndsadas dsdas dsadass dsadasndsadas dsadas dsadass dsadasndsadas dsadas ddas dsadass dsadasndsadas dsadas dsadass dsadasndsadas dsadas ddas dsadass dsadasndsadas dsadas dsadass dsadasndsadas dsadas ddas dsadass dsadasndsadas dsadas dsadass dsadasndsadas dsadas dadas dsadass dsadasndsadas dsadas dsadass dsadasndsadas dsadas dsadas",
             id = 8163,
             isActual = false,
             isLocked = false,
@@ -415,5 +645,5 @@ fun HomeDetailScreenPreview() {
             isNew = false,
             dataCount = 6355
         )
-    )
+    )*/
 }

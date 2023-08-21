@@ -2,25 +2,19 @@ package com.baltroid.ui.screens.reading
 
 import android.content.Context
 import android.content.Intent
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -28,7 +22,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
@@ -41,7 +34,6 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,7 +44,6 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -68,10 +59,7 @@ import com.baltroid.ui.common.HorizontalSpacer
 import com.baltroid.ui.common.IconWithTextNextTo
 import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.VerticalSpacer
-import com.baltroid.ui.components.CommentWritingCard
-import com.baltroid.ui.components.HitReadsSideBar
 import com.baltroid.ui.components.HitReadsTopBar
-import com.baltroid.ui.navigation.HitReadsScreens
 import com.baltroid.ui.screens.menu.comments.CommentImage
 import com.baltroid.ui.screens.menu.comments.CommentViewModel
 import com.baltroid.ui.screens.menu.place_marks.EpisodeBanner
@@ -81,12 +69,10 @@ import com.baltroid.ui.theme.Poppins
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localDimens
 import com.baltroid.ui.theme.localTextStyles
-import com.baltroid.util.orEmpty
 import com.baltroid.util.orZero
 import com.hitreads.core.domain.model.OriginalType
 import com.hitreads.core.model.Comment
 import com.hitreads.core.model.Episode
-import com.hitreads.core.model.Original
 import com.hitreads.core.model.ShowEpisode
 
 @Composable
@@ -116,43 +102,48 @@ fun ReadingScreen(
     }
 
     ReadingScreenContent(
-        commentViewModel,
-        originalViewModel = viewModel,
-        screenState = screenState,
-        textOriginal = sharedOriginal,
-        hashTag = sharedOriginal?.hashtag.orEmpty(),
-        comments = comments,
-        onEpisodeChange = {
-            viewModel.showEpisode(
-                screenState.original?.episodes?.get(it)?.id.orZero(),
-                OriginalType.TEXT
-            )
-        },
-        onLikeClick = { isLiked ->
-            if (!isLiked) {
-                screenState.episode?.id?.let { it1 -> viewModel.createFavorite(it1) }
-            } else {
-                screenState.episode?.id?.let { it1 -> viewModel.deleteFavorite(it1) }
-            }
-        },
-        sendComment = { content, id ->
-        },
-        onMarkClicked = { isMarked ->
-            if (!isMarked) viewModel.createBookmark(
-                screenState.original?.id.orZero(),
-                screenState.episode?.id.orZero()
-            ) else {
-                viewModel.deleteBookmark(screenState.episode?.favoriteId.orZero())
-            }
-        },
-        navigate = navigate,
-        openMenuScreen,
-        onExpanseClicked = {
-            commentViewModel.expanseComment(it)
-        },
+        body = screenState.episode?.content.orEmpty()
     )
+
+    /* ReadingScreenContent(
+         commentViewModel,
+         originalViewModel = viewModel,
+         screenState = screenState,
+         textOriginal = sharedOriginal,
+         hashTag = sharedOriginal?.hashtag.orEmpty(),
+         comments = comments,
+         onEpisodeChange = {
+             viewModel.showEpisode(
+                 screenState.original?.episodes?.get(it)?.id.orZero(),
+                 OriginalType.TEXT
+             )
+         },
+         onLikeClick = { isLiked ->
+             if (!isLiked) {
+                 screenState.episode?.id?.let { it1 -> viewModel.createFavorite(it1) }
+             } else {
+                 screenState.episode?.id?.let { it1 -> viewModel.deleteFavorite(it1) }
+             }
+         },
+         sendComment = { content, id ->
+         },
+         onMarkClicked = { isMarked ->
+             if (!isMarked) viewModel.createBookmark(
+                 screenState.original?.id.orZero(),
+                 screenState.episode?.id.orZero()
+             ) else {
+                 viewModel.deleteBookmark(screenState.episode?.favoriteId.orZero())
+             }
+         },
+         navigate = navigate,
+         openMenuScreen,
+         onExpanseClicked = {
+             commentViewModel.expanseComment(it)
+         },
+     )*/
 }
 
+/*
 @Composable
 private fun ReadingScreenContent(
     commentVM: CommentViewModel,
@@ -321,6 +312,7 @@ private fun ReadingScreenContent(
         }
     }
 }
+*/
 
 fun share(title: String?, ctx: Context) {
     Intent(Intent.ACTION_SEND).apply {
@@ -411,7 +403,7 @@ fun HitReadsPageHeader(
     }
 }
 
-@Composable
+/*@Composable
 fun TitleSection(
     title: String,
     subtitle: String,
@@ -474,9 +466,74 @@ fun TitleSection(
             VerticalSpacer(height = MaterialTheme.localDimens.dp4_5)
         }
     }
-}
+}*/
 
 @Composable
+fun TitleSection(
+    title: String,
+    subtitle: String,
+    isExpanded: Boolean,
+    isLiked: Boolean,
+    onDotsClick: () -> Unit,
+    onLikeClick: (Boolean) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column {
+        Column(
+            modifier = modifier
+        ) {
+            Row(
+                modifier = Modifier.height(IntrinsicSize.Min)
+            ) {
+                Titles(
+                    title = title,
+                    subtitle = subtitle,
+                    modifier = Modifier.weight(1f)
+                )
+                SimpleIcon(
+                    iconResId = if (isLiked) R.drawable.ic_star else R.drawable.ic_star_outlined,
+                    tint = if (isLiked) MaterialTheme.localColors.yellow else Color.Unspecified,
+                    modifier = Modifier
+                        .padding(
+                            top = MaterialTheme.localDimens.dp8,
+                        )
+                        .clickable {
+                            onLikeClick(isLiked)
+                        }
+                )
+                if (isExpanded) {
+                    HorizontalSpacer(width = MaterialTheme.localDimens.dp15)
+                    Divider(
+                        color = MaterialTheme.localColors.white_alpha05,
+                        modifier = Modifier
+                            .width(MaterialTheme.localDimens.dp0_5)
+                            .fillMaxHeight()
+                    )
+                    HorizontalSpacer(width = MaterialTheme.localDimens.dp10)
+                    SimpleIcon(
+                        iconResId = R.drawable.ic_menu,
+                        modifier = Modifier
+                            .padding(
+                                top = MaterialTheme.localDimens.dp12,
+                                end = MaterialTheme.localDimens.dp20
+                            )
+                            .clickable { onDotsClick.invoke() })
+                }
+
+            }
+        }
+        if (isExpanded) {
+            Divider(
+                color = MaterialTheme.localColors.white_alpha05,
+                thickness = MaterialTheme.localDimens.dp0_5,
+                modifier = Modifier.padding(horizontal = MaterialTheme.localDimens.dp12)
+            )
+            VerticalSpacer(height = MaterialTheme.localDimens.dp4_5)
+        }
+    }
+}
+
+/*@Composable
 fun Titles(
     title: String,
     subtitle: String,
@@ -494,6 +551,20 @@ fun Titles(
                 style = MaterialTheme.localTextStyles.readingPurpleSubTitle
             )
         }
+    }
+}*/
+
+@Composable
+fun Titles(
+    title: String,
+    subtitle: String,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+    ) {
+        Text(text = title, style = MaterialTheme.localTextStyles.title)
+        Text(text = subtitle, style = MaterialTheme.localTextStyles.subtitle)
     }
 }
 
@@ -912,6 +983,44 @@ fun SeeAll(
                 .background(MaterialTheme.localColors.white_alpha07)
                 .fillMaxWidth()
         )
+    }
+}
+
+@Composable
+fun ReadingScreenContent(
+    body: String
+) {
+    val scrollState = rememberScrollState()
+    Column {
+        AsyncImage(
+            model = R.drawable.woods_image,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.14f),
+        )
+        TitleSection(
+            title = "KİMSE GERÇEK DEĞİL",
+            subtitle = "ZEYNEP SEY",
+            isExpanded = true,
+            isLiked = false,
+            onDotsClick = { /*TODO*/ },
+            onLikeClick = { },
+            modifier = Modifier.padding(
+                top = MaterialTheme.localDimens.dp12,
+                start = MaterialTheme.localDimens.dp31
+            )
+        )
+        Row {
+            Text(
+                text = body,
+                style = MaterialTheme.localTextStyles.body,
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(scrollState)
+            )
+        }
     }
 }
 

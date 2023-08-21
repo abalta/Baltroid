@@ -10,5 +10,6 @@ data class ShowEpisodeModel(
     val priceType: String?,
     val sort: Int?,
     val createdAt: String?,
-    val updatedAt: String?
+    val updatedAt: String?,
+    val isLocked: Boolean?
 )

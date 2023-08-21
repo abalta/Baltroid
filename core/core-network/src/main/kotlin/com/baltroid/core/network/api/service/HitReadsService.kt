@@ -16,6 +16,7 @@ import com.baltroid.core.network.model.response.LoginDto
 import com.baltroid.core.network.model.response.NotificationDto
 import com.baltroid.core.network.model.response.OriginalResponseDto
 import com.baltroid.core.network.model.response.ProfileDto
+import com.baltroid.core.network.model.response.TagsWithOriginalsDto
 import com.baltroid.core.network.model.response.WelcomeDto
 import com.baltroid.core.network.util.Constants.DEFAULT_PAGE
 import com.baltroid.core.network.util.Constants.Fields.CONTENT
@@ -59,6 +60,11 @@ interface HitReadsService {
         @Query(FILTER_TAG) filter: String? = null,
         @Query(GET_BY_FAV) getByFav: Boolean? = null
     ): BaltroidResult<HitReadsResponse<OriginalResponseDto>>
+
+    @GET(ORIGINALS_INDEX)
+    suspend fun getOriginals(
+        @Query(GET_BY_FAV) getByFav: Boolean? = null
+    ): BaltroidResult<HitReadsResponse<List<TagsWithOriginalsDto>>>
 
     @GET("$ORIGINALS_INDEX/{id}")
     suspend fun showOriginal(@Path("id") id: Int): BaltroidResult<HitReadsResponse<NetworkShowOriginal>>

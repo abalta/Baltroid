@@ -70,7 +70,10 @@ data class TextStyles(
     val filterScreenPinkText: TextStyle,
     val commentsScreenTabText: TextStyle,
     val passwordInfo: TextStyle,
-    val readingPurpleSubTitle: TextStyle
+    val readingPurpleSubTitle: TextStyle,
+    val originalItemTitle: TextStyle,
+    val episodesSheet: TextStyle,
+    val episodeSheetEpisode: TextStyle
 )
 
 val DarkThemeTextStyles = TextStyles(
@@ -323,6 +326,24 @@ val DarkThemeTextStyles = TextStyles(
         fontWeight = FontWeight.Medium,
         fontSize = 12.5.sp,
         color = Purple_80
+    ),
+    originalItemTitle = TextStyle(
+        fontFamily = Poppins,
+        fontWeight = FontWeight.Bold,
+        fontSize = 12.sp,
+        color = White
+    ),
+    episodesSheet = TextStyle(
+        fontFamily = Poppins,
+        fontSize = 17.sp,
+        fontWeight = FontWeight.Normal,
+        color = White_black,
+    ),
+    episodeSheetEpisode = TextStyle(
+        fontFamily = Poppins,
+        fontSize = 15.sp,
+        fontWeight = FontWeight.Bold,
+        color = White
     )
 )
 
@@ -576,6 +597,24 @@ val LightThemeTextStyles = TextStyles(
         fontWeight = FontWeight.Medium,
         fontSize = 12.5.sp,
         color = Purple_80
+    ),
+    originalItemTitle = TextStyle(
+        fontFamily = Poppins,
+        fontWeight = FontWeight.Bold,
+        fontSize = 12.sp,
+        color = White
+    ),
+    episodesSheet = TextStyle(
+        fontFamily = Poppins,
+        fontSize = 17.sp,
+        fontWeight = FontWeight.Normal,
+        color = White_black,
+    ),
+    episodeSheetEpisode = TextStyle(
+        fontFamily = Poppins,
+        fontSize = 15.sp,
+        fontWeight = FontWeight.Bold,
+        color = White
     )
 )
 
@@ -656,8 +695,10 @@ data class Dimensions(
     val dp111: Dp = 111.dp,
     val dp117: Dp = 117.dp,
     val dp127: Dp = 127.dp,
+    val dp129: Dp = 129.dp,
     val dp155: Dp = 155.dp,
     val dp177: Dp = 177.dp,
+    val dp180: Dp = 180.dp,
     val dp200: Dp = 200.dp,
     val dp244: Dp = 244.dp,
     val dp225: Dp = 225.dp,

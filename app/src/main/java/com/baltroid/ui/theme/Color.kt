@@ -20,6 +20,7 @@ val White_alpha05 = Color(0x80FFFFFF)
 val White_alpha04 = Color(0x66FFFFFF)
 val White_alpha03 = Color(0x4DFFFFFF)
 val White_alpha02 = Color(0x33FFFFFF)
+val White_black = Color(0xFF808080)
 val Grey = Color(0xFFA5A4A3)
 val Purple = Color(0xFF8D1697)
 val Pink_alpha09 = Color(0xE6EC1CFE)
@@ -31,6 +32,7 @@ val Orange = Color(0xFFFF7A00)
 val Yellow_100 = Color(0xFFFFDA1A)
 val Yellow_200 = Color(0xFFEFCD19)
 val Gold = Color(0xFFB39912)
+val White_bb = Color(0xFFBBBBBB)
 val Transparent = Color.Transparent
 
 data class Colors(
@@ -57,7 +59,9 @@ data class Colors(
     val yellow: Color = Yellow_100,
     val textSelectionColor: Color = Yellow_200,
     val gold: Color = Gold,
-    val transparent: Color = Transparent
+    val transparent: Color = Transparent,
+    val white_black: Color = White_black,
+    val white_bb: Color = White_bb
 )
 
 val LocalColors = staticCompositionLocalOf { Colors() }

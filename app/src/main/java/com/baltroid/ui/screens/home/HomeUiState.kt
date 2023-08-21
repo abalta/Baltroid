@@ -1,13 +1,11 @@
 package com.baltroid.ui.screens.home
 
-import androidx.paging.PagingData
 import com.hitreads.core.model.Original
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
+import com.hitreads.core.model.TagsWithOriginals
 
 data class HomeUiState(
-    val originals: Flow<PagingData<Original>> = emptyFlow(),
-    val favorites: Flow<PagingData<Original>> = emptyFlow(),
+    val originals: List<TagsWithOriginals> = emptyList(),
+    val favorites: List<Original> = emptyList(),
     val loadStates: Map<Int, Boolean> = emptyMap(),
     val error: Throwable? = null,
 )

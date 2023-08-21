@@ -3,12 +3,10 @@ package com.baltroid.ui.screens.viewmodels
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.cachedIn
 import com.baltroid.core.common.result.handle
 import com.baltroid.ui.screens.home.HomeUiState
 import com.baltroid.ui.screens.home.filter.FilterUiState
 import com.baltroid.ui.screens.reading.ReadingUiState
-import com.hitreads.core.domain.model.OriginalModel
 import com.hitreads.core.domain.model.ProfileModel
 import com.hitreads.core.domain.usecase.CreateBookmarkUseCase
 import com.hitreads.core.domain.usecase.CreateCommentUseCase
@@ -26,7 +24,7 @@ import com.hitreads.core.ui.mapper.asEpisode
 import com.hitreads.core.ui.mapper.asOriginal
 import com.hitreads.core.ui.mapper.asShowOriginal
 import com.hitreads.core.ui.mapper.asTag
-import com.hitreads.core.ui.mapper.pagingMap
+import com.hitreads.core.ui.mapper.asTagsWithOriginals
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -79,16 +77,25 @@ class OriginalViewModel @Inject constructor(
 
     val filter = mutableStateListOf<Int>()
 
-    fun loadOriginals() = _uiStateHome.update {
+    /*fun loadOriginals() = _uiStateHome.update {
         val originals = getOriginalsUseCase(
             if (filter.isEmpty()) null
             else filter.joinToString { it.toString() }
-        ).pagingMap(OriginalModel::asOriginal)
+        ).pagingMap {
+            it.asTagsWithOriginals()
+        }
             .cachedIn(viewModelScope)
-
         it.copy(
             originals = originals
         )
+    }*/
+
+    fun loadOriginals() = viewModelScope.launch {
+        getOriginalsUseCase().handle {
+            onSuccess { result ->
+                _uiStateHome.update { it.copy(originals = result.map { it.asTagsWithOriginals() }) }
+            }
+        }
     }
 
     private fun getProfile() {
@@ -142,6 +149,7 @@ class OriginalViewModel @Inject constructor(
         isLoggedUseCase().handle {
             onSuccess {
                 _uiStateIsLogged.update { _ -> it }
+                loadFavorites()
                 getProfile()
             }
             onFailure {
@@ -154,13 +162,18 @@ class OriginalViewModel @Inject constructor(
         _sharedUIState.update { original }
     }
 
-    fun loadFavorites() = _uiStateHome.update {
-        val originals = getOriginalsUseCase(getByFav = true).pagingMap(OriginalModel::asOriginal)
-            .cachedIn(viewModelScope)
-
-        it.copy(
-            favorites = originals
-        )
+    private fun loadFavorites() = viewModelScope.launch {
+        val favoriteOriginals = mutableListOf<Original>()
+        getOriginalsUseCase.invoke(true).handle {
+            onSuccess { result ->
+                result.forEach {
+                    it.originals?.forEach {
+                        favoriteOriginals.add(it.asOriginal())
+                    }
+                }
+                _uiStateHome.update { it.copy(favorites = favoriteOriginals) }
+            }
+        }
     }
 
     fun showOriginal(id: Int) = viewModelScope.launch {

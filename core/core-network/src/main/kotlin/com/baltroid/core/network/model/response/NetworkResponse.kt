@@ -13,8 +13,8 @@ data class OriginalResponseDto(
     @SerialName(Constants.Fields.DATA_COUNT)
     val dataCount: Int?,
 
-    @SerialName(Constants.Fields.ORIGINALS)
-    val originals: List<NetworkOriginal>,
+    @SerialName(Constants.Fields.TAGS)
+    val tags: List<TagsWithOriginalsDto>,
 
     @SerialName(Constants.Fields.ACTIVE_PAGE)
     val totalPages: Int?,
@@ -24,27 +24,13 @@ data class OriginalResponseDto(
 )
 
 @Serializable
-data class TagsDto(
-    @SerialName("Gençlik")
-    val youth: TagDetail?,
-    @SerialName("Romantik")
-    val romance: TagDetail?,
-    @SerialName("Macera")
-    val adventure: TagDetail?,
-    @SerialName("Bilim Kurgu")
-    val sciFi: TagDetail?,
-    @SerialName("Dram")
-    val drama: TagDetail?,
-    @SerialName("Fantastik")
-    val fantastic: TagDetail?,
-)
-
-@Serializable
-data class TagDetail(
+data class TagsWithOriginalsDto(
     @SerialName("tag_name")
     val tagName: String?,
+    @SerialName("tag_id")
+    val tagId: Int?,
     @SerialName("originals")
-    val originals: List<List<NetworkOriginal>?>?
+    val originals: List<NetworkOriginal>?
 )
 
 @Serializable

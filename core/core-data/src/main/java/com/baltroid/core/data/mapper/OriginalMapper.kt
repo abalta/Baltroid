@@ -15,6 +15,7 @@ import com.baltroid.core.network.model.response.AllCommentsDto
 import com.baltroid.core.network.model.response.BookmarkDto
 import com.baltroid.core.network.model.response.CommentDto
 import com.baltroid.core.network.model.response.FavoriteDto
+import com.baltroid.core.network.model.response.TagsWithOriginalsDto
 import com.baltroid.core.network.model.response.WelcomeDto
 import com.baltroid.core.network.model.user.NetworkUserData
 import com.hitreads.core.domain.model.AllCommentsModel
@@ -29,6 +30,7 @@ import com.hitreads.core.domain.model.SeasonModel
 import com.hitreads.core.domain.model.ShowEpisodeModel
 import com.hitreads.core.domain.model.ShowOriginalModel
 import com.hitreads.core.domain.model.TagModel
+import com.hitreads.core.domain.model.TagsWithOriginalsModel
 import com.hitreads.core.domain.model.UserDataModel
 import com.hitreads.core.domain.model.WelcomeModel
 
@@ -107,7 +109,8 @@ internal fun NetworkShowEpisode.asShowEpisodeModel() = ShowEpisodeModel(
     priceType = priceType,
     sort = sort,
     createdAt = createdAt,
-    updatedAt = updatedAt
+    updatedAt = updatedAt,
+    isLocked = isLocked
 )
 
 internal fun NetworkAuthor.asAuthorModel() = AuthorModel(
@@ -229,3 +232,6 @@ internal fun FavoriteDto.asFavoriteModel() = FavoriteModel(
     sort = sort
 )
 
+internal fun TagsWithOriginalsDto.asTagsWithOriginalsModel() = TagsWithOriginalsModel(
+    tagName = tagName, tagId = tagId, originals = originals?.map { it.asOriginalModel() }
+)
