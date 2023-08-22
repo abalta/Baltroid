@@ -85,6 +85,8 @@ fun HomeScreen(
         profileModel = profile,
         uiState = uiStates,
         openMenuScreen = openMenuScreen,
+        isUserLoggedIn = viewModel.uiStateIsLogged.collectAsStateWithLifecycle().value,
+        deleteFavorite = viewModel::deleteFavorite,
         navigate = navigate
         //uiStates = uiStates.originals.collectAsLazyPagingItems().itemSnapshotList.items,
         //uiStatesFavorites = uiStates.favorites.collectAsLazyPagingItems().itemSnapshotList.items,
@@ -97,7 +99,9 @@ fun HomeScreen(
 fun HomeScreenContent(
     profileModel: ProfileModel,
     uiState: HomeUiState,
+    isUserLoggedIn: Boolean,
     openMenuScreen: () -> Unit,
+    deleteFavorite: (Original?) -> Unit,
     navigate: (route: String, item: Original?) -> Unit
 ) {
     var tabState by rememberSaveable {
@@ -111,6 +115,7 @@ fun HomeScreenContent(
             iconResId = R.drawable.ic_bell_outlined,
             numberOfNotification = 0,
             isGemEnabled = true,
+            isUserLoggedIn = isUserLoggedIn,
             gemCount = profileModel.gem,
             onMenuClick = openMenuScreen
         ) {
@@ -139,8 +144,11 @@ fun HomeScreenContent(
             }
 
             HomeScreenTabs.Favorites -> {
-                FavoriteOriginals(originals = uiState.favorites, state = rememberLazyListState()) {
-
+                FavoriteOriginals(
+                    originals = uiState.favorites, state = rememberLazyListState(),
+                    onStarClicked = deleteFavorite
+                ) {
+                    navigate.invoke(HitReadsScreens.HomeDetailScreen.route, it)
                 }
             }
 
@@ -189,7 +197,8 @@ private fun FavoriteOriginals(
     originals: List<Original>,
     state: LazyListState,
     modifier: Modifier = Modifier,
-    onItemClicked: (Original?) -> Unit
+    onStarClicked: (Original?) -> Unit,
+    onItemClicked: (Original?) -> Unit,
 ) {
     LazyRow(
         modifier = modifier,
@@ -198,7 +207,9 @@ private fun FavoriteOriginals(
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp30),
     ) {
         items(originals) { original ->
-            FavoriteOriginalItem(original = original) {
+            FavoriteOriginalItem(
+                original = original,
+                onStarClicked = { onStarClicked.invoke(original) }) {
                 onItemClicked.invoke(original)
             }
         }
@@ -259,7 +270,8 @@ private fun OriginalItem(
 @Composable
 fun FavoriteOriginalItem(
     original: Original,
-    onClick: () -> Unit
+    onStarClicked: () -> Unit,
+    onClick: () -> Unit,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -274,6 +286,7 @@ fun FavoriteOriginalItem(
             modifier = Modifier
                 .size(MaterialTheme.localDimens.dp129, MaterialTheme.localDimens.dp180)
                 .clip(MaterialTheme.localShapes.roundedDp9)
+                .clickable { onClick.invoke() }
         )
         VerticalSpacer(height = MaterialTheme.localDimens.dp13)
         Text(
@@ -284,7 +297,9 @@ fun FavoriteOriginalItem(
             textAlign = TextAlign.Center,
         )
         VerticalSpacer(height = MaterialTheme.localDimens.dp28)
-        YellowStarBox()
+        YellowStarBox(
+            modifier = Modifier.clickable { onStarClicked.invoke() }
+        )
     }
 }
 

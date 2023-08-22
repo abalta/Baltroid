@@ -703,7 +703,8 @@ fun InteractiveScreenPreview() {
             episodeCount = 3147,
             seasons = listOf(),
             isNew = false,
-            dataCount = 6877
+            dataCount = 6877,
+            barcode = "21312312"
         ),
         Episode(
             id = 6941,

@@ -73,4 +73,6 @@
     <string name="register_success">Başarıyla kayıt olundu mail adresinize gelen bağlantıyı onaylayın.</string>
     <string name="episodes">BÖLÜMLER</string>
     <string name="continue_reading">OKUMAYA DEVAM ET</string>
+    <string name="barcode">BARKOD</string>
+    <string name="summary">ÖZET</string>
 </resources>

@@ -140,11 +140,10 @@ interface HitReadsService {
         @Field("$ID") id: Int
     ): BaltroidResult<HitReadsResponse<Unit>>
 
-    @FormUrlEncoded
     @DELETE("$FAVORITE")
     suspend fun deleteFavorite(
-        @Field("$TYPE") type: String,
-        @Field("$ID") id: Int
+        @Query("$TYPE") type: String,
+        @Query("$ID") id: Int
     ): BaltroidResult<HitReadsResponse<Unit>>
 
     @GET("$FAVORITE")

@@ -1,5 +1,6 @@
 package com.baltroid.ui.screens.home.detail
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -62,7 +64,7 @@ fun HomeDetailScreen(
     viewModel: OriginalViewModel,
     navigateBack: () -> Unit,
     openMenuScreen: () -> Unit,
-    navigate: (route: String) -> Unit
+    navigate: (route: String, episode: ShowEpisode?, original: Original?) -> Unit
 ) {
 
     val episodes = viewModel.uiStateReading.collectAsStateWithLifecycle().value.original?.episodes
@@ -201,6 +203,7 @@ fun GenreAndInteractions(
     genres: List<Tag>,
     numberOfViews: Int,
     numberOfComments: Int,
+    onInfoClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -218,7 +221,9 @@ fun GenreAndInteractions(
             modifier = Modifier.align(Alignment.Bottom)
         )
         HorizontalSpacer(width = MaterialTheme.localDimens.dp15)
-        SimpleIcon(iconResId = R.drawable.ic_info)
+        SimpleIcon(iconResId = R.drawable.ic_info, modifier = Modifier.clickable {
+            onInfoClicked.invoke()
+        })
     }
 }
 
@@ -251,11 +256,26 @@ private fun HomeDetailSummarySection(
 fun HomeDetailScreenContent(
     screenState: Original?,
     episodes: List<ShowEpisode>,
-    navigate: (route: String) -> Unit
+    navigate: (route: String, episode: ShowEpisode?, original: Original?) -> Unit
 ) {
 
     var isEpisodesEnabled by rememberSaveable {
         mutableStateOf(false)
+    }
+    var isBarcodeEnabled by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    BackHandler(
+        enabled = isEpisodesEnabled
+    ) {
+        isEpisodesEnabled = false
+    }
+
+    BackHandler(
+        enabled = isBarcodeEnabled
+    ) {
+        isBarcodeEnabled = false
     }
 
     Box(
@@ -285,7 +305,12 @@ fun HomeDetailScreenContent(
                     .align(Alignment.BottomCenter)
             )
         }
-        if (!isEpisodesEnabled) {
+        if (isBarcodeEnabled) {
+            OriginalBarcode(original = screenState) {
+                isBarcodeEnabled = false
+            }
+        }
+        if (!isEpisodesEnabled && !isBarcodeEnabled) {
             Column {
                 HitReadsTopBar(
                     iconResId = R.drawable.ic_bell,
@@ -332,6 +357,7 @@ fun HomeDetailScreenContent(
                             genres = screenState?.tags.orEmpty(),
                             numberOfViews = screenState?.viewCount.orZero(),
                             numberOfComments = screenState?.commentCount.orZero(),
+                            onInfoClicked = { isBarcodeEnabled = !isBarcodeEnabled },
                             modifier = Modifier.width(IntrinsicSize.Max)
                         )
                         VerticalSpacer(height = MaterialTheme.localDimens.dp20_5)
@@ -361,8 +387,10 @@ fun HomeDetailScreenContent(
                             modifier = Modifier
                                 .align(Alignment.Bottom)
                         ) {
-                            SimpleIcon(iconResId = R.drawable.ic_lock)
-                            HorizontalSpacer(width = MaterialTheme.localDimens.dp8)
+                            if (screenState?.isLocked == true) {
+                                SimpleIcon(iconResId = R.drawable.ic_lock)
+                                HorizontalSpacer(width = MaterialTheme.localDimens.dp8)
+                            }
                             Text(
                                 text = screenState?.hashtag.orEmpty(),
                                 style = MaterialTheme.localTextStyles.episodeText
@@ -370,9 +398,17 @@ fun HomeDetailScreenContent(
                         }
                         SimpleImage(imgResId = R.drawable.ic_read, modifier = Modifier.clickable {
                             if (screenState?.type == "interactive") {
-                                navigate.invoke(HitReadsScreens.InteractiveScreen.route)
+                                navigate.invoke(
+                                    HitReadsScreens.InteractiveScreen.route,
+                                    episodes.firstOrNull(),
+                                    screenState
+                                )
                             } else {
-                                navigate.invoke(HitReadsScreens.ReadingScreen.route.plus("/${screenState?.id}"))
+                                navigate.invoke(
+                                    HitReadsScreens.ReadingScreen.route,
+                                    episodes.firstOrNull(),
+                                    screenState
+                                )
                             }
                         })
                     }
@@ -383,17 +419,30 @@ fun HomeDetailScreenContent(
                 }
             }
         } else {
-            EpisodeSheet(
-                episodes = episodes,
-                Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(0.7f)
-                    .background(MaterialTheme.localColors.black_alpha05)
-                    .align(Alignment.BottomCenter),
-                closeSheet = {
-                    isEpisodesEnabled = false
-                }
-            )
+            if (isEpisodesEnabled) {
+                EpisodeSheet(
+                    episodes = episodes,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.7f)
+                        .background(MaterialTheme.localColors.black_alpha05)
+                        .align(Alignment.BottomCenter),
+                    closeSheet = {
+                        isEpisodesEnabled = false
+                    },
+                    onEpisodeClick = {
+                        if (screenState?.type == "interactive") {
+                            navigate.invoke(
+                                HitReadsScreens.InteractiveScreen.route,
+                                episodes.firstOrNull(),
+                                screenState
+                            )
+                        } else {
+                            navigate.invoke(HitReadsScreens.ReadingScreen.route, it, screenState)
+                        }
+                    }
+                )
+            }
         }
 
     }
@@ -523,7 +572,8 @@ fun HomeDetailScreenContent(
 fun EpisodeSheet(
     episodes: List<ShowEpisode>,
     modifier: Modifier = Modifier,
-    closeSheet: () -> Unit
+    closeSheet: () -> Unit,
+    onEpisodeClick: (ShowEpisode) -> Unit
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -546,7 +596,7 @@ fun EpisodeSheet(
         ) {
             items(episodes) { episode ->
                 EpisodeItem(episode = episode) {
-
+                    onEpisodeClick.invoke(it)
                 }
                 Divider(
                     color = MaterialTheme.localColors.white,
@@ -584,12 +634,12 @@ fun DetailEpisodes(
 @Composable
 fun EpisodeItem(
     episode: ShowEpisode,
-    onClick: (Int) -> Unit,
+    onClick: (ShowEpisode) -> Unit,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .clickable { onClick.invoke(episode.id.orZero()) }
+            .clickable { onClick.invoke(episode) }
             .padding(
                 start = MaterialTheme.localDimens.dp28,
                 end = MaterialTheme.localDimens.dp22,
@@ -611,6 +661,74 @@ fun EpisodeItem(
             SimpleIcon(
                 iconResId = R.drawable.ic_lock,
                 modifier = Modifier.padding(end = MaterialTheme.localDimens.dp22)
+            )
+        }
+    }
+}
+
+@Composable
+fun OriginalBarcode(
+    original: Original?,
+    onCloseClicked: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .systemBarsPadding()
+            .padding(horizontal = MaterialTheme.localDimens.dp22)
+            .fillMaxSize()
+            .clip(MaterialTheme.localShapes.roundedDp20)
+            .background(MaterialTheme.localColors.white)
+            .verticalScroll(rememberScrollState())
+    ) {
+        VerticalSpacer(height = MaterialTheme.localDimens.dp43)
+        SimpleImage(
+            imgResId = R.drawable.ic_circular_close,
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentWidth(Alignment.End)
+                .padding(end = MaterialTheme.localDimens.dp24)
+                .clickable { onCloseClicked.invoke() }
+        )
+        VerticalSpacer(height = MaterialTheme.localDimens.dp30)
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentWidth(Alignment.CenterHorizontally)
+                .width(IntrinsicSize.Min)
+        ) {
+            AsyncImage(
+                model = original?.cover,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(
+                        MaterialTheme.localDimens.dp269,
+                        MaterialTheme.localDimens.dp376
+                    )
+                    .clip(MaterialTheme.localShapes.roundedDp20)
+                    .align(Alignment.CenterHorizontally)
+            )
+            VerticalSpacer(height = MaterialTheme.localDimens.dp30)
+            Text(
+                text = stringResource(id = R.string.barcode),
+                style = MaterialTheme.localTextStyles.extraBoldTitle,
+                color = MaterialTheme.localColors.black
+            )
+            VerticalSpacer(height = MaterialTheme.localDimens.dp2)
+            Text(
+                text = original?.barcode.orEmpty(),
+                style = MaterialTheme.localTextStyles.detailSummaryTextBlack,
+            )
+            VerticalSpacer(height = MaterialTheme.localDimens.dp7)
+            Text(
+                text = stringResource(id = R.string.summary),
+                style = MaterialTheme.localTextStyles.extraBoldTitle,
+                color = MaterialTheme.localColors.black
+            )
+            VerticalSpacer(height = MaterialTheme.localDimens.dp3)
+            Text(
+                text = "Kim olduğunu sorguladıkça dünyasının sahtelikten İbaret olduğunu anlamaya başlayan Işıl Özsoydan, öğrendiği gerçekler...",
+                style = MaterialTheme.localTextStyles.detailSummaryTextBlack
             )
         }
     }

@@ -20,6 +20,7 @@ import com.hitreads.core.domain.usecase.ProfileUseCase
 import com.hitreads.core.domain.usecase.ShowEpisodeUseCase
 import com.hitreads.core.domain.usecase.ShowOriginalUseCase
 import com.hitreads.core.model.Original
+import com.hitreads.core.model.ShowEpisode
 import com.hitreads.core.ui.mapper.asEpisode
 import com.hitreads.core.ui.mapper.asOriginal
 import com.hitreads.core.ui.mapper.asShowOriginal
@@ -76,6 +77,9 @@ class OriginalViewModel @Inject constructor(
     val uiStateProfile = _uiStateProfile.asStateFlow()
 
     val filter = mutableStateListOf<Int>()
+
+    var selectedOriginal: Original? = null
+    var selectedEpisode: ShowEpisode? = null
 
     /*fun loadOriginals() = _uiStateHome.update {
         val originals = getOriginalsUseCase(
@@ -136,10 +140,16 @@ class OriginalViewModel @Inject constructor(
         }
     }
 
-    fun deleteFavorite(id: Int) = viewModelScope.launch {
-        createFavoriteUseCase.invoke("episode", id).handle {
-            onSuccess {
-                _uiStateReading.update { it.copy(episode = it.episode?.copy(isFav = false)) }
+    fun deleteFavorite(original: Original?) = viewModelScope.launch {
+        original?.let {
+            deleteFavoriteUseCase.invoke("originals", it.id).handle {
+                onSuccess {
+                    _uiStateHome.update { uiState ->
+                        val newList = uiState.favorites.toMutableList()
+                        newList.remove(original)
+                        uiState.copy(favorites = newList)
+                    }
+                }
             }
         }
     }

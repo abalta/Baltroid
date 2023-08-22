@@ -59,6 +59,7 @@ import com.baltroid.ui.common.HorizontalSpacer
 import com.baltroid.ui.common.IconWithTextNextTo
 import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.VerticalSpacer
+import com.baltroid.ui.components.HitReadsSideBar
 import com.baltroid.ui.components.HitReadsTopBar
 import com.baltroid.ui.screens.menu.comments.CommentImage
 import com.baltroid.ui.screens.menu.comments.CommentViewModel
@@ -74,10 +75,10 @@ import com.hitreads.core.domain.model.OriginalType
 import com.hitreads.core.model.Comment
 import com.hitreads.core.model.Episode
 import com.hitreads.core.model.ShowEpisode
+import com.hitreads.core.model.ShowOriginal
 
 @Composable
 fun ReadingScreen(
-    originalId: Int,
     viewModel: OriginalViewModel,
     commentViewModel: CommentViewModel = hiltViewModel(),
     openMenuScreen: () -> Unit,
@@ -88,21 +89,22 @@ fun ReadingScreen(
     val comments = commentViewModel.uiState.collectAsStateWithLifecycle().value.commentList
 
     LaunchedEffect(Unit) {
-        viewModel.showOriginal(originalId)
-        commentViewModel.getAllComments("original", originalId)
+        viewModel.showOriginal(viewModel.selectedOriginal?.id.orZero())
+        commentViewModel.getAllComments("original", viewModel.selectedOriginal?.id)
     }
 
     LaunchedEffect(screenState.original) {
         if (screenState.original != null) {
             viewModel.showEpisode(
-                screenState.original.episodes.firstOrNull()?.id.orZero(),
+                viewModel.selectedEpisode?.id.orZero(),
                 OriginalType.TEXT
             )
         }
     }
 
     ReadingScreenContent(
-        body = screenState.episode?.content.orEmpty()
+        body = screenState.episode?.content.orEmpty(),
+        original = screenState.original,
     )
 
     /* ReadingScreenContent(
@@ -496,6 +498,7 @@ fun TitleSection(
                     modifier = Modifier
                         .padding(
                             top = MaterialTheme.localDimens.dp8,
+                            end = MaterialTheme.localDimens.dp15,
                         )
                         .clickable {
                             onLikeClick(isLiked)
@@ -988,7 +991,8 @@ fun SeeAll(
 
 @Composable
 fun ReadingScreenContent(
-    body: String
+    body: String,
+    original: ShowOriginal?,
 ) {
     val scrollState = rememberScrollState()
     Column {
@@ -1000,26 +1004,46 @@ fun ReadingScreenContent(
                 .fillMaxWidth()
                 .fillMaxHeight(0.14f),
         )
-        TitleSection(
-            title = "KİMSE GERÇEK DEĞİL",
-            subtitle = "ZEYNEP SEY",
-            isExpanded = true,
-            isLiked = false,
-            onDotsClick = { /*TODO*/ },
-            onLikeClick = { },
-            modifier = Modifier.padding(
-                top = MaterialTheme.localDimens.dp12,
-                start = MaterialTheme.localDimens.dp31
-            )
-        )
         Row {
-            Text(
-                text = body,
-                style = MaterialTheme.localTextStyles.body,
+            HorizontalSpacer(width = MaterialTheme.localDimens.dp31)
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                TitleSection(
+                    title = original?.title.orEmpty(),
+                    subtitle = original?.author?.name.orEmpty(),
+                    isExpanded = false,
+                    isLiked = false,
+                    onDotsClick = { /*TODO*/ },
+                    onLikeClick = { },
+                    modifier = Modifier.padding(
+                        top = MaterialTheme.localDimens.dp12,
+                    )
+                )
+                Text(
+                    text = body,
+                    style = MaterialTheme.localTextStyles.body,
+                    modifier = Modifier
+                        .verticalScroll(scrollState)
+                        .padding(
+                            end = MaterialTheme.localDimens.dp24
+                        )
+                )
+            }
+            HitReadsSideBar(
+                numberOfComments = 0,
+                onVisibilityChange = { /*TODO*/ },
+                onShowComments = { /*TODO*/ },
+                onCreateComment = { /*TODO*/ },
                 modifier = Modifier
-                    .weight(1f)
-                    .verticalScroll(scrollState)
-            )
+                    .width(IntrinsicSize.Min)
+                    .padding(
+                        top = MaterialTheme.localDimens.dp12,
+                        end = MaterialTheme.localDimens.dp12
+                    )
+            ) {
+
+            }
         }
     }
 }

@@ -38,6 +38,7 @@ fun HitReadsTopBar(
     @DrawableRes iconResId: Int,
     numberOfNotification: Int,
     modifier: Modifier = Modifier,
+    isUserLoggedIn: Boolean = false,
     iconTint: Color = Color.Unspecified,
     gemCount: Int = 0,
     isGemEnabled: Boolean = false,
@@ -65,6 +66,7 @@ fun HitReadsTopBar(
             iconTint = iconTint,
             iconResId = iconResId,
             onMenuClick = onMenuClick,
+            isUserLoggedIn = isUserLoggedIn,
             numberOfNotification = 0,
             gemCount = gemCount,
             isGemEnabled = isGemEnabled,
@@ -81,6 +83,7 @@ fun MenuAndNotification(
     iconTint: Color = Color.Unspecified,
     gemCount: Int,
     isGemEnabled: Boolean = false,
+    isUserLoggedIn: Boolean = false,
     onMenuClick: () -> Unit,
     onNotificationClick: () -> Unit
 ) {
@@ -104,8 +107,18 @@ fun MenuAndNotification(
                         horizontal = MaterialTheme.localDimens.dp15
                     )
             ) {
-                Text(text = gemCount.toString(), style = MaterialTheme.localTextStyles.episodeText)
-                SimpleIcon(iconResId = R.drawable.ic_diamond)
+                if (!isUserLoggedIn) {
+                    Text(
+                        text = stringResource(id = R.string.member_login),
+                        style = MaterialTheme.localTextStyles.episodeText
+                    )
+                } else {
+                    Text(
+                        text = gemCount.toString(),
+                        style = MaterialTheme.localTextStyles.episodeText
+                    )
+                    SimpleIcon(iconResId = R.drawable.ic_diamond)
+                }
             }
             HorizontalSpacer(width = MaterialTheme.localDimens.dp26)
         }
@@ -233,6 +246,7 @@ fun HitReadsTopBarPreview() {
         numberOfNotification = 12,
         gemCount = 4500,
         isGemEnabled = true,
+        isUserLoggedIn = true,
         onIconClick = {},
         onMenuClick = {}
     )

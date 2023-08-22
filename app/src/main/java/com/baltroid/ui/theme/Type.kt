@@ -73,7 +73,8 @@ data class TextStyles(
     val readingPurpleSubTitle: TextStyle,
     val originalItemTitle: TextStyle,
     val episodesSheet: TextStyle,
-    val episodeSheetEpisode: TextStyle
+    val episodeSheetEpisode: TextStyle,
+    val detailSummaryTextBlack: TextStyle
 )
 
 val DarkThemeTextStyles = TextStyles(
@@ -344,7 +345,13 @@ val DarkThemeTextStyles = TextStyles(
         fontSize = 15.sp,
         fontWeight = FontWeight.Bold,
         color = White
-    )
+    ),
+    detailSummaryTextBlack = TextStyle(
+        fontFamily = SpaceGrotesk,
+        fontWeight = FontWeight.Normal,
+        fontSize = 13.5.sp,
+        color = Black
+    ),
 )
 
 val LightThemeTextStyles = TextStyles(
@@ -371,6 +378,12 @@ val LightThemeTextStyles = TextStyles(
         fontWeight = FontWeight.Normal,
         fontSize = 13.5.sp,
         color = White
+    ),
+    detailSummaryTextBlack = TextStyle(
+        fontFamily = SpaceGrotesk,
+        fontWeight = FontWeight.Normal,
+        fontSize = 13.5.sp,
+        color = Black
     ),
     menuBarTitle = TextStyle(
         fontFamily = SpaceGrotesk,
@@ -706,6 +719,8 @@ data class Dimensions(
     val dp308: Dp = 308.dp,
     val dp249: Dp = 249.dp,
     val dp348: Dp = 348.dp,
+    val dp376: Dp = 376.dp,
+    val dp269: Dp = 269.dp,
 )
 
 val LocalTextStyles = compositionLocalOf {

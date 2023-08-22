@@ -13,8 +13,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptionsBuilder
-import androidx.navigation.NavType
-import androidx.navigation.navArgument
 import com.baltroid.apps.R
 import com.baltroid.presentation.screens.menu.login.LoginViewModel
 import com.baltroid.ui.common.CroppedImage
@@ -28,7 +26,6 @@ import com.baltroid.ui.screens.playground.PlaygroundScreen
 import com.baltroid.ui.screens.reading.ReadingScreen
 import com.baltroid.ui.screens.viewmodels.OriginalViewModel
 import com.baltroid.ui.theme.localColors
-import com.baltroid.util.orZero
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
@@ -105,17 +102,19 @@ fun HitReadsNavHost(
                     viewModel = originalViewModel,
                     navigateBack = { navController.popBackStack() },
                     openMenuScreen = openMenuScreen,
-                ) { route ->
+                ) { route, episode, original ->
+                    originalViewModel.apply {
+                        selectedOriginal = original
+                        selectedEpisode = episode
+                    }
                     navController.navigate(route)
                 }
             }
             composable(
-                route = HitReadsScreens.ReadingScreen.route.plus("/{id}"),
-                arguments = listOf(navArgument("id") { type = NavType.IntType })
-            ) { bacStackEntry ->
+                route = HitReadsScreens.ReadingScreen.route
+            ) {
                 ReadingScreen(
                     viewModel = originalViewModel,
-                    originalId = bacStackEntry.arguments?.getInt("id").orZero(),
                     openMenuScreen = openMenuScreen,
                     navigate = {
                         navController.navigate(it)

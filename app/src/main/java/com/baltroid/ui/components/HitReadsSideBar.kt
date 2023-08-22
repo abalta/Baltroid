@@ -252,7 +252,9 @@ fun HitReadsSideBar(
     onCreateComment: () -> Unit,
     onShowEpisodes: () -> Unit
 ) {
-    Row {
+    Row(
+        modifier = modifier
+    ) {
         Divider(
             modifier = Modifier
                 .fillMaxHeight()

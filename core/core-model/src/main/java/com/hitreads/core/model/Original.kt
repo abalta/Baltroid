@@ -23,5 +23,6 @@ data class Original(
     val episodeCount: Int,
     val seasons: List<Season>,
     val isNew: Boolean,
-    val dataCount: Int
+    val dataCount: Int,
+    val barcode: String
 )
