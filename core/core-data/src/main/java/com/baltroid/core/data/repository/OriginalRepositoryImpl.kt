@@ -34,10 +34,16 @@ class OriginalRepositoryImpl @Inject constructor(
             )
         }).flow*/
 
-    override fun getOriginals(getByFav: Boolean?): Flow<BaltroidResult<List<TagsWithOriginalsModel>>> =
+    override fun getOriginals(
+        getByFav: Boolean?,
+        continueReading: Boolean?
+    ): Flow<BaltroidResult<List<TagsWithOriginalsModel>>> =
         flow {
             emit(BaltroidResult.loading())
-            val response = networkDataSource.getOriginals()
+            val response = networkDataSource.getOriginals(
+                getByFav = getByFav,
+                continueReading = continueReading
+            )
             when {
                 response.isSuccess() -> {
                     response.value.data?.let {

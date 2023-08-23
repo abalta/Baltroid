@@ -57,7 +57,8 @@ internal fun NetworkOriginal.asOriginalModel() = OriginalModel(
     hashtag = hashtag,
     seasons = seasons?.map { it.asSeasonModel() }.orEmpty(),
     isNew = isNew,
-    barcode = barcode.orEmpty()
+    barcode = barcode.orEmpty(),
+    continueReadingEpisode = continueReadingEpisode?.asShowEpisodeModel()
 )
 
 internal fun NetworkCommentOriginal.asOriginalModel() = OriginalModel(
@@ -83,7 +84,8 @@ internal fun NetworkCommentOriginal.asOriginalModel() = OriginalModel(
     hashtag = hashtag.orEmpty(),
     seasons = emptyList(),
     isNew = false,
-    barcode = ""
+    barcode = "",
+    continueReadingEpisode = null
 )
 
 internal fun NetworkShowOriginal.asShowOriginalModel() = ShowOriginalModel(

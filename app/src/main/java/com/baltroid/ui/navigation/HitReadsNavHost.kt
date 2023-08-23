@@ -76,9 +76,13 @@ fun HitReadsNavHost(
                     viewModel = originalViewModel,
                     openMenuScreen = openMenuScreen,
                 ) { route, item ->
-                    if (route == HitReadsScreens.HomeDetailScreen.route) {
-                        originalViewModel.setSharedUIState(item)
+                    if (route != HitReadsScreens.HomeDetailScreen.route) {
+                        originalViewModel.apply {
+                            selectedOriginal = item
+                            selectedEpisode = item?.continueReadingEpisode
+                        }
                     }
+                    originalViewModel.setSharedUIState(item)
                     navController.navigate(route)
                 }
             }

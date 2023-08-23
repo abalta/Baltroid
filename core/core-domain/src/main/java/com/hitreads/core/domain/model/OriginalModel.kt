@@ -27,7 +27,8 @@ data class OriginalModel(
     val hashtag: String,
     val seasons: List<SeasonModel>,
     val isNew: Boolean,
-    val barcode: String
+    val barcode: String,
+    val continueReadingEpisode: ShowEpisodeModel?
 )
 
 @Retention(AnnotationRetention.SOURCE)

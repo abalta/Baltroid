@@ -53,7 +53,8 @@ fun OriginalModel.asOriginal() = Original(
     episodeCount = episodeCount,
     seasons = seasons.map { it.asSeason() },
     isNew = isNew,
-    barcode = barcode
+    barcode = barcode,
+    continueReadingEpisode = continueReadingEpisode?.asShowEpisode()
 )
 
 fun TagsWithOriginalsModel.asTagsWithOriginals() = TagsWithOriginals(

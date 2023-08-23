@@ -34,8 +34,11 @@ class HitReadsNetworkDataSource @Inject constructor(private val hitReadsService:
     ): BaltroidResult<HitReadsResponse<OriginalResponseDto>> =
         hitReadsService.getOriginals(page, filter, getByFav)*/
 
-    suspend fun getOriginals(): BaltroidResult<HitReadsResponse<List<TagsWithOriginalsDto>>> =
-        hitReadsService.getOriginals()
+    suspend fun getOriginals(
+        getByFav: Boolean?,
+        continueReading: Boolean?
+    ): BaltroidResult<HitReadsResponse<List<TagsWithOriginalsDto>>> =
+        hitReadsService.getOriginals(getByFav = getByFav, continueReading = continueReading)
 
     suspend fun likeOriginal(
         originalId: Int

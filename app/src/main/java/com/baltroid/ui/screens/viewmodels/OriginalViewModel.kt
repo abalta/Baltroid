@@ -4,15 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.baltroid.core.common.result.handle
 import com.baltroid.ui.screens.home.HomeUiState
-import com.baltroid.ui.screens.home.filter.FilterUiState
 import com.baltroid.ui.screens.reading.ReadingUiState
-import com.hitreads.core.domain.usecase.CreateBookmarkUseCase
 import com.hitreads.core.domain.usecase.CreateCommentUseCase
 import com.hitreads.core.domain.usecase.CreateFavoriteUseCase
-import com.hitreads.core.domain.usecase.DeleteBookmarkUseCase
 import com.hitreads.core.domain.usecase.DeleteFavoriteUseCase
 import com.hitreads.core.domain.usecase.GetOriginalsUseCase
-import com.hitreads.core.domain.usecase.GetTagsUseCase
 import com.hitreads.core.domain.usecase.IsLoggedUseCase
 import com.hitreads.core.domain.usecase.ProfileUseCase
 import com.hitreads.core.domain.usecase.ShowEpisodeUseCase
@@ -22,7 +18,6 @@ import com.hitreads.core.model.ShowEpisode
 import com.hitreads.core.ui.mapper.asEpisode
 import com.hitreads.core.ui.mapper.asOriginal
 import com.hitreads.core.ui.mapper.asShowOriginal
-import com.hitreads.core.ui.mapper.asTag
 import com.hitreads.core.ui.mapper.asTagsWithOriginals
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,11 +34,11 @@ class OriginalViewModel @Inject constructor(
     private val isLoggedUseCase: IsLoggedUseCase,
     private val createFavoriteUseCase: CreateFavoriteUseCase,
     private val deleteFavoriteUseCase: DeleteFavoriteUseCase,
-    private val getTagsUseCase: GetTagsUseCase,
-    private val createBookmarkUseCase: CreateBookmarkUseCase,
-    private val deleteBookmarkUseCase: DeleteBookmarkUseCase,
     private val createCommentUseCase: CreateCommentUseCase,
-    private val profileUseCase: ProfileUseCase
+    private val profileUseCase: ProfileUseCase,
+    //private val getTagsUseCase: GetTagsUseCase,
+    //private val createBookmarkUseCase: CreateBookmarkUseCase,
+    //private val deleteBookmarkUseCase: DeleteBookmarkUseCase
 ) : ViewModel() {
 
     private val _uiStateReading = MutableStateFlow(ReadingUiState())
@@ -55,17 +50,15 @@ class OriginalViewModel @Inject constructor(
     private val _sharedUIState = MutableStateFlow<Original?>(null)
     val sharedUIState = _sharedUIState.asStateFlow()
 
-    private val _uiStateFilter = MutableStateFlow(FilterUiState())
-    val uiStateFilter = _uiStateFilter.asStateFlow()
-
     init {
+        loadOriginals()
         isLogged()
     }
 
     var selectedOriginal: Original? = null
     var selectedEpisode: ShowEpisode? = null
 
-    fun loadOriginals() = viewModelScope.launch {
+    private fun loadOriginals() = viewModelScope.launch {
         getOriginalsUseCase().handle {
             onLoading {
                 _uiStateHome.update { it.copy(isLoading = true) }
@@ -74,6 +67,31 @@ class OriginalViewModel @Inject constructor(
                 _uiStateHome.update {
                     it.copy(
                         originals = result.map { it.asTagsWithOriginals() },
+                        isLoading = false
+                    )
+                }
+            }
+            onFailure {
+                _uiStateHome.update { it.copy(isLoading = false) }
+            }
+        }
+    }
+
+    private fun loadContinueReading() = viewModelScope.launch {
+        val continueReading = mutableListOf<Original>()
+        getOriginalsUseCase.invoke(continueReading = true).handle {
+            onLoading {
+                _uiStateHome.update { it.copy(isLoading = true) }
+            }
+            onSuccess { result ->
+                result.forEach {
+                    it.originals?.forEach {
+                        continueReading.add(it.asOriginal())
+                    }
+                }
+                _uiStateHome.update {
+                    it.copy(
+                        continueReading = continueReading,
                         isLoading = false
                     )
                 }
@@ -96,22 +114,6 @@ class OriginalViewModel @Inject constructor(
                 onFailure {
                     _uiStateHome.update { it.copy(isLoading = false) }
                 }
-            }
-        }
-    }
-
-    fun createBookmark(originalId: Int, episodeId: Int) = viewModelScope.launch {
-        createBookmarkUseCase(originalId, episodeId).handle {
-            onSuccess {
-                _uiStateReading.update { it.copy(episode = it.episode?.copy(isBookmarked = true)) }
-            }
-        }
-    }
-
-    fun deleteBookmark(id: Int) = viewModelScope.launch {
-        deleteBookmarkUseCase.invoke(id).handle {
-            onSuccess {
-                _uiStateReading.update { it.copy(episode = it.episode?.copy(isFav = false)) }
             }
         }
     }
@@ -145,6 +147,7 @@ class OriginalViewModel @Inject constructor(
                 _uiStateHome.update { it.copy(isUserLoggedIn = isUserLoggedIn) }
                 loadFavorites()
                 getProfile()
+                loadContinueReading()
             }
             onFailure {
                 _uiStateHome.update { it.copy(isUserLoggedIn = false) }
@@ -194,7 +197,9 @@ class OriginalViewModel @Inject constructor(
                     )
                 }
             }
-            onFailure(::handleFailure)
+            onFailure {
+                _uiStateHome.update { it.copy(isLoading = false) }
+            }
         }
     }
 
@@ -217,27 +222,9 @@ class OriginalViewModel @Inject constructor(
                     )
                 }
             }
-            onFailure(::handleFailure)
-        }
-    }
-
-    fun loadFilters() = viewModelScope.launch {
-        getTagsUseCase().handle {
-            onLoading { list ->
-                _uiStateFilter.update { state ->
-                    state.copy(tagUiModels = list?.map {
-                        it.asTag()
-                    }.orEmpty(), isLoading = true)
-                }
+            onFailure {
+                _uiStateReading.update { it.copy(isLoading = false) }
             }
-            onSuccess { list ->
-                _uiStateFilter.update { state ->
-                    state.copy(tagUiModels = list.map {
-                        it.asTag()
-                    }, isLoading = true)
-                }
-            }
-            onFailure(::handleFailure)
         }
     }
 
@@ -256,12 +243,43 @@ class OriginalViewModel @Inject constructor(
         }
     }
 
-    private fun handleFailure(error: Throwable) = _uiStateReading.update {
-        it.copy(
-            error = error,
-            isLoading = false
-        )
+    /*private val _uiStateFilter = MutableStateFlow(FilterUiState())
+    val uiStateFilter = _uiStateFilter.asStateFlow()*/
+
+    /*fun createBookmark(originalId: Int, episodeId: Int) = viewModelScope.launch {
+        createBookmarkUseCase(originalId, episodeId).handle {
+            onSuccess {
+                _uiStateReading.update { it.copy(episode = it.episode?.copy(isBookmarked = true)) }
+            }
+        }
     }
+
+    fun deleteBookmark(id: Int) = viewModelScope.launch {
+        deleteBookmarkUseCase.invoke(id).handle {
+            onSuccess {
+                _uiStateReading.update { it.copy(episode = it.episode?.copy(isFav = false)) }
+            }
+        }
+    }*/
+
+    /*fun loadFilters() = viewModelScope.launch {
+        getTagsUseCase().handle {
+            onLoading { list ->
+                _uiStateFilter.update { state ->
+                    state.copy(tagUiModels = list?.map {
+                        it.asTag()
+                    }.orEmpty(), isLoading = true)
+                }
+            }
+            onSuccess { list ->
+                _uiStateFilter.update { state ->
+                    state.copy(tagUiModels = list.map {
+                        it.asTag()
+                    }, isLoading = true)
+                }
+            }
+        }
+    }*/
 
     //val filter = mutableStateListOf<Int>()
     /*fun loadOriginals() = _uiStateHome.update {

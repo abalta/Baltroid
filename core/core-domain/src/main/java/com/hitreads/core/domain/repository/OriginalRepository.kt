@@ -13,7 +13,8 @@ interface OriginalRepository {
     ): Flow<PagingData<TagsWithOriginalsModel>>*/
 
     fun getOriginals(
-        getByFav: Boolean? = null
+        getByFav: Boolean? = null,
+        continueReading: Boolean? = null
     ): Flow<BaltroidResult<List<TagsWithOriginalsModel>>>
 
     fun likeOriginal(originalId: Int): Flow<BaltroidResult<Unit?>>

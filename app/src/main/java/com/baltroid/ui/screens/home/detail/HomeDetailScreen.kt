@@ -62,7 +62,6 @@ import com.hitreads.core.model.Tag
 @Composable
 fun HomeDetailScreen(
     viewModel: OriginalViewModel,
-    navigateBack: () -> Unit,
     openMenuScreen: () -> Unit,
     navigate: (route: String, episode: ShowEpisode?, original: Original?) -> Unit
 ) {
@@ -73,6 +72,7 @@ fun HomeDetailScreen(
     HomeDetailScreenContent(
         episodes = episodes.orEmpty(),
         navigate = navigate,
+        openMenuScreen = openMenuScreen,
         screenState = viewModel.sharedUIState
             .collectAsStateWithLifecycle().value,
     )
@@ -228,7 +228,7 @@ fun GenreAndInteractions(
     }
 }
 
-@Composable
+/*@Composable
 private fun HomeDetailSummarySection(
     summary: String,
     modifier: Modifier = Modifier,
@@ -252,12 +252,13 @@ private fun HomeDetailSummarySection(
                 .align(Alignment.CenterVertically)
         )
     }
-}
+}*/
 
 @Composable
 fun HomeDetailScreenContent(
     screenState: Original?,
     episodes: List<ShowEpisode>,
+    openMenuScreen: () -> Unit,
     navigate: (route: String, episode: ShowEpisode?, original: Original?) -> Unit
 ) {
 
@@ -317,7 +318,7 @@ fun HomeDetailScreenContent(
                 HitReadsTopBar(
                     iconResId = R.drawable.ic_bell,
                     numberOfNotification = -1,
-                    onMenuClick = {},
+                    onMenuClick = openMenuScreen,
                     onIconClick = {},
                     iconTint = MaterialTheme.localColors.white,
                     onNotificationClick = {},

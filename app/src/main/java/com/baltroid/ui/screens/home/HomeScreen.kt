@@ -26,7 +26,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -68,10 +67,6 @@ fun HomeScreen(
 ) {
     val homeUiState = viewModel.uiStateHome.collectAsStateWithLifecycle().value
     SetLoadingState(isLoading = homeUiState.isLoading)
-
-    LaunchedEffect(Unit) {
-        viewModel.loadOriginals()
-    }
 
     HomeScreenContent(
         homeUiState = homeUiState,
@@ -135,8 +130,17 @@ fun HomeScreenContent(
                 }
             }
 
-            HomeScreenTabs.ContinueReading -> {/* no-op */
-
+            HomeScreenTabs.ContinueReading -> {
+                ContinueReading(
+                    originals = homeUiState.continueReading,
+                    state = rememberLazyListState()
+                ) {
+                    if (it?.type == "interactive") {
+                        navigate.invoke(HitReadsScreens.InteractiveScreen.route, it)
+                    } else {
+                        navigate.invoke(HitReadsScreens.ReadingScreen.route, it)
+                    }
+                }
             }
         }
     }
@@ -200,8 +204,67 @@ private fun FavoriteOriginals(
 }
 
 @Composable
-fun ContinueReading() {
+fun ContinueReading(
+    originals: List<Original>,
+    state: LazyListState,
+    modifier: Modifier = Modifier,
+    onItemClicked: (Original?) -> Unit,
+) {
+    LazyRow(
+        modifier = modifier,
+        state = state,
+        contentPadding = PaddingValues(horizontal = dimensionResource(id = R.dimen.dp24)),
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp30)),
+    ) {
+        items(originals) { original ->
+            ContinueReadingItem(
+                original = original
+            ) {
+                onItemClicked.invoke(original)
+            }
+        }
+    }
+}
 
+@Composable
+fun ContinueReadingItem(
+    original: Original,
+    onClick: () -> Unit,
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.width(IntrinsicSize.Min)
+    ) {
+        AsyncImage(
+            model = original.cover,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            placeholder = painterResource(id = R.drawable.hitreads_placeholder),
+            error = painterResource(id = R.drawable.hitreads_placeholder),
+            modifier = Modifier
+                .size(dimensionResource(id = R.dimen.dp129), dimensionResource(id = R.dimen.dp180))
+                .clip(MaterialTheme.localShapes.roundedDp9)
+                .clickable { onClick.invoke() }
+        )
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp13))
+        Text(
+            text = original.title,
+            style = MaterialTheme.localTextStyles.poppins12Bold,
+            color = MaterialTheme.localColors.white,
+            maxLines = 2,
+            minLines = 2,
+            textAlign = TextAlign.Center,
+        )
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp12))
+        Text(
+            text = stringResource(
+                id = R.string.episode_number,
+                original.continueReadingEpisode?.sort.orZero()
+            ),
+            style = MaterialTheme.localTextStyles.poppins12Regular,
+            color = MaterialTheme.localColors.white
+        )
+    }
 }
 
 @Composable
