@@ -1,4 +1,4 @@
-package com.baltroid.ui.screens.reading.comments
+package com.baltroid.ui
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -27,23 +27,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.baltroid.apps.R
-import com.baltroid.ui.common.SimpleIcon
-import com.baltroid.ui.common.VerticalSpacer
-import com.baltroid.ui.components.SideBarHorizontalDivider
-import com.baltroid.ui.components.SideBarVerticalDivider
-import com.baltroid.ui.screens.menu.comments.CommentViewModel
-import com.baltroid.ui.screens.reading.CommentSection
-import com.baltroid.ui.screens.reading.HashTagSection
-import com.baltroid.ui.screens.reading.HitReadsPageHeader
-import com.baltroid.ui.screens.reading.ScrollBar
-import com.baltroid.ui.theme.localColors
-import com.baltroid.ui.theme.localDimens
-import com.baltroid.ui.theme.localTextStyles
 
 @Composable
 fun AllCommentsScreen(
@@ -85,21 +75,22 @@ fun AllCommentsScreen(
                     modifier = Modifier
                         .weight(1f)
                 ) {
-                    VerticalSpacer(height = MaterialTheme.localDimens.dp12)
+                    VerticalSpacer(height = dimensionResource(id = R.dimen.dp12))
                     Text(
                         text = stringResource(id = R.string.comments),
                         style = MaterialTheme.localTextStyles.title,
+                        color = MaterialTheme.localColors.white,
                         modifier = Modifier.padding(
-                            start = MaterialTheme.localDimens.dp31,
-                            end = MaterialTheme.localDimens.dp15
+                            start = dimensionResource(id = R.dimen.dp31),
+                            end = dimensionResource(id = R.dimen.dp15)
                         )
                     )
-                    VerticalSpacer(height = MaterialTheme.localDimens.dp11_5)
+                    VerticalSpacer(height = dimensionResource(id = R.dimen.dp12))
                     Row {
                         Column(
                             modifier = Modifier
                                 .fillMaxHeight()
-                                .width(MaterialTheme.localDimens.dp31)
+                                .width(dimensionResource(id = R.dimen.dp31))
                         ) {
                             ScrollBar(
                                 scrollState = scrollState,
@@ -110,7 +101,7 @@ fun AllCommentsScreen(
                         CommentSection(
                             lazyListState = lazyListState,
                             comments = comments.commentList,
-                            modifier = Modifier.padding(end = MaterialTheme.localDimens.dp8),
+                            modifier = Modifier.padding(end = 8.dp),
                             onLikeClick = { _, _ -> },
                             onReplyClick = {},
                             onExpanseClicked = {
@@ -125,10 +116,10 @@ fun AllCommentsScreen(
                     }
                 }
             }
-            VerticalSpacer(height = MaterialTheme.localDimens.dp15)
+            VerticalSpacer(height = dimensionResource(id = R.dimen.dp15))
             AnimatedVisibility(visible = bottomBarVisibility) {
                 HashTagSection(
-                    paddingValues = PaddingValues(start = MaterialTheme.localDimens.dp31),
+                    paddingValues = PaddingValues(start = dimensionResource(id = R.dimen.dp31)),
                     modifier = Modifier.padding(bottom = this@BoxWithConstraints.maxHeight * .06f)
                 )
             }
@@ -160,8 +151,8 @@ fun AllCommentsScreenSideBar(
                     iconResId = R.drawable.ic_menu,
                     modifier = Modifier
                         .padding(
-                            vertical = MaterialTheme.localDimens.dp12,
-                            horizontal = MaterialTheme.localDimens.dp8
+                            vertical = dimensionResource(id = R.dimen.dp12),
+                            horizontal = 8.dp
                         )
                         .clickable { onDotsClick.invoke() }
                 )
@@ -175,9 +166,9 @@ fun AllCommentsScreenSideBar(
 
             ) {
                 SideBarHorizontalDivider()
-                VerticalSpacer(height = MaterialTheme.localDimens.dp12)
+                VerticalSpacer(height = dimensionResource(id = R.dimen.dp12))
                 SimpleIcon(iconResId = R.drawable.ic_add_comment)
-                VerticalSpacer(height = MaterialTheme.localDimens.dp12)
+                VerticalSpacer(height = dimensionResource(id = R.dimen.dp12))
             }
         }
     }

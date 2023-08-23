@@ -1,4 +1,4 @@
-package com.baltroid.ui.components
+package com.baltroid.ui
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.clickable
@@ -11,15 +11,12 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ChainStyle
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.baltroid.apps.R
-import com.baltroid.ui.common.SimpleIcon
-import com.baltroid.ui.common.VerticalSpacer
-import com.baltroid.ui.theme.localColors
-import com.baltroid.ui.theme.localDimens
-import com.baltroid.ui.theme.localTextStyles
 
 @Composable
 fun MenuBar(
@@ -28,7 +25,6 @@ fun MenuBar(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit
 ) {
-    val localDimens = MaterialTheme.localDimens
 
     ConstraintLayout(modifier = modifier.fillMaxWidth(.85f)) {
 
@@ -45,6 +41,7 @@ fun MenuBar(
         Text(
             text = title,
             style = MaterialTheme.localTextStyles.menuBarTitle,
+            color = MaterialTheme.localColors.white_alpha09,
             modifier = Modifier.constrainAs(text) {
                 top.linkTo(parent.top)
             }
@@ -59,12 +56,12 @@ fun MenuBar(
                 .clickable { onBackClick.invoke() }
         )
         Divider(
-            thickness = MaterialTheme.localDimens.dp0_5,
+            thickness = dimensionResource(id = R.dimen.dp1),
             color = MaterialTheme.localColors.white_alpha06,
             modifier = Modifier.constrainAs(divider) {
                 start.linkTo(banner.start)
                 end.linkTo(close.end)
-                top.linkTo(text.bottom, margin = localDimens.dp20)
+                top.linkTo(text.bottom, margin = 20.dp)
                 width = Dimension.fillToConstraints
             }
         )
@@ -86,6 +83,7 @@ fun IconlessMenuBar(
             Text(
                 text = title,
                 style = MaterialTheme.localTextStyles.menuBarTitle,
+                color = MaterialTheme.localColors.white_alpha09,
                 modifier = Modifier.align(
                     Alignment.Center
                 )
@@ -98,9 +96,9 @@ fun IconlessMenuBar(
             )
 
         }
-        VerticalSpacer(height = MaterialTheme.localDimens.dp20)
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp20))
         Divider(
-            thickness = MaterialTheme.localDimens.dp0_5,
+            thickness = dimensionResource(id = R.dimen.dp1),
             color = MaterialTheme.localColors.white_alpha06
         )
     }

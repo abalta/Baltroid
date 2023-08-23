@@ -1,4 +1,4 @@
-package com.baltroid.ui.components
+package com.baltroid.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,14 +21,10 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.baltroid.apps.R
-import com.baltroid.ui.common.IconWithTextBelow
-import com.baltroid.ui.common.SimpleIcon
-import com.baltroid.ui.theme.localColors
-import com.baltroid.ui.theme.localDimens
-import com.baltroid.ui.theme.localTextStyles
 import com.baltroid.util.conditional
 
 @Composable
@@ -86,7 +82,7 @@ fun SideBarVerticalDivider() {
         color = MaterialTheme.localColors.white_alpha05,
         modifier = Modifier
             .fillMaxHeight()
-            .width(MaterialTheme.localDimens.dp0_5)
+            .width(dimensionResource(id = R.dimen.dp1))
     )
 }
 
@@ -96,7 +92,7 @@ fun SideBarHorizontalDivider() {
         color = MaterialTheme.localColors.white_alpha05,
         modifier = Modifier
             .fillMaxWidth()
-            .height(MaterialTheme.localDimens.dp0_5)
+            .height(dimensionResource(id = R.dimen.dp1))
     )
 }
 
@@ -114,7 +110,6 @@ fun SideBarTopSection(
 ) {
 
     val localColors = MaterialTheme.localColors
-    val localDimens = MaterialTheme.localDimens
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -125,8 +120,8 @@ fun SideBarTopSection(
             iconResId = R.drawable.ic_menu,
             modifier = Modifier
                 .padding(
-                    vertical = MaterialTheme.localDimens.dp12,
-                    horizontal = MaterialTheme.localDimens.dp8
+                    vertical = dimensionResource(id = R.dimen.dp12),
+                    horizontal = 8.dp
                 )
                 .clickable { onDotsClick.invoke() }
         )
@@ -136,10 +131,10 @@ fun SideBarTopSection(
                 iconResId = R.drawable.ic_eye,
                 text = numberOfViews.toString(),
                 textStyle = MaterialTheme.localTextStyles.sideBarIconText,
-                spacedBy = MaterialTheme.localDimens.dp10,
+                spacedBy = dimensionResource(id = R.dimen.dp10),
                 modifier = Modifier.padding(
-                    vertical = MaterialTheme.localDimens.dp12,
-                    horizontal = MaterialTheme.localDimens.dp8
+                    vertical = dimensionResource(id = R.dimen.dp12),
+                    horizontal = 8.dp
                 )
             )
             SideBarHorizontalDivider()
@@ -150,7 +145,8 @@ fun SideBarTopSection(
                 Text(
                     text = hashTag,
                     modifier = Modifier.rotate(-90f),
-                    style = MaterialTheme.localTextStyles.mediumTitle
+                    style = MaterialTheme.localTextStyles.mediumTitle,
+                    color = MaterialTheme.localColors.white
                 )
             }
         }
@@ -158,7 +154,7 @@ fun SideBarTopSection(
         IconWithTextBelow(
             iconResId = R.drawable.ic_comment,
             text = numberOfComments.toString(),
-            spacedBy = MaterialTheme.localDimens.dp3,
+            spacedBy = dimensionResource(id = R.dimen.dp3),
             textStyle = MaterialTheme.localTextStyles.sideBarIconText,
             modifier = Modifier
                 .fillMaxWidth()
@@ -167,15 +163,15 @@ fun SideBarTopSection(
                         drawRoundRect(
                             color = localColors.orange,
                             size = Size(
-                                width = localDimens.dp3.toPx(),
+                                width = 3.dp.toPx(),
                                 height = size.height
                             )
                         )
                     }
                 }
                 .padding(
-                    vertical = MaterialTheme.localDimens.dp12,
-                    horizontal = MaterialTheme.localDimens.dp8
+                    vertical = dimensionResource(id = R.dimen.dp12),
+                    horizontal = 8.dp
                 )
                 .clickable { onCommentsClick.invoke() }
         )
@@ -201,10 +197,10 @@ fun SideBarBottomSection(
             iconResId = R.drawable.ic_rectangle_filled,
             text = "0",
             textStyle = MaterialTheme.localTextStyles.sideBarIconText,
-            spacedBy = MaterialTheme.localDimens.dp4,
+            spacedBy = dimensionResource(id = R.dimen.dp4),
             modifier = Modifier.padding(
-                vertical = MaterialTheme.localDimens.dp12,
-                horizontal = MaterialTheme.localDimens.dp8
+                vertical = dimensionResource(id = R.dimen.dp12),
+                horizontal = 8.dp
             )
         )
         SideBarHorizontalDivider()
@@ -212,8 +208,8 @@ fun SideBarBottomSection(
             iconResId = R.drawable.ic_share,
             modifier = Modifier
                 .padding(
-                    vertical = MaterialTheme.localDimens.dp12,
-                    horizontal = MaterialTheme.localDimens.dp8
+                    vertical = dimensionResource(id = R.dimen.dp12),
+                    horizontal = 8.dp
                 )
                 .clickable {
                     onShareClicked.invoke()
@@ -224,8 +220,8 @@ fun SideBarBottomSection(
             iconResId = R.drawable.ic_add_comment,
             modifier = Modifier
                 .padding(
-                    vertical = MaterialTheme.localDimens.dp12,
-                    horizontal = MaterialTheme.localDimens.dp8
+                    vertical = dimensionResource(id = R.dimen.dp12),
+                    horizontal = 8.dp
                 )
                 .clickable { addComment.invoke() }
         )
@@ -236,8 +232,8 @@ fun SideBarBottomSection(
             modifier = Modifier
                 .clickable { onMarkClicked.invoke(isMarked) }
                 .padding(
-                    vertical = MaterialTheme.localDimens.dp12,
-                    horizontal = MaterialTheme.localDimens.dp8
+                    vertical = dimensionResource(id = R.dimen.dp12),
+                    horizontal = 8.dp
                 )
         )
     }
@@ -258,7 +254,7 @@ fun HitReadsSideBar(
         Divider(
             modifier = Modifier
                 .fillMaxHeight()
-                .width(MaterialTheme.localDimens.dp0_5),
+                .width(dimensionResource(id = R.dimen.dp1)),
             color = MaterialTheme.localColors.white
         )
         Column(
@@ -268,16 +264,16 @@ fun HitReadsSideBar(
                 iconResId = R.drawable.ic_menu,
                 Modifier
                     .padding(
-                        start = MaterialTheme.localDimens.dp12,
-                        bottom = MaterialTheme.localDimens.dp11,
-                        top = MaterialTheme.localDimens.dp11
+                        start = dimensionResource(id = R.dimen.dp12),
+                        bottom = dimensionResource(id = R.dimen.dp11),
+                        top = dimensionResource(id = R.dimen.dp11)
                     )
                     .clickable {
                         onVisibilityChange.invoke()
                     }
             )
             Divider(
-                thickness = MaterialTheme.localDimens.dp0_5,
+                thickness = dimensionResource(id = R.dimen.dp1),
                 color = MaterialTheme.localColors.white
             )
             IconWithTextBelow(
@@ -286,48 +282,48 @@ fun HitReadsSideBar(
                 textStyle = MaterialTheme.localTextStyles.sideBarIconText,
                 modifier = Modifier
                     .padding(
-                        start = MaterialTheme.localDimens.dp12,
-                        bottom = MaterialTheme.localDimens.dp9,
-                        top = MaterialTheme.localDimens.dp9
+                        start = dimensionResource(id = R.dimen.dp12),
+                        bottom = dimensionResource(id = R.dimen.dp9),
+                        top = dimensionResource(id = R.dimen.dp9)
                     )
                     .clickable {
                         onShowComments.invoke()
                     }
             )
             Divider(
-                thickness = MaterialTheme.localDimens.dp0_5,
+                thickness = dimensionResource(id = R.dimen.dp1),
                 color = MaterialTheme.localColors.white
             )
             SimpleIcon(
                 iconResId = R.drawable.ic_add_comment,
                 Modifier
                     .padding(
-                        start = MaterialTheme.localDimens.dp12,
-                        bottom = MaterialTheme.localDimens.dp22,
-                        top = MaterialTheme.localDimens.dp22
+                        start = dimensionResource(id = R.dimen.dp12),
+                        bottom = dimensionResource(id = R.dimen.dp22),
+                        top = dimensionResource(id = R.dimen.dp22)
                     )
                     .clickable {
                         onCreateComment.invoke()
                     }
             )
             Divider(
-                thickness = MaterialTheme.localDimens.dp0_5,
+                thickness = dimensionResource(id = R.dimen.dp1),
                 color = MaterialTheme.localColors.white
             )
             SimpleIcon(
                 iconResId = R.drawable.ic_filter,
                 Modifier
                     .padding(
-                        start = MaterialTheme.localDimens.dp12,
-                        bottom = MaterialTheme.localDimens.dp22,
-                        top = MaterialTheme.localDimens.dp22
+                        start = dimensionResource(id = R.dimen.dp12),
+                        bottom = dimensionResource(id = R.dimen.dp22),
+                        top = dimensionResource(id = R.dimen.dp22)
                     )
                     .clickable {
                         onShowEpisodes.invoke()
                     }
             )
             Divider(
-                thickness = MaterialTheme.localDimens.dp0_5,
+                thickness = dimensionResource(id = R.dimen.dp1),
                 color = MaterialTheme.localColors.white
             )
         }

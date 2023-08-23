@@ -1,4 +1,4 @@
-package com.baltroid.ui.screens.menu
+package com.baltroid.ui
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.ScrollState
@@ -26,27 +26,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.baltroid.apps.R
-import com.baltroid.ui.common.HorizontalSpacer
-import com.baltroid.ui.common.RoundedIconCard
-import com.baltroid.ui.common.SimpleIcon
-import com.baltroid.ui.common.SimpleImage
-import com.baltroid.ui.common.VerticalSpacer
-import com.baltroid.ui.navigation.HitReadsScreens
-import com.baltroid.ui.screens.viewmodels.AuthenticationViewModel
-import com.baltroid.ui.theme.localColors
-import com.baltroid.ui.theme.localDimens
-import com.baltroid.ui.theme.localShapes
-import com.baltroid.ui.theme.localTextStyles
 import com.baltroid.util.conditional
 
 @Composable
@@ -103,14 +94,13 @@ fun MenuScreenGuestContent(
             ) = createRefs()
 
             val bottomGuideLine = createGuidelineFromBottom(0.075f)
-            val localDimens = MaterialTheme.localDimens
 
             RoundedIconCard(
                 text = "0",
                 iconResId = R.drawable.ic_diamond,
                 modifier = Modifier
                     .constrainAs(diamond) {
-                        end.linkTo(image.start, margin = localDimens.dp23)
+                        end.linkTo(image.start, margin = 23.dp)
                         top.linkTo(image.top)
                         bottom.linkTo(image.bottom)
                     }
@@ -122,24 +112,25 @@ fun MenuScreenGuestContent(
                 imgResId = R.drawable.ic_member,
                 modifier = Modifier
                     .constrainAs(image) {
-                        top.linkTo(parent.top, margin = localDimens.dp36)
+                        top.linkTo(parent.top, margin = 36.dp)
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                     }
-                    .size(MaterialTheme.localDimens.dp111)
+                    .size(dimensionResource(id = R.dimen.dp111))
                     .clip(MaterialTheme.localShapes.circleShape)
             )
             Text(
                 text = stringResource(id = R.string.member_login),
                 style = MaterialTheme.localTextStyles.subtitleGrotesk,
+                color = MaterialTheme.localColors.white,
                 modifier = Modifier
                     .constrainAs(profileButton) {
-                        top.linkTo(image.bottom, margin = localDimens.dp26)
+                        top.linkTo(image.bottom, margin = 26.dp)
                         start.linkTo(image.start)
                         end.linkTo(image.end)
                     }
                     .border(
-                        MaterialTheme.localDimens.dp1,
+                        dimensionResource(id = R.dimen.dp1),
                         MaterialTheme.localColors.white,
                         MaterialTheme.localShapes.roundedDp4
                     )
@@ -149,33 +140,33 @@ fun MenuScreenGuestContent(
                         navigate.invoke(HitReadsScreens.LoginScreen.route)
                     }
                     .padding(
-                        vertical = MaterialTheme.localDimens.dp6,
-                        horizontal = MaterialTheme.localDimens.dp20
+                        vertical = 6.dp,
+                        horizontal = dimensionResource(id = R.dimen.dp20)
                     )
             )
             SimpleIcon(
                 iconResId = R.drawable.ic_close, modifier = Modifier
                     .constrainAs(close) {
-                        end.linkTo(parent.end, margin = localDimens.dp42)
+                        end.linkTo(parent.end, margin = 42.dp)
                         top.linkTo(image.top)
                     }
                     .clickable { onBackClick.invoke() }
             )
             Divider(
                 color = MaterialTheme.localColors.white,
-                thickness = MaterialTheme.localDimens.dp0_5,
+                thickness = dimensionResource(id = R.dimen.dp1),
                 modifier = Modifier.constrainAs(divider) {
-                    top.linkTo(profileButton.bottom, margin = localDimens.dp20)
+                    top.linkTo(profileButton.bottom, margin = 20.dp)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                     width = Dimension.percent(0.8f)
                 }
             )
             Column(
-                verticalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp16),
+                verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp16)),
                 modifier = Modifier
                     .constrainAs(scrollSection) {
-                        top.linkTo(divider.bottom, margin = localDimens.dp16)
+                        top.linkTo(divider.bottom, margin = 16.dp)
                         start.linkTo(divider.start)
                         end.linkTo(divider.end)
                         bottom.linkTo(parent.bottom)
@@ -252,14 +243,13 @@ private fun MenuScreenLoggedInContent(
             ) = createRefs()
 
             val bottomGuideLine = createGuidelineFromBottom(0.075f)
-            val localDimens = MaterialTheme.localDimens
 
             RoundedIconCard(
                 text = balance.toString(),
                 iconResId = R.drawable.ic_diamond,
                 modifier = Modifier
                     .constrainAs(diamond) {
-                        end.linkTo(image.start, margin = localDimens.dp23)
+                        end.linkTo(image.start, margin = 23.dp)
                         top.linkTo(image.top)
                         bottom.linkTo(image.bottom)
                     }
@@ -273,18 +263,19 @@ private fun MenuScreenLoggedInContent(
                 contentDescription = null,
                 modifier = Modifier
                     .constrainAs(image) {
-                        top.linkTo(parent.top, margin = localDimens.dp36)
+                        top.linkTo(parent.top, margin = 36.dp)
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                     }
-                    .size(MaterialTheme.localDimens.dp111)
+                    .size(dimensionResource(id = R.dimen.dp111))
                     .clip(MaterialTheme.localShapes.circleShape)
             )
             Text(
                 text = currentUserName,
                 style = MaterialTheme.localTextStyles.subtitle,
+                color = MaterialTheme.localColors.white,
                 modifier = Modifier.constrainAs(name) {
-                    top.linkTo(image.bottom, margin = localDimens.dp14)
+                    top.linkTo(image.bottom, margin = 14.dp)
                     start.linkTo(image.start)
                     end.linkTo(image.end)
                 }
@@ -292,9 +283,10 @@ private fun MenuScreenLoggedInContent(
             Text(
                 text = stringResource(id = R.string.profile_text),
                 style = MaterialTheme.localTextStyles.isStoryNewText,
+                color = MaterialTheme.localColors.black,
                 modifier = Modifier
                     .constrainAs(profileButton) {
-                        top.linkTo(name.bottom, margin = localDimens.dp11)
+                        top.linkTo(name.bottom, margin = 11.dp)
                         start.linkTo(name.start)
                         end.linkTo(name.end)
                     }
@@ -304,33 +296,33 @@ private fun MenuScreenLoggedInContent(
                         navigate.invoke(HitReadsScreens.ProfileScreen.route)
                     }
                     .padding(
-                        vertical = MaterialTheme.localDimens.dp6,
-                        horizontal = MaterialTheme.localDimens.dp20
+                        vertical = 6.dp,
+                        horizontal = dimensionResource(id = R.dimen.dp20)
                     )
             )
             SimpleIcon(
                 iconResId = R.drawable.ic_close, modifier = Modifier
                     .constrainAs(close) {
-                        end.linkTo(parent.end, margin = localDimens.dp42)
+                        end.linkTo(parent.end, margin = 42.dp)
                         top.linkTo(image.top)
                     }
                     .clickable { onBackClick.invoke() }
             )
             Divider(
                 color = MaterialTheme.localColors.white,
-                thickness = MaterialTheme.localDimens.dp0_5,
+                thickness = dimensionResource(id = R.dimen.dp1),
                 modifier = Modifier.constrainAs(divider) {
-                    top.linkTo(profileButton.bottom, margin = localDimens.dp20)
+                    top.linkTo(profileButton.bottom, margin = 20.dp)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                     width = Dimension.percent(0.8f)
                 }
             )
             Column(
-                verticalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp16),
+                verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp16)),
                 modifier = Modifier
                     .constrainAs(scrollSection) {
-                        top.linkTo(divider.bottom, margin = localDimens.dp16)
+                        top.linkTo(divider.bottom, margin = 16.dp)
                         start.linkTo(divider.start)
                         end.linkTo(divider.end)
                         bottom.linkTo(parent.bottom)
@@ -388,7 +380,7 @@ fun ThemeButtons(
     modifier: Modifier = Modifier
 ) {
     Row(
-        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp7),
+        horizontalArrangement = Arrangement.spacedBy(7.dp),
         modifier = modifier
     ) {
         LightThemeButton()
@@ -403,11 +395,11 @@ fun LightThemeButton(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
-            .clip(RoundedCornerShape(MaterialTheme.localDimens.dp24))
+            .clip(RoundedCornerShape(dimensionResource(id = R.dimen.dp24)))
             .background(MaterialTheme.localColors.white_alpha02)
             .padding(
-                vertical = MaterialTheme.localDimens.dp12,
-                horizontal = MaterialTheme.localDimens.dp29
+                vertical = dimensionResource(id = R.dimen.dp12),
+                horizontal = dimensionResource(id = R.dimen.dp29)
             )
     ) {
         Text(
@@ -415,7 +407,7 @@ fun LightThemeButton(
             style = MaterialTheme.localTextStyles.menuBarSubTitle,
             color = MaterialTheme.localColors.black
         )
-        HorizontalSpacer(width = MaterialTheme.localDimens.dp9)
+        HorizontalSpacer(width = dimensionResource(id = R.dimen.dp9))
         SimpleIcon(iconResId = R.drawable.ic_sun)
     }
 }
@@ -429,20 +421,21 @@ fun DarkThemeButton(
         horizontalArrangement = Arrangement.Center,
         modifier = modifier
             .border(
-                MaterialTheme.localDimens.dp1,
+                dimensionResource(id = R.dimen.dp1),
                 MaterialTheme.localColors.white_alpha05,
                 MaterialTheme.localShapes.roundedDp24
             )
             .padding(
-                vertical = MaterialTheme.localDimens.dp12,
-                horizontal = MaterialTheme.localDimens.dp29
+                vertical = dimensionResource(id = R.dimen.dp12),
+                horizontal = dimensionResource(id = R.dimen.dp29)
             )
     ) {
         Text(
             text = stringResource(id = R.string.dark),
-            style = MaterialTheme.localTextStyles.menuBarSubTitle
+            style = MaterialTheme.localTextStyles.menuBarSubTitle,
+            color = MaterialTheme.localColors.white_alpha09
         )
-        HorizontalSpacer(width = MaterialTheme.localDimens.dp9)
+        HorizontalSpacer(width = dimensionResource(id = R.dimen.dp9))
         SimpleIcon(iconResId = R.drawable.ic_moon)
     }
 }
@@ -468,19 +461,19 @@ fun MenuItem(
                 tint = if (!isEnabled) MaterialTheme.localColors.white_alpha03 else Color.Unspecified,
                 modifier = Modifier
                     .align(Alignment.CenterStart)
-                    .padding(start = MaterialTheme.localDimens.dp11)
+                    .padding(start = dimensionResource(id = R.dimen.dp11))
             )
             Text(
                 text = title,
                 style = MaterialTheme.localTextStyles.menuBarTitle,
-                color = if (!isEnabled) MaterialTheme.localColors.white_alpha03 else Color.Unspecified,
+                color = if (!isEnabled) MaterialTheme.localColors.white_alpha03 else MaterialTheme.localColors.white_alpha09,
                 modifier = Modifier.align(Alignment.Center)
             )
         }
-        VerticalSpacer(height = MaterialTheme.localDimens.dp14)
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp14))
         Divider(
             color = MaterialTheme.localColors.white,
-            thickness = MaterialTheme.localDimens.dp0_5
+            thickness = dimensionResource(id = R.dimen.dp1)
         )
     }
 }

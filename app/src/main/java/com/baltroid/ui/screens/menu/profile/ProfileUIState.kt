@@ -1,4 +1,4 @@
-package com.baltroid.ui.screens.menu.profile
+package com.baltroid.ui
 
 import com.hitreads.core.model.Profile
 

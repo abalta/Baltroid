@@ -1,4 +1,4 @@
-package com.baltroid.ui.screens.menu.shop
+package com.baltroid.ui
 
 data class ShopScreenState(
     val currentBalance: Float,

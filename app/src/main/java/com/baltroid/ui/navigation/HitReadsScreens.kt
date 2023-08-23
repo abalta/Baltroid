@@ -1,4 +1,4 @@
-package com.baltroid.ui.navigation
+package com.baltroid.ui
 
 sealed class HitReadsScreens(val route: String) {
     object OnboardingScreen : HitReadsScreens("onboarding")

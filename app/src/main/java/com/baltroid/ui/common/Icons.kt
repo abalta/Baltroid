@@ -1,4 +1,4 @@
-package com.baltroid.ui.common
+package com.baltroid.ui
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.border
@@ -14,13 +14,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.baltroid.ui.theme.localColors
-import com.baltroid.ui.theme.localDimens
-import com.baltroid.ui.theme.localShapes
-import com.baltroid.ui.theme.localTextStyles
+import com.baltroid.apps.R
 
 @Composable
 fun IconWithTextBelow(
@@ -63,7 +61,7 @@ fun IconWithTextNextTo(
             modifier = Modifier.clickable { onIconClick.invoke() })
         HorizontalSpacer(width = spacedBy)
         if (isTextVisible) {
-            Text(text = text, style = textStyle)
+            Text(text = text, style = textStyle, color = MaterialTheme.localColors.white)
         }
     }
 }
@@ -77,15 +75,15 @@ fun RoundedIconCard(
     IconWithTextBelow(
         iconResId = iconResId,
         text = text,
-        spacedBy = MaterialTheme.localDimens.dp3,
+        spacedBy = dimensionResource(id = R.dimen.dp3),
         textStyle = MaterialTheme.localTextStyles.imageCardText,
         modifier = modifier
             .size(
-                width = MaterialTheme.localDimens.dp76,
-                height = MaterialTheme.localDimens.dp70
+                width = dimensionResource(id = R.dimen.dp76),
+                height = dimensionResource(id = R.dimen.dp70)
             )
             .border(
-                width = MaterialTheme.localDimens.dp1,
+                width = dimensionResource(id = R.dimen.dp1),
                 color = MaterialTheme.localColors.white,
                 shape = MaterialTheme.localShapes.roundedDp16
             )
@@ -101,11 +99,11 @@ fun RoundedIconCard(
         contentAlignment = Alignment.Center,
         modifier = modifier
             .size(
-                width = MaterialTheme.localDimens.dp76,
-                height = MaterialTheme.localDimens.dp70
+                width = dimensionResource(id = R.dimen.dp76),
+                height = dimensionResource(id = R.dimen.dp70)
             )
             .border(
-                width = MaterialTheme.localDimens.dp1,
+                width = dimensionResource(id = R.dimen.dp1),
                 color = MaterialTheme.localColors.white,
                 shape = MaterialTheme.localShapes.roundedDp16
             )

@@ -1,4 +1,4 @@
-package com.baltroid.ui.screens.onboarding
+package com.baltroid.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,16 +16,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import coil.compose.AsyncImage
 import com.baltroid.apps.R
-import com.baltroid.ui.common.SimpleImage
-import com.baltroid.ui.common.VerticalSpacer
-import com.baltroid.ui.theme.localColors
-import com.baltroid.ui.theme.localDimens
-import com.baltroid.ui.theme.localTextStyles
 import com.hitreads.core.domain.model.WelcomeModel
 
 @Composable
@@ -60,8 +56,8 @@ fun OnboardingScreenContent(
                     }
                 }
                 .size(
-                    MaterialTheme.localDimens.dp107,
-                    MaterialTheme.localDimens.dp102
+                    dimensionResource(id = R.dimen.dp107),
+                    dimensionResource(id = R.dimen.dp102)
                 )
         )
         OnboardingScreenBottomSection(
@@ -85,23 +81,24 @@ fun OnboardingScreenBottomSection(
     ) {
         Divider(
             color = MaterialTheme.localColors.white,
-            thickness = MaterialTheme.localDimens.dp0_5,
+            thickness = dimensionResource(id = R.dimen.dp1),
         )
         Text(
             text = text,
             style = MaterialTheme.localTextStyles.splashScreenText,
+            color = MaterialTheme.localColors.white,
             modifier = Modifier
                 .padding(
-                    top = MaterialTheme.localDimens.dp24,
-                    bottom = MaterialTheme.localDimens.dp22
+                    top = dimensionResource(id = R.dimen.dp24),
+                    bottom = dimensionResource(id = R.dimen.dp22)
                 )
                 .align(Alignment.CenterHorizontally)
         )
         Divider(
             color = MaterialTheme.localColors.white,
-            thickness = MaterialTheme.localDimens.dp0_5,
+            thickness = dimensionResource(id = R.dimen.dp1),
         )
-        VerticalSpacer(height = MaterialTheme.localDimens.dp28)
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp28))
         SimpleImage(
             imgResId = R.drawable.ic_arrow_right,
             modifier = Modifier
@@ -109,7 +106,7 @@ fun OnboardingScreenBottomSection(
                 .navigationBarsPadding()
                 .clickable { onClick.invoke() }
         )
-        VerticalSpacer(height = MaterialTheme.localDimens.dp29)
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp29))
     }
 }
 

@@ -1,4 +1,4 @@
-package com.baltroid.ui.screens.menu.comments
+package com.baltroid.ui
 
 import com.hitreads.core.model.Comment
 

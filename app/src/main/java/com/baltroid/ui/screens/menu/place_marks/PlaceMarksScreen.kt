@@ -1,4 +1,4 @@
-package com.baltroid.ui.screens.menu.place_marks
+package com.baltroid.ui
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
@@ -24,21 +24,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.baltroid.apps.R
-import com.baltroid.ui.common.SimpleIcon
-import com.baltroid.ui.common.VerticalSpacer
-import com.baltroid.ui.components.MenuBar
-import com.baltroid.ui.theme.localColors
-import com.baltroid.ui.theme.localDimens
-import com.baltroid.ui.theme.localShapes
-import com.baltroid.ui.theme.localTextStyles
 import com.hitreads.core.domain.model.BookmarkModel
 import com.hitreads.core.model.Bookmark
 
@@ -66,41 +62,42 @@ fun PlaceMarsScreenContent(
             .background(MaterialTheme.localColors.black)
             .systemBarsPadding()
     ) {
-        VerticalSpacer(height = MaterialTheme.localDimens.dp36)
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp36))
         MenuBar(
             modifier = Modifier.align(Alignment.CenterHorizontally),
             title = stringResource(id = R.string.place_marks),
             iconResId = R.drawable.ic_banner_filled,
             onBackClick = onBackClick
         )
-        VerticalSpacer(height = MaterialTheme.localDimens.dp16)
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp16))
         Column(
             modifier = Modifier.verticalScroll(scrollState)
         ) {
             Text(
                 text = stringResource(id = R.string.stories),
                 style = MaterialTheme.localTextStyles.menuBarSubTitle,
+                color = MaterialTheme.localColors.white_alpha09,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
-            VerticalSpacer(height = MaterialTheme.localDimens.dp16)
+            VerticalSpacer(height = dimensionResource(id = R.dimen.dp16))
             StoryItemList(
                 state,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = MaterialTheme.localDimens.dp35)
+                    .padding(start = dimensionResource(id = R.dimen.dp35))
             )
-            /* VerticalSpacer(height = MaterialTheme.localDimens.dp18_5)
+            /* VerticalSpacer(height = dimensionResource(id = R.dimen.dp18)_5)
              Text(
                  text = stringResource(id = R.string.marks),
                  style = MaterialTheme.localTextStyles.menuBarSubTitle,
                  modifier = Modifier.align(Alignment.CenterHorizontally)
              )
-             VerticalSpacer(height = MaterialTheme.localDimens.dp21)
+             VerticalSpacer(height = dimensionResource(id = R.dimen.dp21))
              MarkItemList(
                  state,
                  modifier = Modifier
                      .fillMaxWidth()
-                     .padding(start = MaterialTheme.localDimens.dp35)
+                     .padding(start = dimensionResource(id = R.dimen.dp35))
              )*/
         }
     }
@@ -113,7 +110,7 @@ fun StoryItemList(
 ) {
     LazyRow(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp29)
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp29))
     ) {
         items(state) { item ->
             StoryItem(
@@ -132,7 +129,7 @@ fun MarkItemList(
 ) {
     LazyRow(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp29)
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp29))
     ) {
         items(state) { item ->
             MarkItem(
@@ -160,13 +157,18 @@ fun StoryItem(
             error = painterResource(id = R.drawable.hitreads_placeholder),
             modifier = Modifier
                 .size(
-                    MaterialTheme.localDimens.dp127,
-                    MaterialTheme.localDimens.dp177
+                    dimensionResource(id = R.dimen.dp127),
+                    dimensionResource(id = R.dimen.dp177)
                 )
                 .clip(MaterialTheme.localShapes.roundedDp18)
         )
-        VerticalSpacer(height = MaterialTheme.localDimens.dp13)
-        Text(text = title, style = MaterialTheme.localTextStyles.storyItemTitle)
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp13))
+        Text(
+            text = title,
+            style = MaterialTheme.localTextStyles.storyItemTitle,
+            color = MaterialTheme.localColors.white_alpha05,
+            textAlign = TextAlign.Center
+        )
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.width(IntrinsicSize.Min)
@@ -175,9 +177,10 @@ fun StoryItem(
             Text(
                 text = stringResource(id = R.string.episode_size, episodeNumber),
                 style = MaterialTheme.localTextStyles.episodeSelectedText,
+                color = MaterialTheme.localColors.white,
                 modifier = Modifier.width(IntrinsicSize.Max)
             )
-            VerticalSpacer(height = MaterialTheme.localDimens.dp5)
+            VerticalSpacer(height = 5.dp)
             EpisodeBanner(modifier = Modifier.fillMaxWidth())
         }
     }
@@ -189,7 +192,7 @@ fun EpisodeBanner(
 ) {
     SimpleIcon(
         iconResId = R.drawable.ic_banner_long,
-        modifier = modifier.height(MaterialTheme.localDimens.dp17)
+        modifier = modifier.height(dimensionResource(id = R.dimen.dp17))
     )
 }
 
@@ -209,13 +212,18 @@ fun MarkItem(
             error = painterResource(id = R.drawable.hitreads_placeholder),
             modifier = Modifier
                 .size(
-                    MaterialTheme.localDimens.dp127,
-                    MaterialTheme.localDimens.dp177
+                    dimensionResource(id = R.dimen.dp127),
+                    dimensionResource(id = R.dimen.dp177)
                 )
                 .clip(MaterialTheme.localShapes.roundedDp18)
         )
-        VerticalSpacer(height = MaterialTheme.localDimens.dp13)
-        Text(text = title, style = MaterialTheme.localTextStyles.storyItemTitle)
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp13))
+        Text(
+            text = title,
+            style = MaterialTheme.localTextStyles.storyItemTitle,
+            color = MaterialTheme.localColors.white_alpha05,
+            textAlign = TextAlign.Center
+        )
         Column(
             modifier = Modifier.width(IntrinsicSize.Min)
         ) {
@@ -223,10 +231,11 @@ fun MarkItem(
                 Text(
                     text = stringResource(id = R.string.episode_size, episodeNumber),
                     style = MaterialTheme.localTextStyles.episodeSelectedText,
+                    color = MaterialTheme.localColors.white,
                     modifier = Modifier.width(IntrinsicSize.Max)
                 )
             }
-            VerticalSpacer(height = MaterialTheme.localDimens.dp7)
+            VerticalSpacer(height = 7.dp)
             YellowBar(modifier = Modifier.fillMaxWidth())
         }
     }
@@ -238,7 +247,7 @@ fun YellowBar(
 ) {
     Box(
         modifier = modifier
-            .height(MaterialTheme.localDimens.dp8)
+            .height(8.dp)
             .background(MaterialTheme.localColors.gold)
     )
 }

@@ -1,4 +1,4 @@
-package com.baltroid.ui.screens.home.detail
+package com.baltroid.ui
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -34,25 +34,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.baltroid.apps.R
-import com.baltroid.ui.common.HorizontalSpacer
-import com.baltroid.ui.common.SimpleIcon
-import com.baltroid.ui.common.SimpleImage
-import com.baltroid.ui.common.VerticalSpacer
-import com.baltroid.ui.components.HitReadsTopBar
-import com.baltroid.ui.navigation.HitReadsScreens
-import com.baltroid.ui.screens.home.GenreSection
-import com.baltroid.ui.screens.home.TitleSection
-import com.baltroid.ui.screens.viewmodels.OriginalViewModel
-import com.baltroid.ui.theme.localColors
-import com.baltroid.ui.theme.localDimens
-import com.baltroid.ui.theme.localShapes
-import com.baltroid.ui.theme.localTextStyles
 import com.baltroid.util.orEmpty
 import com.baltroid.util.orZero
 import com.hitreads.core.model.Original
@@ -66,7 +55,6 @@ fun HomeDetailScreen(
     openMenuScreen: () -> Unit,
     navigate: (route: String, episode: ShowEpisode?, original: Original?) -> Unit
 ) {
-
     val episodes = viewModel.uiStateReading.collectAsStateWithLifecycle().value.original?.episodes
     LaunchedEffect(Unit) {
         viewModel.sharedUIState.value?.id?.let { viewModel.showOriginal(it) }
@@ -118,19 +106,19 @@ private fun HomeDetailScreenContent(
                 .background(MaterialTheme.localColors.black_alpha05)
                 .align(Alignment.BottomCenter)
                 .verticalScroll(verticalScrollState)
-                .padding(bottom = MaterialTheme.localDimens.dp155)
+                .padding(bottom = dimensionResource(id = R.dimen.dp15)5)
 
         ) {
             Text(
                 text = screenState?.hashtag.orEmpty(),
                 style = MaterialTheme.localTextStyles.hashTag,
-                modifier = Modifier.padding(start = MaterialTheme.localDimens.dp17)
+                modifier = Modifier.padding(start = dimensionResource(id = R.dimen.dp17))
             )
             TitleSection(
                 author = screenState?.author?.name.orEmpty(),
                 title = screenState?.title.orEmpty(),
                 subTitle = screenState?.subtitle.orEmpty(),
-                modifier = Modifier.padding(start = MaterialTheme.localDimens.dp23)
+                modifier = Modifier.padding(start = dimensionResource(id = R.dimen.dp23))
             )
             VerticalSpacer(height = MaterialTheme.localDimens.dp10_5)
             GenreAndInteractions(
@@ -139,10 +127,10 @@ private fun HomeDetailScreenContent(
                 numberOfViews = screenState?.viewCount.orZero(),
                 numberOfComments = screenState?.commentCount.orZero()
             )
-            VerticalSpacer(height = MaterialTheme.localDimens.dp20_5)
+            VerticalSpacer(height = dimensionResource(id = R.dimen.dp20)_5)
             HomeDetailSummarySection(
                 summary = screenState?.description.orEmpty(),
-                modifier = Modifier.padding(start = MaterialTheme.localDimens.dp25)
+                modifier = Modifier.padding(start = dimensionResource(id = R.dimen.dp25))
             ) {
                 if (screenState?.type == "interactive") {
                     navigate.invoke(HitReadsScreens.InteractiveScreen.route)
@@ -151,7 +139,7 @@ private fun HomeDetailScreenContent(
                 }
             }
             if (this@BoxWithConstraints.maxHeight < MaterialTheme.localDimens.minDetailScreenHeight) {
-                VerticalSpacer(height = MaterialTheme.localDimens.dp50)
+                VerticalSpacer(height = dimensionResource(id = R.dimen.dp50))
             }
         }
     }
@@ -170,14 +158,15 @@ fun Interactions(
         SimpleIcon(
             iconResId = R.drawable.ic_eye,
             tint = MaterialTheme.localColors.white,
-            modifier = Modifier.size(MaterialTheme.localDimens.dp16)
+            modifier = Modifier.size(dimensionResource(id = R.dimen.dp16))
         )
         Text(
             text = numberOfViews.toString(),
-            style = MaterialTheme.localTextStyles.summaryIconText
+            style = MaterialTheme.localTextStyles.summaryIconText,
+            color = MaterialTheme.localColors.white
         )
     }
-    HorizontalSpacer(width = MaterialTheme.localDimens.dp11_5)
+    HorizontalSpacer(width = dimensionResource(id = R.dimen.dp12))
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier,
@@ -186,13 +175,14 @@ fun Interactions(
             iconResId = R.drawable.ic_comment,
             tint = MaterialTheme.localColors.white,
             modifier = Modifier.size(
-                MaterialTheme.localDimens.dp16,
-                MaterialTheme.localDimens.dp14_5
+                dimensionResource(id = R.dimen.dp16),
+                dimensionResource(id = R.dimen.dp15)
             )
         )
         Text(
             text = numberOfComments.toString(),
-            style = MaterialTheme.localTextStyles.summaryIconText
+            style = MaterialTheme.localTextStyles.summaryIconText,
+            color = MaterialTheme.localColors.white,
         )
     }
 }
@@ -214,13 +204,13 @@ fun GenreAndInteractions(
             episodeSize = episodeSize,
             genres = genres,
         )
-        HorizontalSpacer(width = MaterialTheme.localDimens.dp13)
+        HorizontalSpacer(width = dimensionResource(id = R.dimen.dp13))
         Interactions(
             numberOfViews = numberOfViews,
             numberOfComments = numberOfComments,
             modifier = Modifier.align(Alignment.Bottom)
         )
-        HorizontalSpacer(width = MaterialTheme.localDimens.dp15)
+        HorizontalSpacer(width = dimensionResource(id = R.dimen.dp15))
         SimpleIcon(iconResId = R.drawable.ic_info, modifier = Modifier.clickable {
             onInfoClicked.invoke()
         })
@@ -239,13 +229,14 @@ private fun HomeDetailSummarySection(
         Text(
             text = summary,
             style = MaterialTheme.localTextStyles.detailSummaryText,
+            color = MaterialTheme.localColors.white,
             modifier = Modifier.weight(1f)
         )
-        HorizontalSpacer(width = MaterialTheme.localDimens.dp9)
+        HorizontalSpacer(width = dimensionResource(id = R.dimen.dp9))
         SimpleImage(
             imgResId = R.drawable.ic_arrow_right,
             modifier = Modifier
-                .padding(end = MaterialTheme.localDimens.dp33)
+                .padding(end = dimensionResource(id = R.dimen.dp33))
                 .clickable { onClick.invoke() }
                 .align(Alignment.CenterVertically)
         )
@@ -320,7 +311,7 @@ fun HomeDetailScreenContent(
                     iconTint = MaterialTheme.localColors.white,
                     onNotificationClick = {},
                 )
-                VerticalSpacer(height = MaterialTheme.localDimens.dp18)
+                VerticalSpacer(height = dimensionResource(id = R.dimen.dp18))
                 AsyncImage(
                     model = screenState?.cover,
                     contentDescription = null,
@@ -332,9 +323,12 @@ fun HomeDetailScreenContent(
                         .fillMaxWidth()
                         .wrapContentWidth(Alignment.CenterHorizontally)
                         .clip(MaterialTheme.localShapes.roundedDp9)
-                        .size(MaterialTheme.localDimens.dp219, MaterialTheme.localDimens.dp308)
+                        .size(
+                            dimensionResource(id = R.dimen.dp219),
+                            dimensionResource(id = R.dimen.dp308)
+                        )
                 )
-                VerticalSpacer(height = MaterialTheme.localDimens.dp16)
+                VerticalSpacer(height = dimensionResource(id = R.dimen.dp16))
                 Column(
                     Modifier
                         .weight(1f)
@@ -344,12 +338,12 @@ fun HomeDetailScreenContent(
                         author = screenState?.author?.name.orEmpty(),
                         title = screenState?.title.orEmpty(),
                         subTitle = screenState?.subtitle.orEmpty(),
-                        modifier = Modifier.padding(start = MaterialTheme.localDimens.dp23)
+                        modifier = Modifier.padding(start = dimensionResource(id = R.dimen.dp23))
                     )
-                    VerticalSpacer(height = MaterialTheme.localDimens.dp10_5)
+                    VerticalSpacer(height = dimensionResource(id = R.dimen.dp11))
                     Column(
                         Modifier
-                            .padding(start = MaterialTheme.localDimens.dp24)
+                            .padding(start = dimensionResource(id = R.dimen.dp24))
                             .width(IntrinsicSize.Min)
                     ) {
                         GenreAndInteractions(
@@ -360,27 +354,29 @@ fun HomeDetailScreenContent(
                             onInfoClicked = { isBarcodeEnabled = !isBarcodeEnabled },
                             modifier = Modifier.width(IntrinsicSize.Max)
                         )
-                        VerticalSpacer(height = MaterialTheme.localDimens.dp20_5)
+                        VerticalSpacer(height = dimensionResource(id = R.dimen.dp21))
                         Text(
                             text = screenState?.description.orEmpty(),
                             style = MaterialTheme.localTextStyles.detailSummaryText,
+                            color = MaterialTheme.localColors.white,
                             modifier = Modifier.fillMaxWidth(),
                         )
-                        VerticalSpacer(height = MaterialTheme.localDimens.dp8)
+                        VerticalSpacer(height = 8.dp)
                         Text(
                             text = "#kimsegercekdegil",
-                            style = MaterialTheme.localTextStyles.subtitleGrotesk
+                            style = MaterialTheme.localTextStyles.subtitleGrotesk,
+                            color = MaterialTheme.localColors.white
                         )
                     }
 
-                    VerticalSpacer(height = MaterialTheme.localDimens.dp7)
+                    VerticalSpacer(height = 7.dp)
                     Row(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(
-                                start = MaterialTheme.localDimens.dp24,
-                                end = MaterialTheme.localDimens.dp47
+                                start = dimensionResource(id = R.dimen.dp24),
+                                end = dimensionResource(id = R.dimen.dp47)
                             )
                     ) {
                         Row(
@@ -389,11 +385,12 @@ fun HomeDetailScreenContent(
                         ) {
                             if (screenState?.isLocked == true) {
                                 SimpleIcon(iconResId = R.drawable.ic_lock)
-                                HorizontalSpacer(width = MaterialTheme.localDimens.dp8)
+                                HorizontalSpacer(width = 8.dp)
                             }
                             Text(
                                 text = screenState?.hashtag.orEmpty(),
-                                style = MaterialTheme.localTextStyles.episodeText
+                                style = MaterialTheme.localTextStyles.episodeText,
+                                color = MaterialTheme.localColors.white
                             )
                         }
                         SimpleImage(imgResId = R.drawable.ic_read, modifier = Modifier.clickable {
@@ -412,7 +409,7 @@ fun HomeDetailScreenContent(
                             }
                         })
                     }
-                    VerticalSpacer(height = MaterialTheme.localDimens.dp30)
+                    VerticalSpacer(height = dimensionResource(id = R.dimen.dp30))
                 }
                 DetailEpisodes {
                     isEpisodesEnabled = true
@@ -496,7 +493,7 @@ fun HomeDetailScreenContent(
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .clip(MaterialTheme.localShapes.roundedDp9)
-                .size(MaterialTheme.localDimens.dp219, MaterialTheme.localDimens.dp308)
+                .size(dimensionResource(id = R.dimen.dp21)9, dimensionResource(id = R.dimen.dp30)8)
                 .constrainAs(image) {
                     top.linkTo(toolbar.bottom, 18.dp)
                     start.linkTo(parent.start)
@@ -515,7 +512,7 @@ fun HomeDetailScreenContent(
                 author = screenState?.author?.name.orEmpty(),
                 title = screenState?.title.orEmpty(),
                 subTitle = screenState?.subtitle.orEmpty(),
-                modifier = Modifier.padding(start = MaterialTheme.localDimens.dp23)
+                modifier = Modifier.padding(start = dimensionResource(id = R.dimen.dp23))
             )
             VerticalSpacer(height = MaterialTheme.localDimens.dp10_5)
             GenreAndInteractions(
@@ -525,21 +522,21 @@ fun HomeDetailScreenContent(
                 numberOfComments = screenState?.commentCount.orZero(),
                 modifier = Modifier
             )
-            VerticalSpacer(height = MaterialTheme.localDimens.dp20_5)
+            VerticalSpacer(height = dimensionResource(id = R.dimen.dp20)_5)
             Text(
                 text = screenState?.description.orEmpty(),
                 style = MaterialTheme.localTextStyles.detailSummaryText,
                 modifier = Modifier,
             )
-            VerticalSpacer(height = MaterialTheme.localDimens.dp8)
+            VerticalSpacer(height = 8.dp)
             Column(
-                modifier = Modifier.padding(start = MaterialTheme.localDimens.dp24)
+                modifier = Modifier.padding(start = dimensionResource(id = R.dimen.dp24))
             ) {
                 Text(
                     text = "#kimsegercekdegil",
                     style = MaterialTheme.localTextStyles.subtitleGrotesk
                 )
-                VerticalSpacer(height = MaterialTheme.localDimens.dp7)
+                VerticalSpacer(height = 7.dp)
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier
@@ -579,18 +576,19 @@ fun EpisodeSheet(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
     ) {
-        VerticalSpacer(height = MaterialTheme.localDimens.dp19)
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp19))
         Text(
             text = stringResource(id = R.string.episodes),
-            style = MaterialTheme.localTextStyles.episodesSheet
+            style = MaterialTheme.localTextStyles.episodesSheet,
+            color = MaterialTheme.localColors.white_black
         )
-        VerticalSpacer(height = MaterialTheme.localDimens.dp6)
+        VerticalSpacer(height = 6.dp)
         SimpleIcon(
             iconResId = R.drawable.ic_menu_horizontal,
             tint = MaterialTheme.localColors.white_bb,
             modifier = Modifier.clickable { closeSheet.invoke() }
         )
-        VerticalSpacer(height = MaterialTheme.localDimens.dp33)
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp33))
         LazyColumn(
             Modifier.fillMaxWidth()
         ) {
@@ -600,7 +598,7 @@ fun EpisodeSheet(
                 }
                 Divider(
                     color = MaterialTheme.localColors.white,
-                    thickness = MaterialTheme.localDimens.dp1
+                    thickness = dimensionResource(id = R.dimen.dp1)
                 )
             }
         }
@@ -617,17 +615,18 @@ fun DetailEpisodes(
         modifier = modifier.clickable { onClick.invoke() }
     ) {
         Divider(
-            thickness = MaterialTheme.localDimens.dp0_5,
+            thickness = dimensionResource(id = R.dimen.dp1),
             color = MaterialTheme.localColors.white
         )
         MaterialTheme.colors
-        VerticalSpacer(height = MaterialTheme.localDimens.dp14)
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp14))
         Text(
             text = stringResource(id = R.string.episodes),
-            style = MaterialTheme.localTextStyles.mediumTitle
+            style = MaterialTheme.localTextStyles.mediumTitle,
+            color = MaterialTheme.localColors.white
         )
         SimpleImage(imgResId = R.drawable.ic_menu_horizontal)
-        VerticalSpacer(height = MaterialTheme.localDimens.dp27)
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp27))
     }
 }
 
@@ -641,26 +640,28 @@ fun EpisodeItem(
         modifier = Modifier
             .clickable { onClick.invoke(episode) }
             .padding(
-                start = MaterialTheme.localDimens.dp28,
-                end = MaterialTheme.localDimens.dp22,
-                top = MaterialTheme.localDimens.dp12,
-                bottom = MaterialTheme.localDimens.dp12
+                start = dimensionResource(id = R.dimen.dp28),
+                end = dimensionResource(id = R.dimen.dp22),
+                top = dimensionResource(id = R.dimen.dp12),
+                bottom = dimensionResource(id = R.dimen.dp12)
             )
     ) {
         Text(
             text = stringResource(id = R.string.episode_number, episode.sort.orZero()),
-            style = MaterialTheme.localTextStyles.episodeSheetEpisode
+            style = MaterialTheme.localTextStyles.episodeSheetEpisode,
+            color = MaterialTheme.localColors.white
         )
-        HorizontalSpacer(width = MaterialTheme.localDimens.dp20)
+        HorizontalSpacer(width = dimensionResource(id = R.dimen.dp20))
         Text(
             text = episode.episodeName.orEmpty(),
             style = MaterialTheme.localTextStyles.detailSummaryText,
+            color = MaterialTheme.localColors.white,
             modifier = Modifier.weight(1f)
         )
         if (episode.isLocked) {
             SimpleIcon(
                 iconResId = R.drawable.ic_lock,
-                modifier = Modifier.padding(end = MaterialTheme.localDimens.dp22)
+                modifier = Modifier.padding(end = dimensionResource(id = R.dimen.dp22))
             )
         }
     }
@@ -674,22 +675,22 @@ fun OriginalBarcode(
     Column(
         modifier = Modifier
             .systemBarsPadding()
-            .padding(horizontal = MaterialTheme.localDimens.dp22)
+            .padding(horizontal = dimensionResource(id = R.dimen.dp22))
             .fillMaxSize()
             .clip(MaterialTheme.localShapes.roundedDp20)
             .background(MaterialTheme.localColors.white)
             .verticalScroll(rememberScrollState())
     ) {
-        VerticalSpacer(height = MaterialTheme.localDimens.dp43)
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp43))
         SimpleImage(
             imgResId = R.drawable.ic_circular_close,
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentWidth(Alignment.End)
-                .padding(end = MaterialTheme.localDimens.dp24)
+                .padding(end = dimensionResource(id = R.dimen.dp24))
                 .clickable { onCloseClicked.invoke() }
         )
-        VerticalSpacer(height = MaterialTheme.localDimens.dp30)
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp30))
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -702,33 +703,35 @@ fun OriginalBarcode(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(
-                        MaterialTheme.localDimens.dp269,
-                        MaterialTheme.localDimens.dp376
+                        dimensionResource(id = R.dimen.dp269),
+                        dimensionResource(id = R.dimen.dp376)
                     )
                     .clip(MaterialTheme.localShapes.roundedDp20)
                     .align(Alignment.CenterHorizontally)
             )
-            VerticalSpacer(height = MaterialTheme.localDimens.dp30)
+            VerticalSpacer(height = dimensionResource(id = R.dimen.dp30))
             Text(
                 text = stringResource(id = R.string.barcode),
                 style = MaterialTheme.localTextStyles.extraBoldTitle,
                 color = MaterialTheme.localColors.black
             )
-            VerticalSpacer(height = MaterialTheme.localDimens.dp2)
+            VerticalSpacer(height = dimensionResource(id = R.dimen.dp2))
             Text(
                 text = original?.barcode.orEmpty(),
-                style = MaterialTheme.localTextStyles.detailSummaryTextBlack,
+                style = MaterialTheme.localTextStyles.detailSummaryText,
+                color = MaterialTheme.localColors.black,
             )
-            VerticalSpacer(height = MaterialTheme.localDimens.dp7)
+            VerticalSpacer(height = 7.dp)
             Text(
                 text = stringResource(id = R.string.summary),
                 style = MaterialTheme.localTextStyles.extraBoldTitle,
                 color = MaterialTheme.localColors.black
             )
-            VerticalSpacer(height = MaterialTheme.localDimens.dp3)
+            VerticalSpacer(height = dimensionResource(id = R.dimen.dp3))
             Text(
                 text = "Kim olduğunu sorguladıkça dünyasının sahtelikten İbaret olduğunu anlamaya başlayan Işıl Özsoydan, öğrendiği gerçekler...",
-                style = MaterialTheme.localTextStyles.detailSummaryTextBlack
+                style = MaterialTheme.localTextStyles.detailSummaryText,
+                color = MaterialTheme.localColors.black
             )
         }
     }

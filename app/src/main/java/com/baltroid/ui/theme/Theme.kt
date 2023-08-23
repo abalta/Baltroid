@@ -1,8 +1,11 @@
-package com.baltroid.ui.theme
+package com.baltroid.ui
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @Composable
@@ -11,27 +14,27 @@ fun HitReadsTheme(
     content: @Composable () -> Unit
 ) {
 
-    val textStyles = if (darkTheme) {
-        DarkThemeTextStyles
-    } else {
-        LightThemeTextStyles
-    }
+    val textStyles = HitReadsTextStyles
 
-    // todo needs to be dynamic
     val systemUiController = rememberSystemUiController()
     systemUiController.setSystemBarsColor(
         color = Transparent
     )
 
-    val dimensions = Dimensions()
     val staticColors = Colors()
     val shapes = Shapes()
 
+    val loadingState = remember {
+        mutableStateOf(false)
+    }
+
     CompositionLocalProvider(
         LocalTextStyles provides textStyles,
-        LocalDimensions provides dimensions,
         LocalColors provides staticColors,
         LocalShapes provides shapes,
+        LocalLoadingState provides loadingState,
         content = content
     )
 }
+
+val LocalLoadingState = compositionLocalOf { mutableStateOf(false) }

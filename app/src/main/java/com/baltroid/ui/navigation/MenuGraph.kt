@@ -1,4 +1,4 @@
-package com.baltroid.ui.navigation
+package com.baltroid.ui
 
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -9,17 +9,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navigation
 import com.baltroid.presentation.screens.menu.login.LoginViewModel
-import com.baltroid.ui.screens.menu.MenuScreen
-import com.baltroid.ui.screens.menu.author.AuthorScreen
-import com.baltroid.ui.screens.menu.comments.CommentsScreen
-import com.baltroid.ui.screens.menu.favorites.FavoritesScreen
-import com.baltroid.ui.screens.menu.login.LoginScreen
-import com.baltroid.ui.screens.menu.place_marks.PlaceMarksScreen
-import com.baltroid.ui.screens.menu.profile.ProfileScreen
-import com.baltroid.ui.screens.menu.register.RegisterScreen
-import com.baltroid.ui.screens.menu.settings.SettingsScreen
-import com.baltroid.ui.screens.menu.shop.ShopScreen
-import com.baltroid.ui.screens.menu.shop.ShopScreenState
 import com.google.accompanist.navigation.animation.composable
 
 

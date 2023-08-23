@@ -1,4 +1,4 @@
-package com.baltroid.ui.screens.home.filter
+package com.baltroid.ui
 
 import com.hitreads.core.model.Tag
 

@@ -1,4 +1,4 @@
-package com.baltroid.ui.screens.menu.place_marks
+package com.baltroid.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

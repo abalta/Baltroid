@@ -1,4 +1,4 @@
-package com.baltroid.ui.screens.playground
+package com.baltroid.ui
 
 import androidx.compose.material.Button
 import androidx.compose.material.Text

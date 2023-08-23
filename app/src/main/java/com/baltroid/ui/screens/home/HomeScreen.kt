@@ -1,20 +1,17 @@
-package com.baltroid.ui.screens.home
+package com.baltroid.ui
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -25,9 +22,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PageSize
-import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -42,28 +36,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.Dimension
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.baltroid.apps.R
-import com.baltroid.ui.common.HorizontalSpacer
-import com.baltroid.ui.common.SimpleIcon
-import com.baltroid.ui.common.VerticalSpacer
-import com.baltroid.ui.components.HitReadsTopBar
-import com.baltroid.ui.navigation.HitReadsScreens
-import com.baltroid.ui.screens.menu.favorites.YellowStarBox
-import com.baltroid.ui.screens.viewmodels.OriginalViewModel
-import com.baltroid.ui.theme.localColors
-import com.baltroid.ui.theme.localDimens
-import com.baltroid.ui.theme.localShapes
-import com.baltroid.ui.theme.localTextStyles
-import com.hitreads.core.domain.model.ProfileModel
+import com.baltroid.util.orZero
 import com.hitreads.core.model.Original
 import com.hitreads.core.model.Tag
 import com.hitreads.core.model.TagsWithOriginals
@@ -74,32 +57,24 @@ fun HomeScreen(
     openMenuScreen: () -> Unit,
     navigate: (route: String, item: Original?) -> Unit
 ) {
-    val uiStates = viewModel.uiStateHome.collectAsStateWithLifecycle().value
-    val profile = viewModel.uiStateProfile.collectAsStateWithLifecycle().value
+    val homeUiState = viewModel.uiStateHome.collectAsStateWithLifecycle().value
+    SetLoadingState(isLoading = homeUiState.isLoading)
 
     LaunchedEffect(Unit) {
         viewModel.loadOriginals()
     }
 
     HomeScreenContent(
-        profileModel = profile,
-        uiState = uiStates,
+        homeUiState = homeUiState,
         openMenuScreen = openMenuScreen,
-        isUserLoggedIn = viewModel.uiStateIsLogged.collectAsStateWithLifecycle().value,
         deleteFavorite = viewModel::deleteFavorite,
         navigate = navigate
-        //uiStates = uiStates.originals.collectAsLazyPagingItems().itemSnapshotList.items,
-        //uiStatesFavorites = uiStates.favorites.collectAsLazyPagingItems().itemSnapshotList.items,
-        //openMenuScreen = openMenuScreen,
-        //navigate = navigate
     )
 }
 
 @Composable
 fun HomeScreenContent(
-    profileModel: ProfileModel,
-    uiState: HomeUiState,
-    isUserLoggedIn: Boolean,
+    homeUiState: HomeUiState,
     openMenuScreen: () -> Unit,
     deleteFavorite: (Original?) -> Unit,
     navigate: (route: String, item: Original?) -> Unit
@@ -115,27 +90,26 @@ fun HomeScreenContent(
             iconResId = R.drawable.ic_bell_outlined,
             numberOfNotification = 0,
             isGemEnabled = true,
-            isUserLoggedIn = isUserLoggedIn,
-            gemCount = profileModel.gem,
-            onMenuClick = openMenuScreen
-        ) {
-
-        }
-        VerticalSpacer(height = MaterialTheme.localDimens.dp18_5)
+            isUserLoggedIn = homeUiState.isUserLoggedIn,
+            gemCount = homeUiState.profileModel?.gem.orZero(),
+            onMenuClick = openMenuScreen,
+            onNotificationClick = {/* no-op */ }
+        )
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp19))
         HomeScreenTabs(
             selectedTab = tabState, modifier = Modifier
                 .fillMaxWidth()
                 .padding(
-                    horizontal = MaterialTheme.localDimens.dp32
+                    horizontal = dimensionResource(id = R.dimen.dp32)
                 )
         ) {
             tabState = it
         }
-        VerticalSpacer(height = MaterialTheme.localDimens.dp31)
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp31))
         when (tabState) {
             HomeScreenTabs.AllStories -> {
                 Originals(
-                    originals = uiState.originals,
+                    originals = homeUiState.originals,
                     state = rememberLazyListState(),
                     modifier = Modifier.weight(1f)
                 ) {
@@ -145,14 +119,14 @@ fun HomeScreenContent(
 
             HomeScreenTabs.Favorites -> {
                 FavoriteOriginals(
-                    originals = uiState.favorites, state = rememberLazyListState(),
+                    originals = homeUiState.favorites, state = rememberLazyListState(),
                     onStarClicked = deleteFavorite
                 ) {
                     navigate.invoke(HitReadsScreens.HomeDetailScreen.route, it)
                 }
             }
 
-            HomeScreenTabs.ContinueReading -> {
+            HomeScreenTabs.ContinueReading -> {/* no-op */
 
             }
         }
@@ -169,18 +143,18 @@ private fun Originals(
     LazyColumn(
         modifier = modifier,
         state = state,
-        verticalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp30),
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp30)),
     ) {
         itemsIndexed(originals) { index, item ->
             GenreItem(
                 text = item.tagName.orEmpty(), if (index % 2 == 0) MaterialTheme.localColors.purple
                 else MaterialTheme.localColors.pink,
-                modifier = Modifier.padding(start = MaterialTheme.localDimens.dp24)
+                modifier = Modifier.padding(start = dimensionResource(id = R.dimen.dp24))
             )
-            VerticalSpacer(height = MaterialTheme.localDimens.dp16)
+            VerticalSpacer(height = dimensionResource(id = R.dimen.dp16))
             LazyRow(
-                contentPadding = PaddingValues(horizontal = MaterialTheme.localDimens.dp24),
-                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp16)
+                contentPadding = PaddingValues(horizontal = dimensionResource(id = R.dimen.dp24)),
+                horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp16))
             ) {
                 items(item.originals.orEmpty()) { original ->
                     OriginalItem(original = original) {
@@ -203,8 +177,8 @@ private fun FavoriteOriginals(
     LazyRow(
         modifier = modifier,
         state = state,
-        contentPadding = PaddingValues(horizontal = MaterialTheme.localDimens.dp24),
-        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp30),
+        contentPadding = PaddingValues(horizontal = dimensionResource(id = R.dimen.dp24)),
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp30)),
     ) {
         items(originals) { original ->
             FavoriteOriginalItem(
@@ -224,7 +198,7 @@ private fun OriginalItem(
     Column(
         modifier = Modifier
             .width(IntrinsicSize.Min)
-            .height(MaterialTheme.localDimens.dp244)
+            .height(dimensionResource(id = R.dimen.dp244))
             .clickable { onClick.invoke() }
     ) {
         Box {
@@ -235,7 +209,10 @@ private fun OriginalItem(
                 placeholder = painterResource(id = R.drawable.hitreads_placeholder),
                 error = painterResource(id = R.drawable.hitreads_placeholder),
                 modifier = Modifier
-                    .size(MaterialTheme.localDimens.dp129, MaterialTheme.localDimens.dp180)
+                    .size(
+                        dimensionResource(id = R.dimen.dp129),
+                        dimensionResource(id = R.dimen.dp180)
+                    )
                     .clip(MaterialTheme.localShapes.roundedDp9)
             )
             if (original.isNew) {
@@ -244,26 +221,31 @@ private fun OriginalItem(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
                         .padding(
-                            bottom = MaterialTheme.localDimens.dp12,
-                            end = MaterialTheme.localDimens.dp14
+                            bottom = dimensionResource(id = R.dimen.dp12),
+                            end = dimensionResource(id = R.dimen.dp14)
                         )
                         .clip(MaterialTheme.localShapes.roundedDp4)
                         .background(MaterialTheme.localColors.orange)
                         .padding(
-                            vertical = MaterialTheme.localDimens.dp6,
-                            horizontal = MaterialTheme.localDimens.dp10
+                            vertical = 6.dp,
+                            horizontal = dimensionResource(id = R.dimen.dp10)
                         )
                 )
             }
         }
-        VerticalSpacer(height = MaterialTheme.localDimens.dp6)
+        VerticalSpacer(height = 6.dp)
         Text(
             text = original.title,
             style = MaterialTheme.localTextStyles.originalItemTitle,
+            color = MaterialTheme.localColors.white,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
         )
-        Text(text = original.author.name, style = MaterialTheme.localTextStyles.summaryIconText)
+        Text(
+            text = original.author.name,
+            style = MaterialTheme.localTextStyles.summaryIconText,
+            color = MaterialTheme.localColors.white
+        )
     }
 }
 
@@ -284,24 +266,260 @@ fun FavoriteOriginalItem(
             placeholder = painterResource(id = R.drawable.hitreads_placeholder),
             error = painterResource(id = R.drawable.hitreads_placeholder),
             modifier = Modifier
-                .size(MaterialTheme.localDimens.dp129, MaterialTheme.localDimens.dp180)
+                .size(dimensionResource(id = R.dimen.dp129), dimensionResource(id = R.dimen.dp180))
                 .clip(MaterialTheme.localShapes.roundedDp9)
                 .clickable { onClick.invoke() }
         )
-        VerticalSpacer(height = MaterialTheme.localDimens.dp13)
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp13))
         Text(
             text = original.title,
             style = MaterialTheme.localTextStyles.originalItemTitle,
+            color = MaterialTheme.localColors.white,
             maxLines = 2,
             minLines = 2,
             textAlign = TextAlign.Center,
         )
-        VerticalSpacer(height = MaterialTheme.localDimens.dp28)
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp28))
         YellowStarBox(
             modifier = Modifier.clickable { onStarClicked.invoke() }
         )
     }
 }
+
+@Composable
+private fun HomeScreenTabs(
+    selectedTab: HomeScreenTabs,
+    modifier: Modifier = Modifier,
+    onTabSelected: (HomeScreenTabs) -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp34)),
+        modifier = modifier.horizontalScroll(rememberScrollState())
+    ) {
+        HomeScreenTabItem(
+            title = R.string.all_stories,
+            isSelected = selectedTab == HomeScreenTabs.AllStories
+        ) {
+            onTabSelected.invoke(HomeScreenTabs.AllStories)
+        }
+        HomeScreenTabItem(
+            title = R.string.favorites_with_size,
+            isSelected = selectedTab == HomeScreenTabs.Favorites
+        ) {
+            onTabSelected.invoke(HomeScreenTabs.Favorites)
+        }
+        HomeScreenTabItem(
+            title = R.string.continue_reading,
+            isSelected = selectedTab == HomeScreenTabs.ContinueReading
+        ) {
+            onTabSelected.invoke(HomeScreenTabs.ContinueReading)
+        }
+    }
+}
+
+enum class HomeScreenTabs {
+    AllStories,
+    Favorites,
+    ContinueReading
+}
+
+@Composable
+private fun HomeScreenTabItem(
+    @StringRes title: Int,
+    isSelected: Boolean,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    Column(
+        modifier = modifier
+            .width(IntrinsicSize.Min)
+            .clickable { onClick.invoke() }
+    ) {
+        Text(
+            text = stringResource(id = title),
+            style = MaterialTheme.localTextStyles.homeScreenTabText,
+            color = MaterialTheme.localColors.white_alpha07,
+            modifier = Modifier
+                .width(IntrinsicSize.Max)
+                .padding(bottom = dimensionResource(id = R.dimen.dp2))
+
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(dimensionResource(id = R.dimen.dp4))
+                .clip(MaterialTheme.localShapes.roundedDp3)
+                .background(
+                    if (isSelected) {
+                        MaterialTheme.localColors.purple_alpha08
+                    } else {
+                        MaterialTheme.localColors.transparent
+                    }
+                )
+        )
+    }
+}
+
+
+@Composable
+fun TitleSection(
+    author: String,
+    title: String,
+    subTitle: String,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+    ) {
+        Text(
+            text = author,
+            style = MaterialTheme.localTextStyles.mediumTitle,
+            color = MaterialTheme.localColors.white
+        )
+        Text(
+            text = title,
+            style = MaterialTheme.localTextStyles.extraBoldTitle,
+            color = MaterialTheme.localColors.white
+        )
+        Text(
+            text = subTitle,
+            style = MaterialTheme.localTextStyles.subtitleGrotesk,
+            color = MaterialTheme.localColors.white
+        )
+    }
+}
+
+@Composable
+fun GenreSection(
+    episodeSize: Int,
+    genres: List<Tag>?,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+    ) {
+        genres?.firstOrNull()?.let {
+            GenreItem(
+                it.name,
+                color = MaterialTheme.localColors.purple
+            )
+            HorizontalSpacer(width = dimensionResource(id = R.dimen.dp19))
+        }
+        Column(
+            modifier = Modifier
+                .width(IntrinsicSize.Min)
+                .align(Alignment.Bottom)
+        ) {
+            Text(
+                text = stringResource(id = R.string.episode_size, episodeSize),
+                style = MaterialTheme.localTextStyles.episodeText,
+                color = MaterialTheme.localColors.white,
+                modifier = Modifier.width(IntrinsicSize.Max)
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(dimensionResource(id = R.dimen.dp4))
+                    .clip(MaterialTheme.localShapes.roundedDp3)
+                    .background(MaterialTheme.localColors.white_alpha08)
+            )
+        }
+    }
+}
+
+@Composable
+fun GenreItem(
+    text: String,
+    color: Color,
+    modifier: Modifier = Modifier
+) {
+    Text(
+        text = text,
+        textAlign = TextAlign.Center,
+        style = MaterialTheme.localTextStyles.isStoryNewText,
+        color = MaterialTheme.localColors.black,
+        modifier = modifier
+            .clip(MaterialTheme.localShapes.roundedDp4)
+            .background(color)
+            .padding(
+                vertical = 6.dp,
+                horizontal = dimensionResource(id = R.dimen.dp10)
+            )
+    )
+}
+
+/*@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun StoriesRow(
+    lazyPagingItems: List<Original>,
+    state: PagerState,
+    modifier: Modifier = Modifier,
+    onClick: (Original?) -> Unit,
+) {
+    BoxWithConstraints {
+        HorizontalPager(
+            pageCount = lazyPagingItems.size,
+            state = state,
+            contentPadding = PaddingValues(
+                start = dimensionResource(id = R.dimen.dp25),
+                end = this.maxWidth - dimensionResource(id = R.dimen.dp24)9 - dimensionResource(id = R.dimen.dp25)
+            ),
+            pageSpacing = dimensionResource(id = R.dimen.dp31),
+            pageSize = PageSize.Fixed(dimensionResource(id = R.dimen.dp24)9),
+            modifier = modifier,
+        ) { page ->
+            StoryImage(
+                imgUrl = lazyPagingItems[page].cover.toString(),
+                isNew = lazyPagingItems[page].isNew ?: false,
+                onClick = { onClick.invoke(lazyPagingItems[page]) }
+            )
+        }
+    }
+}*/
+
+/*@Composable
+private fun StoryImage(
+    imgUrl: String,
+    isNew: Boolean,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier.clickable { onClick.invoke() }
+    ) {
+        AsyncImage(
+            model = imgUrl,
+            contentDescription = null,
+            fallback = painterResource(id = R.drawable.hitreads_placeholder),
+            placeholder = painterResource(id = R.drawable.hitreads_placeholder),
+            error = painterResource(id = R.drawable.hitreads_placeholder),
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .size(
+                    dimensionResource(id = R.dimen.dp24)9,
+                    dimensionResource(id = R.dimen.dp34)8
+                )
+                .clip(MaterialTheme.localShapes.roundedDp20)
+        )
+        if (isNew) {
+            Text(
+                text = stringResource(id = R.string.new_),
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(
+                        bottom = dimensionResource(id = R.dimen.dp12),
+                        end = dimensionResource(id = R.dimen.dp14)
+                    )
+                    .clip(MaterialTheme.localShapes.roundedDp4)
+                    .background(MaterialTheme.localColors.orange)
+                    .padding(
+                        vertical = 6.dp,
+                        horizontal = MaterialTheme.localDimens.dp10
+                    )
+            )
+        }
+    }
+}*/
 
 /*@OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -354,7 +572,7 @@ private fun HomeScreenContent(
             gemCount = 4500,
             onMenuClick = openMenuScreen
         )
-        VerticalSpacer(height = MaterialTheme.localDimens.dp18_5)
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp18)_5)
         HomeScreenTabs(
             storiesSize = uiStates.firstOrNull()?.dataCount.orZero(),
             favoritesSize = uiStatesFavorites.firstOrNull()?.dataCount.orZero(),
@@ -364,7 +582,7 @@ private fun HomeScreenContent(
             scope.launch { pagerState.scrollToPage(0) }
             tabState = selectedTab
         }
-        VerticalSpacer(height = MaterialTheme.localDimens.dp14)
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp14))
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -379,19 +597,19 @@ private fun HomeScreenContent(
             ) { original ->
                 navigate.invoke(HitReadsScreens.HomeDetailScreen.route, original)
             }
-            VerticalSpacer(height = MaterialTheme.localDimens.dp28_5)
+            VerticalSpacer(height = dimensionResource(id = R.dimen.dp28)_5)
             if (uiStates.isNotEmpty()) {
                 TitleSection(
                     author = currentItem?.author?.name.toString(),
                     title = currentItem?.title.toString(),
                     subTitle = currentItem?.subtitle.toString(),
-                    modifier = Modifier.padding(start = MaterialTheme.localDimens.dp23)
+                    modifier = Modifier.padding(start = dimensionResource(id = R.dimen.dp23))
                 )
-                VerticalSpacer(height = MaterialTheme.localDimens.dp20)
+                VerticalSpacer(height = dimensionResource(id = R.dimen.dp20))
                 GenreSection(
                     genres = currentItem?.tags,
                     episodeSize = currentItem?.episodeCount ?: 0,
-                    modifier = Modifier.padding(start = MaterialTheme.localDimens.dp23)
+                    modifier = Modifier.padding(start = dimensionResource(id = R.dimen.dp23))
                 )
                 SummarySection(
                     summary = currentItem?.description.toString(),
@@ -399,8 +617,8 @@ private fun HomeScreenContent(
                     numberOfComments = currentItem?.commentCount.orZero(),
                     onCommentsClick = {},
                     modifier = Modifier.padding(
-                        top = MaterialTheme.localDimens.dp9,
-                        start = MaterialTheme.localDimens.dp25,
+                        top = dimensionResource(id = R.dimen.dp9),
+                        start = dimensionResource(id = R.dimen.dp25),
                         end = MaterialTheme.localDimens.dp39
                     )
                 )
@@ -410,7 +628,7 @@ private fun HomeScreenContent(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = MaterialTheme.localDimens.dp24)
+                .padding(horizontal = dimensionResource(id = R.dimen.dp24))
         ) {
             Text(
                 text = stringResource(id = R.string.story_summary, currentItem?.dataCount.orZero()),
@@ -422,231 +640,11 @@ private fun HomeScreenContent(
                     .clickable { navigate.invoke(HitReadsScreens.FilterScreen.route, null) }
             )
         }
-        VerticalSpacer(height = MaterialTheme.localDimens.dp24)
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp24))
     }
 }*/
 
-@Composable
-private fun HomeScreenTabs(
-    selectedTab: HomeScreenTabs,
-    modifier: Modifier = Modifier,
-    onTabSelected: (HomeScreenTabs) -> Unit
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp34),
-        modifier = modifier.horizontalScroll(rememberScrollState())
-    ) {
-        HomeScreenTabItem(
-            title = R.string.all_stories,
-            isSelected = selectedTab == HomeScreenTabs.AllStories
-        ) {
-            onTabSelected.invoke(HomeScreenTabs.AllStories)
-        }
-        HomeScreenTabItem(
-            title = R.string.favorites_with_size,
-            isSelected = selectedTab == HomeScreenTabs.Favorites
-        ) {
-            //todo
-            onTabSelected.invoke(HomeScreenTabs.Favorites)
-        }
-        HomeScreenTabItem(
-            title = R.string.continue_reading,
-            isSelected = selectedTab == HomeScreenTabs.ContinueReading
-        ) {
-            onTabSelected.invoke(HomeScreenTabs.ContinueReading)
-        }
-    }
-}
-
-enum class HomeScreenTabs {
-    AllStories,
-    Favorites,
-    ContinueReading
-}
-
-@Composable
-private fun HomeScreenTabItem(
-    @StringRes title: Int,
-    isSelected: Boolean,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit
-) {
-    Column(
-        modifier = modifier
-            .width(IntrinsicSize.Min)
-            .clickable { onClick.invoke() }
-    ) {
-        Text(
-            text = stringResource(id = title),
-            style = MaterialTheme.localTextStyles.homeScreenTabText,
-            modifier = Modifier
-                .width(IntrinsicSize.Max)
-                .padding(bottom = MaterialTheme.localDimens.dp2)
-
-        )
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(MaterialTheme.localDimens.dp4)
-                .clip(MaterialTheme.localShapes.roundedDp3)
-                .background(
-                    if (isSelected) {
-                        MaterialTheme.localColors.purple_alpha08
-                    } else {
-                        MaterialTheme.localColors.transparent
-                    }
-                )
-        )
-    }
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-private fun StoriesRow(
-    lazyPagingItems: List<Original>,
-    state: PagerState,
-    modifier: Modifier = Modifier,
-    onClick: (Original?) -> Unit,
-) {
-    BoxWithConstraints {
-        HorizontalPager(
-            pageCount = lazyPagingItems.size,
-            state = state,
-            contentPadding = PaddingValues(
-                start = MaterialTheme.localDimens.dp25,
-                end = this.maxWidth - MaterialTheme.localDimens.dp249 - MaterialTheme.localDimens.dp25
-            ),
-            pageSpacing = MaterialTheme.localDimens.dp31,
-            pageSize = PageSize.Fixed(MaterialTheme.localDimens.dp249),
-            modifier = modifier,
-        ) { page ->
-            StoryImage(
-                imgUrl = lazyPagingItems[page].cover.toString(),
-                isNew = lazyPagingItems[page].isNew ?: false,
-                onClick = { onClick.invoke(lazyPagingItems[page]) }
-            )
-        }
-    }
-}
-
-@Composable
-private fun StoryImage(
-    imgUrl: String,
-    isNew: Boolean,
-    onClick: () -> Unit
-) {
-    Box(
-        modifier = Modifier.clickable { onClick.invoke() }
-    ) {
-        AsyncImage(
-            model = imgUrl,
-            contentDescription = null,
-            fallback = painterResource(id = R.drawable.hitreads_placeholder),
-            placeholder = painterResource(id = R.drawable.hitreads_placeholder),
-            error = painterResource(id = R.drawable.hitreads_placeholder),
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .size(
-                    MaterialTheme.localDimens.dp249,
-                    MaterialTheme.localDimens.dp348
-                )
-                .clip(MaterialTheme.localShapes.roundedDp20)
-        )
-        if (isNew) {
-            Text(
-                text = stringResource(id = R.string.new_),
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(
-                        bottom = MaterialTheme.localDimens.dp12,
-                        end = MaterialTheme.localDimens.dp14
-                    )
-                    .clip(MaterialTheme.localShapes.roundedDp4)
-                    .background(MaterialTheme.localColors.orange)
-                    .padding(
-                        vertical = MaterialTheme.localDimens.dp6,
-                        horizontal = MaterialTheme.localDimens.dp10
-                    )
-            )
-        }
-    }
-}
-
-@Composable
-fun TitleSection(
-    author: String,
-    title: String,
-    subTitle: String,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier
-    ) {
-        Text(text = author, style = MaterialTheme.localTextStyles.mediumTitle)
-        Text(text = title, style = MaterialTheme.localTextStyles.extraBoldTitle)
-        Text(text = subTitle, style = MaterialTheme.localTextStyles.subtitleGrotesk)
-    }
-}
-
-@Composable
-fun GenreSection(
-    episodeSize: Int,
-    genres: List<Tag>?,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier
-    ) {
-        genres?.firstOrNull()?.let {
-            GenreItem(
-                it.name,
-                color = MaterialTheme.localColors.purple
-            )
-            HorizontalSpacer(width = MaterialTheme.localDimens.dp19)
-        }
-        Column(
-            modifier = Modifier
-                .width(IntrinsicSize.Min)
-                .align(Alignment.Bottom)
-        ) {
-            Text(
-                text = stringResource(id = R.string.episode_size, episodeSize),
-                style = MaterialTheme.localTextStyles.episodeText,
-                modifier = Modifier.width(IntrinsicSize.Max)
-            )
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(MaterialTheme.localDimens.dp4)
-                    .clip(MaterialTheme.localShapes.roundedDp3)
-                    .background(MaterialTheme.localColors.white_alpha08)
-            )
-        }
-    }
-}
-
-@Composable
-fun GenreItem(
-    text: String,
-    color: Color,
-    modifier: Modifier = Modifier
-) {
-    Text(
-        text = text,
-        textAlign = TextAlign.Center,
-        style = MaterialTheme.localTextStyles.isStoryNewText,
-        modifier = modifier
-            .clip(MaterialTheme.localShapes.roundedDp4)
-            .background(color)
-            .padding(
-                vertical = MaterialTheme.localDimens.dp6,
-                horizontal = MaterialTheme.localDimens.dp10
-            )
-    )
-}
-
-@Composable
+/*@Composable
 private fun SummarySection(
     summary: String,
     numberOfViews: Int,
@@ -711,10 +709,20 @@ private fun SummarySection(
             )
         }
     }
-}
+}*/
 
 @Preview
 @Composable
 fun HomeScreenPreview() {
+    HomeScreenContent(
+        homeUiState = HomeUiState(
+            originals = listOf(),
+            favorites = listOf(),
+            error = null
+        ),
+        openMenuScreen = {},
+        deleteFavorite = {},
+        navigate = { s: String, original: Original? -> }
 
+    )
 }

@@ -1,4 +1,4 @@
-package com.baltroid.ui.screens.menu.comments
+package com.baltroid.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -32,27 +32,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.baltroid.apps.R
-import com.baltroid.ui.common.SimpleIcon
-import com.baltroid.ui.common.VerticalSpacer
-import com.baltroid.ui.components.CommentWritingCard
-import com.baltroid.ui.components.MenuBar
-import com.baltroid.ui.screens.reading.CommentSection
-import com.baltroid.ui.screens.reading.CommentSectionTabs
-import com.baltroid.ui.screens.reading.comments.CommentsTabState
-import com.baltroid.ui.theme.Poppins
-import com.baltroid.ui.theme.localColors
-import com.baltroid.ui.theme.localDimens
-import com.baltroid.ui.theme.localShapes
-import com.baltroid.ui.theme.localTextStyles
 import com.baltroid.util.orZero
 import com.hitreads.core.model.Comment
 import kotlin.random.Random
@@ -118,26 +108,26 @@ private fun CommentsScreenContent(
                 .background(MaterialTheme.localColors.black)
                 .systemBarsPadding()
         ) {
-            VerticalSpacer(height = MaterialTheme.localDimens.dp36)
+            VerticalSpacer(height = dimensionResource(id = R.dimen.dp36))
             MenuBar(
                 title = stringResource(id = R.string.comments),
                 iconResId = R.drawable.ic_chat_filled
             ) {
                 onBackClick.invoke()
             }
-            VerticalSpacer(height = MaterialTheme.localDimens.dp24)
+            VerticalSpacer(height = dimensionResource(id = R.dimen.dp24))
 
             CommentSectionTabs(tabState = selectedTab) {
                 selectedTab = it
             }
 
-            VerticalSpacer(height = MaterialTheme.localDimens.dp33)
+            VerticalSpacer(height = dimensionResource(id = R.dimen.dp33))
             when (selectedTab) {
                 CommentsTabState.AllComments -> {
                     CommentSection(
                         lazyListState = rememberLazyListState(),
                         comments = comments,
-                        modifier = Modifier.padding(start = MaterialTheme.localDimens.dp30),
+                        modifier = Modifier.padding(start = dimensionResource(id = R.dimen.dp30)),
                         onLikeClick = onLikeClick,
                         onReplyClick = {
                             isCommentWriteActive = true
@@ -180,8 +170,8 @@ private fun Comments(
     onReplyClick: (Int) -> Unit
 ) {
     LazyRow(
-        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp29),
-        contentPadding = PaddingValues(horizontal = MaterialTheme.localDimens.dp35),
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp29)),
+        contentPadding = PaddingValues(horizontal = dimensionResource(id = R.dimen.dp35)),
         modifier = Modifier.fillMaxWidth()
     ) {
         items(comments) { comment ->
@@ -208,29 +198,30 @@ private fun CommentItem(
             error = painterResource(id = R.drawable.hitreads_placeholder),
             modifier = Modifier
                 .size(
-                    width = MaterialTheme.localDimens.dp127,
-                    height = MaterialTheme.localDimens.dp177
+                    width = dimensionResource(id = R.dimen.dp127),
+                    height = dimensionResource(id = R.dimen.dp177)
                 )
                 .clip(MaterialTheme.localShapes.roundedDp18)
         )
-        VerticalSpacer(height = MaterialTheme.localDimens.dp13)
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp13))
         Text(
             text = comment.original?.title.orEmpty(),
-            style = MaterialTheme.localTextStyles.storyItemTitle
+            style = MaterialTheme.localTextStyles.storyItemTitle,
+            color = MaterialTheme.localColors.white_alpha05, textAlign = TextAlign.Center
         )
-        VerticalSpacer(height = MaterialTheme.localDimens.dp10)
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp10))
         Row(
-            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp3),
+            horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp3)),
             modifier = Modifier
                 .clip(MaterialTheme.localShapes.roundedDp2)
                 .border(
-                    width = MaterialTheme.localDimens.dp0_5,
+                    width = dimensionResource(id = R.dimen.dp1),
                     color = MaterialTheme.localColors.white_alpha07,
                     shape = MaterialTheme.localShapes.roundedDp2
                 )
                 .padding(
-                    vertical = MaterialTheme.localDimens.dp6_5,
-                    horizontal = MaterialTheme.localDimens.dp20
+                    vertical = dimensionResource(id = R.dimen.dp7),
+                    horizontal = dimensionResource(id = R.dimen.dp20)
                 )
         ) {
             SimpleIcon(
@@ -241,7 +232,8 @@ private fun CommentItem(
             if (!comment.isReply) {
                 Text(
                     text = comment.original?.commentCount.toString(),
-                    style = MaterialTheme.localTextStyles.episodeSectionIconText
+                    style = MaterialTheme.localTextStyles.topBarIconText,
+                    color = MaterialTheme.localColors.white_alpha04
                 )
             }
         }
@@ -265,7 +257,7 @@ fun CommentImage(
             model = imgUrl,
             contentDescription = null,
             modifier = Modifier
-                .size(MaterialTheme.localDimens.dp48)
+                .size(dimensionResource(id = R.dimen.dp48))
                 .clip(MaterialTheme.localShapes.circleShape),
             contentScale = ContentScale.Crop
         )
@@ -273,7 +265,7 @@ fun CommentImage(
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
-                .size(MaterialTheme.localDimens.dp48)
+                .size(dimensionResource(id = R.dimen.dp48))
                 .clip(MaterialTheme.localShapes.circleShape)
                 .background(color = randomColor)
         ) {

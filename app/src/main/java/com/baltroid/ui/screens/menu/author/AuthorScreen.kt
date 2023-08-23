@@ -1,4 +1,4 @@
-package com.baltroid.ui.screens.menu.author
+package com.baltroid.ui
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
@@ -29,19 +29,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.baltroid.apps.R
-import com.baltroid.ui.common.CroppedImage
-import com.baltroid.ui.common.HorizontalSpacer
-import com.baltroid.ui.common.SimpleIcon
-import com.baltroid.ui.common.VerticalSpacer
-import com.baltroid.ui.components.IconlessMenuBar
-import com.baltroid.ui.screens.menu.favorites.NamelessAuthorItem
-import com.baltroid.ui.theme.localColors
-import com.baltroid.ui.theme.localDimens
-import com.baltroid.ui.theme.localShapes
-import com.baltroid.ui.theme.localTextStyles
 
 @Composable
 fun AuthorScreen(
@@ -69,28 +61,28 @@ fun AuthorScreenContent(
             .verticalScroll(scrollState)
             .systemBarsPadding()
     ) {
-        VerticalSpacer(height = MaterialTheme.localDimens.dp36)
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp36))
         IconlessMenuBar(
             title = "ZEYNEP SEY",
             onBackClick = onBackClick,
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
         )
-        VerticalSpacer(height = MaterialTheme.localDimens.dp22)
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp22))
         NamelessAuthorItem(
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
-        VerticalSpacer(height = MaterialTheme.localDimens.dp44)
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp44))
         StoryAndCommentTabs(
             selectedTab = selectedTab,
-            modifier = Modifier.padding(start = MaterialTheme.localDimens.dp54)
+            modifier = Modifier.padding(start = dimensionResource(id = R.dimen.dp54))
         ) { tabToSelect ->
             selectedTab = tabToSelect
         }
-        VerticalSpacer(height = MaterialTheme.localDimens.dp34)
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp34))
         LazyRow(
-            modifier = Modifier.padding(start = MaterialTheme.localDimens.dp54_5),
-            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp30)
+            modifier = Modifier.padding(start = dimensionResource(id = R.dimen.dp55)),
+            horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp30))
         ) {
 
         }
@@ -105,7 +97,7 @@ fun StoryAndCommentTabs(
 ) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp33)
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp33))
     ) {
         Column(
             modifier = Modifier
@@ -117,12 +109,13 @@ fun StoryAndCommentTabs(
             Text(
                 text = stringResource(id = R.string.stories),
                 style = MaterialTheme.localTextStyles.menuBarSubTitle,
+                color = MaterialTheme.localColors.white_alpha09,
                 modifier = Modifier.width(IntrinsicSize.Max)
             )
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(MaterialTheme.localDimens.dp3)
+                    .height(3.dp)
                     .background(
                         if (selectedTab == AuthorScreenTabs.Stories) {
                             MaterialTheme.localColors.white_alpha07
@@ -142,12 +135,13 @@ fun StoryAndCommentTabs(
             Text(
                 text = stringResource(id = R.string.comments),
                 style = MaterialTheme.localTextStyles.menuBarSubTitle,
+                color = MaterialTheme.localColors.white_alpha09,
                 modifier = Modifier.width(IntrinsicSize.Max)
             )
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(MaterialTheme.localDimens.dp3)
+                    .height(3.dp)
                     .background(
                         if (selectedTab == AuthorScreenTabs.Comments) {
                             MaterialTheme.localColors.white_alpha07
@@ -165,7 +159,7 @@ fun AuthorComments(
     modifier: Modifier = Modifier
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp23),
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp23)),
         modifier = modifier
     ) {
         repeat(5) {
@@ -197,24 +191,28 @@ fun AuthorCommentItem(
             CroppedImage(
                 imgResId = R.drawable.woods_image,
                 modifier
-                    .size(MaterialTheme.localDimens.dp48)
+                    .size(dimensionResource(id = R.dimen.dp48))
                     .clip(MaterialTheme.localShapes.circleShape)
             )
-            HorizontalSpacer(width = MaterialTheme.localDimens.dp13)
+            HorizontalSpacer(width = dimensionResource(id = R.dimen.dp13))
             Column(
                 verticalArrangement = Arrangement.Bottom,
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp5)
+                    horizontalArrangement = Arrangement.spacedBy(5.dp)
                 ) {
-                    Text(text = owner, style = MaterialTheme.localTextStyles.subtitle)
+                    Text(
+                        text = owner,
+                        style = MaterialTheme.localTextStyles.subtitle,
+                        color = MaterialTheme.localColors.white
+                    )
                     SimpleIcon(
                         iconResId = R.drawable.ic_star,
                         tint = MaterialTheme.localColors.yellow,
                         modifier = Modifier
-                            .padding(top = MaterialTheme.localDimens.dp1)
-                            .size(MaterialTheme.localDimens.dp15)
+                            .padding(top = dimensionResource(id = R.dimen.dp1))
+                            .size(dimensionResource(id = R.dimen.dp15))
                             .align(Alignment.Top)
                     )
                 }
@@ -225,11 +223,12 @@ fun AuthorCommentItem(
                 ) {
                     Text(
                         text = date,
-                        style = MaterialTheme.localTextStyles.dateText
+                        style = MaterialTheme.localTextStyles.dateText,
+                        color = MaterialTheme.localColors.white_alpha07,
                     )
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp14),
+                        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp14)),
                         modifier = Modifier
                             .fillMaxWidth()
                             .wrapContentWidth(Alignment.CenterHorizontally),
@@ -241,13 +240,14 @@ fun AuthorCommentItem(
                 }
             }
         }
-        VerticalSpacer(height = MaterialTheme.localDimens.dp6)
+        VerticalSpacer(height = 6.dp)
         Text(
             text = "First of all please publish this so I can buy it for my library! second #KGD is my best book",
             style = MaterialTheme.localTextStyles.body,
+            color = MaterialTheme.localColors.white_alpha08,
             modifier = Modifier
                 .width(IntrinsicSize.Max)
-                .padding(start = MaterialTheme.localDimens.dp5)
+                .padding(start = 5.dp)
         )
     }
 }

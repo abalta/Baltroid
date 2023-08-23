@@ -1,4 +1,4 @@
-package com.baltroid.ui.theme
+package com.baltroid.ui
 
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape

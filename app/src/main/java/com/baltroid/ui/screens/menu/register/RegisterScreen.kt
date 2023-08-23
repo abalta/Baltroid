@@ -1,4 +1,4 @@
-package com.baltroid.ui.screens.menu.register
+package com.baltroid.ui
 
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -23,20 +23,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.baltroid.apps.R
-import com.baltroid.ui.common.VerticalSpacer
-import com.baltroid.ui.components.IconlessMenuBar
-import com.baltroid.ui.navigation.HitReadsScreens
-import com.baltroid.ui.screens.menu.login.TextBetweenDividers
-import com.baltroid.ui.screens.menu.login.UserInputArea
-import com.baltroid.ui.screens.viewmodels.AuthenticationViewModel
-import com.baltroid.ui.theme.localColors
-import com.baltroid.ui.theme.localDimens
-import com.baltroid.ui.theme.localTextStyles
 import com.baltroid.util.conditional
 
 @Composable
@@ -70,7 +62,7 @@ fun RegisterScreen(
             .background(MaterialTheme.localColors.black)
             .systemBarsPadding()
     ) {
-        VerticalSpacer(height = MaterialTheme.localDimens.dp36)
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp36))
         IconlessMenuBar(
             modifier = Modifier.align(Alignment.CenterHorizontally),
             title = stringResource(id = R.string.new_user),
@@ -82,7 +74,7 @@ fun RegisterScreen(
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
         ) {
-            VerticalSpacer(height = MaterialTheme.localDimens.dp18)
+            VerticalSpacer(height = dimensionResource(id = R.dimen.dp18))
             UserInputArea(
                 title = R.string.name_surname,
                 value = uiState.name.fieldValue,
@@ -92,10 +84,11 @@ fun RegisterScreen(
             if (uiState.name.errorMsg != null) {
                 Text(
                     text = stringResource(id = uiState.name.errorMsg),
-                    style = MaterialTheme.localTextStyles.signUpTextOrangeGrotesk
+                    style = MaterialTheme.localTextStyles.writingCardInfo,
+                    color = MaterialTheme.localColors.orange
                 )
             }
-            VerticalSpacer(height = MaterialTheme.localDimens.dp9)
+            VerticalSpacer(height = dimensionResource(id = R.dimen.dp9))
             UserInputArea(
                 title = R.string.email,
                 value = uiState.email.fieldValue,
@@ -105,24 +98,26 @@ fun RegisterScreen(
             if (uiState.email.errorMsg != null) {
                 Text(
                     text = stringResource(id = uiState.email.errorMsg),
-                    style = MaterialTheme.localTextStyles.signUpTextOrangeGrotesk
+                    style = MaterialTheme.localTextStyles.writingCardInfo,
+                    color = MaterialTheme.localColors.orange
                 )
             }
-            VerticalSpacer(height = MaterialTheme.localDimens.dp9)
+            VerticalSpacer(height = dimensionResource(id = R.dimen.dp9))
             UserInputArea(
                 title = R.string.password,
                 value = uiState.password.fieldValue,
                 onValueChange = viewModel::updatePasswordField,
                 modifier = Modifier.fillMaxWidth(0.65f)
             )
-            VerticalSpacer(height = MaterialTheme.localDimens.dp9)
+            VerticalSpacer(height = dimensionResource(id = R.dimen.dp9))
             Text(
                 text = stringResource(id = R.string.invalid_password),
-                style = if (uiState.password.errorMsg == null) MaterialTheme.localTextStyles.passwordInfo
-                else MaterialTheme.localTextStyles.signUpTextOrangeGrotesk,
+                style = MaterialTheme.localTextStyles.writingCardInfo,
+                color = if (uiState.password.errorMsg == null) MaterialTheme.localColors.white_alpha03
+                else MaterialTheme.localColors.orange,
                 modifier = Modifier.fillMaxWidth(0.65f)
             )
-            VerticalSpacer(height = MaterialTheme.localDimens.dp9)
+            VerticalSpacer(height = dimensionResource(id = R.dimen.dp9))
             UserInputArea(
                 title = R.string.password_confirm,
                 value = uiState.passwordConfirm.fieldValue,
@@ -132,10 +127,11 @@ fun RegisterScreen(
             if (uiState.passwordConfirm.errorMsg != null) {
                 Text(
                     text = stringResource(id = uiState.passwordConfirm.errorMsg),
-                    style = MaterialTheme.localTextStyles.signUpTextOrangeGrotesk
+                    style = MaterialTheme.localTextStyles.writingCardInfo,
+                    color = MaterialTheme.localColors.orange
                 )
             }
-            VerticalSpacer(height = MaterialTheme.localDimens.dp30)
+            VerticalSpacer(height = dimensionResource(id = R.dimen.dp30))
             Column {
                 CheckBoxWithText(
                     uiState.isPrivacyPolicyChecked.isChecked,
@@ -143,7 +139,7 @@ fun RegisterScreen(
                 ) {
                     viewModel.updatePrivacyPolicy(isChecked = !it)
                 }
-                VerticalSpacer(height = MaterialTheme.localDimens.dp15)
+                VerticalSpacer(height = dimensionResource(id = R.dimen.dp15))
                 CheckBoxWithText(
                     uiState.isCookiePolicyChecked.isChecked,
                     stringResource(id = R.string.accept_cookie_policy)
@@ -151,7 +147,7 @@ fun RegisterScreen(
                     viewModel.updateCookiePolicy(isChecked = !it)
                 }
             }
-            VerticalSpacer(height = MaterialTheme.localDimens.dp38)
+            VerticalSpacer(height = dimensionResource(id = R.dimen.dp38))
             TextBetweenDividers(
                 text = stringResource(id = R.string.save),
                 textStyle = MaterialTheme.localTextStyles.signInTextWhite,
@@ -159,7 +155,7 @@ fun RegisterScreen(
             )
             TextBetweenDividers(
                 text = stringResource(id = R.string.already_member),
-                textStyle = MaterialTheme.localTextStyles.signUpTextOrange,
+                textStyle = MaterialTheme.localTextStyles.signInTextWhite,
                 onClick = { /*TODO*/ })
         }
     }
@@ -173,14 +169,14 @@ fun CheckBoxWithText(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp13),
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp13)),
         modifier = Modifier.clickable { onClick.invoke(isChecked) },
     ) {
         Box(
             modifier = Modifier
-                .size(MaterialTheme.localDimens.dp14)
+                .size(dimensionResource(id = R.dimen.dp14))
                 .border(
-                    MaterialTheme.localDimens.dp1,
+                    dimensionResource(id = R.dimen.dp1),
                     MaterialTheme.localColors.white_alpha05,
                     RectangleShape
                 )
@@ -193,7 +189,8 @@ fun CheckBoxWithText(
 
         Text(
             text = text,
-            style = MaterialTheme.localTextStyles.passwordInfo
+            style = MaterialTheme.localTextStyles.signInTextWhite,
+            color = MaterialTheme.localColors.white_alpha03
         )
     }
 }

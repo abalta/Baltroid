@@ -1,4 +1,4 @@
-package com.baltroid.ui.screens.reading
+package com.baltroid.ui
 
 import android.content.Context
 import android.content.Intent
@@ -44,6 +44,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -55,21 +56,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.baltroid.apps.R
-import com.baltroid.ui.common.HorizontalSpacer
-import com.baltroid.ui.common.IconWithTextNextTo
-import com.baltroid.ui.common.SimpleIcon
-import com.baltroid.ui.common.VerticalSpacer
-import com.baltroid.ui.components.HitReadsSideBar
-import com.baltroid.ui.components.HitReadsTopBar
-import com.baltroid.ui.screens.menu.comments.CommentImage
-import com.baltroid.ui.screens.menu.comments.CommentViewModel
-import com.baltroid.ui.screens.menu.place_marks.EpisodeBanner
-import com.baltroid.ui.screens.reading.comments.CommentsTabState
-import com.baltroid.ui.screens.viewmodels.OriginalViewModel
-import com.baltroid.ui.theme.Poppins
-import com.baltroid.ui.theme.localColors
-import com.baltroid.ui.theme.localDimens
-import com.baltroid.ui.theme.localTextStyles
 import com.baltroid.util.orZero
 import com.hitreads.core.domain.model.OriginalType
 import com.hitreads.core.model.Comment
@@ -217,24 +203,24 @@ private fun ReadingScreenContent(
                         isLiked = screenState.episode?.isFav ?: false,
                         onLikeClick = { onLikeClick(it) },
                         modifier = Modifier.padding(
-                            top = MaterialTheme.localDimens.dp12,
+                            top = dimensionResource(id = R.dimen.dp12),
                             start = MaterialTheme.localDimens.dp32
                         )
                     )
                     Row(
-                        modifier = Modifier.padding(end = MaterialTheme.localDimens.dp8)
+                        modifier = Modifier.padding(end = 8.dp)
                     ) {
                         if (isReadingSection) {
                             ScrollBar(
                                 scrollState = scrollState,
-                                modifier = Modifier.padding(start = MaterialTheme.localDimens.dp12)
+                                modifier = Modifier.padding(start = dimensionResource(id = R.dimen.dp12))
                             )
                         }
                         if (isReadingSection) {
                             ReadingSection(
                                 text = screenState.episode?.content.orEmpty(),
                                 scrollState = scrollState,
-                                modifier = Modifier.padding(start = MaterialTheme.localDimens.dp12)
+                                modifier = Modifier.padding(start = dimensionResource(id = R.dimen.dp12))
                             )
                         } else {
                             CommentSection(
@@ -277,7 +263,7 @@ private fun ReadingScreenContent(
                     }
                 }
             }
-            VerticalSpacer(height = MaterialTheme.localDimens.dp16)
+            VerticalSpacer(height = dimensionResource(id = R.dimen.dp16))
             AnimatedVisibility(visible = if (isReadingSection) scrollState.isEpisodesVisible() else lazyScrollState.isEpisodesVisible()) {
                 EpisodeSection(
                     episodes = screenState.original?.episodes.orEmpty(),
@@ -331,17 +317,16 @@ fun ScrollBar(
     modifier: Modifier = Modifier
 ) {
     val localColors = MaterialTheme.localColors
-    val localDimens = MaterialTheme.localDimens
 
     Box(
         modifier = modifier
-            .width(MaterialTheme.localDimens.dp6)
+            .width(6.dp)
             .fillMaxHeight()
             .drawWithContent {
                 val maxScrollValue = scrollState.maxValue
                 val currentScrollValue = scrollState.value
                 val scrollPercent = currentScrollValue.toFloat() / maxScrollValue.toFloat()
-                val scrollOffsetY = (size.height - localDimens.dp50.toPx()) * scrollPercent
+                val scrollOffsetY = (size.height - 50.dp.toPx()) * scrollPercent
 
                 drawRoundRect(
                     color = localColors.white_alpha05,
@@ -349,14 +334,14 @@ fun ScrollBar(
                         x = 0f,
                         y = scrollOffsetY
                     ),
-                    style = Stroke(localDimens.dp0_5.toPx()),
+                    style = Stroke(1.dp.toPx()),
                     cornerRadius = CornerRadius(
-                        localDimens.dp6.toPx(),
-                        localDimens.dp6.toPx()
+                        6.dp.toPx(),
+                        6.dp.toPx()
                     ),
                     size = Size(
-                        width = localDimens.dp6.toPx(),
-                        height = localDimens.dp50.toPx()
+                        width = 6.dp.toPx(),
+                        height = 50.dp.toPx()
                     )
                 )
             }
@@ -375,7 +360,6 @@ fun HitReadsPageHeader(
         modifier = modifier
     ) {
         val (image, topBar) = createRefs()
-        val localDimens = MaterialTheme.localDimens
         AsyncImage(
             model = imgUrl,
             contentDescription = null,
@@ -385,7 +369,7 @@ fun HitReadsPageHeader(
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
                 top.linkTo(parent.top)
-                bottom.linkTo(topBar.bottom, margin = -localDimens.dp5)
+                bottom.linkTo(topBar.bottom, margin = (-5).dp)
                 width = Dimension.fillToConstraints
                 height = Dimension.fillToConstraints
             }
@@ -433,28 +417,28 @@ fun TitleSection(
                 tint = if (isLiked) MaterialTheme.localColors.yellow else Color.Unspecified,
                 modifier = Modifier
                     .padding(
-                        top = MaterialTheme.localDimens.dp12,
-                        end = MaterialTheme.localDimens.dp15
+                        top = dimensionResource(id = R.dimen.dp12),
+                        end = dimensionResource(id = R.dimen.dp15)
                     )
                     .clickable {
                         onLikeClick(isLiked)
                     }
             )
             if (isExpanded) {
-                HorizontalSpacer(width = MaterialTheme.localDimens.dp15)
+                HorizontalSpacer(width = dimensionResource(id = R.dimen.dp15))
                 Divider(
                     color = MaterialTheme.localColors.white_alpha05,
                     modifier = Modifier
                         .width(MaterialTheme.localDimens.dp0_5)
                         .fillMaxHeight()
                 )
-                HorizontalSpacer(width = MaterialTheme.localDimens.dp10)
+                HorizontalSpacer(width = dimensionResource(id = R.dimen.dp10))
                 SimpleIcon(
                     iconResId = R.drawable.ic_menu,
                     modifier = Modifier
                         .padding(
-                            top = MaterialTheme.localDimens.dp12,
-                            end = MaterialTheme.localDimens.dp20
+                            top = dimensionResource(id = R.dimen.dp12),
+                            end = dimensionResource(id = R.dimen.dp20)
                         )
                         .clickable { onDotsClick.invoke() })
             }
@@ -497,28 +481,28 @@ fun TitleSection(
                     tint = if (isLiked) MaterialTheme.localColors.yellow else Color.Unspecified,
                     modifier = Modifier
                         .padding(
-                            top = MaterialTheme.localDimens.dp8,
-                            end = MaterialTheme.localDimens.dp15,
+                            top = 8.dp,
+                            end = dimensionResource(id = R.dimen.dp15),
                         )
                         .clickable {
                             onLikeClick(isLiked)
                         }
                 )
                 if (isExpanded) {
-                    HorizontalSpacer(width = MaterialTheme.localDimens.dp15)
+                    HorizontalSpacer(width = dimensionResource(id = R.dimen.dp15))
                     Divider(
                         color = MaterialTheme.localColors.white_alpha05,
                         modifier = Modifier
-                            .width(MaterialTheme.localDimens.dp0_5)
+                            .width(dimensionResource(id = R.dimen.dp1))
                             .fillMaxHeight()
                     )
-                    HorizontalSpacer(width = MaterialTheme.localDimens.dp10)
+                    HorizontalSpacer(width = dimensionResource(id = R.dimen.dp10))
                     SimpleIcon(
                         iconResId = R.drawable.ic_menu,
                         modifier = Modifier
                             .padding(
-                                top = MaterialTheme.localDimens.dp12,
-                                end = MaterialTheme.localDimens.dp20
+                                top = dimensionResource(id = R.dimen.dp12),
+                                end = dimensionResource(id = R.dimen.dp20)
                             )
                             .clickable { onDotsClick.invoke() })
                 }
@@ -528,10 +512,10 @@ fun TitleSection(
         if (isExpanded) {
             Divider(
                 color = MaterialTheme.localColors.white_alpha05,
-                thickness = MaterialTheme.localDimens.dp0_5,
-                modifier = Modifier.padding(horizontal = MaterialTheme.localDimens.dp12)
+                thickness = dimensionResource(id = R.dimen.dp1),
+                modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.dp12))
             )
-            VerticalSpacer(height = MaterialTheme.localDimens.dp4_5)
+            VerticalSpacer(height = 5.dp)
         }
     }
 }
@@ -566,8 +550,16 @@ fun Titles(
     Column(
         modifier = modifier
     ) {
-        Text(text = title, style = MaterialTheme.localTextStyles.title)
-        Text(text = subtitle, style = MaterialTheme.localTextStyles.subtitle)
+        Text(
+            text = title,
+            style = MaterialTheme.localTextStyles.title,
+            color = MaterialTheme.localColors.white
+        )
+        Text(
+            text = subtitle,
+            style = MaterialTheme.localTextStyles.subtitle,
+            color = MaterialTheme.localColors.white
+        )
     }
 }
 
@@ -581,6 +573,7 @@ fun ReadingSection(
         Text(
             text = text,
             style = MaterialTheme.localTextStyles.body,
+            color = MaterialTheme.localColors.white_alpha08,
             modifier = Modifier.verticalScroll(scrollState)
         )
     }
@@ -596,7 +589,7 @@ fun EpisodeSection(
     onEpisodeClick: (index: Int) -> Unit
 ) {
     LazyRow(
-        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp13),
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp13)),
         contentPadding = paddingValues,
         modifier = modifier
     ) {
@@ -620,8 +613,7 @@ fun EpisodeSectionItem(
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
-    val episodeTextStyle = if (isSelected) MaterialTheme.localTextStyles.episodeSelectedText
-    else MaterialTheme.localTextStyles.episodeUnselectedText
+    val episodeTextStyle = MaterialTheme.localTextStyles.episodeSelectedText
 
     Column(
         modifier
@@ -630,17 +622,17 @@ fun EpisodeSectionItem(
     ) {
         Row {
             Text(text = stringResource(id = R.string.episode), style = episodeTextStyle)
-            HorizontalSpacer(width = MaterialTheme.localDimens.dp4)
+            HorizontalSpacer(width = dimensionResource(id = R.dimen.dp4))
             Text(text = episodeNumber.toString(), style = episodeTextStyle)
         }
-        VerticalSpacer(height = MaterialTheme.localDimens.dp5)
+        VerticalSpacer(height = 5.dp)
         if (hasBanner) {
             EpisodeBanner(modifier = Modifier.fillMaxWidth())
         } else {
             Divider(
                 color = MaterialTheme.localColors.grey,
             )
-            VerticalSpacer(height = MaterialTheme.localDimens.dp17)
+            VerticalSpacer(height = dimensionResource(id = R.dimen.dp17))
         }
     }
 }
@@ -660,8 +652,8 @@ fun CommentSection(
     ) {
         LazyColumn(
             state = lazyListState,
-            verticalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp15),
-            contentPadding = PaddingValues(top = MaterialTheme.localDimens.dp14),
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp15)),
+            contentPadding = PaddingValues(top = dimensionResource(id = R.dimen.dp14)),
         ) {
             items(comments) { comment ->
                 CommentItem(
@@ -670,7 +662,7 @@ fun CommentSection(
                     onLikeClick = onLikeClick,
                     onReplyClick = { onReplyClick.invoke(comment) }
                 )
-                VerticalSpacer(height = MaterialTheme.localDimens.dp12)
+                VerticalSpacer(height = dimensionResource(id = R.dimen.dp12))
                 CommentItem(
                     model = comment.replies.firstOrNull() ?: return@items,
                     isChatSelected = false,
@@ -710,7 +702,7 @@ fun CommentSectionTabs(
     onTabSelect: (CommentsTabState) -> Unit
 ) {
     Row(
-        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp9),
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp9)),
         modifier = Modifier.horizontalScroll(scrollState)
     ) {
         TabItem(
@@ -747,8 +739,8 @@ private fun TabItem(
     ) {
         Text(
             text = title,
-            style = if (isSelected) MaterialTheme.localTextStyles.subtitle
-            else MaterialTheme.localTextStyles.interactiveEpisode,
+            style = MaterialTheme.localTextStyles.subtitle,
+            color = if (isSelected) MaterialTheme.localColors.white else MaterialTheme.localColors.white_alpha07,
             modifier = Modifier.clickable { onTabSelect.invoke(CommentsTabState.AllComments) }
         )
         if (isSelected) {
@@ -756,7 +748,7 @@ private fun TabItem(
                 modifier = Modifier
                     .background(MaterialTheme.localColors.white_alpha07)
                     .fillMaxWidth()
-                    .height(MaterialTheme.localDimens.dp4)
+                    .height(dimensionResource(id = R.dimen.dp4))
             )
         }
     }
@@ -803,11 +795,15 @@ fun CommentItem(
                 letter = if (model.authorName.isNotEmpty()) model.authorName.first()
                     .toString() else "?"
             )
-            HorizontalSpacer(width = MaterialTheme.localDimens.dp13)
+            HorizontalSpacer(width = dimensionResource(id = R.dimen.dp13))
             Column(
                 verticalArrangement = Arrangement.Bottom,
             ) {
-                Text(text = model.authorName, style = MaterialTheme.localTextStyles.subtitle)
+                Text(
+                    text = model.authorName,
+                    style = MaterialTheme.localTextStyles.subtitle,
+                    color = MaterialTheme.localColors.white
+                )
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
@@ -815,11 +811,12 @@ fun CommentItem(
                 ) {
                     Text(
                         text = model.createdAt,
-                        style = MaterialTheme.localTextStyles.dateText
+                        style = MaterialTheme.localTextStyles.dateText,
+                        color = MaterialTheme.localColors.white_alpha07
                     )
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp12),
+                        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp12)),
                     ) {
                         SimpleIcon(
                             iconResId = if (model.isLiked) R.drawable.ic_heart_filled else R.drawable.ic_heart_outlined,
@@ -833,7 +830,7 @@ fun CommentItem(
                         IconWithTextNextTo(
                             iconResId = if (isChatSelected) R.drawable.ic_chat_filled else R.drawable.ic_chat_outlined,
                             text = model.repliesCount.toString(),
-                            spacedBy = MaterialTheme.localDimens.dp6,
+                            spacedBy = 6.dp,
                             textStyle = MaterialTheme.localTextStyles.sideBarIconText,
                             isTextVisible = !model.isReply,
                             onIconClick = { onReplyClick.invoke() },
@@ -843,10 +840,11 @@ fun CommentItem(
                 }
             }
         }
-        VerticalSpacer(height = MaterialTheme.localDimens.dp14)
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp14))
         Text(
             text = model.content,
-            style = MaterialTheme.localTextStyles.commentText,
+            style = MaterialTheme.localTextStyles.episodeText,
+            color = MaterialTheme.localColors.white_alpha08,
             modifier = Modifier.constrainAs(comment) {
                 start.linkTo(commentHeader.start)
                 top.linkTo(commentHeader.bottom)
@@ -864,7 +862,7 @@ fun HashTagSection(
 ) {
     LazyRow(
         contentPadding = paddingValues,
-        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp23),
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp23)),
         modifier = modifier,
     ) {
         item { HasTagItem(hashTag = "TÜMÜ", commentSize = 1678, isSelected = true) }
@@ -884,15 +882,15 @@ fun HasTagItem(
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp4_5),
+        verticalArrangement = Arrangement.spacedBy(5.dp),
         modifier = Modifier.width(IntrinsicSize.Min),
     ) {
         IconWithTextNextTo(
             iconResId = R.drawable.ic_comment,
             text = commentSize.toString(),
-            spacedBy = MaterialTheme.localDimens.dp3,
+            spacedBy = dimensionResource(id = R.dimen.dp3),
             tint = MaterialTheme.localColors.white_alpha04,
-            textStyle = MaterialTheme.localTextStyles.episodeSectionIconText,
+            textStyle = MaterialTheme.localTextStyles.topBarIconText,
             onIconClick = {},
             modifier = Modifier
                 .fillMaxWidth()
@@ -900,20 +898,19 @@ fun HasTagItem(
         )
         Text(
             text = hashTag,
-            style = if (isSelected) MaterialTheme.localTextStyles.episodeSelectedText
-            else MaterialTheme.localTextStyles.episodeUnselectedText
+            style = MaterialTheme.localTextStyles.episodeSelectedText
         )
         if (isSelected) {
             Box(
                 modifier = Modifier
-                    .height(MaterialTheme.localDimens.dp3)
+                    .height(3.dp)
                     .fillMaxWidth()
                     .background(MaterialTheme.localColors.orange)
             )
         } else {
             Box(
                 modifier = Modifier
-                    .height(MaterialTheme.localDimens.dp1)
+                    .height(dimensionResource(id = R.dimen.dp1))
                     .fillMaxWidth()
                     .background(MaterialTheme.localColors.grey)
             )
@@ -1005,7 +1002,7 @@ fun ReadingScreenContent(
                 .fillMaxHeight(0.14f),
         )
         Row {
-            HorizontalSpacer(width = MaterialTheme.localDimens.dp31)
+            HorizontalSpacer(width = dimensionResource(id = R.dimen.dp31))
             Column(
                 modifier = Modifier.weight(1f)
             ) {
@@ -1017,16 +1014,17 @@ fun ReadingScreenContent(
                     onDotsClick = { /*TODO*/ },
                     onLikeClick = { },
                     modifier = Modifier.padding(
-                        top = MaterialTheme.localDimens.dp12,
+                        top = dimensionResource(id = R.dimen.dp12),
                     )
                 )
                 Text(
                     text = body,
                     style = MaterialTheme.localTextStyles.body,
+                    color = MaterialTheme.localColors.white_alpha08,
                     modifier = Modifier
                         .verticalScroll(scrollState)
                         .padding(
-                            end = MaterialTheme.localDimens.dp24
+                            end = dimensionResource(id = R.dimen.dp24)
                         )
                 )
             }
@@ -1038,8 +1036,8 @@ fun ReadingScreenContent(
                 modifier = Modifier
                     .width(IntrinsicSize.Min)
                     .padding(
-                        top = MaterialTheme.localDimens.dp12,
-                        end = MaterialTheme.localDimens.dp12
+                        top = dimensionResource(id = R.dimen.dp12),
+                        end = dimensionResource(id = R.dimen.dp12)
                     )
             ) {
 

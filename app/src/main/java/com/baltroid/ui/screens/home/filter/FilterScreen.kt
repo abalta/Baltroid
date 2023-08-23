@@ -1,39 +1,6 @@
-package com.baltroid.ui.screens.home.filter
+package com.baltroid.ui
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.Dimension
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.baltroid.apps.R
-import com.baltroid.ui.components.MenuBar
-import com.baltroid.ui.screens.menu.login.TextBetweenDividers
-import com.baltroid.ui.screens.viewmodels.OriginalViewModel
-import com.baltroid.ui.theme.localColors
-import com.baltroid.ui.theme.localDimens
-import com.baltroid.ui.theme.localShapes
-import com.baltroid.ui.theme.localTextStyles
-import com.hitreads.core.model.Tag
-
-@Composable
+/*@Composable
 fun FilterScreen(
     viewModel: OriginalViewModel,
     onBackClick: () -> Unit
@@ -43,7 +10,7 @@ fun FilterScreen(
         viewModel.loadFilters()
     }
 
-    val filter = viewModel.filter
+    //val filter = viewModel.filter
 
     ConstraintLayout(
         modifier = Modifier
@@ -61,7 +28,7 @@ fun FilterScreen(
             iconResId = R.drawable.ic_filter,
             onBackClick = onBackClick,
             modifier = Modifier.constrainAs(topBar) {
-                top.linkTo(parent.top, margin = localDimens.dp36)
+                top.linkTo(parent.top, margin = 36.dp)
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
             }
@@ -130,8 +97,8 @@ fun GenreSection(
 ) {
     LazyVerticalGrid(
         columns = GridCells.Adaptive(MaterialTheme.localDimens.dp54_5),
-        verticalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp8),
-        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp10),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp10)),
         modifier = modifier
     ) {
         items(tagList) { item ->
@@ -154,5 +121,5 @@ fun GenreSection(
 @Composable
 fun FilterScreenPreview() {
 
-}
+}*/
 

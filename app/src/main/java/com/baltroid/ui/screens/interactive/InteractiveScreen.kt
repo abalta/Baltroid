@@ -1,4 +1,4 @@
-package com.baltroid.ui.screens.interactive
+package com.baltroid.ui
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
@@ -50,6 +50,7 @@ import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.layoutId
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -57,18 +58,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.baltroid.apps.R
 import com.baltroid.core.common.model.DialogueXml
-import com.baltroid.ui.common.CroppedImage
-import com.baltroid.ui.common.HorizontalSpacer
-import com.baltroid.ui.common.IconWithTextNextTo
-import com.baltroid.ui.common.SimpleIcon
-import com.baltroid.ui.common.VerticalSpacer
-import com.baltroid.ui.components.HitReadsTopBar
-import com.baltroid.ui.screens.reading.Titles
-import com.baltroid.ui.screens.viewmodels.OriginalViewModel
-import com.baltroid.ui.theme.localColors
-import com.baltroid.ui.theme.localDimens
-import com.baltroid.ui.theme.localShapes
-import com.baltroid.ui.theme.localTextStyles
 import com.baltroid.util.orEmpty
 import com.hitreads.core.domain.model.OriginalType
 import com.hitreads.core.model.Author
@@ -125,7 +114,7 @@ fun InteractiveScreen(
                 numberOfNotification = 12,
                 onMenuClick = openMenuScreen,
                 modifier = Modifier
-                    .padding(top = MaterialTheme.localDimens.dp11)
+                    .padding(top = dimensionResource(id = R.dimen.dp11))
             ) {}
             Column(
                 modifier = Modifier
@@ -191,12 +180,12 @@ fun RemindingInfo(
                 onClick.invoke(model.nextLineId.toString())
             }
             .padding(
-                start = MaterialTheme.localDimens.dp35,
-                end = MaterialTheme.localDimens.dp20
+                start = dimensionResource(id = R.dimen.dp35),
+                end = dimensionResource(id = R.dimen.dp20)
             )
     ) {
         ImageWithNameCard()
-        HorizontalSpacer(width = MaterialTheme.localDimens.dp13)
+        HorizontalSpacer(width = dimensionResource(id = R.dimen.dp13))
         TextBalloon(
             text = model.text.toString(),
             modifier = Modifier.align(Alignment.Bottom)
@@ -218,38 +207,40 @@ fun FirstInteractiveContent(
         Text(
             text = model.text.toString(),
             style = MaterialTheme.localTextStyles.body,
+            color = MaterialTheme.localColors.white_alpha08,
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(MaterialTheme.localShapes.roundedDp10)
                 .background(MaterialTheme.localColors.black)
                 .padding(
-                    vertical = MaterialTheme.localDimens.dp17,
-                    horizontal = MaterialTheme.localDimens.dp21
+                    vertical = dimensionResource(id = R.dimen.dp17),
+                    horizontal = dimensionResource(id = R.dimen.dp21)
                 )
         )
         if (isButtonEnabled) {
-            VerticalSpacer(height = MaterialTheme.localDimens.dp15)
+            VerticalSpacer(height = dimensionResource(id = R.dimen.dp15))
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentWidth(Alignment.End)
-                    .padding(end = MaterialTheme.localDimens.dp4)
+                    .padding(end = dimensionResource(id = R.dimen.dp4))
                     .clip(MaterialTheme.localShapes.roundedDp8_5)
                     .background(MaterialTheme.localColors.black)
                     .padding(
-                        start = MaterialTheme.localDimens.dp19,
-                        end = MaterialTheme.localDimens.dp13,
-                        top = MaterialTheme.localDimens.dp8,
-                        bottom = MaterialTheme.localDimens.dp8
+                        start = dimensionResource(id = R.dimen.dp19),
+                        end = dimensionResource(id = R.dimen.dp13),
+                        top = 8.dp,
+                        bottom = 8.dp
                     )
             ) {
                 Text(
                     text = stringResource(id = R.string.next),
                     style = MaterialTheme.localTextStyles.subtitle,
+                    color = MaterialTheme.localColors.white,
                     modifier = Modifier.clickable { onNextClick.invoke(model.nextLineId.toString()) }
                 )
-                HorizontalSpacer(width = MaterialTheme.localDimens.dp10)
+                HorizontalSpacer(width = dimensionResource(id = R.dimen.dp10))
                 SimpleIcon(iconResId = R.drawable.ic_arrow_forward)
             }
         }
@@ -267,27 +258,28 @@ fun Options(
     ) {
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(
-                space = MaterialTheme.localDimens.dp27,
+                space = dimensionResource(id = R.dimen.dp27),
                 alignment = Alignment.CenterVertically
             ),
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = MaterialTheme.localDimens.dp12)
+                .padding(vertical = dimensionResource(id = R.dimen.dp12))
         ) {
             items(items) { dialogue ->
                 if (dialogue.option != "null") {
                     Text(
                         text = dialogue.option,
                         style = MaterialTheme.localTextStyles.imageCardText,
+                        color = MaterialTheme.localColors.white,
                         modifier = Modifier
                             .clickable { onClick.invoke(dialogue.nextLineId) }
                             .fillMaxWidth()
                             .clip(MaterialTheme.localShapes.roundedDp10)
                             .background(MaterialTheme.localColors.black)
                             .padding(
-                                vertical = MaterialTheme.localDimens.dp14,
-                                horizontal = MaterialTheme.localDimens.dp21
+                                vertical = dimensionResource(id = R.dimen.dp14),
+                                horizontal = dimensionResource(id = R.dimen.dp21)
                             )
                     )
                 }
@@ -308,13 +300,13 @@ fun InteractiveScreenBottomSection(
             thickness = 0.5.dp,
             color = MaterialTheme.localColors.white
         )
-        VerticalSpacer(height = MaterialTheme.localDimens.dp7)
+        VerticalSpacer(height = 7.dp)
         SimpleIcon(iconResId = R.drawable.ic_menu_horizontal)
-        VerticalSpacer(height = MaterialTheme.localDimens.dp12)
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp12))
         Row(
             modifier = Modifier.fillMaxWidth()
         ) {
-            HorizontalSpacer(width = MaterialTheme.localDimens.dp31)
+            HorizontalSpacer(width = dimensionResource(id = R.dimen.dp31))
             Titles(
                 title = original?.title.orEmpty(),
                 subtitle = original?.author?.name.orEmpty(),
@@ -324,21 +316,21 @@ fun InteractiveScreenBottomSection(
                 iconResId = R.drawable.ic_comment,
                 text = "12",
                 textStyle = MaterialTheme.localTextStyles.summaryIconText,
-                spacedBy = MaterialTheme.localDimens.dp10,
+                spacedBy = dimensionResource(id = R.dimen.dp10),
                 modifier = Modifier.align(Alignment.Bottom)
             ) {
 
             }
-            HorizontalSpacer(width = MaterialTheme.localDimens.dp19)
+            HorizontalSpacer(width = dimensionResource(id = R.dimen.dp19))
             SimpleIcon(
                 iconResId = R.drawable.ic_star_outlined,
                 modifier = Modifier.align(Alignment.Bottom)
             )
             HorizontalSpacer(
-                width = MaterialTheme.localDimens.dp21
+                width = dimensionResource(id = R.dimen.dp21)
             )
         }
-        VerticalSpacer(height = MaterialTheme.localDimens.dp34)
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp34))
     }
 }
 
@@ -361,19 +353,20 @@ fun InteractiveScreenBottomBar(
         ) {
             Text(
                 text = original?.hashtag.orEmpty(),
-                style = MaterialTheme.localTextStyles.interactiveHashtag
+                style = MaterialTheme.localTextStyles.interactiveHashtag,
+                color = MaterialTheme.localColors.white
             )
             IconWithTextNextTo(
                 iconResId = R.drawable.ic_eye,
                 text = original?.viewCount.toString(),
                 textStyle = MaterialTheme.localTextStyles.sideBarIconText,
-                spacedBy = MaterialTheme.localDimens.dp9,
+                spacedBy = dimensionResource(id = R.dimen.dp9),
             ) {}
             IconWithTextNextTo(
                 iconResId = R.drawable.ic_comment,
                 text = original?.commentCount.toString(),
                 textStyle = MaterialTheme.localTextStyles.sideBarIconText,
-                spacedBy = MaterialTheme.localDimens.dp9,
+                spacedBy = dimensionResource(id = R.dimen.dp9),
                 modifier = Modifier
                     .clickable { onCommentsClicked.invoke() }
             ) {}
@@ -382,26 +375,27 @@ fun InteractiveScreenBottomBar(
                     color = MaterialTheme.localColors.white,
                     modifier = Modifier
                         .fillMaxHeight()
-                        .width(MaterialTheme.localDimens.dp0_5)
+                        .width(dimensionResource(id = R.dimen.dp1))
                 )
                 SimpleIcon(
                     iconResId = R.drawable.ic_add_comment, modifier = Modifier
                         .fillMaxHeight()
                         .padding(
-                            horizontal = MaterialTheme.localDimens.dp12,
-                            vertical = MaterialTheme.localDimens.dp8
+                            horizontal = dimensionResource(id = R.dimen.dp12),
+                            vertical = 8.dp
                         )
                 )
                 Divider(
                     color = MaterialTheme.localColors.white,
                     modifier = Modifier
                         .fillMaxHeight()
-                        .width(MaterialTheme.localDimens.dp0_5)
+                        .width(dimensionResource(id = R.dimen.dp1))
                 )
             }
             Text(
                 text = "BÖLÜM ${episode?.id}",
-                style = MaterialTheme.localTextStyles.interactiveEpisode
+                style = MaterialTheme.localTextStyles.subtitle,
+                color = MaterialTheme.localColors.white_alpha07,
             )
             SimpleIcon(
                 iconResId = R.drawable.ic_banner_filled,
@@ -409,7 +403,7 @@ fun InteractiveScreenBottomBar(
             )
         }
         Divider(
-            thickness = MaterialTheme.localDimens.dp0_5,
+            thickness = dimensionResource(id = R.dimen.dp1),
             color = MaterialTheme.localColors.white
         )
     }
@@ -452,6 +446,7 @@ fun ImageWithNameCard(
             Text(
                 text = "MURAT",
                 style = MaterialTheme.localTextStyles.imageCardText,
+                color = MaterialTheme.localColors.white,
                 modifier = Modifier.layoutId("name")
             )
         }
@@ -577,6 +572,7 @@ fun TextBalloon(
         Text(
             text = text,
             style = MaterialTheme.localTextStyles.imageCardText,
+            color = MaterialTheme.localColors.white,
             modifier = Modifier
                 .width(this.maxWidth)
                 .height(this.maxHeight)
@@ -611,12 +607,12 @@ fun InteractiveTextBox(
     Box(
         modifier
             .fillMaxWidth()
-            .height(MaterialTheme.localDimens.dp225)
+            .height(dimensionResource(id = R.dimen.dp225))
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(MaterialTheme.localDimens.dp155)
+                .height(dimensionResource(id = R.dimen.dp308))
                 .background(MaterialTheme.localColors.black)
                 .align(Alignment.BottomCenter)
         ) {
@@ -625,9 +621,10 @@ fun InteractiveTextBox(
                     Text(
                         text = "Talker: $it",
                         style = MaterialTheme.localTextStyles.imageCardText,
+                        color = MaterialTheme.localColors.white,
                         modifier = Modifier.padding(
-                            top = MaterialTheme.localDimens.dp9,
-                            start = MaterialTheme.localDimens.dp31
+                            top = dimensionResource(id = R.dimen.dp9),
+                            start = dimensionResource(id = R.dimen.dp31)
                         )
                     )
                 }
@@ -635,13 +632,14 @@ fun InteractiveTextBox(
                     Text(
                         text = model.text.orEmpty(),
                         style = MaterialTheme.localTextStyles.body,
+                        color = MaterialTheme.localColors.white_alpha08,
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxSize()
                             .verticalScroll(rememberScrollState())
                             .padding(
-                                start = MaterialTheme.localDimens.dp31,
-                                top = MaterialTheme.localDimens.dp15
+                                start = dimensionResource(id = R.dimen.dp31),
+                                top = dimensionResource(id = R.dimen.dp15)
                             )
                     )
                     if (model.optionCount == null) {
@@ -649,10 +647,10 @@ fun InteractiveTextBox(
                             iconResId = R.drawable.ic_arrow_forward,
                             modifier = Modifier
                                 .padding(
-                                    bottom = MaterialTheme.localDimens.dp18,
-                                    end = MaterialTheme.localDimens.dp22
+                                    bottom = dimensionResource(id = R.dimen.dp18),
+                                    end = dimensionResource(id = R.dimen.dp22)
                                 )
-                                .size(MaterialTheme.localDimens.dp19)
+                                .size(dimensionResource(id = R.dimen.dp19))
                                 .fillMaxHeight()
                                 .align(Alignment.Bottom)
                                 .clickable { onClick.invoke(model.nextLineId.orEmpty()) }
@@ -665,8 +663,8 @@ fun InteractiveTextBox(
             CroppedImage(
                 imgResId = R.drawable.mock_talker,
                 modifier = Modifier
-                    .padding(end = MaterialTheme.localDimens.dp20)
-                    .size(MaterialTheme.localDimens.dp111)
+                    .padding(end = dimensionResource(id = R.dimen.dp20))
+                    .size(dimensionResource(id = R.dimen.dp111))
                     .clip(
                         CircleShape
                     )

@@ -1,4 +1,4 @@
-package com.baltroid.ui.common
+package com.baltroid.ui
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image

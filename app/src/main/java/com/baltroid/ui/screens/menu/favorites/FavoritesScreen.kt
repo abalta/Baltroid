@@ -1,4 +1,4 @@
-package com.baltroid.ui.screens.menu.favorites
+package com.baltroid.ui
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
@@ -25,22 +25,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.baltroid.apps.R
-import com.baltroid.ui.common.CroppedImage
-import com.baltroid.ui.common.SimpleIcon
-import com.baltroid.ui.common.VerticalSpacer
-import com.baltroid.ui.components.MenuBar
-import com.baltroid.ui.theme.localColors
-import com.baltroid.ui.theme.localDimens
-import com.baltroid.ui.theme.localShapes
-import com.baltroid.ui.theme.localTextStyles
 import com.baltroid.util.orZero
 import com.hitreads.core.model.Favorite
 
@@ -77,33 +72,35 @@ fun FavoritesScreenContent(
             .background(MaterialTheme.localColors.black)
             .systemBarsPadding()
     ) {
-        VerticalSpacer(height = MaterialTheme.localDimens.dp36)
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp36))
         MenuBar(
             modifier = Modifier.align(Alignment.CenterHorizontally),
             title = stringResource(id = R.string.favorites),
             iconResId = R.drawable.ic_star,
             onBackClick = onBackClick
         )
-        VerticalSpacer(height = MaterialTheme.localDimens.dp16)
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp16))
         Column(
             modifier = Modifier.verticalScroll(scrollState)
         ) {
             Text(
                 text = stringResource(id = R.string.stories),
                 style = MaterialTheme.localTextStyles.menuBarSubTitle,
+                color = MaterialTheme.localColors.white_alpha09,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
-            VerticalSpacer(height = MaterialTheme.localDimens.dp22)
+            VerticalSpacer(height = dimensionResource(id = R.dimen.dp22))
             StoryItemFavoritesList(
                 episodes = episodes
             )
-            VerticalSpacer(height = MaterialTheme.localDimens.dp25)
+            VerticalSpacer(height = dimensionResource(id = R.dimen.dp25))
             Text(
                 text = stringResource(id = R.string.authors),
                 style = MaterialTheme.localTextStyles.menuBarSubTitle,
+                color = MaterialTheme.localColors.white_alpha09,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
-            VerticalSpacer(height = MaterialTheme.localDimens.dp25)
+            VerticalSpacer(height = dimensionResource(id = R.dimen.dp25))
             AuthorsFavoritesList(
                 authors = authors
             )
@@ -124,16 +121,17 @@ fun AuthorsItem(
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .size(MaterialTheme.localDimens.dp111)
+                .size(dimensionResource(id = R.dimen.dp111))
                 .clip(MaterialTheme.localShapes.circleShape)
         )
-        VerticalSpacer(height = MaterialTheme.localDimens.dp20)
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp20))
         Text(
             text = favoriteAuthor.authorName.orEmpty(),
             style = MaterialTheme.localTextStyles.authorText,
+            color = MaterialTheme.localColors.white_alpha09,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
-        VerticalSpacer(height = MaterialTheme.localDimens.dp19)
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp19))
         YellowStarBox()
     }
 }
@@ -149,10 +147,10 @@ fun NamelessAuthorItem(
         CroppedImage(
             imgResId = R.drawable.woods_image,
             modifier = Modifier
-                .size(MaterialTheme.localDimens.dp111)
+                .size(dimensionResource(id = R.dimen.dp111))
                 .clip(MaterialTheme.localShapes.circleShape)
         )
-        VerticalSpacer(height = MaterialTheme.localDimens.dp20)
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp20))
         YellowStarBox()
     }
 }
@@ -164,8 +162,8 @@ fun AuthorsFavoritesList(
 ) {
     LazyRow(
         modifier = modifier,
-        contentPadding = PaddingValues(horizontal = MaterialTheme.localDimens.dp35),
-        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp30)
+        contentPadding = PaddingValues(horizontal = dimensionResource(id = R.dimen.dp35)),
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp30))
     ) {
         items(
             authors,
@@ -183,8 +181,8 @@ fun StoryItemFavoritesList(
 ) {
     LazyRow(
         modifier = modifier,
-        contentPadding = PaddingValues(horizontal = MaterialTheme.localDimens.dp35),
-        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp30)
+        contentPadding = PaddingValues(horizontal = dimensionResource(id = R.dimen.dp35)),
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp30))
     ) {
         items(
             episodes,
@@ -204,13 +202,13 @@ fun YellowStarBox(
         tint = MaterialTheme.localColors.yellow,
         modifier = modifier
             .border(
-                MaterialTheme.localDimens.dp0_5,
+                dimensionResource(id = R.dimen.dp1),
                 color = MaterialTheme.localColors.white,
-                RoundedCornerShape(MaterialTheme.localDimens.dp3)
+                RoundedCornerShape(3.dp)
             )
             .padding(
-                vertical = MaterialTheme.localDimens.dp6,
-                horizontal = MaterialTheme.localDimens.dp8
+                vertical = 6.dp,
+                horizontal = 8.dp
             )
     )
 }
@@ -230,17 +228,18 @@ fun StoryItemFavorites(
             error = painterResource(id = R.drawable.hitreads_placeholder),
             modifier = Modifier
                 .size(
-                    MaterialTheme.localDimens.dp127,
-                    MaterialTheme.localDimens.dp177
+                    dimensionResource(id = R.dimen.dp127),
+                    dimensionResource(id = R.dimen.dp177)
                 )
                 .clip(MaterialTheme.localShapes.roundedDp18)
         )
-        VerticalSpacer(height = MaterialTheme.localDimens.dp13)
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp13))
         Text(
             text = favoriteEpisode.episodeName.orEmpty(),
-            style = MaterialTheme.localTextStyles.storyItemTitle
+            style = MaterialTheme.localTextStyles.storyItemTitle,
+            color = MaterialTheme.localColors.white_alpha05, textAlign = TextAlign.Center
         )
-        VerticalSpacer(height = MaterialTheme.localDimens.dp11)
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp11))
         YellowStarBox(modifier = Modifier.align(Alignment.CenterHorizontally))
     }
 }

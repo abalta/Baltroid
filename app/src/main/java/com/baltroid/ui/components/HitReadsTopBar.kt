@@ -1,4 +1,4 @@
-package com.baltroid.ui.components
+package com.baltroid.ui
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
@@ -22,16 +22,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.MeasurePolicy
 import androidx.compose.ui.layout.layoutId
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.baltroid.apps.R
-import com.baltroid.ui.common.HorizontalSpacer
-import com.baltroid.ui.common.SimpleIcon
-import com.baltroid.ui.common.SimpleImage
-import com.baltroid.ui.theme.localColors
-import com.baltroid.ui.theme.localDimens
-import com.baltroid.ui.theme.localShapes
-import com.baltroid.ui.theme.localTextStyles
 
 @Composable
 fun HitReadsTopBar(
@@ -52,9 +47,9 @@ fun HitReadsTopBar(
             .fillMaxWidth()
             .statusBarsPadding()
             .padding(
-                start = MaterialTheme.localDimens.dp36,
-                end = MaterialTheme.localDimens.dp32,
-                top = MaterialTheme.localDimens.dp12
+                start = dimensionResource(id = R.dimen.dp36),
+                end = dimensionResource(id = R.dimen.dp32),
+                top = dimensionResource(id = R.dimen.dp12)
             )
     ) {
         SimpleImage(
@@ -95,42 +90,44 @@ fun MenuAndNotification(
         if (isGemEnabled) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp3),
+                horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp3)),
                 modifier = Modifier
                     .border(
-                        MaterialTheme.localDimens.dp0_5,
+                        dimensionResource(id = R.dimen.dp1),
                         MaterialTheme.localColors.white,
                         MaterialTheme.localShapes.roundedDp30
                     )
                     .padding(
-                        vertical = MaterialTheme.localDimens.dp5,
-                        horizontal = MaterialTheme.localDimens.dp15
+                        vertical = 5.dp,
+                        horizontal = dimensionResource(id = R.dimen.dp15)
                     )
             ) {
                 if (!isUserLoggedIn) {
                     Text(
                         text = stringResource(id = R.string.member_login),
-                        style = MaterialTheme.localTextStyles.episodeText
+                        style = MaterialTheme.localTextStyles.episodeText,
+                        color = MaterialTheme.localColors.white
                     )
                 } else {
                     Text(
                         text = gemCount.toString(),
-                        style = MaterialTheme.localTextStyles.episodeText
+                        style = MaterialTheme.localTextStyles.episodeText,
+                        color = MaterialTheme.localColors.white
                     )
                     SimpleIcon(iconResId = R.drawable.ic_diamond)
                 }
             }
-            HorizontalSpacer(width = MaterialTheme.localDimens.dp26)
+            HorizontalSpacer(width = dimensionResource(id = R.dimen.dp26))
         }
         MenuButton(onMenuClick)
-        HorizontalSpacer(width = MaterialTheme.localDimens.dp13_5)
+        HorizontalSpacer(width = dimensionResource(id = R.dimen.dp14))
         IconWithBadge(
             iconResId = iconResId,
             iconTint = iconTint,
             numberOfNotification = if (numberOfNotification <= maxNotificationNumber) numberOfNotification
             else maxNotificationNumber,
             modifier = Modifier
-                .padding(bottom = MaterialTheme.localDimens.dp11)
+                .padding(bottom = dimensionResource(id = R.dimen.dp11))
                 .clickable { onNotificationClick.invoke() }
         )
     }
@@ -143,20 +140,21 @@ fun MenuButton(
     Text(
         text = stringResource(id = R.string.menu),
         style = MaterialTheme.localTextStyles.menuButtonText,
+        color = MaterialTheme.localColors.white,
         modifier = Modifier
             .clip(MaterialTheme.localShapes.roundedDp4)
             .border(
-                width = MaterialTheme.localDimens.dp1,
+                width = dimensionResource(id = R.dimen.dp1),
                 color = Color.White,
                 shape = MaterialTheme.localShapes.roundedDp4
             )
             .background(Color.Black)
             .clickable { onClick.invoke() }
             .padding(
-                top = MaterialTheme.localDimens.dp4_5,
-                start = MaterialTheme.localDimens.dp12_5,
-                end = MaterialTheme.localDimens.dp11_5,
-                bottom = MaterialTheme.localDimens.dp3_5
+                top = 5.dp,
+                start = dimensionResource(id = R.dimen.dp13),
+                end = dimensionResource(id = R.dimen.dp12),
+                bottom = dimensionResource(id = R.dimen.dp4)
             )
     )
 }
@@ -183,17 +181,18 @@ fun IconWithBadge(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .layoutId("badge")
-                    .size(MaterialTheme.localDimens.dp22)
+                    .size(dimensionResource(id = R.dimen.dp22))
                     .clip(CircleShape)
                     .background(Color.Black)
-                    .padding(MaterialTheme.localDimens.dp1_5)
+                    .padding(dimensionResource(id = R.dimen.dp2))
                     .clip(CircleShape)
                     .background(Color.White)
             ) {
                 Text(
                     text = numberOfNotification.toString(),
                     style = MaterialTheme.localTextStyles.topBarIconText,
-                    modifier = Modifier.padding(top = MaterialTheme.localDimens.dp1_5)
+                    color = MaterialTheme.localColors.black,
+                    modifier = Modifier.padding(top = dimensionResource(id = R.dimen.dp2))
                 )
             }
         }

@@ -1,4 +1,4 @@
-package com.baltroid.ui.components
+package com.baltroid.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -30,17 +30,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.baltroid.apps.R
-import com.baltroid.ui.common.CroppedImage
-import com.baltroid.ui.common.HorizontalSpacer
-import com.baltroid.ui.common.SimpleImage
-import com.baltroid.ui.common.VerticalSpacer
-import com.baltroid.ui.theme.localColors
-import com.baltroid.ui.theme.localDimens
-import com.baltroid.ui.theme.localShapes
-import com.baltroid.ui.theme.localTextStyles
 
 @Composable
 fun CommentWritingCard(
@@ -61,14 +55,14 @@ fun CommentWritingCard(
     Box(
         modifier = Modifier
             .padding(
-                horizontal = MaterialTheme.localDimens.dp20,
-                vertical = MaterialTheme.localDimens.dp22
+                horizontal = dimensionResource(id = R.dimen.dp20),
+                vertical = dimensionResource(id = R.dimen.dp22)
             )
             .systemBarsPadding()
             .fillMaxSize()
             .clip(MaterialTheme.localShapes.roundedDp10)
             .border(
-                width = MaterialTheme.localDimens.dp1,
+                width = dimensionResource(id = R.dimen.dp1),
                 color = MaterialTheme.localColors.white,
                 shape = MaterialTheme.localShapes.roundedDp10
             )
@@ -79,7 +73,10 @@ fun CommentWritingCard(
             imgResId = R.drawable.ic_close,
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .padding(top = MaterialTheme.localDimens.dp14, end = MaterialTheme.localDimens.dp22)
+                .padding(
+                    top = dimensionResource(id = R.dimen.dp14),
+                    end = dimensionResource(id = R.dimen.dp22)
+                )
                 .clickable { onBackClick.invoke() }
         )
         Column {
@@ -90,41 +87,43 @@ fun CommentWritingCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(
-                            start = MaterialTheme.localDimens.dp29,
-                            top = MaterialTheme.localDimens.dp27
+                            start = dimensionResource(id = R.dimen.dp29),
+                            top = dimensionResource(id = R.dimen.dp27)
                         )
                 ) {
                     CroppedImage(
                         imgResId = R.drawable.woods_image,
                         modifier = Modifier
-                            .size(MaterialTheme.localDimens.dp48)
+                            .size(dimensionResource(id = R.dimen.dp48))
                             .clip(MaterialTheme.localShapes.circleShape)
                     )
-                    HorizontalSpacer(width = MaterialTheme.localDimens.dp13)
+                    HorizontalSpacer(width = dimensionResource(id = R.dimen.dp13))
                     Column(
                         modifier = Modifier
                             .align(Alignment.Bottom)
                     ) {
                         Text(
                             text = hashTag,
-                            style = MaterialTheme.localTextStyles.writingCardInfo
+                            style = MaterialTheme.localTextStyles.writingCardInfo,
+                            color = MaterialTheme.localColors.white_alpha06
                         )
                         Text(
                             text = author,
-                            style = MaterialTheme.localTextStyles.subtitle
+                            style = MaterialTheme.localTextStyles.subtitle,
+                            color = MaterialTheme.localColors.white
                         )
                     }
                 }
-                VerticalSpacer(height = MaterialTheme.localDimens.dp15)
+                VerticalSpacer(height = dimensionResource(id = R.dimen.dp15))
                 Divider(
                     color = MaterialTheme.localColors.white,
-                    thickness = MaterialTheme.localDimens.dp0_5,
+                    thickness = dimensionResource(id = R.dimen.dp1),
                     modifier = Modifier.padding(
-                        start = MaterialTheme.localDimens.dp25,
-                        end = MaterialTheme.localDimens.dp42
+                        start = dimensionResource(id = R.dimen.dp25),
+                        end = dimensionResource(id = R.dimen.dp42)
                     )
                 )
-                VerticalSpacer(height = MaterialTheme.localDimens.dp15)
+                VerticalSpacer(height = dimensionResource(id = R.dimen.dp15))
                 BasicTextField(
                     value = comment,
                     onValueChange = { comment = if (comment.length < 1200) it else comment },
@@ -133,8 +132,8 @@ fun CommentWritingCard(
                     modifier = Modifier
                         .focusRequester(focusRequester)
                         .padding(
-                            start = MaterialTheme.localDimens.dp27,
-                            end = MaterialTheme.localDimens.dp39
+                            start = dimensionResource(id = R.dimen.dp27),
+                            end = dimensionResource(id = R.dimen.dp39)
                         )
                         .fillMaxSize()
                 )
@@ -148,27 +147,29 @@ fun CommentWritingCard(
                 Text(
                     text = "${comment.length}/1200",
                     style = MaterialTheme.localTextStyles.writingCardInfo,
+                    color = MaterialTheme.localColors.white_alpha06,
                     modifier = Modifier
                         .align(Alignment.Bottom)
                         .padding(
-                            start = MaterialTheme.localDimens.dp29,
-                            bottom = MaterialTheme.localDimens.dp16
+                            start = dimensionResource(id = R.dimen.dp29),
+                            bottom = dimensionResource(id = R.dimen.dp16)
                         )
                 )
                 Text(
                     text = stringResource(id = R.string.send),
                     style = MaterialTheme.localTextStyles.writingCardButtonText,
+                    color = MaterialTheme.localColors.black,
                     modifier = Modifier
                         .padding(
-                            end = MaterialTheme.localDimens.dp20,
-                            bottom = MaterialTheme.localDimens.dp16
+                            end = dimensionResource(id = R.dimen.dp20),
+                            bottom = dimensionResource(id = R.dimen.dp16)
                         )
                         .clip(MaterialTheme.localShapes.roundedDp4)
                         .background(MaterialTheme.localColors.white_alpha08)
                         .clickable { sendComment.invoke(comment) }
                         .padding(
-                            vertical = MaterialTheme.localDimens.dp8,
-                            horizontal = MaterialTheme.localDimens.dp18
+                            vertical = 8.dp,
+                            horizontal = dimensionResource(id = R.dimen.dp18)
                         )
 
                 )

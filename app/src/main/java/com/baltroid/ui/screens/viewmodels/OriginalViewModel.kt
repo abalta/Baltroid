@@ -1,13 +1,8 @@
-package com.baltroid.ui.screens.viewmodels
+package com.baltroid.ui
 
-import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.baltroid.core.common.result.handle
-import com.baltroid.ui.screens.home.HomeUiState
-import com.baltroid.ui.screens.home.filter.FilterUiState
-import com.baltroid.ui.screens.reading.ReadingUiState
-import com.hitreads.core.domain.model.ProfileModel
 import com.hitreads.core.domain.usecase.CreateBookmarkUseCase
 import com.hitreads.core.domain.usecase.CreateCommentUseCase
 import com.hitreads.core.domain.usecase.CreateFavoriteUseCase
@@ -57,47 +52,31 @@ class OriginalViewModel @Inject constructor(
     private val _sharedUIState = MutableStateFlow<Original?>(null)
     val sharedUIState = _sharedUIState.asStateFlow()
 
-    private val _uiStateIsLogged = MutableStateFlow(false)
-    val uiStateIsLogged = _uiStateIsLogged.asStateFlow()
-
     private val _uiStateFilter = MutableStateFlow(FilterUiState())
     val uiStateFilter = _uiStateFilter.asStateFlow()
 
-    private val _uiStateProfile: MutableStateFlow<ProfileModel> = MutableStateFlow(
-        ProfileModel(
-            name = "",
-            userName = "",
-            email = "",
-            karma = 0,
-            avatar = "",
-            is_beta = false,
-            gem = 0
-        )
-    )
-    val uiStateProfile = _uiStateProfile.asStateFlow()
-
-    val filter = mutableStateListOf<Int>()
+    init {
+        isLogged()
+    }
 
     var selectedOriginal: Original? = null
     var selectedEpisode: ShowEpisode? = null
 
-    /*fun loadOriginals() = _uiStateHome.update {
-        val originals = getOriginalsUseCase(
-            if (filter.isEmpty()) null
-            else filter.joinToString { it.toString() }
-        ).pagingMap {
-            it.asTagsWithOriginals()
-        }
-            .cachedIn(viewModelScope)
-        it.copy(
-            originals = originals
-        )
-    }*/
-
     fun loadOriginals() = viewModelScope.launch {
         getOriginalsUseCase().handle {
+            onLoading {
+                _uiStateHome.update { it.copy(isLoading = true) }
+            }
             onSuccess { result ->
-                _uiStateHome.update { it.copy(originals = result.map { it.asTagsWithOriginals() }) }
+                _uiStateHome.update {
+                    it.copy(
+                        originals = result.map { it.asTagsWithOriginals() },
+                        isLoading = false
+                    )
+                }
+            }
+            onFailure {
+                _uiStateHome.update { it.copy(isLoading = false) }
             }
         }
     }
@@ -105,15 +84,17 @@ class OriginalViewModel @Inject constructor(
     private fun getProfile() {
         viewModelScope.launch {
             profileUseCase().handle {
+                onLoading {
+                    _uiStateHome.update { it.copy(isLoading = true) }
+                }
                 onSuccess { profile ->
-                    _uiStateProfile.update { profile }
+                    _uiStateHome.update { it.copy(profileModel = profile, isLoading = false) }
+                }
+                onFailure {
+                    _uiStateHome.update { it.copy(isLoading = false) }
                 }
             }
         }
-    }
-
-    init {
-        isLogged()
     }
 
     fun createBookmark(originalId: Int, episodeId: Int) = viewModelScope.launch {
@@ -157,13 +138,13 @@ class OriginalViewModel @Inject constructor(
 
     private fun isLogged() = viewModelScope.launch {
         isLoggedUseCase().handle {
-            onSuccess {
-                _uiStateIsLogged.update { _ -> it }
+            onSuccess { isUserLoggedIn ->
+                _uiStateHome.update { it.copy(isUserLoggedIn = isUserLoggedIn) }
                 loadFavorites()
                 getProfile()
             }
             onFailure {
-                _uiStateIsLogged.update { _ -> false }
+                _uiStateHome.update { it.copy(isUserLoggedIn = false) }
             }
         }
     }
@@ -175,13 +156,19 @@ class OriginalViewModel @Inject constructor(
     private fun loadFavorites() = viewModelScope.launch {
         val favoriteOriginals = mutableListOf<Original>()
         getOriginalsUseCase.invoke(true).handle {
+            onLoading {
+                _uiStateHome.update { it.copy(isLoading = true) }
+            }
             onSuccess { result ->
                 result.forEach {
                     it.originals?.forEach {
                         favoriteOriginals.add(it.asOriginal())
                     }
                 }
-                _uiStateHome.update { it.copy(favorites = favoriteOriginals) }
+                _uiStateHome.update { it.copy(favorites = favoriteOriginals, isLoading = false) }
+            }
+            onFailure {
+                _uiStateHome.update { it.copy(isLoading = false) }
             }
         }
     }
@@ -272,4 +259,18 @@ class OriginalViewModel @Inject constructor(
             isLoading = false
         )
     }
+
+    //val filter = mutableStateListOf<Int>()
+    /*fun loadOriginals() = _uiStateHome.update {
+        val originals = getOriginalsUseCase(
+            if (filter.isEmpty()) null
+            else filter.joinToString { it.toString() }
+        ).pagingMap {
+            it.asTagsWithOriginals()
+        }
+            .cachedIn(viewModelScope)
+        it.copy(
+            originals = originals
+        )
+    }*/
 }

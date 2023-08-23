@@ -1,4 +1,4 @@
-package com.baltroid.ui.screens.menu.register
+package com.baltroid.ui
 
 import androidx.annotation.StringRes
 

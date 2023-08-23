@@ -1,4 +1,4 @@
-package com.baltroid.ui.screens.menu
+package com.baltroid.ui
 
 data class MenuScreenState(
     val diamondBalance: Int,

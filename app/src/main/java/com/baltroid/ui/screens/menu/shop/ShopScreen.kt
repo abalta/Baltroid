@@ -1,4 +1,4 @@
-package com.baltroid.ui.screens.menu.shop
+package com.baltroid.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -16,18 +16,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import com.baltroid.apps.R
-import com.baltroid.ui.common.RoundedIconCard
-import com.baltroid.ui.common.VerticalSpacer
-import com.baltroid.ui.components.MenuBar
-import com.baltroid.ui.theme.localColors
-import com.baltroid.ui.theme.localDimens
-import com.baltroid.ui.theme.localShapes
-import com.baltroid.ui.theme.localTextStyles
 
 @Composable
 fun ShopScreen(
@@ -52,7 +46,7 @@ private fun ShopScreenContent(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.localColors.black)
-            .padding(top = MaterialTheme.localDimens.dp36)
+            .padding(top = dimensionResource(id = R.dimen.dp36))
             .statusBarsPadding()
     ) {
         MenuBar(
@@ -61,7 +55,7 @@ private fun ShopScreenContent(
             modifier = Modifier.align(Alignment.CenterHorizontally),
             onBackClick = onBackClick
         )
-        VerticalSpacer(height = MaterialTheme.localDimens.dp40)
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp40))
         DiamondsGrid()
         Text(
             text = stringResource(id = R.string.balance, currentBalance),
@@ -76,10 +70,10 @@ fun DiamondsGrid(
     modifier: Modifier = Modifier
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp24),
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp24)),
         modifier = modifier
     ) {
-        val horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDimens.dp24)
+        val horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp24))
 
         Row(
             horizontalArrangement = horizontalArrangement
@@ -112,17 +106,18 @@ fun BuyButton(
     Text(
         text = stringResource(id = R.string.buy),
         style = MaterialTheme.localTextStyles.menuBarTitle,
+        color = MaterialTheme.localColors.white_alpha09,
         textAlign = TextAlign.Center,
         modifier = Modifier
             .fillMaxWidth()
             .border(
-                width = MaterialTheme.localDimens.dp1,
+                width = dimensionResource(id = R.dimen.dp1),
                 color = MaterialTheme.localColors.white_alpha05,
                 shape = MaterialTheme.localShapes.roundedDp24
             )
             .clip(MaterialTheme.localShapes.roundedDp24)
             .clickable { onClick.invoke() }
-            .padding(vertical = MaterialTheme.localDimens.dp12)
+            .padding(vertical = dimensionResource(id = R.dimen.dp12))
     )
 }
 

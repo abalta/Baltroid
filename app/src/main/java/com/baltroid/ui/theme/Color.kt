@@ -1,4 +1,4 @@
-package com.baltroid.ui.theme
+package com.baltroid.ui
 
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
