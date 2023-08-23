@@ -1,10 +1,12 @@
-package com.baltroid.ui
+package com.baltroid.ui.screens.viewmodels
 
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.baltroid.apps.R
 import com.baltroid.core.common.result.handle
+import com.baltroid.ui.screens.menu.profile.ProfileUIState
+import com.baltroid.ui.screens.menu.register.RegisterScreenUIState
 import com.hitreads.core.domain.usecase.ProfileUseCase
 import com.hitreads.core.domain.usecase.RegisterUseCase
 import com.hitreads.core.ui.mapper.asProfile

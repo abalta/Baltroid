@@ -1,4 +1,4 @@
-package com.baltroid.ui
+package com.baltroid.ui.screens.onboarding
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,6 +22,10 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import coil.compose.AsyncImage
 import com.baltroid.apps.R
+import com.baltroid.ui.common.SimpleImage
+import com.baltroid.ui.common.VerticalSpacer
+import com.baltroid.ui.theme.localColors
+import com.baltroid.ui.theme.localTextStyles
 import com.hitreads.core.domain.model.WelcomeModel
 
 @Composable

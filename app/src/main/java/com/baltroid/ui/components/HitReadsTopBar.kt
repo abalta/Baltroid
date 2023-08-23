@@ -1,4 +1,4 @@
-package com.baltroid.ui
+package com.baltroid.ui.components
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
@@ -27,6 +27,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.baltroid.apps.R
+import com.baltroid.ui.common.HorizontalSpacer
+import com.baltroid.ui.common.SimpleIcon
+import com.baltroid.ui.common.SimpleImage
+import com.baltroid.ui.theme.localColors
+import com.baltroid.ui.theme.localShapes
+import com.baltroid.ui.theme.localTextStyles
 
 @Composable
 fun HitReadsTopBar(

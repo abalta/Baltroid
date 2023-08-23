@@ -1,4 +1,4 @@
-package com.baltroid.ui
+package com.baltroid.ui.screens.menu.login
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
@@ -30,6 +30,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.baltroid.apps.R
 import com.baltroid.presentation.screens.menu.login.LoginViewModel
+import com.baltroid.ui.common.SimpleImage
+import com.baltroid.ui.common.VerticalSpacer
+import com.baltroid.ui.navigation.HitReadsScreens
+import com.baltroid.ui.theme.localColors
+import com.baltroid.ui.theme.localShapes
+import com.baltroid.ui.theme.localTextStyles
 
 @Composable
 fun LoginScreen(

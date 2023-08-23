@@ -1,8 +1,11 @@
-package com.baltroid.ui
+package com.baltroid.ui.screens.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.baltroid.core.common.result.handle
+import com.baltroid.ui.screens.home.HomeUiState
+import com.baltroid.ui.screens.home.filter.FilterUiState
+import com.baltroid.ui.screens.reading.ReadingUiState
 import com.hitreads.core.domain.usecase.CreateBookmarkUseCase
 import com.hitreads.core.domain.usecase.CreateCommentUseCase
 import com.hitreads.core.domain.usecase.CreateFavoriteUseCase

@@ -1,4 +1,4 @@
-package com.baltroid.ui
+package com.baltroid.ui.navigation
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
@@ -15,6 +15,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptionsBuilder
 import com.baltroid.presentation.screens.menu.login.LoginViewModel
+import com.baltroid.ui.screens.home.HomeScreen
+import com.baltroid.ui.screens.home.detail.HomeDetailScreen
+import com.baltroid.ui.screens.interactive.InteractiveScreen
+import com.baltroid.ui.screens.onboarding.OnboardingScreen
+import com.baltroid.ui.screens.onboarding.OnboardingViewModel
+import com.baltroid.ui.screens.playground.PlaygroundScreen
+import com.baltroid.ui.screens.reading.ReadingScreen
+import com.baltroid.ui.screens.viewmodels.OriginalViewModel
+import com.baltroid.ui.theme.LocalLoadingState
+import com.baltroid.ui.theme.localColors
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController

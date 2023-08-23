@@ -1,4 +1,4 @@
-package com.baltroid.ui
+package com.baltroid.ui.screens.reading
 
 import com.hitreads.core.model.Episode
 import com.hitreads.core.model.ShowOriginal

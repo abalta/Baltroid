@@ -1,4 +1,4 @@
-package com.baltroid.ui
+package com.baltroid.ui.screens.reading.comments
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -34,6 +34,17 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.baltroid.apps.R
+import com.baltroid.ui.common.SimpleIcon
+import com.baltroid.ui.common.VerticalSpacer
+import com.baltroid.ui.components.SideBarHorizontalDivider
+import com.baltroid.ui.components.SideBarVerticalDivider
+import com.baltroid.ui.screens.menu.comments.CommentViewModel
+import com.baltroid.ui.screens.reading.CommentSection
+import com.baltroid.ui.screens.reading.HashTagSection
+import com.baltroid.ui.screens.reading.HitReadsPageHeader
+import com.baltroid.ui.screens.reading.ScrollBar
+import com.baltroid.ui.theme.localColors
+import com.baltroid.ui.theme.localTextStyles
 
 @Composable
 fun AllCommentsScreen(

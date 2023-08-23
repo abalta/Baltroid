@@ -1,4 +1,4 @@
-package com.baltroid.ui
+package com.baltroid.ui.screens.menu.comments
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -43,6 +43,17 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.baltroid.apps.R
+import com.baltroid.ui.common.SimpleIcon
+import com.baltroid.ui.common.VerticalSpacer
+import com.baltroid.ui.components.CommentWritingCard
+import com.baltroid.ui.components.MenuBar
+import com.baltroid.ui.screens.reading.CommentSection
+import com.baltroid.ui.screens.reading.CommentSectionTabs
+import com.baltroid.ui.screens.reading.comments.CommentsTabState
+import com.baltroid.ui.theme.Poppins
+import com.baltroid.ui.theme.localColors
+import com.baltroid.ui.theme.localShapes
+import com.baltroid.ui.theme.localTextStyles
 import com.baltroid.util.orZero
 import com.hitreads.core.model.Comment
 import kotlin.random.Random

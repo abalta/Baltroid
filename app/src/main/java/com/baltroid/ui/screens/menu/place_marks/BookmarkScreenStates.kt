@@ -1,4 +1,4 @@
-package com.baltroid.ui
+package com.baltroid.ui.screens.menu.place_marks
 
 import com.hitreads.core.model.Bookmark
 

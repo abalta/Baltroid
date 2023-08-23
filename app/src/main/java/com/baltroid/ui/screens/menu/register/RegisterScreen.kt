@@ -1,4 +1,4 @@
-package com.baltroid.ui
+package com.baltroid.ui.screens.menu.register
 
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -29,6 +29,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.baltroid.apps.R
+import com.baltroid.ui.common.VerticalSpacer
+import com.baltroid.ui.components.IconlessMenuBar
+import com.baltroid.ui.navigation.HitReadsScreens
+import com.baltroid.ui.screens.menu.login.TextBetweenDividers
+import com.baltroid.ui.screens.menu.login.UserInputArea
+import com.baltroid.ui.screens.viewmodels.AuthenticationViewModel
+import com.baltroid.ui.theme.localColors
+import com.baltroid.ui.theme.localTextStyles
 import com.baltroid.util.conditional
 
 @Composable

@@ -1,4 +1,4 @@
-package com.baltroid.ui
+package com.baltroid.ui.screens.reading
 
 import android.content.Context
 import android.content.Intent
@@ -56,6 +56,20 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.baltroid.apps.R
+import com.baltroid.ui.common.HorizontalSpacer
+import com.baltroid.ui.common.IconWithTextNextTo
+import com.baltroid.ui.common.SimpleIcon
+import com.baltroid.ui.common.VerticalSpacer
+import com.baltroid.ui.components.HitReadsSideBar
+import com.baltroid.ui.components.HitReadsTopBar
+import com.baltroid.ui.screens.menu.comments.CommentImage
+import com.baltroid.ui.screens.menu.comments.CommentViewModel
+import com.baltroid.ui.screens.menu.place_marks.EpisodeBanner
+import com.baltroid.ui.screens.reading.comments.CommentsTabState
+import com.baltroid.ui.screens.viewmodels.OriginalViewModel
+import com.baltroid.ui.theme.Poppins
+import com.baltroid.ui.theme.localColors
+import com.baltroid.ui.theme.localTextStyles
 import com.baltroid.util.orZero
 import com.hitreads.core.domain.model.OriginalType
 import com.hitreads.core.model.Comment

@@ -1,4 +1,4 @@
-package com.baltroid.ui
+package com.baltroid.ui.screens.menu.profile
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -34,6 +34,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.baltroid.apps.R
+import com.baltroid.ui.common.RoundedIconCard
+import com.baltroid.ui.common.SimpleIcon
+import com.baltroid.ui.common.VerticalSpacer
+import com.baltroid.ui.components.IconlessMenuBar
+import com.baltroid.ui.screens.menu.login.TextBetweenDividers
+import com.baltroid.ui.screens.viewmodels.AuthenticationViewModel
+import com.baltroid.ui.theme.localColors
+import com.baltroid.ui.theme.localShapes
+import com.baltroid.ui.theme.localTextStyles
 import com.baltroid.util.orZero
 import com.hitreads.core.model.Profile
 

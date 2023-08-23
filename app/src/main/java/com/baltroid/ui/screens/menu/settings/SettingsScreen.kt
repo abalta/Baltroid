@@ -1,4 +1,4 @@
-package com.baltroid.ui
+package com.baltroid.ui.screens.menu.settings
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
@@ -23,6 +23,10 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.baltroid.apps.R
+import com.baltroid.ui.common.VerticalSpacer
+import com.baltroid.ui.components.MenuBar
+import com.baltroid.ui.theme.localColors
+import com.baltroid.ui.theme.localTextStyles
 
 @Composable
 fun SettingsScreen(

@@ -1,4 +1,4 @@
-package com.baltroid.ui
+package com.baltroid.ui.screens.home.detail
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -42,6 +42,18 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.baltroid.apps.R
+import com.baltroid.ui.common.HorizontalSpacer
+import com.baltroid.ui.common.SimpleIcon
+import com.baltroid.ui.common.SimpleImage
+import com.baltroid.ui.common.VerticalSpacer
+import com.baltroid.ui.components.HitReadsTopBar
+import com.baltroid.ui.navigation.HitReadsScreens
+import com.baltroid.ui.screens.home.GenreSection
+import com.baltroid.ui.screens.home.TitleSection
+import com.baltroid.ui.screens.viewmodels.OriginalViewModel
+import com.baltroid.ui.theme.localColors
+import com.baltroid.ui.theme.localShapes
+import com.baltroid.ui.theme.localTextStyles
 import com.baltroid.util.orEmpty
 import com.baltroid.util.orZero
 import com.hitreads.core.model.Original

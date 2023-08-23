@@ -1,4 +1,4 @@
-package com.baltroid.ui
+package com.baltroid.ui.screens.home
 
 import com.hitreads.core.domain.model.ProfileModel
 import com.hitreads.core.model.Original

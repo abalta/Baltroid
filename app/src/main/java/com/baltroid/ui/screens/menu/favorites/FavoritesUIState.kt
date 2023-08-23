@@ -1,4 +1,4 @@
-package com.baltroid.ui
+package com.baltroid.ui.screens.menu.favorites
 
 import com.hitreads.core.model.Favorite
 

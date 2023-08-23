@@ -1,4 +1,4 @@
-package com.baltroid.ui
+package com.baltroid.ui.screens.menu.comments
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

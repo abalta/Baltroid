@@ -1,4 +1,4 @@
-package com.baltroid.ui
+package com.baltroid.ui.common
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.border
@@ -19,6 +19,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.baltroid.apps.R
+import com.baltroid.ui.theme.localColors
+import com.baltroid.ui.theme.localShapes
+import com.baltroid.ui.theme.localTextStyles
 
 @Composable
 fun IconWithTextBelow(

@@ -1,4 +1,4 @@
-package com.baltroid.ui
+package com.baltroid.ui.screens.menu.shop
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -22,6 +22,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import com.baltroid.apps.R
+import com.baltroid.ui.common.RoundedIconCard
+import com.baltroid.ui.common.VerticalSpacer
+import com.baltroid.ui.components.MenuBar
+import com.baltroid.ui.theme.localColors
+import com.baltroid.ui.theme.localShapes
+import com.baltroid.ui.theme.localTextStyles
 
 @Composable
 fun ShopScreen(

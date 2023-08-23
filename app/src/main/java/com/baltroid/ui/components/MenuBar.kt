@@ -1,4 +1,4 @@
-package com.baltroid.ui
+package com.baltroid.ui.components
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.clickable
@@ -17,6 +17,10 @@ import androidx.constraintlayout.compose.ChainStyle
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.baltroid.apps.R
+import com.baltroid.ui.common.SimpleIcon
+import com.baltroid.ui.common.VerticalSpacer
+import com.baltroid.ui.theme.localColors
+import com.baltroid.ui.theme.localTextStyles
 
 @Composable
 fun MenuBar(

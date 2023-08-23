@@ -1,4 +1,4 @@
-package com.baltroid.ui
+package com.baltroid.ui.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +25,10 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.baltroid.apps.R
+import com.baltroid.ui.common.IconWithTextBelow
+import com.baltroid.ui.common.SimpleIcon
+import com.baltroid.ui.theme.localColors
+import com.baltroid.ui.theme.localTextStyles
 import com.baltroid.util.conditional
 
 @Composable
