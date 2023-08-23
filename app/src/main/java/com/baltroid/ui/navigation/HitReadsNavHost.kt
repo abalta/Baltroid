@@ -14,10 +14,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptionsBuilder
-import com.baltroid.presentation.screens.menu.login.LoginViewModel
 import com.baltroid.ui.screens.home.HomeScreen
 import com.baltroid.ui.screens.home.detail.HomeDetailScreen
 import com.baltroid.ui.screens.interactive.InteractiveScreen
+import com.baltroid.ui.screens.menu.login.LoginViewModel
 import com.baltroid.ui.screens.onboarding.OnboardingScreen
 import com.baltroid.ui.screens.onboarding.OnboardingViewModel
 import com.baltroid.ui.screens.playground.PlaygroundScreen

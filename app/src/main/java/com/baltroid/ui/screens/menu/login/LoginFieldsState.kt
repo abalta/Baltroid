@@ -1,4 +1,4 @@
-package com.baltroid.presentation.screens.menu.login
+package com.baltroid.ui.screens.menu.login
 
 data class LoginFieldsState(
     val email: String? = null,

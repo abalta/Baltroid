@@ -29,7 +29,6 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.baltroid.apps.R
-import com.baltroid.presentation.screens.menu.login.LoginViewModel
 import com.baltroid.ui.common.SimpleImage
 import com.baltroid.ui.common.VerticalSpacer
 import com.baltroid.ui.navigation.HitReadsScreens

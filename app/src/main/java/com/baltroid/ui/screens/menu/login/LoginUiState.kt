@@ -1,4 +1,4 @@
-package com.baltroid.presentation.screens.menu.login
+package com.baltroid.ui.screens.menu.login
 
 import com.hitreads.core.model.Login
 

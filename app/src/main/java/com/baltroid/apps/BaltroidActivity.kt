@@ -11,8 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.baltroid.presentation.screens.menu.login.LoginViewModel
 import com.baltroid.ui.navigation.HitReadsNavHost
+import com.baltroid.ui.screens.menu.login.LoginViewModel
 import com.baltroid.ui.theme.HitReadsTheme
 import dagger.hilt.android.AndroidEntryPoint
 

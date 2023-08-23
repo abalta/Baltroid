@@ -8,12 +8,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navigation
-import com.baltroid.presentation.screens.menu.login.LoginViewModel
 import com.baltroid.ui.MenuScreen
 import com.baltroid.ui.screens.menu.author.AuthorScreen
 import com.baltroid.ui.screens.menu.comments.CommentsScreen
 import com.baltroid.ui.screens.menu.favorites.FavoritesScreen
 import com.baltroid.ui.screens.menu.login.LoginScreen
+import com.baltroid.ui.screens.menu.login.LoginViewModel
 import com.baltroid.ui.screens.menu.place_marks.PlaceMarksScreen
 import com.baltroid.ui.screens.menu.profile.ProfileScreen
 import com.baltroid.ui.screens.menu.register.RegisterScreen
