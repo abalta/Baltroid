@@ -111,13 +111,13 @@ fun MenuAndNotification(
                 if (!isUserLoggedIn) {
                     Text(
                         text = stringResource(id = R.string.member_login),
-                        style = MaterialTheme.localTextStyles.episodeText,
+                        style = MaterialTheme.localTextStyles.poppins12Regular,
                         color = MaterialTheme.localColors.white
                     )
                 } else {
                     Text(
                         text = gemCount.toString(),
-                        style = MaterialTheme.localTextStyles.episodeText,
+                        style = MaterialTheme.localTextStyles.poppins12Regular,
                         color = MaterialTheme.localColors.white
                     )
                     SimpleIcon(iconResId = R.drawable.ic_diamond)
@@ -145,7 +145,7 @@ fun MenuButton(
 ) {
     Text(
         text = stringResource(id = R.string.menu),
-        style = MaterialTheme.localTextStyles.menuButtonText,
+        style = MaterialTheme.localTextStyles.poppins12Medium,
         color = MaterialTheme.localColors.white,
         modifier = Modifier
             .clip(MaterialTheme.localShapes.roundedDp4)
@@ -196,7 +196,7 @@ fun IconWithBadge(
             ) {
                 Text(
                     text = numberOfNotification.toString(),
-                    style = MaterialTheme.localTextStyles.topBarIconText,
+                    style = MaterialTheme.localTextStyles.poppins11Medium,
                     color = MaterialTheme.localColors.black,
                     modifier = Modifier.padding(top = dimensionResource(id = R.dimen.dp2))
                 )

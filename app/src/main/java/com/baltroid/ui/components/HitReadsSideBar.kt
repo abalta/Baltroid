@@ -134,7 +134,7 @@ fun SideBarTopSection(
             IconWithTextBelow(
                 iconResId = R.drawable.ic_eye,
                 text = numberOfViews.toString(),
-                textStyle = MaterialTheme.localTextStyles.sideBarIconText,
+                textStyle = MaterialTheme.localTextStyles.poppins10Regular,
                 spacedBy = dimensionResource(id = R.dimen.dp10),
                 modifier = Modifier.padding(
                     vertical = dimensionResource(id = R.dimen.dp12),
@@ -149,7 +149,7 @@ fun SideBarTopSection(
                 Text(
                     text = hashTag,
                     modifier = Modifier.rotate(-90f),
-                    style = MaterialTheme.localTextStyles.mediumTitle,
+                    style = MaterialTheme.localTextStyles.poppins17Medium,
                     color = MaterialTheme.localColors.white
                 )
             }
@@ -159,7 +159,7 @@ fun SideBarTopSection(
             iconResId = R.drawable.ic_comment,
             text = numberOfComments.toString(),
             spacedBy = dimensionResource(id = R.dimen.dp3),
-            textStyle = MaterialTheme.localTextStyles.sideBarIconText,
+            textStyle = MaterialTheme.localTextStyles.poppins10Regular,
             modifier = Modifier
                 .fillMaxWidth()
                 .conditional(isCommentsSelected) {
@@ -200,7 +200,7 @@ fun SideBarBottomSection(
         IconWithTextBelow(
             iconResId = R.drawable.ic_rectangle_filled,
             text = "0",
-            textStyle = MaterialTheme.localTextStyles.sideBarIconText,
+            textStyle = MaterialTheme.localTextStyles.poppins10Regular,
             spacedBy = dimensionResource(id = R.dimen.dp4),
             modifier = Modifier.padding(
                 vertical = dimensionResource(id = R.dimen.dp12),
@@ -283,7 +283,7 @@ fun HitReadsSideBar(
             IconWithTextBelow(
                 iconResId = R.drawable.ic_comment,
                 text = numberOfComments.toString(),
-                textStyle = MaterialTheme.localTextStyles.sideBarIconText,
+                textStyle = MaterialTheme.localTextStyles.poppins10Regular,
                 modifier = Modifier
                     .padding(
                         start = dimensionResource(id = R.dimen.dp12),

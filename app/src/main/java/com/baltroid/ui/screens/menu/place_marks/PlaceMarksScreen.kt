@@ -81,7 +81,7 @@ fun PlaceMarsScreenContent(
         ) {
             Text(
                 text = stringResource(id = R.string.stories),
-                style = MaterialTheme.localTextStyles.menuBarSubTitle,
+                style = MaterialTheme.localTextStyles.spaceGrotesk20Medium,
                 color = MaterialTheme.localColors.white_alpha09,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
@@ -171,7 +171,7 @@ fun StoryItem(
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp13))
         Text(
             text = title,
-            style = MaterialTheme.localTextStyles.storyItemTitle,
+            style = MaterialTheme.localTextStyles.poppins12Medium,
             color = MaterialTheme.localColors.white_alpha05,
             textAlign = TextAlign.Center
         )
@@ -182,7 +182,7 @@ fun StoryItem(
 
             Text(
                 text = stringResource(id = R.string.episode_size, episodeNumber),
-                style = MaterialTheme.localTextStyles.episodeSelectedText,
+                style = MaterialTheme.localTextStyles.spaceGrotesk16Medium,
                 color = MaterialTheme.localColors.white,
                 modifier = Modifier.width(IntrinsicSize.Max)
             )
@@ -226,7 +226,7 @@ fun MarkItem(
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp13))
         Text(
             text = title,
-            style = MaterialTheme.localTextStyles.storyItemTitle,
+            style = MaterialTheme.localTextStyles.poppins12Medium,
             color = MaterialTheme.localColors.white_alpha05,
             textAlign = TextAlign.Center
         )
@@ -236,7 +236,7 @@ fun MarkItem(
             Row {
                 Text(
                     text = stringResource(id = R.string.episode_size, episodeNumber),
-                    style = MaterialTheme.localTextStyles.episodeSelectedText,
+                    style = MaterialTheme.localTextStyles.spaceGrotesk16Medium,
                     color = MaterialTheme.localColors.white,
                     modifier = Modifier.width(IntrinsicSize.Max)
                 )

@@ -1,7 +1,5 @@
 package com.baltroid.core.data.repository
 
-import androidx.paging.Pager
-import androidx.paging.PagingData
 import com.baltroid.core.common.model.XmlContent
 import com.baltroid.core.common.result.BaltroidResult
 import com.baltroid.core.common.result.isFailure
@@ -9,8 +7,6 @@ import com.baltroid.core.common.result.isSuccess
 import com.baltroid.core.data.mapper.asEpisodeModel
 import com.baltroid.core.data.mapper.asShowOriginalModel
 import com.baltroid.core.data.mapper.asTagsWithOriginalsModel
-import com.baltroid.core.data.paging.OriginalsPagingSource
-import com.baltroid.core.data.util.defaultPagingConfig
 import com.baltroid.core.network.common.networkBoundResource
 import com.baltroid.core.network.source.HitReadsNetworkDataSource
 import com.baltroid.core.network.util.MESSAGE_UNHANDLED_STATE
@@ -29,14 +25,14 @@ class OriginalRepositoryImpl @Inject constructor(
     private val networkDataSource: HitReadsNetworkDataSource
 ) : OriginalRepository {
 
-    override fun getOriginals(
+    /*override fun getOriginals(
         filter: String?, getByFav: Boolean?
     ): Flow<PagingData<TagsWithOriginalsModel>> =
         Pager(config = defaultPagingConfig, pagingSourceFactory = {
             OriginalsPagingSource(
                 networkDataSource = networkDataSource, filter, getByFav
             )
-        }).flow
+        }).flow*/
 
     override fun getOriginals(getByFav: Boolean?): Flow<BaltroidResult<List<TagsWithOriginalsModel>>> =
         flow {

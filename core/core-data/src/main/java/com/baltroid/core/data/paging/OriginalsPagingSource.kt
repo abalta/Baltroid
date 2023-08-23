@@ -1,17 +1,6 @@
 package com.baltroid.core.data.paging
 
-import androidx.paging.PagingSource
-import androidx.paging.PagingState
-import com.baltroid.core.common.result.HttpException
-import com.baltroid.core.common.result.isFailure
-import com.baltroid.core.common.result.isSuccess
-import com.baltroid.core.data.mapper.asTagsWithOriginalsModel
-import com.baltroid.core.data.util.Constants
-import com.baltroid.core.network.source.HitReadsNetworkDataSource
-import com.baltroid.core.network.util.DEFAULT_PAGE
-import com.hitreads.core.domain.model.TagsWithOriginalsModel
-import java.io.IOException
-
+/*
 class OriginalsPagingSource(
     private val networkDataSource: HitReadsNetworkDataSource,
     private val filter: String? = null,
@@ -55,4 +44,4 @@ class OriginalsPagingSource(
             return LoadResult.Error(exception)
         }
     }
-}
+}*/

@@ -131,7 +131,7 @@ fun MenuScreenGuestContent(
             )
             Text(
                 text = stringResource(id = R.string.member_login),
-                style = MaterialTheme.localTextStyles.subtitleGrotesk,
+                style = MaterialTheme.localTextStyles.spaceGrotesk14Regular,
                 color = MaterialTheme.localColors.white,
                 modifier = Modifier
                     .constrainAs(profileButton) {
@@ -282,7 +282,7 @@ private fun MenuScreenLoggedInContent(
             )
             Text(
                 text = currentUserName,
-                style = MaterialTheme.localTextStyles.subtitle,
+                style = MaterialTheme.localTextStyles.poppins13Medium,
                 color = MaterialTheme.localColors.white,
                 modifier = Modifier.constrainAs(name) {
                     top.linkTo(image.bottom, margin = 14.dp)
@@ -292,7 +292,7 @@ private fun MenuScreenLoggedInContent(
             )
             Text(
                 text = stringResource(id = R.string.profile_text),
-                style = MaterialTheme.localTextStyles.isStoryNewText,
+                style = MaterialTheme.localTextStyles.spaceGrotesk11Medium,
                 color = MaterialTheme.localColors.black,
                 modifier = Modifier
                     .constrainAs(profileButton) {
@@ -414,7 +414,7 @@ fun LightThemeButton(
     ) {
         Text(
             text = stringResource(id = R.string.light),
-            style = MaterialTheme.localTextStyles.menuBarSubTitle,
+            style = MaterialTheme.localTextStyles.spaceGrotesk20Medium,
             color = MaterialTheme.localColors.black
         )
         HorizontalSpacer(width = dimensionResource(id = R.dimen.dp9))
@@ -442,7 +442,7 @@ fun DarkThemeButton(
     ) {
         Text(
             text = stringResource(id = R.string.dark),
-            style = MaterialTheme.localTextStyles.menuBarSubTitle,
+            style = MaterialTheme.localTextStyles.spaceGrotesk20Medium,
             color = MaterialTheme.localColors.white_alpha09
         )
         HorizontalSpacer(width = dimensionResource(id = R.dimen.dp9))
@@ -475,7 +475,7 @@ fun MenuItem(
             )
             Text(
                 text = title,
-                style = MaterialTheme.localTextStyles.menuBarTitle,
+                style = MaterialTheme.localTextStyles.spaceGrotesk24Medium,
                 color = if (!isEnabled) MaterialTheme.localColors.white_alpha03 else MaterialTheme.localColors.white_alpha09,
                 modifier = Modifier.align(Alignment.Center)
             )

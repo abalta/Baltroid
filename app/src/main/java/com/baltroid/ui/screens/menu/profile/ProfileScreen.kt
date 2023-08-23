@@ -108,7 +108,7 @@ fun ProfileScreenContent(
         }
         TextBetweenDividers(
             text = stringResource(id = R.string.forgot_password),
-            textStyle = MaterialTheme.localTextStyles.signInTextWhite,
+            textStyle = MaterialTheme.localTextStyles.spaceGrotesk18Medium,
             onClick = {
 
             })
@@ -127,7 +127,7 @@ fun ProfileItem(
     ) {
         Text(
             title,
-            style = MaterialTheme.localTextStyles.profileScreenUserInfo,
+            style = MaterialTheme.localTextStyles.poppins18Regular,
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .border(
@@ -184,15 +184,15 @@ fun UserInfoSection(
     ) {
         Text(
             text = userName,
-            style = MaterialTheme.localTextStyles.profileScreenUserInfo
+            style = MaterialTheme.localTextStyles.poppins18Regular
         )
         Text(
             text = userEmail,
-            style = MaterialTheme.localTextStyles.profileScreenUserInfo
+            style = MaterialTheme.localTextStyles.poppins18Regular
         )
         Text(
             text = stringResource(id = R.string.forgot_password),
-            style = MaterialTheme.localTextStyles.imageCardText,
+            style = MaterialTheme.localTextStyles.poppins14Medium,
             color = MaterialTheme.localColors.orange,
             modifier = Modifier.clickable { onClick.invoke() })
     }

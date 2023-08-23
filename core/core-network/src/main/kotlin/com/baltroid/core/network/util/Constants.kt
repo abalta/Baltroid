@@ -73,6 +73,7 @@ internal object Constants {
         internal const val DIALOGUE = "dialogue"
         internal const val REPUTATION = "reputation"
         internal const val GET_BY_FAV = "get_by_fav"
+        internal const val CONTINUE_READING = "continue_reading"
         internal const val EPISODE_ID = "episode_id"
         internal const val ORIGINAL_ID = "original_id"
         internal const val CONTENT = "content"

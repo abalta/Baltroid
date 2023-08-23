@@ -117,7 +117,7 @@ fun StoryAndCommentTabs(
         ) {
             Text(
                 text = stringResource(id = R.string.stories),
-                style = MaterialTheme.localTextStyles.menuBarSubTitle,
+                style = MaterialTheme.localTextStyles.spaceGrotesk20Medium,
                 color = MaterialTheme.localColors.white_alpha09,
                 modifier = Modifier.width(IntrinsicSize.Max)
             )
@@ -143,7 +143,7 @@ fun StoryAndCommentTabs(
         ) {
             Text(
                 text = stringResource(id = R.string.comments),
-                style = MaterialTheme.localTextStyles.menuBarSubTitle,
+                style = MaterialTheme.localTextStyles.spaceGrotesk20Medium,
                 color = MaterialTheme.localColors.white_alpha09,
                 modifier = Modifier.width(IntrinsicSize.Max)
             )
@@ -213,7 +213,7 @@ fun AuthorCommentItem(
                 ) {
                     Text(
                         text = owner,
-                        style = MaterialTheme.localTextStyles.subtitle,
+                        style = MaterialTheme.localTextStyles.poppins13Medium,
                         color = MaterialTheme.localColors.white
                     )
                     SimpleIcon(
@@ -232,7 +232,7 @@ fun AuthorCommentItem(
                 ) {
                     Text(
                         text = date,
-                        style = MaterialTheme.localTextStyles.dateText,
+                        style = MaterialTheme.localTextStyles.poppins10Regular,
                         color = MaterialTheme.localColors.white_alpha07,
                     )
                     Row(
@@ -252,7 +252,7 @@ fun AuthorCommentItem(
         VerticalSpacer(height = 6.dp)
         Text(
             text = "First of all please publish this so I can buy it for my library! second #KGD is my best book",
-            style = MaterialTheme.localTextStyles.body,
+            style = MaterialTheme.localTextStyles.poppins14Regular,
             color = MaterialTheme.localColors.white_alpha08,
             modifier = Modifier
                 .width(IntrinsicSize.Max)

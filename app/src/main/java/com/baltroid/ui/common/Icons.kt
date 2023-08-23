@@ -79,7 +79,7 @@ fun RoundedIconCard(
         iconResId = iconResId,
         text = text,
         spacedBy = dimensionResource(id = R.dimen.dp3),
-        textStyle = MaterialTheme.localTextStyles.imageCardText,
+        textStyle = MaterialTheme.localTextStyles.poppins14Medium,
         modifier = modifier
             .size(
                 width = dimensionResource(id = R.dimen.dp76),

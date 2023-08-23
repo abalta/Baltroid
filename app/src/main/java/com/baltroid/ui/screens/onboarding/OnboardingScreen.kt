@@ -89,7 +89,7 @@ fun OnboardingScreenBottomSection(
         )
         Text(
             text = text,
-            style = MaterialTheme.localTextStyles.splashScreenText,
+            style = MaterialTheme.localTextStyles.spaceGrotesk18Regular,
             color = MaterialTheme.localColors.white,
             modifier = Modifier
                 .padding(

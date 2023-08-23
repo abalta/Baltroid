@@ -111,12 +111,12 @@ fun CommentWritingCard(
                     ) {
                         Text(
                             text = hashTag,
-                            style = MaterialTheme.localTextStyles.writingCardInfo,
+                            style = MaterialTheme.localTextStyles.spaceGrotesk14Medium,
                             color = MaterialTheme.localColors.white_alpha06
                         )
                         Text(
                             text = author,
-                            style = MaterialTheme.localTextStyles.subtitle,
+                            style = MaterialTheme.localTextStyles.poppins13Medium,
                             color = MaterialTheme.localColors.white
                         )
                     }
@@ -134,7 +134,7 @@ fun CommentWritingCard(
                 BasicTextField(
                     value = comment,
                     onValueChange = { comment = if (comment.length < 1200) it else comment },
-                    textStyle = MaterialTheme.localTextStyles.writingCardBody,
+                    textStyle = MaterialTheme.localTextStyles.poppins16Regular,
                     cursorBrush = SolidColor(MaterialTheme.localColors.white_alpha08),
                     modifier = Modifier
                         .focusRequester(focusRequester)
@@ -153,7 +153,7 @@ fun CommentWritingCard(
             ) {
                 Text(
                     text = "${comment.length}/1200",
-                    style = MaterialTheme.localTextStyles.writingCardInfo,
+                    style = MaterialTheme.localTextStyles.spaceGrotesk14Medium,
                     color = MaterialTheme.localColors.white_alpha06,
                     modifier = Modifier
                         .align(Alignment.Bottom)
@@ -164,7 +164,7 @@ fun CommentWritingCard(
                 )
                 Text(
                     text = stringResource(id = R.string.send),
-                    style = MaterialTheme.localTextStyles.writingCardButtonText,
+                    style = MaterialTheme.localTextStyles.poppins12Medium,
                     color = MaterialTheme.localColors.black,
                     modifier = Modifier
                         .padding(

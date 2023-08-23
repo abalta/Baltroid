@@ -14,11 +14,9 @@ import com.baltroid.core.network.model.response.CommentDto
 import com.baltroid.core.network.model.response.EpisodeResponseDto
 import com.baltroid.core.network.model.response.FavoriteDto
 import com.baltroid.core.network.model.response.LoginDto
-import com.baltroid.core.network.model.response.OriginalResponseDto
 import com.baltroid.core.network.model.response.ProfileDto
 import com.baltroid.core.network.model.response.TagsWithOriginalsDto
 import com.baltroid.core.network.model.response.WelcomeDto
-import com.baltroid.core.network.util.DEFAULT_PAGE
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -29,12 +27,12 @@ import java.io.IOException
 import javax.inject.Inject
 
 class HitReadsNetworkDataSource @Inject constructor(private val hitReadsService: HitReadsService) {
-    suspend fun getOriginals(
+    /*suspend fun getOriginals(
         page: Int = DEFAULT_PAGE,
         filter: String? = null,
         getByFav: Boolean? = null
     ): BaltroidResult<HitReadsResponse<OriginalResponseDto>> =
-        hitReadsService.getOriginals(page, filter, getByFav)
+        hitReadsService.getOriginals(page, filter, getByFav)*/
 
     suspend fun getOriginals(): BaltroidResult<HitReadsResponse<List<TagsWithOriginalsDto>>> =
         hitReadsService.getOriginals()

@@ -566,12 +566,12 @@ fun Titles(
     ) {
         Text(
             text = title,
-            style = MaterialTheme.localTextStyles.title,
+            style = MaterialTheme.localTextStyles.poppins17Light,
             color = MaterialTheme.localColors.white
         )
         Text(
             text = subtitle,
-            style = MaterialTheme.localTextStyles.subtitle,
+            style = MaterialTheme.localTextStyles.poppins13Medium,
             color = MaterialTheme.localColors.white
         )
     }
@@ -586,7 +586,7 @@ fun ReadingSection(
     SelectionContainer(modifier) {
         Text(
             text = text,
-            style = MaterialTheme.localTextStyles.body,
+            style = MaterialTheme.localTextStyles.poppins14Regular,
             color = MaterialTheme.localColors.white_alpha08,
             modifier = Modifier.verticalScroll(scrollState)
         )
@@ -627,7 +627,7 @@ fun EpisodeSectionItem(
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
-    val episodeTextStyle = MaterialTheme.localTextStyles.episodeSelectedText
+    val episodeTextStyle = MaterialTheme.localTextStyles.spaceGrotesk16Medium
 
     Column(
         modifier
@@ -753,7 +753,7 @@ private fun TabItem(
     ) {
         Text(
             text = title,
-            style = MaterialTheme.localTextStyles.subtitle,
+            style = MaterialTheme.localTextStyles.poppins13Medium,
             color = if (isSelected) MaterialTheme.localColors.white else MaterialTheme.localColors.white_alpha07,
             modifier = Modifier.clickable { onTabSelect.invoke(CommentsTabState.AllComments) }
         )
@@ -815,7 +815,7 @@ fun CommentItem(
             ) {
                 Text(
                     text = model.authorName,
-                    style = MaterialTheme.localTextStyles.subtitle,
+                    style = MaterialTheme.localTextStyles.poppins13Medium,
                     color = MaterialTheme.localColors.white
                 )
                 Row(
@@ -825,7 +825,7 @@ fun CommentItem(
                 ) {
                     Text(
                         text = model.createdAt,
-                        style = MaterialTheme.localTextStyles.dateText,
+                        style = MaterialTheme.localTextStyles.poppins10Regular,
                         color = MaterialTheme.localColors.white_alpha07
                     )
                     Row(
@@ -845,7 +845,7 @@ fun CommentItem(
                             iconResId = if (isChatSelected) R.drawable.ic_chat_filled else R.drawable.ic_chat_outlined,
                             text = model.repliesCount.toString(),
                             spacedBy = dimensionResource(id = R.dimen.dp6),
-                            textStyle = MaterialTheme.localTextStyles.sideBarIconText,
+                            textStyle = MaterialTheme.localTextStyles.poppins10Regular,
                             isTextVisible = !model.isReply,
                             onIconClick = { onReplyClick.invoke() },
                         )
@@ -857,7 +857,7 @@ fun CommentItem(
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp14))
         Text(
             text = model.content,
-            style = MaterialTheme.localTextStyles.episodeText,
+            style = MaterialTheme.localTextStyles.poppins12Regular,
             color = MaterialTheme.localColors.white_alpha08,
             modifier = Modifier.constrainAs(comment) {
                 start.linkTo(commentHeader.start)
@@ -904,7 +904,7 @@ fun HasTagItem(
             text = commentSize.toString(),
             spacedBy = dimensionResource(id = R.dimen.dp3),
             tint = MaterialTheme.localColors.white_alpha04,
-            textStyle = MaterialTheme.localTextStyles.topBarIconText,
+            textStyle = MaterialTheme.localTextStyles.poppins11Medium,
             onIconClick = {},
             modifier = Modifier
                 .fillMaxWidth()
@@ -912,7 +912,7 @@ fun HasTagItem(
         )
         Text(
             text = hashTag,
-            style = MaterialTheme.localTextStyles.episodeSelectedText
+            style = MaterialTheme.localTextStyles.spaceGrotesk16Medium
         )
         if (isSelected) {
             Box(
@@ -1008,7 +1008,7 @@ fun ReadingScreenContent(
     val scrollState = rememberScrollState()
     Column {
         AsyncImage(
-            model = R.drawable.woods_image,
+            model = original?.cover,
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
@@ -1033,7 +1033,7 @@ fun ReadingScreenContent(
                 )
                 Text(
                     text = body,
-                    style = MaterialTheme.localTextStyles.body,
+                    style = MaterialTheme.localTextStyles.poppins14Regular,
                     color = MaterialTheme.localColors.white_alpha08,
                     modifier = Modifier
                         .verticalScroll(scrollState)

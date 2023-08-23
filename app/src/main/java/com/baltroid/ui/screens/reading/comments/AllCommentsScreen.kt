@@ -89,7 +89,7 @@ fun AllCommentsScreen(
                     VerticalSpacer(height = dimensionResource(id = R.dimen.dp12))
                     Text(
                         text = stringResource(id = R.string.comments),
-                        style = MaterialTheme.localTextStyles.title,
+                        style = MaterialTheme.localTextStyles.poppins17Light,
                         color = MaterialTheme.localColors.white,
                         modifier = Modifier.padding(
                             start = dimensionResource(id = R.dimen.dp31),

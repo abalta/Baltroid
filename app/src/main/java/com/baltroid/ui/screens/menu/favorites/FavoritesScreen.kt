@@ -92,7 +92,7 @@ fun FavoritesScreenContent(
         ) {
             Text(
                 text = stringResource(id = R.string.stories),
-                style = MaterialTheme.localTextStyles.menuBarSubTitle,
+                style = MaterialTheme.localTextStyles.spaceGrotesk20Medium,
                 color = MaterialTheme.localColors.white_alpha09,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
@@ -103,7 +103,7 @@ fun FavoritesScreenContent(
             VerticalSpacer(height = dimensionResource(id = R.dimen.dp25))
             Text(
                 text = stringResource(id = R.string.authors),
-                style = MaterialTheme.localTextStyles.menuBarSubTitle,
+                style = MaterialTheme.localTextStyles.spaceGrotesk20Medium,
                 color = MaterialTheme.localColors.white_alpha09,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
@@ -134,7 +134,7 @@ fun AuthorsItem(
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp20))
         Text(
             text = favoriteAuthor.authorName.orEmpty(),
-            style = MaterialTheme.localTextStyles.authorText,
+            style = MaterialTheme.localTextStyles.spaceGrotesk15Medium,
             color = MaterialTheme.localColors.white_alpha09,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
@@ -243,7 +243,7 @@ fun StoryItemFavorites(
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp13))
         Text(
             text = favoriteEpisode.episodeName.orEmpty(),
-            style = MaterialTheme.localTextStyles.storyItemTitle,
+            style = MaterialTheme.localTextStyles.poppins12Medium,
             color = MaterialTheme.localColors.white_alpha05, textAlign = TextAlign.Center
         )
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp11))

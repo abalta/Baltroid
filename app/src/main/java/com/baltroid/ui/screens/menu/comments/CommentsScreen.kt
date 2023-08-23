@@ -217,7 +217,7 @@ private fun CommentItem(
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp13))
         Text(
             text = comment.original?.title.orEmpty(),
-            style = MaterialTheme.localTextStyles.storyItemTitle,
+            style = MaterialTheme.localTextStyles.poppins12Medium,
             color = MaterialTheme.localColors.white_alpha05, textAlign = TextAlign.Center
         )
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp10))
@@ -243,7 +243,7 @@ private fun CommentItem(
             if (!comment.isReply) {
                 Text(
                     text = comment.original?.commentCount.toString(),
-                    style = MaterialTheme.localTextStyles.topBarIconText,
+                    style = MaterialTheme.localTextStyles.poppins11Medium,
                     color = MaterialTheme.localColors.white_alpha04
                 )
             }

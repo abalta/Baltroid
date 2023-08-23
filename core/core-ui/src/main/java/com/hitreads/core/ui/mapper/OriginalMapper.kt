@@ -53,7 +53,6 @@ fun OriginalModel.asOriginal() = Original(
     episodeCount = episodeCount,
     seasons = seasons.map { it.asSeason() },
     isNew = isNew,
-    dataCount = dataCount,
     barcode = barcode
 )
 

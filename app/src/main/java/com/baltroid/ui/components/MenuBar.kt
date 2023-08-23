@@ -44,7 +44,7 @@ fun MenuBar(
         )
         Text(
             text = title,
-            style = MaterialTheme.localTextStyles.menuBarTitle,
+            style = MaterialTheme.localTextStyles.spaceGrotesk24Medium,
             color = MaterialTheme.localColors.white_alpha09,
             modifier = Modifier.constrainAs(text) {
                 top.linkTo(parent.top)
@@ -86,7 +86,7 @@ fun IconlessMenuBar(
         ) {
             Text(
                 text = title,
-                style = MaterialTheme.localTextStyles.menuBarTitle,
+                style = MaterialTheme.localTextStyles.spaceGrotesk24Medium,
                 color = MaterialTheme.localColors.white_alpha09,
                 modifier = Modifier.align(
                     Alignment.Center

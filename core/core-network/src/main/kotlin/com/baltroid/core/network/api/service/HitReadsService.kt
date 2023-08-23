@@ -14,17 +14,14 @@ import com.baltroid.core.network.model.response.EpisodeResponseDto
 import com.baltroid.core.network.model.response.FavoriteDto
 import com.baltroid.core.network.model.response.LoginDto
 import com.baltroid.core.network.model.response.NotificationDto
-import com.baltroid.core.network.model.response.OriginalResponseDto
 import com.baltroid.core.network.model.response.ProfileDto
 import com.baltroid.core.network.model.response.TagsWithOriginalsDto
 import com.baltroid.core.network.model.response.WelcomeDto
-import com.baltroid.core.network.util.Constants.DEFAULT_PAGE
 import com.baltroid.core.network.util.Constants.Fields.CONTENT
+import com.baltroid.core.network.util.Constants.Fields.CONTINUE_READING
 import com.baltroid.core.network.util.Constants.Fields.EMAIL
-import com.baltroid.core.network.util.Constants.Fields.FILTER_TAG
 import com.baltroid.core.network.util.Constants.Fields.GET_BY_FAV
 import com.baltroid.core.network.util.Constants.Fields.ID
-import com.baltroid.core.network.util.Constants.Fields.PAGE
 import com.baltroid.core.network.util.Constants.Fields.PASSWORD
 import com.baltroid.core.network.util.Constants.Fields.RESPONSE_ID
 import com.baltroid.core.network.util.Constants.Fields.TYPE
@@ -54,16 +51,17 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface HitReadsService {
-    @GET(ORIGINALS_INDEX)
+    /*@GET(ORIGINALS_INDEX)
     suspend fun getOriginals(
         @Query(PAGE) page: Int = DEFAULT_PAGE,
         @Query(FILTER_TAG) filter: String? = null,
         @Query(GET_BY_FAV) getByFav: Boolean? = null
-    ): BaltroidResult<HitReadsResponse<OriginalResponseDto>>
+    ): BaltroidResult<HitReadsResponse<OriginalResponseDto>>*/
 
     @GET(ORIGINALS_INDEX)
     suspend fun getOriginals(
-        @Query(GET_BY_FAV) getByFav: Boolean? = null
+        @Query(GET_BY_FAV) getByFav: Boolean? = null,
+        @Query(CONTINUE_READING) continueReading: Boolean? = null
     ): BaltroidResult<HitReadsResponse<List<TagsWithOriginalsDto>>>
 
     @GET("$ORIGINALS_INDEX/{id}")

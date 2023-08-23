@@ -217,7 +217,7 @@ fun FirstInteractiveContent(
     ) {
         Text(
             text = model.text.toString(),
-            style = MaterialTheme.localTextStyles.body,
+            style = MaterialTheme.localTextStyles.poppins14Regular,
             color = MaterialTheme.localColors.white_alpha08,
             modifier = Modifier
                 .fillMaxWidth()
@@ -247,7 +247,7 @@ fun FirstInteractiveContent(
             ) {
                 Text(
                     text = stringResource(id = R.string.next),
-                    style = MaterialTheme.localTextStyles.subtitle,
+                    style = MaterialTheme.localTextStyles.poppins13Medium,
                     color = MaterialTheme.localColors.white,
                     modifier = Modifier.clickable { onNextClick.invoke(model.nextLineId.toString()) }
                 )
@@ -281,7 +281,7 @@ fun Options(
                 if (dialogue.option != "null") {
                     Text(
                         text = dialogue.option,
-                        style = MaterialTheme.localTextStyles.imageCardText,
+                        style = MaterialTheme.localTextStyles.poppins14Medium,
                         color = MaterialTheme.localColors.white,
                         modifier = Modifier
                             .clickable { onClick.invoke(dialogue.nextLineId) }
@@ -326,7 +326,7 @@ fun InteractiveScreenBottomSection(
             IconWithTextNextTo(
                 iconResId = R.drawable.ic_comment,
                 text = "12",
-                textStyle = MaterialTheme.localTextStyles.summaryIconText,
+                textStyle = MaterialTheme.localTextStyles.poppins10SemiBold,
                 spacedBy = dimensionResource(id = R.dimen.dp10),
                 modifier = Modifier.align(Alignment.Bottom)
             ) {
@@ -364,19 +364,19 @@ fun InteractiveScreenBottomBar(
         ) {
             Text(
                 text = original?.hashtag.orEmpty(),
-                style = MaterialTheme.localTextStyles.interactiveHashtag,
+                style = MaterialTheme.localTextStyles.poppins15Medium,
                 color = MaterialTheme.localColors.white
             )
             IconWithTextNextTo(
                 iconResId = R.drawable.ic_eye,
                 text = original?.viewCount.toString(),
-                textStyle = MaterialTheme.localTextStyles.sideBarIconText,
+                textStyle = MaterialTheme.localTextStyles.poppins10Regular,
                 spacedBy = dimensionResource(id = R.dimen.dp9),
             ) {}
             IconWithTextNextTo(
                 iconResId = R.drawable.ic_comment,
                 text = original?.commentCount.toString(),
-                textStyle = MaterialTheme.localTextStyles.sideBarIconText,
+                textStyle = MaterialTheme.localTextStyles.poppins10Regular,
                 spacedBy = dimensionResource(id = R.dimen.dp9),
                 modifier = Modifier
                     .clickable { onCommentsClicked.invoke() }
@@ -405,7 +405,7 @@ fun InteractiveScreenBottomBar(
             }
             Text(
                 text = "BÖLÜM ${episode?.id}",
-                style = MaterialTheme.localTextStyles.subtitle,
+                style = MaterialTheme.localTextStyles.poppins13Medium,
                 color = MaterialTheme.localColors.white_alpha07,
             )
             SimpleIcon(
@@ -456,7 +456,7 @@ fun ImageWithNameCard(
             )
             Text(
                 text = "MURAT",
-                style = MaterialTheme.localTextStyles.imageCardText,
+                style = MaterialTheme.localTextStyles.poppins14Medium,
                 color = MaterialTheme.localColors.white,
                 modifier = Modifier.layoutId("name")
             )
@@ -582,7 +582,7 @@ fun TextBalloon(
 
         Text(
             text = text,
-            style = MaterialTheme.localTextStyles.imageCardText,
+            style = MaterialTheme.localTextStyles.poppins14Medium,
             color = MaterialTheme.localColors.white,
             modifier = Modifier
                 .width(this.maxWidth)
@@ -631,7 +631,7 @@ fun InteractiveTextBox(
                 model.talker?.let {
                     Text(
                         text = "Talker: $it",
-                        style = MaterialTheme.localTextStyles.imageCardText,
+                        style = MaterialTheme.localTextStyles.poppins14Medium,
                         color = MaterialTheme.localColors.white,
                         modifier = Modifier.padding(
                             top = dimensionResource(id = R.dimen.dp9),
@@ -642,7 +642,7 @@ fun InteractiveTextBox(
                 Row {
                     Text(
                         text = model.text.orEmpty(),
-                        style = MaterialTheme.localTextStyles.body,
+                        style = MaterialTheme.localTextStyles.poppins14Regular,
                         color = MaterialTheme.localColors.white_alpha08,
                         modifier = Modifier
                             .weight(1f)
@@ -712,7 +712,6 @@ fun InteractiveScreenPreview() {
             episodeCount = 3147,
             seasons = listOf(),
             isNew = false,
-            dataCount = 6877,
             barcode = "21312312"
         ),
         Episode(

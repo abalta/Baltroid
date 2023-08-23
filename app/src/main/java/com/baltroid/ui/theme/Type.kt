@@ -26,194 +26,169 @@ val SpaceGrotesk = FontFamily(
 )
 
 data class TextStyles(
-    val title: TextStyle,
-    val mediumTitle: TextStyle,
-    val extraBoldTitle: TextStyle,
-    val subtitle: TextStyle,
-    val menuBarTitle: TextStyle,
-    val menuBarSubTitle: TextStyle,
-    val subtitleGrotesk: TextStyle,
-    val storyItemTitle: TextStyle,
-    val body: TextStyle,
-    val episodeText: TextStyle,
-    val authorText: TextStyle,
-    val detailSummaryText: TextStyle,
-    val sideBarIconText: TextStyle,
-    val menuButtonText: TextStyle,
-    val topBarIconText: TextStyle,
-    val summaryIconText: TextStyle,
-    val episodeSelectedText: TextStyle,
-    val homeScreenTabText: TextStyle,
-    val splashScreenText: TextStyle,
-    val isStoryNewText: TextStyle,
-    val dateText: TextStyle,
-    val interactiveHashtag: TextStyle,
-    val imageCardText: TextStyle,
-    val profileScreenUserInfo: TextStyle,
-    val writingCardInfo: TextStyle,
-    val writingCardBody: TextStyle,
-    val writingCardButtonText: TextStyle,
-    val signInTextWhite: TextStyle,
-    val originalItemTitle: TextStyle,
-    val episodesSheet: TextStyle,
-    val episodeSheetEpisode: TextStyle
+    val poppins10Regular: TextStyle,
+    val poppins10SemiBold: TextStyle,
+    val poppins11Medium: TextStyle,
+    val poppins12Regular: TextStyle,
+    val poppins12Medium: TextStyle,
+    val poppins12Bold: TextStyle,
+    val poppins13Medium: TextStyle,
+    val poppins14Regular: TextStyle,
+    val poppins14Medium: TextStyle,
+    val poppins15Medium: TextStyle,
+    val poppins15Bold: TextStyle,
+    val poppins16Regular: TextStyle,
+    val poppins17Light: TextStyle,
+    val poppins17Regular: TextStyle,
+    val poppins17Medium: TextStyle,
+    val poppins18Regular: TextStyle,
+    val poppins20ExtraBold: TextStyle,
+    val spaceGrotesk11Medium: TextStyle,
+    val spaceGrotesk13Medium: TextStyle,
+    val spaceGrotesk14Regular: TextStyle,
+    val spaceGrotesk14Medium: TextStyle,
+    val spaceGrotesk15Medium: TextStyle,
+    val spaceGrotesk16Medium: TextStyle,
+    val spaceGrotesk18Regular: TextStyle,
+    val spaceGrotesk18Medium: TextStyle,
+    val spaceGrotesk20Medium: TextStyle,
+    val spaceGrotesk24Medium: TextStyle,
 )
 
 val HitReadsTextStyles = TextStyles(
-    title = TextStyle(
+    poppins17Light = TextStyle(
         fontFamily = Poppins,
         fontWeight = FontWeight.Light,
         fontSize = 17.sp
     ),
-    mediumTitle = TextStyle(
+    poppins17Medium = TextStyle(
         fontFamily = Poppins,
         fontWeight = FontWeight.Medium,
         fontSize = 17.sp
     ),
-    authorText = TextStyle(
+    spaceGrotesk15Medium = TextStyle(
         fontFamily = SpaceGrotesk,
         fontWeight = FontWeight.Medium,
         fontSize = 15.sp
     ),
-    detailSummaryText = TextStyle(
+    spaceGrotesk14Regular = TextStyle(
         fontFamily = SpaceGrotesk,
         fontWeight = FontWeight.Normal,
-        fontSize = 13.5.sp
+        fontSize = 14.sp
     ),
-    menuBarTitle = TextStyle(
+    spaceGrotesk24Medium = TextStyle(
         fontFamily = SpaceGrotesk,
         fontWeight = FontWeight.Medium,
         fontSize = 24.sp
     ),
-    storyItemTitle = TextStyle(
+    poppins12Medium = TextStyle(
         fontFamily = Poppins,
         fontWeight = FontWeight.Medium,
-        fontSize = 11.5.sp,
+        fontSize = 12.sp,
         lineHeight = 13.sp
     ),
-    menuBarSubTitle = TextStyle(
+    spaceGrotesk20Medium = TextStyle(
         fontFamily = SpaceGrotesk,
         fontWeight = FontWeight.Medium,
         fontSize = 20.sp
     ),
-    extraBoldTitle = TextStyle(
+    poppins20ExtraBold = TextStyle(
         fontFamily = Poppins,
         fontWeight = FontWeight.ExtraBold,
         fontSize = 20.sp
     ),
-    subtitle = TextStyle(
+    poppins13Medium = TextStyle(
         fontFamily = Poppins,
         fontWeight = FontWeight.Medium,
-        fontSize = 12.5.sp
+        fontSize = 13.sp
     ),
-    subtitleGrotesk = TextStyle(
-        fontFamily = SpaceGrotesk,
+    poppins14Regular = TextStyle(
+        fontFamily = Poppins,
         fontWeight = FontWeight.Normal,
         fontSize = 14.sp,
         lineHeight = 19.sp
     ),
-    body = TextStyle(
-        fontFamily = Poppins,
-        fontWeight = FontWeight.Normal,
-        fontSize = 14.sp,
-        lineHeight = 18.5.sp
-    ),
-    summaryIconText = TextStyle(
+    poppins10SemiBold = TextStyle(
         fontFamily = Poppins,
         fontWeight = FontWeight.SemiBold,
         fontSize = 10.sp
     ),
-    episodeText = TextStyle(
+    poppins12Regular = TextStyle(
         fontFamily = Poppins,
         fontWeight = FontWeight.Normal,
         fontSize = 12.sp
     ),
-    sideBarIconText = TextStyle(
+    poppins10Regular = TextStyle(
         fontFamily = Poppins,
         fontSize = 10.sp,
         fontWeight = FontWeight.Normal
     ),
-    menuButtonText = TextStyle(
-        fontFamily = Poppins,
-        fontSize = 12.sp,
-        fontWeight = FontWeight.Medium
-    ),
-    topBarIconText = TextStyle(
+    poppins11Medium = TextStyle(
         fontFamily = Poppins,
         fontSize = 11.sp,
         fontWeight = FontWeight.Medium
     ),
-    episodeSelectedText = TextStyle(
+    spaceGrotesk16Medium = TextStyle(
         fontFamily = SpaceGrotesk,
         fontSize = 16.sp,
         fontWeight = FontWeight.Medium
     ),
-    homeScreenTabText = TextStyle(
+    spaceGrotesk13Medium = TextStyle(
         fontFamily = SpaceGrotesk,
         fontSize = 13.sp,
         fontWeight = FontWeight.Medium
     ),
-    splashScreenText = TextStyle(
+    spaceGrotesk18Regular = TextStyle(
         fontFamily = SpaceGrotesk,
         fontSize = 18.sp,
         fontWeight = FontWeight.Normal
     ),
-    isStoryNewText = TextStyle(
+    spaceGrotesk11Medium = TextStyle(
         fontFamily = SpaceGrotesk,
         fontSize = 11.sp,
         fontWeight = FontWeight.Medium
     ),
-    dateText = TextStyle(
-        fontFamily = Poppins,
-        fontWeight = FontWeight.Normal,
-        fontSize = 10.sp
-    ),
-    interactiveHashtag = TextStyle(
+    poppins15Medium = TextStyle(
         fontFamily = Poppins,
         fontWeight = FontWeight.Medium,
         fontSize = 15.sp
     ),
-    imageCardText = TextStyle(
+    poppins14Medium = TextStyle(
         fontFamily = Poppins,
         fontWeight = FontWeight.Medium,
         fontSize = 14.sp
     ),
-    profileScreenUserInfo = TextStyle(
+    poppins18Regular = TextStyle(
         fontFamily = Poppins,
         fontWeight = FontWeight.Normal,
         fontSize = 18.sp
     ),
-    writingCardBody = TextStyle(
+    poppins16Regular = TextStyle(
         fontFamily = Poppins,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp
     ),
-    writingCardInfo = TextStyle(
+    spaceGrotesk14Medium = TextStyle(
         fontFamily = SpaceGrotesk,
         fontWeight = FontWeight.Medium,
         fontSize = 14.sp
     ),
-    writingCardButtonText = TextStyle(
-        fontFamily = Poppins,
-        fontWeight = FontWeight.Medium,
-        fontSize = 12.sp
-    ),
-    signInTextWhite = TextStyle(
+    spaceGrotesk18Medium = TextStyle(
         fontFamily = SpaceGrotesk,
         fontWeight = FontWeight.Medium,
         fontSize = 18.sp
     ),
-    originalItemTitle = TextStyle(
+    poppins12Bold = TextStyle(
         fontFamily = Poppins,
         fontWeight = FontWeight.Bold,
         fontSize = 12.sp
     ),
-    episodesSheet = TextStyle(
+    poppins17Regular = TextStyle(
         fontFamily = Poppins,
         fontSize = 17.sp,
         fontWeight = FontWeight.Normal
     ),
-    episodeSheetEpisode = TextStyle(
+    poppins15Bold = TextStyle(
         fontFamily = Poppins,
         fontSize = 15.sp,
         fontWeight = FontWeight.Bold

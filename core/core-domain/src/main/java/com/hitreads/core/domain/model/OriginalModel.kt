@@ -27,7 +27,6 @@ data class OriginalModel(
     val hashtag: String,
     val seasons: List<SeasonModel>,
     val isNew: Boolean,
-    var dataCount: Int,
     val barcode: String
 )
 

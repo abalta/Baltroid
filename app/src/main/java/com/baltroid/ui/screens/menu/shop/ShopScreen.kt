@@ -65,7 +65,7 @@ private fun ShopScreenContent(
         DiamondsGrid()
         Text(
             text = stringResource(id = R.string.balance, currentBalance),
-            style = MaterialTheme.localTextStyles.profileScreenUserInfo
+            style = MaterialTheme.localTextStyles.poppins18Regular
         )
         BuyButton {}
     }
@@ -111,7 +111,7 @@ fun BuyButton(
 ) {
     Text(
         text = stringResource(id = R.string.buy),
-        style = MaterialTheme.localTextStyles.menuBarTitle,
+        style = MaterialTheme.localTextStyles.spaceGrotesk24Medium,
         color = MaterialTheme.localColors.white_alpha09,
         textAlign = TextAlign.Center,
         modifier = Modifier

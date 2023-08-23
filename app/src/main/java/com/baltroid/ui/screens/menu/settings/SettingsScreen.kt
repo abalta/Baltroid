@@ -116,7 +116,7 @@ fun SettingsItem(
     ) {
         Text(
             text = title,
-            style = MaterialTheme.localTextStyles.menuBarTitle,
+            style = MaterialTheme.localTextStyles.spaceGrotesk24Medium,
             color = MaterialTheme.localColors.white_alpha09
         )
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp14))

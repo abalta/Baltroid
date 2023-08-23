@@ -200,6 +200,11 @@ private fun FavoriteOriginals(
 }
 
 @Composable
+fun ContinueReading() {
+
+}
+
+@Composable
 private fun OriginalItem(
     original: Original,
     onClick: () -> Unit
@@ -245,14 +250,14 @@ private fun OriginalItem(
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp6))
         Text(
             text = original.title,
-            style = MaterialTheme.localTextStyles.originalItemTitle,
+            style = MaterialTheme.localTextStyles.poppins12Bold,
             color = MaterialTheme.localColors.white,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
         )
         Text(
             text = original.author.name,
-            style = MaterialTheme.localTextStyles.summaryIconText,
+            style = MaterialTheme.localTextStyles.poppins10SemiBold,
             color = MaterialTheme.localColors.white
         )
     }
@@ -282,7 +287,7 @@ fun FavoriteOriginalItem(
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp13))
         Text(
             text = original.title,
-            style = MaterialTheme.localTextStyles.originalItemTitle,
+            style = MaterialTheme.localTextStyles.poppins12Bold,
             color = MaterialTheme.localColors.white,
             maxLines = 2,
             minLines = 2,
@@ -347,7 +352,7 @@ private fun HomeScreenTabItem(
     ) {
         Text(
             text = stringResource(id = title),
-            style = MaterialTheme.localTextStyles.homeScreenTabText,
+            style = MaterialTheme.localTextStyles.spaceGrotesk13Medium,
             color = MaterialTheme.localColors.white_alpha07,
             modifier = Modifier
                 .width(IntrinsicSize.Max)
@@ -383,17 +388,17 @@ fun TitleSection(
     ) {
         Text(
             text = author,
-            style = MaterialTheme.localTextStyles.mediumTitle,
+            style = MaterialTheme.localTextStyles.poppins17Medium,
             color = MaterialTheme.localColors.white
         )
         Text(
             text = title,
-            style = MaterialTheme.localTextStyles.extraBoldTitle,
+            style = MaterialTheme.localTextStyles.poppins20ExtraBold,
             color = MaterialTheme.localColors.white
         )
         Text(
             text = subTitle,
-            style = MaterialTheme.localTextStyles.subtitleGrotesk,
+            style = MaterialTheme.localTextStyles.spaceGrotesk14Regular,
             color = MaterialTheme.localColors.white
         )
     }
@@ -422,7 +427,7 @@ fun GenreSection(
         ) {
             Text(
                 text = stringResource(id = R.string.episode_size, episodeSize),
-                style = MaterialTheme.localTextStyles.episodeText,
+                style = MaterialTheme.localTextStyles.poppins12Regular,
                 color = MaterialTheme.localColors.white,
                 modifier = Modifier.width(IntrinsicSize.Max)
             )
@@ -446,7 +451,7 @@ fun GenreItem(
     Text(
         text = text,
         textAlign = TextAlign.Center,
-        style = MaterialTheme.localTextStyles.isStoryNewText,
+        style = MaterialTheme.localTextStyles.spaceGrotesk11Medium,
         color = MaterialTheme.localColors.black,
         modifier = modifier
             .clip(MaterialTheme.localShapes.roundedDp4)

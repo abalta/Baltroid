@@ -173,7 +173,7 @@ fun Interactions(
         )
         Text(
             text = numberOfViews.toString(),
-            style = MaterialTheme.localTextStyles.summaryIconText,
+            style = MaterialTheme.localTextStyles.poppins10SemiBold,
             color = MaterialTheme.localColors.white
         )
     }
@@ -192,7 +192,7 @@ fun Interactions(
         )
         Text(
             text = numberOfComments.toString(),
-            style = MaterialTheme.localTextStyles.summaryIconText,
+            style = MaterialTheme.localTextStyles.poppins10SemiBold,
             color = MaterialTheme.localColors.white,
         )
     }
@@ -239,7 +239,7 @@ private fun HomeDetailSummarySection(
     ) {
         Text(
             text = summary,
-            style = MaterialTheme.localTextStyles.detailSummaryText,
+            style = MaterialTheme.localTextStyles.spaceGrotesk14Regular,
             color = MaterialTheme.localColors.white,
             modifier = Modifier.weight(1f)
         )
@@ -368,14 +368,14 @@ fun HomeDetailScreenContent(
                         VerticalSpacer(height = dimensionResource(id = R.dimen.dp21))
                         Text(
                             text = screenState?.description.orEmpty(),
-                            style = MaterialTheme.localTextStyles.detailSummaryText,
+                            style = MaterialTheme.localTextStyles.spaceGrotesk14Regular,
                             color = MaterialTheme.localColors.white,
                             modifier = Modifier.fillMaxWidth(),
                         )
                         VerticalSpacer(height = dimensionResource(id = R.dimen.dp8))
                         Text(
                             text = "#kimsegercekdegil",
-                            style = MaterialTheme.localTextStyles.subtitleGrotesk,
+                            style = MaterialTheme.localTextStyles.spaceGrotesk14Regular,
                             color = MaterialTheme.localColors.white
                         )
                     }
@@ -400,7 +400,7 @@ fun HomeDetailScreenContent(
                             }
                             Text(
                                 text = screenState?.hashtag.orEmpty(),
-                                style = MaterialTheme.localTextStyles.episodeText,
+                                style = MaterialTheme.localTextStyles.poppins12Regular,
                                 color = MaterialTheme.localColors.white
                             )
                         }
@@ -590,7 +590,7 @@ fun EpisodeSheet(
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp19))
         Text(
             text = stringResource(id = R.string.episodes),
-            style = MaterialTheme.localTextStyles.episodesSheet,
+            style = MaterialTheme.localTextStyles.poppins17Regular,
             color = MaterialTheme.localColors.white_black
         )
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp6))
@@ -633,7 +633,7 @@ fun DetailEpisodes(
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp14))
         Text(
             text = stringResource(id = R.string.episodes),
-            style = MaterialTheme.localTextStyles.mediumTitle,
+            style = MaterialTheme.localTextStyles.poppins17Medium,
             color = MaterialTheme.localColors.white
         )
         SimpleImage(imgResId = R.drawable.ic_menu_horizontal)
@@ -659,13 +659,13 @@ fun EpisodeItem(
     ) {
         Text(
             text = stringResource(id = R.string.episode_number, episode.sort.orZero()),
-            style = MaterialTheme.localTextStyles.episodeSheetEpisode,
+            style = MaterialTheme.localTextStyles.poppins15Bold,
             color = MaterialTheme.localColors.white
         )
         HorizontalSpacer(width = dimensionResource(id = R.dimen.dp20))
         Text(
             text = episode.episodeName.orEmpty(),
-            style = MaterialTheme.localTextStyles.detailSummaryText,
+            style = MaterialTheme.localTextStyles.spaceGrotesk14Regular,
             color = MaterialTheme.localColors.white,
             modifier = Modifier.weight(1f)
         )
@@ -723,25 +723,25 @@ fun OriginalBarcode(
             VerticalSpacer(height = dimensionResource(id = R.dimen.dp30))
             Text(
                 text = stringResource(id = R.string.barcode),
-                style = MaterialTheme.localTextStyles.extraBoldTitle,
+                style = MaterialTheme.localTextStyles.poppins20ExtraBold,
                 color = MaterialTheme.localColors.black
             )
             VerticalSpacer(height = dimensionResource(id = R.dimen.dp2))
             Text(
                 text = original?.barcode.orEmpty(),
-                style = MaterialTheme.localTextStyles.detailSummaryText,
+                style = MaterialTheme.localTextStyles.spaceGrotesk14Regular,
                 color = MaterialTheme.localColors.black,
             )
             VerticalSpacer(height = dimensionResource(id = R.dimen.dp7))
             Text(
                 text = stringResource(id = R.string.summary),
-                style = MaterialTheme.localTextStyles.extraBoldTitle,
+                style = MaterialTheme.localTextStyles.poppins20ExtraBold,
                 color = MaterialTheme.localColors.black
             )
             VerticalSpacer(height = dimensionResource(id = R.dimen.dp3))
             Text(
                 text = "Kim olduğunu sorguladıkça dünyasının sahtelikten İbaret olduğunu anlamaya başlayan Işıl Özsoydan, öğrendiği gerçekler...",
-                style = MaterialTheme.localTextStyles.detailSummaryText,
+                style = MaterialTheme.localTextStyles.spaceGrotesk14Regular,
                 color = MaterialTheme.localColors.black
             )
         }

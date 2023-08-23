@@ -51,8 +51,9 @@ data class NetworkOriginal(
     val seasons: List<NetworkSeason>?,
     @SerialName("is_new")
     val isNew: Boolean,
-    var dataCount: Int? = 0,
     @SerialName("barcode")
-    val barcode: String?
+    val barcode: String?,
+    @SerialName("continue_reading_episode")
+    val continueReadingEpisode: NetworkShowEpisode?
 )
 

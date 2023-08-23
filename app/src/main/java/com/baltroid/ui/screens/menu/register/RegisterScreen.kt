@@ -92,7 +92,7 @@ fun RegisterScreen(
             if (uiState.name.errorMsg != null) {
                 Text(
                     text = stringResource(id = uiState.name.errorMsg),
-                    style = MaterialTheme.localTextStyles.writingCardInfo,
+                    style = MaterialTheme.localTextStyles.spaceGrotesk14Medium,
                     color = MaterialTheme.localColors.orange
                 )
             }
@@ -106,7 +106,7 @@ fun RegisterScreen(
             if (uiState.email.errorMsg != null) {
                 Text(
                     text = stringResource(id = uiState.email.errorMsg),
-                    style = MaterialTheme.localTextStyles.writingCardInfo,
+                    style = MaterialTheme.localTextStyles.spaceGrotesk14Medium,
                     color = MaterialTheme.localColors.orange
                 )
             }
@@ -120,7 +120,7 @@ fun RegisterScreen(
             VerticalSpacer(height = dimensionResource(id = R.dimen.dp9))
             Text(
                 text = stringResource(id = R.string.invalid_password),
-                style = MaterialTheme.localTextStyles.writingCardInfo,
+                style = MaterialTheme.localTextStyles.spaceGrotesk14Medium,
                 color = if (uiState.password.errorMsg == null) MaterialTheme.localColors.white_alpha03
                 else MaterialTheme.localColors.orange,
                 modifier = Modifier.fillMaxWidth(0.65f)
@@ -135,7 +135,7 @@ fun RegisterScreen(
             if (uiState.passwordConfirm.errorMsg != null) {
                 Text(
                     text = stringResource(id = uiState.passwordConfirm.errorMsg),
-                    style = MaterialTheme.localTextStyles.writingCardInfo,
+                    style = MaterialTheme.localTextStyles.spaceGrotesk14Medium,
                     color = MaterialTheme.localColors.orange
                 )
             }
@@ -158,12 +158,12 @@ fun RegisterScreen(
             VerticalSpacer(height = dimensionResource(id = R.dimen.dp38))
             TextBetweenDividers(
                 text = stringResource(id = R.string.save),
-                textStyle = MaterialTheme.localTextStyles.signInTextWhite,
+                textStyle = MaterialTheme.localTextStyles.spaceGrotesk18Medium,
                 onClick = viewModel::register
             )
             TextBetweenDividers(
                 text = stringResource(id = R.string.already_member),
-                textStyle = MaterialTheme.localTextStyles.signInTextWhite,
+                textStyle = MaterialTheme.localTextStyles.spaceGrotesk18Medium,
                 onClick = { /*TODO*/ })
         }
     }
@@ -197,7 +197,7 @@ fun CheckBoxWithText(
 
         Text(
             text = text,
-            style = MaterialTheme.localTextStyles.signInTextWhite,
+            style = MaterialTheme.localTextStyles.spaceGrotesk18Medium,
             color = MaterialTheme.localColors.white_alpha03
         )
     }

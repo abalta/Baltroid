@@ -73,7 +73,7 @@ fun LoginScreenContent(
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp36))
         Text(
             text = stringResource(id = R.string.member_login),
-            style = MaterialTheme.localTextStyles.menuBarTitle,
+            style = MaterialTheme.localTextStyles.spaceGrotesk24Medium,
             color = MaterialTheme.localColors.white_alpha09
         )
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp20))
@@ -102,7 +102,7 @@ fun LoginScreenContent(
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp36))
         Text(
             text = stringResource(id = R.string.forgot_password),
-            style = MaterialTheme.localTextStyles.imageCardText,
+            style = MaterialTheme.localTextStyles.poppins14Medium,
             color = MaterialTheme.localColors.orange,
             modifier = Modifier.clickable { forgotPassword.invoke() }
         )
@@ -112,12 +112,12 @@ fun LoginScreenContent(
         ) {
             TextBetweenDividers(
                 text = stringResource(id = R.string.sign_in),
-                textStyle = MaterialTheme.localTextStyles.signInTextWhite,
+                textStyle = MaterialTheme.localTextStyles.spaceGrotesk18Medium,
                 onClick = { loginViewModel.login() }
             )
             TextBetweenDividers(
                 text = stringResource(id = R.string.sign_up),
-                textStyle = MaterialTheme.localTextStyles.signInTextWhite,
+                textStyle = MaterialTheme.localTextStyles.spaceGrotesk18Medium,
                 onClick = { navigate.invoke(HitReadsScreens.RegisterScreen.route) }
             )
         }
@@ -138,14 +138,14 @@ fun UserInputArea(
     ) {
         Text(
             text = stringResource(id = title),
-            style = MaterialTheme.localTextStyles.profileScreenUserInfo,
+            style = MaterialTheme.localTextStyles.poppins18Regular,
             color = MaterialTheme.localColors.white
         )
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp11))
         BasicTextField(
             value = value,
             onValueChange = onValueChange,
-            textStyle = MaterialTheme.localTextStyles.profileScreenUserInfo,
+            textStyle = MaterialTheme.localTextStyles.poppins18Regular,
             cursorBrush = SolidColor(MaterialTheme.localColors.white),
             maxLines = 1,
             visualTransformation = visualTransformation,
