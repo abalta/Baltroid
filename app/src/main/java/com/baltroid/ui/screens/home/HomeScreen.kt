@@ -42,7 +42,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.baltroid.apps.R
@@ -237,13 +236,13 @@ private fun OriginalItem(
                         .clip(MaterialTheme.localShapes.roundedDp4)
                         .background(MaterialTheme.localColors.orange)
                         .padding(
-                            vertical = 6.dp,
+                            vertical = dimensionResource(id = R.dimen.dp6),
                             horizontal = dimensionResource(id = R.dimen.dp10)
                         )
                 )
             }
         }
-        VerticalSpacer(height = 6.dp)
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp6))
         Text(
             text = original.title,
             style = MaterialTheme.localTextStyles.originalItemTitle,
@@ -453,7 +452,7 @@ fun GenreItem(
             .clip(MaterialTheme.localShapes.roundedDp4)
             .background(color)
             .padding(
-                vertical = 6.dp,
+                vertical = dimensionResource(id = R.dimen.dp6),
                 horizontal = dimensionResource(id = R.dimen.dp10)
             )
     )
@@ -732,7 +731,7 @@ fun HomeScreenPreview() {
         ),
         openMenuScreen = {},
         deleteFavorite = {},
-        navigate = { s: String, original: Original? -> }
+        navigate = { _: String, _: Original? -> }
 
     )
 }

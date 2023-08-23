@@ -38,7 +38,6 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.baltroid.apps.R
@@ -373,7 +372,7 @@ fun HomeDetailScreenContent(
                             color = MaterialTheme.localColors.white,
                             modifier = Modifier.fillMaxWidth(),
                         )
-                        VerticalSpacer(height = 8.dp)
+                        VerticalSpacer(height = dimensionResource(id = R.dimen.dp8))
                         Text(
                             text = "#kimsegercekdegil",
                             style = MaterialTheme.localTextStyles.subtitleGrotesk,
@@ -381,7 +380,7 @@ fun HomeDetailScreenContent(
                         )
                     }
 
-                    VerticalSpacer(height = 7.dp)
+                    VerticalSpacer(height = dimensionResource(id = R.dimen.dp7))
                     Row(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         modifier = Modifier
@@ -397,7 +396,7 @@ fun HomeDetailScreenContent(
                         ) {
                             if (screenState?.isLocked == true) {
                                 SimpleIcon(iconResId = R.drawable.ic_lock)
-                                HorizontalSpacer(width = 8.dp)
+                                HorizontalSpacer(width = dimensionResource(id = R.dimen.dp8))
                             }
                             Text(
                                 text = screenState?.hashtag.orEmpty(),
@@ -594,7 +593,7 @@ fun EpisodeSheet(
             style = MaterialTheme.localTextStyles.episodesSheet,
             color = MaterialTheme.localColors.white_black
         )
-        VerticalSpacer(height = 6.dp)
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp6))
         SimpleIcon(
             iconResId = R.drawable.ic_menu_horizontal,
             tint = MaterialTheme.localColors.white_bb,
@@ -733,7 +732,7 @@ fun OriginalBarcode(
                 style = MaterialTheme.localTextStyles.detailSummaryText,
                 color = MaterialTheme.localColors.black,
             )
-            VerticalSpacer(height = 7.dp)
+            VerticalSpacer(height = dimensionResource(id = R.dimen.dp7))
             Text(
                 text = stringResource(id = R.string.summary),
                 style = MaterialTheme.localTextStyles.extraBoldTitle,

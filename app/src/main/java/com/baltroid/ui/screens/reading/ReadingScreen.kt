@@ -334,7 +334,7 @@ fun ScrollBar(
 
     Box(
         modifier = modifier
-            .width(6.dp)
+            .width(dimensionResource(id = R.dimen.dp6))
             .fillMaxHeight()
             .drawWithContent {
                 val maxScrollValue = scrollState.maxValue
@@ -495,7 +495,7 @@ fun TitleSection(
                     tint = if (isLiked) MaterialTheme.localColors.yellow else Color.Unspecified,
                     modifier = Modifier
                         .padding(
-                            top = 8.dp,
+                            top = dimensionResource(id = R.dimen.dp8),
                             end = dimensionResource(id = R.dimen.dp15),
                         )
                         .clickable {
@@ -639,7 +639,7 @@ fun EpisodeSectionItem(
             HorizontalSpacer(width = dimensionResource(id = R.dimen.dp4))
             Text(text = episodeNumber.toString(), style = episodeTextStyle)
         }
-        VerticalSpacer(height = 5.dp)
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp5))
         if (hasBanner) {
             EpisodeBanner(modifier = Modifier.fillMaxWidth())
         } else {
@@ -844,7 +844,7 @@ fun CommentItem(
                         IconWithTextNextTo(
                             iconResId = if (isChatSelected) R.drawable.ic_chat_filled else R.drawable.ic_chat_outlined,
                             text = model.repliesCount.toString(),
-                            spacedBy = 6.dp,
+                            spacedBy = dimensionResource(id = R.dimen.dp6),
                             textStyle = MaterialTheme.localTextStyles.sideBarIconText,
                             isTextVisible = !model.isReply,
                             onIconClick = { onReplyClick.invoke() },
@@ -896,7 +896,7 @@ fun HasTagItem(
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(5.dp),
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp5)),
         modifier = Modifier.width(IntrinsicSize.Min),
     ) {
         IconWithTextNextTo(
@@ -917,7 +917,7 @@ fun HasTagItem(
         if (isSelected) {
             Box(
                 modifier = Modifier
-                    .height(3.dp)
+                    .height(dimensionResource(id = R.dimen.dp3))
                     .fillMaxWidth()
                     .background(MaterialTheme.localColors.orange)
             )
@@ -977,23 +977,23 @@ fun SeeAll(
     ) {
         Box(
             modifier = Modifier
-                .height(1.dp)
-                .width(100.dp)
+                .height(dimensionResource(id = R.dimen.dp1))
+                .width(dimensionResource(id = R.dimen.dp100))
                 .background(MaterialTheme.localColors.white_alpha07)
                 .fillMaxWidth()
         )
-        HorizontalSpacer(width = 12.dp)
+        HorizontalSpacer(width = dimensionResource(id = R.dimen.dp12))
         Text(
             text = "Tüm Cevapları Göster",
             color = MaterialTheme.localColors.white_alpha07,
             fontFamily = Poppins,
             fontSize = 10.sp
         )
-        HorizontalSpacer(width = 12.dp)
+        HorizontalSpacer(width = dimensionResource(id = R.dimen.dp12))
         Box(
             modifier = Modifier
-                .height(1.dp)
-                .width(100.dp)
+                .height(dimensionResource(id = R.dimen.dp1))
+                .width(dimensionResource(id = R.dimen.dp100))
                 .background(MaterialTheme.localColors.white_alpha07)
                 .fillMaxWidth()
         )
