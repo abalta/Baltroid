@@ -100,7 +100,6 @@ fun HitReadsNavHost(
             ) {
                 HomeDetailScreen(
                     viewModel = originalViewModel,
-                    navigateBack = { navController.popBackStack() },
                     openMenuScreen = openMenuScreen,
                 ) { route, episode, original ->
                     originalViewModel.apply {
