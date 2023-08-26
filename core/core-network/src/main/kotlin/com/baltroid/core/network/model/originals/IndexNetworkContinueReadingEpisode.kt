@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class NetworkShowEpisode(
+data class IndexNetworkContinueReadingEpisode(
     @SerialName("id")
     val id: Int?,
     @SerialName("original_id")

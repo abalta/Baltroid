@@ -1,67 +1,99 @@
 package com.hitreads.core.ui.mapper
 
 import com.hitreads.core.domain.model.AllCommentsModel
-import com.hitreads.core.domain.model.AuthorModel
 import com.hitreads.core.domain.model.BookmarkModel
 import com.hitreads.core.domain.model.CommentModel
 import com.hitreads.core.domain.model.EpisodeModel
 import com.hitreads.core.domain.model.FavoriteModel
 import com.hitreads.core.domain.model.FavoriteOriginalModel
-import com.hitreads.core.domain.model.OriginalModel
-import com.hitreads.core.domain.model.PackageModel
-import com.hitreads.core.domain.model.SeasonModel
+import com.hitreads.core.domain.model.IndexAuthorModel
+import com.hitreads.core.domain.model.IndexContinueReadingEpisodeModel
+import com.hitreads.core.domain.model.IndexOriginalModel
+import com.hitreads.core.domain.model.IndexPackageModel
+import com.hitreads.core.domain.model.IndexTagModel
+import com.hitreads.core.domain.model.IndexUserDataModel
+import com.hitreads.core.domain.model.InteractiveBundleAssetModel
 import com.hitreads.core.domain.model.ShowEpisodeModel
 import com.hitreads.core.domain.model.ShowOriginalModel
-import com.hitreads.core.domain.model.TagModel
 import com.hitreads.core.domain.model.TagsWithOriginalsModel
-import com.hitreads.core.domain.model.UserDataModel
 import com.hitreads.core.domain.model.WelcomeModel
-import com.hitreads.core.model.Author
 import com.hitreads.core.model.Bookmark
 import com.hitreads.core.model.Comment
 import com.hitreads.core.model.Episode
 import com.hitreads.core.model.Favorite
 import com.hitreads.core.model.FavoriteOriginal
-import com.hitreads.core.model.Original
-import com.hitreads.core.model.Package
-import com.hitreads.core.model.Season
+import com.hitreads.core.model.IndexAuthor
+import com.hitreads.core.model.IndexOriginal
+import com.hitreads.core.model.IndexPackage
+import com.hitreads.core.model.IndexTag
+import com.hitreads.core.model.IndexUserData
+import com.hitreads.core.model.InteractiveBundleAsset
 import com.hitreads.core.model.ShowEpisode
 import com.hitreads.core.model.ShowOriginal
-import com.hitreads.core.model.Tag
 import com.hitreads.core.model.TagsWithOriginals
-import com.hitreads.core.model.UserData
 import com.hitreads.core.model.Welcome
 
-fun OriginalModel.asOriginal() = Original(
-    author = author.asAuthor(),
-    banner = banner,
-    cover = cover,
-    description = description,
-    id = id,
-    isActual = isActual,
-    isLocked = isLocked,
-    likeCount = likeCount,
-    commentCount = commentCount,
-    viewCount = viewCount,
-    `package` = `package`?.asPackage(),
-    sort = sort,
-    status = status,
-    title = title,
-    type = type,
-    userData = userData.asUserData(),
-    hashtag = hashtag,
-    tags = tags.map { it.asTag() },
-    subtitle = subtitle,
-    episodeCount = episodeCount,
-    seasons = seasons.map { it.asSeason() },
-    isNew = isNew,
-    barcode = barcode,
+fun IndexOriginalModel.asIndexOriginal() = IndexOriginal(
+    indexAuthor = author?.asIndexAuthor() ?: IndexAuthor(-1, ""),
+    banner = banner.orEmpty(),
+    cover = cover.orEmpty(),
+    description = description.orEmpty(),
+    id = id ?: -1,
+    isActual = isActual ?: false,
+    isLocked = isLocked ?: false,
+    likeCount = likeCount ?: 0,
+    commentCount = commentCount ?: 0,
+    viewCount = viewCount ?: 0,
+    indexPackage = `package`?.asIndexPackage() ?: IndexPackage(-1, -1, ""),
+    sort = sort ?: 0,
+    status = status ?: false,
+    title = title.orEmpty(),
+    type = type.orEmpty(),
+    indexUserData = userData?.asIndexUserData() ?: IndexUserData(
+        isLike = false,
+        isPurchase = false
+    ),
+    hashtag = hashtag.orEmpty(),
+    indexTags = tags?.map { it.asIndexTag() } ?: emptyList(),
+    subtitle = subtitle.orEmpty(),
+    episodeCount = episodeCount ?: 0,
+    isNew = isNew ?: false,
+    barcode = barcode.orEmpty(),
     continueReadingEpisode = continueReadingEpisode?.asShowEpisode()
 )
 
-fun TagsWithOriginalsModel.asTagsWithOriginals() = TagsWithOriginals(
-    tagName = tagName, tagId = tagId, originals = originals?.map { it.asOriginal() }
+fun IndexContinueReadingEpisodeModel.asShowEpisode() = ShowEpisode(
+    id = id ?: -1,
+    episodeName = episodeName.orEmpty(),
+    price = price ?: -1,
+    episodeSort = 0,
+    priceType = priceType.orEmpty(),
+    sort = sort ?: 0,
+    createdAt = createdAt.orEmpty(),
+    updatedAt = updatedAt.orEmpty(),
+    originalId = originalId ?: -1,
+    seasonId = seasonId ?: -1,
+    isLocked = isLocked ?: false,
+    isLastEpisode = false,
+    original = null,
+    bundleAssets = null,
+    assetContents = assetContent,
+    xmlContents = null,
+    episodeContent = null
+)
 
+fun InteractiveBundleAssetModel.asInteractiveBundleAssets() = InteractiveBundleAsset(
+    type = type.orEmpty(),
+    typeId = typeId ?: -1,
+    path = path.orEmpty(),
+    isActive = isActive ?: false
+
+)
+
+fun TagsWithOriginalsModel.asTagsWithOriginals() = TagsWithOriginals(
+    tagName = tagName,
+    tagId = tagId,
+    indexOriginals = indexOriginalModels?.map { it.asIndexOriginal() }
 )
 
 fun ShowOriginalModel.asShowOriginal() = ShowOriginal(
@@ -74,36 +106,40 @@ fun ShowOriginalModel.asShowOriginal() = ShowOriginal(
     commentsCount,
     updatedAt,
     episodes.sortedBy { it.sort }.map { it.asShowEpisode() },
-    author.asAuthor()
+    author.asIndexAuthor()
 )
 
 fun ShowEpisodeModel.asShowEpisode() = ShowEpisode(
-    id = id,
-    originalId = originalId,
-    seasonId = seasonId,
-    episodeName = episodeName,
-    assetContent = assetContent,
-    price = price,
-    priceType = priceType,
-    sort = sort,
-    createdAt = createdAt,
-    updatedAt = updatedAt,
-    isLocked = isLocked ?: false
+    id = id ?: -1,
+    episodeName = episodeName.orEmpty(),
+    price = price ?: -1,
+    episodeSort = episodeSort ?: 0,
+    priceType = priceType.orEmpty(),
+    sort = sort ?: 0,
+    createdAt = createdAt.orEmpty(),
+    updatedAt = updatedAt.orEmpty(),
+    originalId = originalId ?: -1,
+    seasonId = seasonId ?: -1,
+    isLocked = isLocked ?: false,
+    isLastEpisode = isLastEpisode ?: false,
+    original = original?.asIndexOriginal(),
+    bundleAssets = bundleAssets?.map { it.asInteractiveBundleAssets() },
+    assetContents = assetContents,
+    xmlContents = xmlContents,
+    episodeContent = episodeContent
 )
 
-fun PackageModel.asPackage() = Package(
+fun IndexPackageModel.asIndexPackage() = IndexPackage(
     id, price, priceType
 )
 
-fun AuthorModel.asAuthor() = Author(
-    id, name
+fun IndexAuthorModel.asIndexAuthor() = IndexAuthor(
+    id ?: -1, name.orEmpty()
 )
 
-fun UserDataModel.asUserData() = UserData(isLike, isPurchase)
+fun IndexUserDataModel.asIndexUserData() = IndexUserData(isLike ?: false, isPurchase ?: false)
 
-fun TagModel.asTag() = Tag(id, name, icon)
-
-fun SeasonModel.asSeason() = Season(id, name, episodes.map { it.asEpisode() })
+fun IndexTagModel.asIndexTag() = IndexTag(id ?: -1, name.orEmpty(), icon.orEmpty())
 
 fun EpisodeModel.asEpisode() =
     Episode(
@@ -125,14 +161,14 @@ fun CommentModel.asComment() = Comment(
     imgUrl = "",
     content = content,
     repliesCount = repliesCount,
-    authorName = author.name,
+    authorName = author.name.orEmpty(),
     hashtag = "",
     createdAt = createdAt,
     isLiked = activeUserLike,
     isReply = isReply,
     replies = replies.map { it.asComment() },
     episode = "",
-    original = original?.asOriginal()
+    indexOriginal = original?.asIndexOriginal()
 )
 
 fun AllCommentsModel.asComment(): Comment = Comment(
@@ -147,7 +183,7 @@ fun AllCommentsModel.asComment(): Comment = Comment(
     isReply = isReply ?: false,
     replies = replies?.map { it.asComment() }.orEmpty(),
     episode = "",
-    original = original?.asOriginal()
+    indexOriginal = original?.asIndexOriginal()
 )
 
 fun WelcomeModel.asWelcome() = Welcome(id, message, path)
@@ -156,7 +192,7 @@ fun BookmarkModel.asBookmark() = Bookmark(
     id = id,
     user = user,
     episode = episode?.asEpisode(),
-    original = original?.asOriginal(),
+    indexOriginal = original?.asIndexOriginal(),
     content = content,
     cover = cover
 )

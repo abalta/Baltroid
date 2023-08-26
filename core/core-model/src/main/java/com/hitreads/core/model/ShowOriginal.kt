@@ -10,6 +10,6 @@ data class ShowOriginal(
     val commentsCount: Int,
     val updatedAt: String,
     val episodes: List<ShowEpisode>,
-    val author: Author,
+    val indexAuthor: IndexAuthor,
     //val comments: List<String>, //todo unknown comment model
 )

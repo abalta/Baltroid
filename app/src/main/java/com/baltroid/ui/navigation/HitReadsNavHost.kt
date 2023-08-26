@@ -78,7 +78,7 @@ fun HitReadsNavHost(
                 ) { route, item ->
                     if (route != HitReadsScreens.HomeDetailScreen.route) {
                         originalViewModel.apply {
-                            selectedOriginal = item
+                            selectedIndexOriginal = item
                             selectedEpisode = item?.continueReadingEpisode
                         }
                     }
@@ -103,7 +103,7 @@ fun HitReadsNavHost(
                     openMenuScreen = openMenuScreen,
                 ) { route, episode, original ->
                     originalViewModel.apply {
-                        selectedOriginal = original
+                        selectedIndexOriginal = original
                         selectedEpisode = episode
                     }
                     navController.navigate(route)

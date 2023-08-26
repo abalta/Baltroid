@@ -16,11 +16,11 @@ import com.hitreads.core.domain.usecase.ProfileUseCase
 import com.hitreads.core.domain.usecase.ShowEpisodeUseCase
 import com.hitreads.core.domain.usecase.ShowOriginalUseCase
 import com.hitreads.core.domain.usecase.StartReadingEpisodeUseCase
-import com.hitreads.core.model.Original
+import com.hitreads.core.model.IndexOriginal
 import com.hitreads.core.model.ShowEpisode
-import com.hitreads.core.ui.mapper.asEpisode
 import com.hitreads.core.ui.mapper.asFavoriteOriginal
-import com.hitreads.core.ui.mapper.asOriginal
+import com.hitreads.core.ui.mapper.asIndexOriginal
+import com.hitreads.core.ui.mapper.asShowEpisode
 import com.hitreads.core.ui.mapper.asShowOriginal
 import com.hitreads.core.ui.mapper.asTagsWithOriginals
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -54,7 +54,7 @@ class OriginalViewModel @Inject constructor(
     private val _uiStateHome = MutableStateFlow(HomeUiState())
     val uiStateHome = _uiStateHome.asStateFlow()
 
-    private val _sharedUIState = MutableStateFlow<Original?>(null)
+    private val _sharedUIState = MutableStateFlow<IndexOriginal?>(null)
     val sharedUIState = _sharedUIState.asStateFlow()
 
     init {
@@ -62,7 +62,7 @@ class OriginalViewModel @Inject constructor(
         isLogged()
     }
 
-    var selectedOriginal: Original? = null
+    var selectedIndexOriginal: IndexOriginal? = null
     var selectedEpisode: ShowEpisode? = null
 
     private fun loadOriginals() = viewModelScope.launch {
@@ -85,15 +85,15 @@ class OriginalViewModel @Inject constructor(
     }
 
     private fun loadContinueReading() = viewModelScope.launch {
-        val continueReading = mutableListOf<Original>()
+        val continueReading = mutableListOf<IndexOriginal>()
         getOriginalsUseCase.invoke(continueReading = true).handle {
             onLoading {
                 _uiStateHome.update { it.copy(isLoading = true) }
             }
             onSuccess { result ->
                 result.forEach {
-                    it.originals?.forEach {
-                        continueReading.add(it.asOriginal())
+                    it.indexOriginalModels?.forEach {
+                        continueReading.add(it.asIndexOriginal())
                     }
                 }
                 _uiStateHome.update {
@@ -135,20 +135,20 @@ class OriginalViewModel @Inject constructor(
         }
     }
 
-    fun createFavorite(id: Int) = viewModelScope.launch {
+    /*fun createFavorite(id: Int) = viewModelScope.launch {
         createFavoriteUseCase.invoke("episode", id).handle {
             onSuccess {
                 _uiStateReading.update { it.copy(episode = it.episode?.copy(isFav = true)) }
             }
         }
-    }
+    }*/
 
     fun deleteFavorite(id: Int) = viewModelScope.launch {
         deleteFavoriteUseCase.invoke("originals", id).handle {
             onSuccess {
                 _sharedUIState.update { original ->
-                    original?.userData?.copy(isLike = false)
-                        ?.let { it1 -> original.copy(userData = it1) }
+                    original?.indexUserData?.copy(isLike = false)
+                        ?.let { it1 -> original.copy(indexUserData = it1) }
                 }
             }
         }
@@ -217,8 +217,8 @@ class OriginalViewModel @Inject constructor(
         }
     }
 
-    fun setSharedUIState(original: Original?) {
-        _sharedUIState.update { original }
+    fun setSharedUIState(indexOriginal: IndexOriginal?) {
+        _sharedUIState.update { indexOriginal }
     }
 
     /*private fun loadFavorites() = viewModelScope.launch {
@@ -271,7 +271,7 @@ class OriginalViewModel @Inject constructor(
             onLoading { episodeModel ->
                 _uiStateReading.update {
                     it.copy(
-                        episode = episodeModel?.asEpisode(),
+                        episode = episodeModel?.asShowEpisode(),
                         isLoading = true
                     )
                 }
@@ -279,7 +279,7 @@ class OriginalViewModel @Inject constructor(
             onSuccess { episodeModel ->
                 _uiStateReading.update {
                     it.copy(
-                        episode = episodeModel.asEpisode(),
+                        episode = episodeModel.asShowEpisode(),
                         isLoading = false
                     )
                 }

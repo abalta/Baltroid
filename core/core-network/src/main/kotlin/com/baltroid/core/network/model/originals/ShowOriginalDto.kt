@@ -1,11 +1,11 @@
 package com.baltroid.core.network.model.originals
 
-import com.baltroid.core.network.model.author.NetworkAuthor
+import com.baltroid.core.network.model.author.IndexNetworkAuthor
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class NetworkShowOriginal(
+data class ShowOriginalDto(
     @SerialName("id")
     val id: Int,
     @SerialName("title")
@@ -23,9 +23,9 @@ data class NetworkShowOriginal(
     @SerialName("updated_at")
     val updatedAt: String,
     @SerialName("episodes")
-    val episodes: List<NetworkShowEpisode>,
+    val episodes: List<IndexNetworkContinueReadingEpisode>,
     @SerialName("author")
-    val author: NetworkAuthor,
-    //@SerialName("comments")
-    //val comments: List<String>, //todo unknown comment model
+    val author: IndexNetworkAuthor,
+    @SerialName("comments")
+    val comments: List<String?> = emptyList() //todo comment model
 )

@@ -120,7 +120,7 @@ fun StoryItemList(
     ) {
         items(state) { item ->
             StoryItem(
-                title = item.original?.title.orEmpty(),
+                title = item.indexOriginal?.title.orEmpty(),
                 imgUrl = item.cover,
                 episodeNumber = item.episode?.id.toString()
             )

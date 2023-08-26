@@ -4,7 +4,7 @@ import com.baltroid.core.common.model.XmlContent
 import com.baltroid.core.common.result.BaltroidResult
 import com.baltroid.core.common.result.isFailure
 import com.baltroid.core.common.result.isSuccess
-import com.baltroid.core.data.mapper.asEpisodeModel
+import com.baltroid.core.data.mapper.asShowEpisodeModel
 import com.baltroid.core.data.mapper.asShowOriginalModel
 import com.baltroid.core.data.mapper.asTagsWithOriginalsModel
 import com.baltroid.core.network.common.networkBoundResource
@@ -12,8 +12,8 @@ import com.baltroid.core.network.source.HitReadsNetworkDataSource
 import com.baltroid.core.network.util.MESSAGE_UNHANDLED_STATE
 import com.github.underscore.U
 import com.google.gson.Gson
-import com.hitreads.core.domain.model.EpisodeModel
 import com.hitreads.core.domain.model.OriginalType
+import com.hitreads.core.domain.model.ShowEpisodeModel
 import com.hitreads.core.domain.model.ShowOriginalModel
 import com.hitreads.core.domain.model.TagsWithOriginalsModel
 import com.hitreads.core.domain.repository.OriginalRepository
@@ -89,7 +89,7 @@ class OriginalRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun showEpisode(episodeId: Int, type: String): Flow<BaltroidResult<EpisodeModel>> =
+    override fun showEpisode(episodeId: Int, type: String): Flow<BaltroidResult<ShowEpisodeModel>> =
         flow {
             emit(BaltroidResult.loading())
             val response = networkDataSource.showEpisode(episodeId)
@@ -97,13 +97,13 @@ class OriginalRepositoryImpl @Inject constructor(
             when {
                 response.isSuccess() -> {
                     response.value.data?.let {
-                        val episodeContent = fetchEpisodeFromUrl(it.episode.assetContent.orEmpty())
+                        val episodeContent = fetchEpisodeFromUrl(it.episode.assetContents.orEmpty())
                         if (type == OriginalType.INTERACTIVE) {
                             val xmlContent: XmlContent =
                                 Gson().fromJson(U.xmlToJson(episodeContent), XmlContent::class.java)
-                            emit(BaltroidResult.success(it.episode.asEpisodeModel(xmlContent = xmlContent)))
+                            emit(BaltroidResult.success(it.episode.asShowEpisodeModel(xmlContent = xmlContent)))
                         } else {
-                            emit(BaltroidResult.success(it.episode.asEpisodeModel(episodeContent = episodeContent)))
+                            emit(BaltroidResult.success(it.episode.asShowEpisodeModel(episodeContent = episodeContent)))
                         }
                     }
                 }

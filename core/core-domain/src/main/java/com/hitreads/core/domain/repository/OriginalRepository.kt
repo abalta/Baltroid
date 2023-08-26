@@ -1,7 +1,7 @@
 package com.hitreads.core.domain.repository
 
 import com.baltroid.core.common.result.BaltroidResult
-import com.hitreads.core.domain.model.EpisodeModel
+import com.hitreads.core.domain.model.ShowEpisodeModel
 import com.hitreads.core.domain.model.ShowOriginalModel
 import com.hitreads.core.domain.model.TagsWithOriginalsModel
 import kotlinx.coroutines.flow.Flow
@@ -20,7 +20,7 @@ interface OriginalRepository {
     fun likeOriginal(originalId: Int): Flow<BaltroidResult<Unit?>>
     fun unlikeOriginal(originalId: Int): Flow<BaltroidResult<Unit?>>
     fun showOriginal(originalId: Int): Flow<BaltroidResult<ShowOriginalModel>>
-    fun showEpisode(episodeId: Int, originalType: String): Flow<BaltroidResult<EpisodeModel>>
+    fun showEpisode(episodeId: Int, originalType: String): Flow<BaltroidResult<ShowEpisodeModel>>
     suspend fun fetchEpisodeFromUrl(url: String): String
     fun startReadingEpisode(episodeId: Int): Flow<BaltroidResult<Unit>>
     fun endReadingEpisode(episodeId: Int): Flow<BaltroidResult<Unit>>

@@ -9,7 +9,7 @@ data class ShowOriginalModel(
     val viewCount: Int,
     val commentsCount: Int,
     val updatedAt: String,
-    val episodes: List<ShowEpisodeModel>,
-    val author: AuthorModel,
-    //val comments: List<String>, //todo unknown comment model
+    val episodes: List<IndexContinueReadingEpisodeModel>,
+    val author: IndexAuthorModel,
+    val comments: List<String?>
 )

@@ -70,10 +70,12 @@ import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
 import com.baltroid.util.orEmpty
 import com.hitreads.core.domain.model.OriginalType
-import com.hitreads.core.model.Author
 import com.hitreads.core.model.Episode
-import com.hitreads.core.model.Original
-import com.hitreads.core.model.UserData
+import com.hitreads.core.model.IndexAuthor
+import com.hitreads.core.model.IndexOriginal
+import com.hitreads.core.model.IndexPackage
+import com.hitreads.core.model.IndexUserData
+import com.hitreads.core.model.ShowEpisode
 
 @Composable
 fun InteractiveScreen(
@@ -88,7 +90,7 @@ fun InteractiveScreen(
     }
 
     val interactiveContent =
-        viewModel.uiStateReading.collectAsStateWithLifecycle().value.episode?.xmlContent
+        viewModel.uiStateReading.collectAsStateWithLifecycle().value.episode?.xmlContents
             ?.episode?.dialogue
 
     val episode = viewModel.uiStateReading.collectAsStateWithLifecycle().value.episode
@@ -98,7 +100,6 @@ fun InteractiveScreen(
     }
 
     LaunchedEffect(currentDialogue) {
-        println(currentDialogue)
     }
 
     Box(
@@ -165,7 +166,7 @@ fun InteractiveScreen(
                 }
             }
             InteractiveScreenBottomSection(
-                original = original,
+                indexOriginal = original,
                 episode = episode
             )
         }
@@ -300,8 +301,8 @@ fun Options(
 
 @Composable
 fun InteractiveScreenBottomSection(
-    original: Original?,
-    episode: Episode?,
+    indexOriginal: IndexOriginal?,
+    episode: ShowEpisode?,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
@@ -346,7 +347,7 @@ fun InteractiveScreenBottomSection(
 
 @Composable
 fun InteractiveScreenBottomBar(
-    original: Original?,
+    indexOriginal: IndexOriginal?,
     episode: Episode?,
     onCommentsClicked: () -> Unit,
     onAddCommentClicked: () -> Unit,
@@ -362,19 +363,19 @@ fun InteractiveScreenBottomBar(
                 .height(IntrinsicSize.Min)
         ) {
             Text(
-                text = original?.hashtag.orEmpty(),
+                text = indexOriginal?.hashtag.orEmpty(),
                 style = MaterialTheme.localTextStyles.poppins15Medium,
                 color = MaterialTheme.localColors.white
             )
             IconWithTextNextTo(
                 iconResId = R.drawable.ic_eye,
-                text = original?.viewCount.toString(),
+                text = indexOriginal?.viewCount.toString(),
                 textStyle = MaterialTheme.localTextStyles.poppins10Regular,
                 spacedBy = dimensionResource(id = R.dimen.dp9),
             ) {}
             IconWithTextNextTo(
                 iconResId = R.drawable.ic_comment,
-                text = original?.commentCount.toString(),
+                text = indexOriginal?.commentCount.toString(),
                 textStyle = MaterialTheme.localTextStyles.poppins10Regular,
                 spacedBy = dimensionResource(id = R.dimen.dp9),
                 modifier = Modifier
@@ -688,8 +689,8 @@ fun InteractiveTextBox(
 @Composable
 fun InteractiveScreenPreview() {
     InteractiveScreenBottomSection(
-        Original(
-            author = Author(id = 2213, name = "Eddy Hewitt"),
+        IndexOriginal(
+            indexAuthor = IndexAuthor(id = 2213, name = "Eddy Hewitt"),
             banner = "ipsum",
             cover = "definitionem",
             description = "idque",
@@ -699,33 +700,38 @@ fun InteractiveScreenPreview() {
             likeCount = 5261,
             commentCount = 8102,
             viewCount = 1789,
-            `package` = null,
+            indexPackage = IndexPackage(id = 1275, price = 4136, priceType = "debet"),
             sort = 5490,
             status = false,
             title = "at",
             type = "pertinax",
-            userData = UserData(isLike = false, isPurchase = false),
-            tags = listOf(),
+            indexUserData = IndexUserData(isLike = false, isPurchase = false),
+            indexTags = listOf(),
             hashtag = "salutatus",
             subtitle = "aeque",
             episodeCount = 3147,
-            seasons = listOf(),
             isNew = false,
             barcode = "21312312",
             continueReadingEpisode = null
         ),
-        Episode(
-            id = 6941,
-            name = "Thomas Stephens",
-            price = 3718,
-            priceType = "eos",
-            userPurchase = "elaboraret",
-            content = null,
-            xmlContent = null,
-            isLiked = false,
-            isBookmarked = false,
-            isFav = false,
-            favoriteId = 3512
+        ShowEpisode(
+            id = 4809,
+            episodeName = "Annette Boyle",
+            price = 4408,
+            episodeSort = 7816,
+            priceType = "eu",
+            sort = 4046,
+            createdAt = "maluisset",
+            updatedAt = "suavitate",
+            originalId = 5831,
+            seasonId = 9302,
+            isLocked = false,
+            isLastEpisode = false,
+            original = null,
+            bundleAssets = listOf(),
+            assetContents = null,
+            xmlContents = null,
+            episodeContent = null
         )
     )
 }

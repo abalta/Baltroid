@@ -55,15 +55,15 @@ import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
 import com.baltroid.util.orEmpty
 import com.baltroid.util.orZero
-import com.hitreads.core.model.Original
+import com.hitreads.core.model.IndexOriginal
+import com.hitreads.core.model.IndexTag
 import com.hitreads.core.model.ShowEpisode
-import com.hitreads.core.model.Tag
 
 @Composable
 fun HomeDetailScreen(
     viewModel: OriginalViewModel,
     openMenuScreen: () -> Unit,
-    navigate: (route: String, episode: ShowEpisode?, original: Original?) -> Unit
+    navigate: (route: String, episode: ShowEpisode?, indexOriginal: IndexOriginal?) -> Unit
 ) {
     val episodes = viewModel.uiStateReading.collectAsStateWithLifecycle().value.original?.episodes
     LaunchedEffect(Unit) {
@@ -201,7 +201,7 @@ fun Interactions(
 @Composable
 fun GenreAndInteractions(
     episodeSize: Int,
-    genres: List<Tag>,
+    genres: List<IndexTag>,
     numberOfViews: Int,
     numberOfComments: Int,
     onInfoClicked: () -> Unit,
@@ -256,10 +256,10 @@ private fun HomeDetailSummarySection(
 
 @Composable
 fun HomeDetailScreenContent(
-    screenState: Original?,
+    screenState: IndexOriginal?,
     episodes: List<ShowEpisode>,
     openMenuScreen: () -> Unit,
-    navigate: (route: String, episode: ShowEpisode?, original: Original?) -> Unit
+    navigate: (route: String, episode: ShowEpisode?, indexOriginal: IndexOriginal?) -> Unit
 ) {
 
     var isEpisodesEnabled by rememberSaveable {
@@ -309,7 +309,7 @@ fun HomeDetailScreenContent(
             )
         }
         if (isBarcodeEnabled) {
-            OriginalBarcode(original = screenState) {
+            OriginalBarcode(indexOriginal = screenState) {
                 isBarcodeEnabled = false
             }
         }
@@ -347,7 +347,7 @@ fun HomeDetailScreenContent(
                         .verticalScroll(rememberScrollState())
                 ) {
                     TitleSection(
-                        author = screenState?.author?.name.orEmpty(),
+                        author = screenState?.indexAuthor?.name.orEmpty(),
                         title = screenState?.title.orEmpty(),
                         subTitle = screenState?.subtitle.orEmpty(),
                         modifier = Modifier.padding(start = dimensionResource(id = R.dimen.dp23))
@@ -360,7 +360,7 @@ fun HomeDetailScreenContent(
                     ) {
                         GenreAndInteractions(
                             episodeSize = screenState?.episodeCount.orZero(),
-                            genres = screenState?.tags.orEmpty(),
+                            genres = screenState?.indexTags.orEmpty(),
                             numberOfViews = screenState?.viewCount.orZero(),
                             numberOfComments = screenState?.commentCount.orZero(),
                             onInfoClicked = { isBarcodeEnabled = !isBarcodeEnabled },
@@ -681,7 +681,7 @@ fun EpisodeItem(
 
 @Composable
 fun OriginalBarcode(
-    original: Original?,
+    indexOriginal: IndexOriginal?,
     onCloseClicked: () -> Unit
 ) {
     Column(
@@ -710,7 +710,7 @@ fun OriginalBarcode(
                 .width(IntrinsicSize.Min)
         ) {
             AsyncImage(
-                model = original?.cover,
+                model = indexOriginal?.cover,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -729,7 +729,7 @@ fun OriginalBarcode(
             )
             VerticalSpacer(height = dimensionResource(id = R.dimen.dp2))
             Text(
-                text = original?.barcode.orEmpty(),
+                text = indexOriginal?.barcode.orEmpty(),
                 style = MaterialTheme.localTextStyles.spaceGrotesk14Regular,
                 color = MaterialTheme.localColors.black,
             )

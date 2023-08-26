@@ -1,9 +1,9 @@
 package com.baltroid.core.network.model.response
 
+import com.baltroid.core.network.model.episode.NetworkShowEpisode
 import com.baltroid.core.network.model.notification.NetworkView
+import com.baltroid.core.network.model.originals.IndexNetworkOriginal
 import com.baltroid.core.network.model.originals.NetworkCommentOriginal
-import com.baltroid.core.network.model.originals.NetworkEpisode
-import com.baltroid.core.network.model.originals.NetworkOriginal
 import com.baltroid.core.network.util.Constants
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -24,13 +24,13 @@ data class OriginalResponseDto(
 )*/
 
 @Serializable
-data class TagsWithOriginalsDto(
+data class TagWithOriginalsDto(
     @SerialName("tag_name")
     val tagName: String?,
     @SerialName("tag_id")
     val tagId: Int?,
     @SerialName("originals")
-    val originals: List<NetworkOriginal>?
+    val originals: List<IndexNetworkOriginal>?
 )
 
 @Serializable
@@ -70,10 +70,9 @@ data class ProfileDto(
 )
 
 @Serializable
-data class EpisodeResponseDto(
+data class EpisodeShowDto(
     @SerialName(Constants.Fields.EPISODE)
-    val episode: NetworkEpisode,
-
+    val episode: NetworkShowEpisode,
     @SerialName(Constants.Fields.REPUTATION)
     val reputation: List<Unit>?
 )
@@ -143,9 +142,9 @@ data class BookmarkDto(
     @SerialName("user")
     val user: String?,
     @SerialName("episode")
-    val episode: NetworkEpisode?,
+    val episode: NetworkShowEpisode?,
     @SerialName("original")
-    val original: NetworkOriginal?,
+    val original: IndexNetworkOriginal?,
     @SerialName("content")
     val content: String?,
     @SerialName("cover")

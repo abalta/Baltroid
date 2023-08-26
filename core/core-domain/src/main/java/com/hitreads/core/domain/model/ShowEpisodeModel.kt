@@ -1,15 +1,23 @@
 package com.hitreads.core.domain.model
 
+import com.baltroid.core.common.model.XmlContent
+
 data class ShowEpisodeModel(
     val id: Int?,
-    val originalId: Int?,
-    val seasonId: Int?,
     val episodeName: String?,
-    val assetContent: String?,
     val price: Int?,
+    val episodeSort: Int?,
     val priceType: String?,
     val sort: Int?,
     val createdAt: String?,
     val updatedAt: String?,
-    val isLocked: Boolean?
+    val originalId: Int?,
+    val seasonId: Int?,
+    val isLocked: Boolean?,
+    val isLastEpisode: Boolean?,
+    val original: IndexOriginalModel?,
+    val bundleAssets: List<InteractiveBundleAssetModel>?,
+    val assetContents: String?,
+    val xmlContents: XmlContent?,
+    val episodeContent: String?
 )

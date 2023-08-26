@@ -4,9 +4,9 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class NetworkUserData(
+data class IndexUserData(
     @SerialName("is_like")
-    val isLike: Boolean,
+    val isLike: Boolean?,
     @SerialName("is_purchase")
-    val isPurchase: Boolean
+    val isPurchase: Boolean?
 )

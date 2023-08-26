@@ -1,49 +1,50 @@
 package com.baltroid.core.data.mapper
 
 import com.baltroid.core.common.model.XmlContent
-import com.baltroid.core.network.model.author.NetworkAuthor
+import com.baltroid.core.network.model.author.IndexNetworkAuthor
+import com.baltroid.core.network.model.episode.InteractiveNetworkBundleAsset
+import com.baltroid.core.network.model.episode.NetworkShowEpisode
+import com.baltroid.core.network.model.originals.IndexNetworkContinueReadingEpisode
+import com.baltroid.core.network.model.originals.IndexNetworkOriginal
+import com.baltroid.core.network.model.originals.IndexNetworkPackage
+import com.baltroid.core.network.model.originals.IndexNetworkTag
 import com.baltroid.core.network.model.originals.NetworkCommentOriginal
 import com.baltroid.core.network.model.originals.NetworkCreateCommentResponse
-import com.baltroid.core.network.model.originals.NetworkEpisode
-import com.baltroid.core.network.model.originals.NetworkOriginal
-import com.baltroid.core.network.model.originals.NetworkPackage
-import com.baltroid.core.network.model.originals.NetworkSeason
-import com.baltroid.core.network.model.originals.NetworkShowEpisode
-import com.baltroid.core.network.model.originals.NetworkShowOriginal
-import com.baltroid.core.network.model.originals.NetworkTag
+import com.baltroid.core.network.model.originals.ShowOriginalDto
 import com.baltroid.core.network.model.response.AllCommentsDto
 import com.baltroid.core.network.model.response.BookmarkDto
 import com.baltroid.core.network.model.response.CommentDto
 import com.baltroid.core.network.model.response.FavoriteDto
 import com.baltroid.core.network.model.response.FavoriteOriginalDto
-import com.baltroid.core.network.model.response.TagsWithOriginalsDto
+import com.baltroid.core.network.model.response.TagWithOriginalsDto
 import com.baltroid.core.network.model.response.WelcomeDto
-import com.baltroid.core.network.model.user.NetworkUserData
+import com.baltroid.core.network.model.user.IndexUserData
 import com.hitreads.core.domain.model.AllCommentsModel
-import com.hitreads.core.domain.model.AuthorModel
 import com.hitreads.core.domain.model.BookmarkModel
 import com.hitreads.core.domain.model.CommentModel
 import com.hitreads.core.domain.model.EpisodeModel
 import com.hitreads.core.domain.model.FavoriteModel
 import com.hitreads.core.domain.model.FavoriteOriginalModel
-import com.hitreads.core.domain.model.OriginalModel
-import com.hitreads.core.domain.model.PackageModel
-import com.hitreads.core.domain.model.SeasonModel
+import com.hitreads.core.domain.model.IndexAuthorModel
+import com.hitreads.core.domain.model.IndexContinueReadingEpisodeModel
+import com.hitreads.core.domain.model.IndexOriginalModel
+import com.hitreads.core.domain.model.IndexPackageModel
+import com.hitreads.core.domain.model.IndexTagModel
+import com.hitreads.core.domain.model.IndexUserDataModel
+import com.hitreads.core.domain.model.InteractiveBundleAssetModel
 import com.hitreads.core.domain.model.ShowEpisodeModel
 import com.hitreads.core.domain.model.ShowOriginalModel
-import com.hitreads.core.domain.model.TagModel
 import com.hitreads.core.domain.model.TagsWithOriginalsModel
-import com.hitreads.core.domain.model.UserDataModel
 import com.hitreads.core.domain.model.WelcomeModel
 
-internal fun NetworkOriginal.asOriginalModel() = OriginalModel(
+internal fun IndexNetworkOriginal.asIndexOriginalModel() = IndexOriginalModel(
     type = type,
     id = id,
     title = title,
     description = description,
     cover = cover,
     banner = banner,
-    author = author.asAuthorModel(),
+    author = author?.asIndexAuthorModel(),
     isLocked = isLocked,
     isActual = isActual,
     status = status,
@@ -51,26 +52,30 @@ internal fun NetworkOriginal.asOriginalModel() = OriginalModel(
     commentCount = commentCount,
     viewCount = viewCount,
     sort = sort,
-    `package` = `package`?.asPackageModel(),
-    userData = userData.asUserDataModel(),
-    subtitle = subtitle.orEmpty(),
-    tags = tags.map { it.asTagModel() },
+    `package` = `package`?.asIndexPackageModel(),
+    userData = userData?.asIndexUserDataModel(),
+    subtitle = subtitle,
+    tags = tags?.map { it.asIndexTagModel() },
     episodeCount = episodeCount,
     hashtag = hashtag,
-    seasons = seasons?.map { it.asSeasonModel() }.orEmpty(),
     isNew = isNew,
-    barcode = barcode.orEmpty(),
-    continueReadingEpisode = continueReadingEpisode?.asShowEpisodeModel()
+    barcode = barcode,
+    continueReadingEpisode = continueReadingEpisode?.asIndexContinueReadingEpisodeModel()
 )
 
-internal fun NetworkCommentOriginal.asOriginalModel() = OriginalModel(
+internal fun InteractiveNetworkBundleAsset.asInteractiveBundleAssetsModel() =
+    InteractiveBundleAssetModel(
+        type = type, typeId = typeId, path = path, isActive = isActive
+    )
+
+internal fun NetworkCommentOriginal.asIndexOriginalModel() = IndexOriginalModel(
     type = "",
     id = id ?: 0,
     title = title.orEmpty(),
     description = description.orEmpty(),
     cover = cover.orEmpty(),
     banner = banner.orEmpty(),
-    author = AuthorModel(authorId ?: 0, "", emptyList()),
+    author = IndexAuthorModel(authorId ?: 0, ""),
     isLocked = isLocked ?: false,
     isActual = false,
     status = false,
@@ -79,18 +84,17 @@ internal fun NetworkCommentOriginal.asOriginalModel() = OriginalModel(
     viewCount = viewCount ?: 0,
     sort = sort ?: 0,
     `package` = null,
-    userData = UserDataModel(false, false),
+    userData = IndexUserDataModel(false, false),
     subtitle = subtitle.orEmpty(),
     tags = emptyList(),
     episodeCount = 0,
     hashtag = hashtag.orEmpty(),
-    seasons = emptyList(),
     isNew = false,
     barcode = "",
     continueReadingEpisode = null
 )
 
-internal fun NetworkShowOriginal.asShowOriginalModel() = ShowOriginalModel(
+internal fun ShowOriginalDto.asShowOriginalModel() = ShowOriginalModel(
     id = id,
     title = title,
     cover = cover,
@@ -99,70 +103,67 @@ internal fun NetworkShowOriginal.asShowOriginalModel() = ShowOriginalModel(
     viewCount = viewCount,
     commentsCount = commentsCount,
     updatedAt = updatedAt,
-    episodes = episodes.map { it.asShowEpisodeModel() },
-    author = author.asAuthorModel()
+    episodes = episodes.map { it.asIndexContinueReadingEpisodeModel() },
+    author = author.asIndexAuthorModel(),
+    comments = comments
 )
 
-internal fun NetworkShowEpisode.asShowEpisodeModel() = ShowEpisodeModel(
-    id = id,
-    originalId = originalId,
-    seasonId = seasonId,
-    episodeName = episodeName,
-    assetContent = assetContent,
-    price = price,
-    priceType = priceType,
-    sort = sort,
-    createdAt = createdAt,
-    updatedAt = updatedAt,
-    isLocked = isLocked
+internal fun IndexNetworkContinueReadingEpisode.asIndexContinueReadingEpisodeModel() =
+    IndexContinueReadingEpisodeModel(
+        id = id,
+        originalId = originalId,
+        seasonId = seasonId,
+        episodeName = episodeName,
+        assetContent = assetContent,
+        price = price,
+        priceType = priceType,
+        sort = sort,
+        createdAt = createdAt,
+        updatedAt = updatedAt,
+        isLocked = isLocked
+    )
+
+internal fun IndexNetworkAuthor.asIndexAuthorModel() = IndexAuthorModel(
+    id = id, name = name
 )
 
-internal fun NetworkAuthor.asAuthorModel() = AuthorModel(
-    id = id,
-    name = name
+internal fun IndexUserData.asIndexUserDataModel() = IndexUserDataModel(
+    isLike = isLike, isPurchase = isPurchase
 )
 
-internal fun NetworkUserData.asUserDataModel() = UserDataModel(
-    isLike = isLike,
-    isPurchase = isPurchase
-)
-
-internal fun NetworkTag.asTagModel() = TagModel(
+internal fun IndexNetworkTag.asIndexTagModel() = IndexTagModel(
     id, name ?: title.orEmpty(), icon
 )
 
-internal fun NetworkSeason.asSeasonModel() = SeasonModel(
-    id = id,
-    name = seasonName,
-    episodes = episodes.map { it.asEpisodeModel() }
-)
-
-internal fun NetworkEpisode.asEpisodeModel(
-    episodeContent: String = "",
-    xmlContent: XmlContent? = null
-) = EpisodeModel(
-    id = id,
-    name = episodeName,
-    price = price,
-    priceType = priceType,
-    userPurchase = userPurchase,
-    assetContents = episodeContent,
+internal fun NetworkShowEpisode.asShowEpisodeModel(
+    episodeContent: String = "", xmlContent: XmlContent? = null
+) = ShowEpisodeModel(
+    id = id ?: -1,
+    episodeName = episodeName.orEmpty(),
+    price = price ?: -1,
+    episodeSort = episodeSort ?: 0,
+    priceType = priceType.orEmpty(),
+    sort = sort ?: 0,
+    createdAt = createdAt.orEmpty(),
+    updatedAt = updatedAt.orEmpty(),
+    originalId = originalId ?: -1,
+    seasonId = seasonId ?: -1,
+    isLocked = isLocked ?: false,
+    isLastEpisode = isLastEpisode ?: false,
+    original = original?.asIndexOriginalModel(),
+    bundleAssets = bundleAssets?.map { it.asInteractiveBundleAssetsModel() },
+    assetContents = assetContents,
     xmlContents = xmlContent,
-    isLiked = isLiked ?: false,
-    isFav = isFav ?: false,
-    isBookmarked = isBookmarked ?: false,
-    favoriteId = favorite?.id ?: 0
+    episodeContent = episodeContent
 )
 
-internal fun NetworkPackage.asPackageModel() = PackageModel(
-    id = id ?: 0,
-    price = price ?: 0,
-    priceType = priceType.orEmpty()
+internal fun IndexNetworkPackage.asIndexPackageModel() = IndexPackageModel(
+    id = id ?: 0, price = price ?: 0, priceType = priceType.orEmpty()
 )
 
 internal fun CommentDto.asCommentModel() = CommentModel(
     activeUserLike = activeUserLike ?: false,
-    author = AuthorModel(id = 0, name = ""),
+    author = IndexAuthorModel(id = 0, name = ""),
     content = content.orEmpty(),
     createdAt = createdAt.orEmpty(),
     id = id ?: 0,
@@ -171,12 +172,12 @@ internal fun CommentDto.asCommentModel() = CommentModel(
     repliesCount = repliesCount ?: 0,
     replyCommentId = replyCommentId ?: 0,
     replies = emptyList(),
-    original = original?.asOriginalModel()
+    original = original?.asIndexOriginalModel()
 )
 
 internal fun NetworkCreateCommentResponse.asCommentModel() = CommentModel(
     activeUserLike = false,
-    author = AuthorModel(id = 0, name = comment?.user?.username.orEmpty()),
+    author = IndexAuthorModel(id = 0, name = comment?.user?.username.orEmpty()),
     content = comment?.content.orEmpty(),
     createdAt = comment?.createdAt.orEmpty(),
     id = comment?.id ?: 0,
@@ -191,11 +192,9 @@ internal fun NetworkCreateCommentResponse.asCommentModel() = CommentModel(
 internal fun AllCommentsDto.asAllCommentsModel(): AllCommentsModel = AllCommentsModel(
     id = id,
     content = content,
-    original = original?.asOriginalModel(),
-    author = AuthorModel(
-        0,
-        author?.username.orEmpty(),
-        author?.avatar?.map { it.url.orEmpty() }.orEmpty()
+    original = original?.asIndexOriginalModel(),
+    author = IndexAuthorModel(
+        0, author?.username.orEmpty()
     ),
     isReply = isReply,
     likesCount = likesCount,
@@ -207,16 +206,26 @@ internal fun AllCommentsDto.asAllCommentsModel(): AllCommentsModel = AllComments
 )
 
 internal fun WelcomeDto.asWelcomeModel() = WelcomeModel(
-    id = id ?: 0,
-    message = message.orEmpty(),
-    path = path.orEmpty()
+    id = id ?: 0, message = message.orEmpty(), path = path.orEmpty()
 )
 
 internal fun BookmarkDto.asBookmarkModel() = BookmarkModel(
     id = id ?: 0,
     user = user.orEmpty(),
-    episode = episode?.asEpisodeModel(),
-    original = original?.asOriginalModel(),
+    episode = EpisodeModel(
+        id = 2859,
+        name = "Larry Rodgers",
+        price = 7409,
+        priceType = "mus",
+        userPurchase = null,
+        assetContents = null,
+        xmlContents = null,
+        isLiked = false,
+        isBookmarked = false,
+        isFav = false,
+        favoriteId = 6342
+    ),
+    original = original?.asIndexOriginalModel(),
     content = content.orEmpty(),
     cover = cover.orEmpty()
 )
@@ -257,6 +266,7 @@ internal fun FavoriteOriginalDto.asFavoriteOriginalModel() = FavoriteOriginalMod
     barcode = barcode
 )
 
-internal fun TagsWithOriginalsDto.asTagsWithOriginalsModel() = TagsWithOriginalsModel(
-    tagName = tagName, tagId = tagId, originals = originals?.map { it.asOriginalModel() }
-)
+internal fun TagWithOriginalsDto.asTagsWithOriginalsModel() =
+    TagsWithOriginalsModel(tagName = tagName,
+        tagId = tagId,
+        indexOriginalModels = originals?.map { it.asIndexOriginalModel() })

@@ -70,12 +70,13 @@ import com.baltroid.ui.theme.localTextStyles
 import com.baltroid.util.orEmpty
 import com.baltroid.util.orZero
 import com.hitreads.core.domain.model.OriginalType
-import com.hitreads.core.model.Author
 import com.hitreads.core.model.Comment
-import com.hitreads.core.model.Original
+import com.hitreads.core.model.IndexAuthor
+import com.hitreads.core.model.IndexOriginal
+import com.hitreads.core.model.IndexPackage
+import com.hitreads.core.model.IndexUserData
 import com.hitreads.core.model.ShowEpisode
 import com.hitreads.core.model.ShowOriginal
-import com.hitreads.core.model.UserData
 
 @Composable
 fun ReadingScreen(
@@ -90,11 +91,11 @@ fun ReadingScreen(
 
     LaunchedEffect(Unit) {
         viewModel.apply {
-            viewModel.showOriginal(selectedOriginal?.id.orZero())
+            viewModel.showOriginal(selectedIndexOriginal?.id.orZero())
             viewModel.startReadingEpisode(selectedEpisode?.id.orZero())
             //todo end read
         }
-        commentViewModel.getAllComments("original", viewModel.selectedOriginal?.id)
+        commentViewModel.getAllComments("original", viewModel.selectedIndexOriginal?.id)
     }
 
     LaunchedEffect(screenState.original) {
@@ -107,13 +108,12 @@ fun ReadingScreen(
     }
 
     ReadingScreenContent(
-        body = screenState.episode?.content.orEmpty(),
+        body = screenState.episode?.episodeContent.orEmpty(),
         original = screenState.original,
-        sharedOriginal = sharedOriginal,
+        sharedIndexOriginal = sharedOriginal,
         episode = viewModel.selectedEpisode,
         onLikeClick = { isLiked, id ->
             if (isLiked) viewModel.deleteFavorite(id)
-            else viewModel.createFavorite(id)
         },
     )
 
@@ -1020,7 +1020,7 @@ fun SeeAll(
 fun ReadingScreenContent(
     body: String,
     original: ShowOriginal?,
-    sharedOriginal: Original?,
+    sharedIndexOriginal: IndexOriginal?,
     episode: ShowEpisode?,
     onLikeClick: (Boolean, Int) -> Unit,
 ) {
@@ -1043,9 +1043,9 @@ fun ReadingScreenContent(
             ) {
                 TitleSection(
                     title = original?.title.orEmpty(),
-                    subtitle = original?.author?.name.orEmpty(),
+                    subtitle = original?.indexAuthor?.name.orEmpty(),
                     isExpanded = !isSidebarVisible,
-                    isLiked = sharedOriginal?.userData?.isLike == true,
+                    isLiked = sharedIndexOriginal?.indexUserData?.isLike == true,
                     episodeName = episode?.episodeName.orEmpty(),
                     onDotsClick = {
                         isSidebarVisible = true
@@ -1114,10 +1114,10 @@ fun ReadingScreenPreview() {
             commentsCount = 6035,
             updatedAt = "platonem",
             episodes = listOf(),
-            author = Author(id = 5990, name = "Calvin Barry")
+            indexAuthor = IndexAuthor(id = 5990, name = "Calvin Barry")
         ),
-        sharedOriginal = Original(
-            author = Author(id = 1539, name = "Taylor Estes"),
+        sharedIndexOriginal = IndexOriginal(
+            indexAuthor = IndexAuthor(id = 1539, name = "Taylor Estes"),
             banner = "iriure",
             cover = "quod",
             description = "senectus",
@@ -1127,34 +1127,40 @@ fun ReadingScreenPreview() {
             likeCount = 7710,
             commentCount = 7709,
             viewCount = 3144,
-            `package` = null,
+            indexPackage = IndexPackage(id = 8018, price = 4137, priceType = "vocibus"),
             sort = 5293,
             status = false,
             title = "fastidii",
             type = "fugit",
-            userData = UserData(isLike = false, isPurchase = false),
-            tags = listOf(),
+            indexUserData = IndexUserData(isLike = false, isPurchase = false),
+            indexTags = listOf(),
             hashtag = "nominavi",
             subtitle = "habitant",
             episodeCount = 4120,
-            seasons = listOf(),
             isNew = false,
             barcode = "propriae",
             continueReadingEpisode = null
         ),
         onLikeClick = { _, _ -> },
         episode = ShowEpisode(
-            id = null,
-            originalId = null,
-            seasonId = null,
-            episodeName = null,
-            assetContent = null,
-            price = null,
-            priceType = null,
-            sort = null,
-            createdAt = null,
-            updatedAt = null,
-            isLocked = false
+            id = 3919,
+            episodeName = "Ashlee Atkinson",
+            price = 5396,
+            episodeSort = 6437,
+            priceType = "signiferumque",
+            sort = 5256,
+            createdAt = "nunc",
+            updatedAt = "diam",
+            originalId = 3275,
+            seasonId = 9062,
+            isLocked = false,
+            isLastEpisode = false,
+            original = null,
+            bundleAssets = listOf(),
+            assetContents = null,
+            xmlContents = null,
+            episodeContent = null
+
         )
     )
 }

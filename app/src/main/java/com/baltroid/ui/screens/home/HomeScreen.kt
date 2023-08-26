@@ -57,15 +57,15 @@ import com.baltroid.ui.theme.localTextStyles
 import com.baltroid.util.orEmpty
 import com.baltroid.util.orZero
 import com.hitreads.core.model.FavoriteOriginal
-import com.hitreads.core.model.Original
-import com.hitreads.core.model.Tag
+import com.hitreads.core.model.IndexOriginal
+import com.hitreads.core.model.IndexTag
 import com.hitreads.core.model.TagsWithOriginals
 
 @Composable
 fun HomeScreen(
     viewModel: OriginalViewModel,
     openMenuScreen: () -> Unit,
-    navigate: (route: String, item: Original?) -> Unit
+    navigate: (route: String, item: IndexOriginal?) -> Unit
 ) {
     val homeUiState = viewModel.uiStateHome.collectAsStateWithLifecycle().value
     SetLoadingState(isLoading = homeUiState.isLoading)
@@ -82,8 +82,8 @@ fun HomeScreen(
 fun HomeScreenContent(
     homeUiState: HomeUiState,
     openMenuScreen: () -> Unit,
-    deleteFavorite: (Original?) -> Unit,
-    navigate: (route: String, item: Original?) -> Unit
+    deleteFavorite: (IndexOriginal?) -> Unit,
+    navigate: (route: String, item: IndexOriginal?) -> Unit
 ) {
     var tabState by rememberSaveable {
         mutableStateOf(HomeScreenTabs.AllStories)
@@ -134,7 +134,7 @@ fun HomeScreenContent(
 
             HomeScreenTabs.ContinueReading -> {
                 ContinueReading(
-                    originals = homeUiState.continueReading,
+                    indexOriginals = homeUiState.continueReading,
                     state = rememberLazyListState()
                 ) {
                     if (it?.type == "interactive") {
@@ -153,7 +153,7 @@ private fun Originals(
     originals: List<TagsWithOriginals>,
     state: LazyListState,
     modifier: Modifier = Modifier,
-    onItemClicked: (Original?) -> Unit
+    onItemClicked: (IndexOriginal?) -> Unit
 ) {
     LazyColumn(
         modifier = modifier,
@@ -171,8 +171,8 @@ private fun Originals(
                 contentPadding = PaddingValues(horizontal = dimensionResource(id = R.dimen.dp24)),
                 horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp16))
             ) {
-                items(item.originals.orEmpty()) { original ->
-                    OriginalItem(original = original) {
+                items(item.indexOriginals.orEmpty()) { original ->
+                    OriginalItem(indexOriginal = original) {
                         onItemClicked.invoke(original)
                     }
                 }
@@ -207,10 +207,10 @@ private fun FavoriteOriginals(
 
 @Composable
 fun ContinueReading(
-    originals: List<Original>,
+    indexOriginals: List<IndexOriginal>,
     state: LazyListState,
     modifier: Modifier = Modifier,
-    onItemClicked: (Original?) -> Unit,
+    onItemClicked: (IndexOriginal?) -> Unit,
 ) {
     LazyRow(
         modifier = modifier,
@@ -218,9 +218,9 @@ fun ContinueReading(
         contentPadding = PaddingValues(horizontal = dimensionResource(id = R.dimen.dp24)),
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp30)),
     ) {
-        items(originals) { original ->
+        items(indexOriginals) { original ->
             ContinueReadingItem(
-                original = original
+                indexOriginal = original
             ) {
                 onItemClicked.invoke(original)
             }
@@ -230,7 +230,7 @@ fun ContinueReading(
 
 @Composable
 fun ContinueReadingItem(
-    original: Original,
+    indexOriginal: IndexOriginal,
     onClick: () -> Unit,
 ) {
     Column(
@@ -238,7 +238,7 @@ fun ContinueReadingItem(
         modifier = Modifier.width(IntrinsicSize.Min)
     ) {
         AsyncImage(
-            model = original.cover,
+            model = indexOriginal.cover,
             contentDescription = null,
             contentScale = ContentScale.Crop,
             placeholder = painterResource(id = R.drawable.hitreads_placeholder),
@@ -250,7 +250,7 @@ fun ContinueReadingItem(
         )
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp13))
         Text(
-            text = original.title,
+            text = indexOriginal.title,
             style = MaterialTheme.localTextStyles.poppins12Bold,
             color = MaterialTheme.localColors.white,
             maxLines = 2,
@@ -261,7 +261,7 @@ fun ContinueReadingItem(
         Text(
             text = stringResource(
                 id = R.string.episode_number,
-                original.continueReadingEpisode?.sort.orZero()
+                indexOriginal.continueReadingEpisode?.episodeSort.orZero()
             ),
             style = MaterialTheme.localTextStyles.poppins12Regular,
             color = MaterialTheme.localColors.white
@@ -271,7 +271,7 @@ fun ContinueReadingItem(
 
 @Composable
 private fun OriginalItem(
-    original: Original,
+    indexOriginal: IndexOriginal,
     onClick: () -> Unit
 ) {
     Column(
@@ -282,7 +282,7 @@ private fun OriginalItem(
     ) {
         Box {
             AsyncImage(
-                model = original.cover,
+                model = indexOriginal.cover,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 placeholder = painterResource(id = R.drawable.hitreads_placeholder),
@@ -294,7 +294,7 @@ private fun OriginalItem(
                     )
                     .clip(MaterialTheme.localShapes.roundedDp9)
             )
-            if (original.isNew) {
+            if (indexOriginal.isNew) {
                 Text(
                     text = stringResource(id = R.string.new_),
                     modifier = Modifier
@@ -314,14 +314,14 @@ private fun OriginalItem(
         }
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp6))
         Text(
-            text = original.title,
+            text = indexOriginal.title,
             style = MaterialTheme.localTextStyles.poppins12Bold,
             color = MaterialTheme.localColors.white,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
         )
         Text(
-            text = original.author.name,
+            text = indexOriginal.indexAuthor.name,
             style = MaterialTheme.localTextStyles.poppins10SemiBold,
             color = MaterialTheme.localColors.white
         )
@@ -472,7 +472,7 @@ fun TitleSection(
 @Composable
 fun GenreSection(
     episodeSize: Int,
-    genres: List<Tag>?,
+    genres: List<IndexTag>?,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -801,7 +801,7 @@ fun HomeScreenPreview() {
         ),
         openMenuScreen = {},
         deleteFavorite = {},
-        navigate = { _: String, _: Original? -> }
+        navigate = { _: String, _: IndexOriginal? -> }
 
     )
 }

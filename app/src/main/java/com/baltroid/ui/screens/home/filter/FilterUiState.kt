@@ -1,10 +1,10 @@
 package com.baltroid.ui.screens.home.filter
 
-import com.hitreads.core.model.Tag
+import com.hitreads.core.model.IndexTag
 
 
 data class FilterUiState(
-    val tagUiModels: List<Tag> = mutableListOf(),
+    val indexTagUiModels: List<IndexTag> = mutableListOf(),
     val isLoading: Boolean = false,
     val error: Throwable? = null,
 )

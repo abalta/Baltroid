@@ -4,11 +4,11 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class NetworkSeason(
+data class IndexNetworkPackage(
     @SerialName("id")
-    val id: Int,
-    @SerialName("season_name")
-    val seasonName: String,
-    @SerialName("episodes")
-    val episodes: List<NetworkEpisode>
+    val id: Int?,
+    @SerialName("price")
+    val price: Int?,
+    @SerialName("price_type")
+    val priceType: String?
 )

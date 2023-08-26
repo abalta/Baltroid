@@ -70,14 +70,14 @@ class CommentViewModel @Inject constructor(
                             imgUrl = "",
                             content = newComment.content,
                             repliesCount = newComment.repliesCount,
-                            authorName = newComment.author.name,
+                            authorName = newComment.author.name.orEmpty(),
                             hashtag = "",
                             createdAt = newComment.createdAt,
                             isLiked = false,
                             isReply = true,
                             replies = listOf(),
                             episode = "",
-                            original = null
+                            indexOriginal = null
                         )
                     )
                     val index = it.commentList.indexOfFirst { it.id == responseId }

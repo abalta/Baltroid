@@ -73,7 +73,7 @@ fun CommentsScreen(
         onBackClick,
         createComment = { comment, content ->
             viewModel.createComment(
-                id = comment?.original?.id.orZero(),
+                id = comment?.indexOriginal?.id.orZero(),
                 content = content,
                 responseId = comment?.id
             )
@@ -164,7 +164,7 @@ private fun CommentsScreenContent(
         if (isCommentWriteActive) {
             CommentWritingCard(
                 author = selectedComment?.authorName.orEmpty(),
-                hashTag = selectedComment?.original?.hashtag.orEmpty(),
+                hashTag = selectedComment?.indexOriginal?.hashtag.orEmpty(),
                 onBackClick = { isCommentWriteActive = false },
                 sendComment = { comment ->
                     createComment.invoke(selectedComment, comment)
@@ -204,7 +204,7 @@ private fun CommentItem(
         modifier = Modifier.width(IntrinsicSize.Min)
     ) {
         AsyncImage(
-            model = comment.original?.cover.orEmpty(),
+            model = comment.indexOriginal?.cover.orEmpty(),
             contentDescription = null,
             error = painterResource(id = R.drawable.hitreads_placeholder),
             modifier = Modifier
@@ -216,7 +216,7 @@ private fun CommentItem(
         )
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp13))
         Text(
-            text = comment.original?.title.orEmpty(),
+            text = comment.indexOriginal?.title.orEmpty(),
             style = MaterialTheme.localTextStyles.poppins12Medium,
             color = MaterialTheme.localColors.white_alpha05, textAlign = TextAlign.Center
         )
@@ -242,7 +242,7 @@ private fun CommentItem(
             )
             if (!comment.isReply) {
                 Text(
-                    text = comment.original?.commentCount.toString(),
+                    text = comment.indexOriginal?.commentCount.toString(),
                     style = MaterialTheme.localTextStyles.poppins11Medium,
                     color = MaterialTheme.localColors.white_alpha04
                 )

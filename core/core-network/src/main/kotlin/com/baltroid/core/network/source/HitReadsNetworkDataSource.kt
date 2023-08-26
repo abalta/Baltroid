@@ -3,20 +3,20 @@ package com.baltroid.core.network.source
 import com.baltroid.core.common.result.BaltroidResult
 import com.baltroid.core.network.api.service.HitReadsService
 import com.baltroid.core.network.model.HitReadsResponse
+import com.baltroid.core.network.model.originals.IndexNetworkTag
 import com.baltroid.core.network.model.originals.NetworkCreateCommentResponse
-import com.baltroid.core.network.model.originals.NetworkShowOriginal
-import com.baltroid.core.network.model.originals.NetworkTag
+import com.baltroid.core.network.model.originals.ShowOriginalDto
 import com.baltroid.core.network.model.request.CreateBookmarkDto
 import com.baltroid.core.network.model.request.RegisterRequestBody
 import com.baltroid.core.network.model.response.AllCommentsDto
 import com.baltroid.core.network.model.response.BookmarkDto
 import com.baltroid.core.network.model.response.CommentDto
-import com.baltroid.core.network.model.response.EpisodeResponseDto
+import com.baltroid.core.network.model.response.EpisodeShowDto
 import com.baltroid.core.network.model.response.FavoriteDto
 import com.baltroid.core.network.model.response.FavoriteOriginalDto
 import com.baltroid.core.network.model.response.LoginDto
 import com.baltroid.core.network.model.response.ProfileDto
-import com.baltroid.core.network.model.response.TagsWithOriginalsDto
+import com.baltroid.core.network.model.response.TagWithOriginalsDto
 import com.baltroid.core.network.model.response.WelcomeDto
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -38,7 +38,7 @@ class HitReadsNetworkDataSource @Inject constructor(private val hitReadsService:
     suspend fun getOriginals(
         getByFav: Boolean?,
         continueReading: Boolean?
-    ): BaltroidResult<HitReadsResponse<List<TagsWithOriginalsDto>>> =
+    ): BaltroidResult<HitReadsResponse<List<TagWithOriginalsDto>>> =
         hitReadsService.getOriginals(getByFav = getByFav, continueReading = continueReading)
 
     suspend fun likeOriginal(
@@ -77,13 +77,13 @@ class HitReadsNetworkDataSource @Inject constructor(private val hitReadsService:
     )
 
 
-    suspend fun showOriginal(originalId: Int): BaltroidResult<HitReadsResponse<NetworkShowOriginal>> =
+    suspend fun showOriginal(originalId: Int): BaltroidResult<HitReadsResponse<ShowOriginalDto>> =
         hitReadsService.showOriginal(originalId)
 
-    suspend fun getTags(): BaltroidResult<HitReadsResponse<List<NetworkTag>>> =
+    suspend fun getTags(): BaltroidResult<HitReadsResponse<List<IndexNetworkTag>>> =
         hitReadsService.getTags()
 
-    suspend fun showEpisode(episodeId: Int): BaltroidResult<HitReadsResponse<EpisodeResponseDto>> =
+    suspend fun showEpisode(episodeId: Int): BaltroidResult<HitReadsResponse<EpisodeShowDto>> =
         hitReadsService.showEpisode(episodeId)
 
     suspend fun startReadingEpisode(episodeId: Int): BaltroidResult<HitReadsResponse<Unit>> =

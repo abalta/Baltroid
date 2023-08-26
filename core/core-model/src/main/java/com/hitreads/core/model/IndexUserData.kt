@@ -1,6 +1,6 @@
 package com.hitreads.core.model
 
-data class UserData(
+data class IndexUserData(
     val isLike: Boolean,
     val isPurchase: Boolean
 )

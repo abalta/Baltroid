@@ -1,7 +1,7 @@
 package com.hitreads.core.model
 
-data class Original(
-    val author: Author,
+data class IndexOriginal(
+    val indexAuthor: IndexAuthor,
     val banner: String,
     val cover: String,
     val description: String,
@@ -11,17 +11,16 @@ data class Original(
     val likeCount: Int,
     val commentCount: Int,
     val viewCount: Int,
-    val `package`: Package?,
+    val indexPackage: IndexPackage,
     val sort: Int,
     val status: Boolean,
     val title: String,
     val type: String,
-    val userData: UserData,
-    val tags: List<Tag>,
+    val indexUserData: IndexUserData,
+    val indexTags: List<IndexTag>,
     val hashtag: String,
     val subtitle: String,
     val episodeCount: Int,
-    val seasons: List<Season>,
     val isNew: Boolean,
     val barcode: String,
     val continueReadingEpisode: ShowEpisode?

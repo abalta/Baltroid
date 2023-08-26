@@ -2,7 +2,7 @@ package com.hitreads.core.domain.model
 
 data class CommentModel(
     val activeUserLike: Boolean,
-    val author: AuthorModel,
+    val author: IndexAuthorModel,
     val content: String,
     val createdAt: String,
     val id: Int,
@@ -11,5 +11,5 @@ data class CommentModel(
     val repliesCount: Int,
     val replyCommentId: Int,
     val replies: List<AllCommentsModel>,
-    val original: OriginalModel?
+    val original: IndexOriginalModel?
 )

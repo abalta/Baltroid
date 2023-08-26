@@ -4,11 +4,13 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class NetworkPackage(
+data class IndexNetworkTag(
     @SerialName("id")
     val id: Int?,
-    @SerialName("price")
-    val price: Int?,
-    @SerialName("price_type")
-    val priceType: String?
+    @SerialName("name")
+    val name: String?,
+    @SerialName("title")
+    val title: String?,
+    @SerialName("icon")
+    val icon: String?
 )

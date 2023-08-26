@@ -4,7 +4,7 @@ data class BookmarkModel(
     val id: Int,
     val user: String,
     val episode: EpisodeModel?,
-    val original: OriginalModel?,
+    val original: IndexOriginalModel?,
     val content: String,
     val cover: String
 )
