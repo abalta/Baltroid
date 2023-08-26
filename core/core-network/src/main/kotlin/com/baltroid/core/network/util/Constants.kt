@@ -18,6 +18,8 @@ internal object Constants {
         internal const val SHOW = "show"
         internal const val COMMENT = "comment"
         internal const val BY_ME = "byme"
+        internal const val START = "start"
+        internal const val END = "start"
         internal const val WELCOME = "welcome-screen"
         internal const val BOOKMARK = "bookmark"
         internal const val REGISTER = "register"

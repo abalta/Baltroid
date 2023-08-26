@@ -54,7 +54,9 @@ import com.baltroid.ui.screens.viewmodels.OriginalViewModel
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
+import com.baltroid.util.orEmpty
 import com.baltroid.util.orZero
+import com.hitreads.core.model.FavoriteOriginal
 import com.hitreads.core.model.Original
 import com.hitreads.core.model.Tag
 import com.hitreads.core.model.TagsWithOriginals
@@ -71,7 +73,7 @@ fun HomeScreen(
     HomeScreenContent(
         homeUiState = homeUiState,
         openMenuScreen = openMenuScreen,
-        deleteFavorite = viewModel::deleteFavorite,
+        deleteFavorite = {},
         navigate = navigate
     )
 }
@@ -124,9 +126,9 @@ fun HomeScreenContent(
             HomeScreenTabs.Favorites -> {
                 FavoriteOriginals(
                     originals = homeUiState.favorites, state = rememberLazyListState(),
-                    onStarClicked = deleteFavorite
+                    onStarClicked = {}
                 ) {
-                    navigate.invoke(HitReadsScreens.HomeDetailScreen.route, it)
+                    //navigate.invoke(HitReadsScreens.HomeDetailScreen.route, it)
                 }
             }
 
@@ -181,11 +183,11 @@ private fun Originals(
 
 @Composable
 private fun FavoriteOriginals(
-    originals: List<Original>,
+    originals: List<FavoriteOriginal>,
     state: LazyListState,
     modifier: Modifier = Modifier,
-    onStarClicked: (Original?) -> Unit,
-    onItemClicked: (Original?) -> Unit,
+    onStarClicked: (FavoriteOriginal?) -> Unit,
+    onItemClicked: (FavoriteOriginal?) -> Unit,
 ) {
     LazyRow(
         modifier = modifier,
@@ -328,7 +330,7 @@ private fun OriginalItem(
 
 @Composable
 fun FavoriteOriginalItem(
-    original: Original,
+    original: FavoriteOriginal,
     onStarClicked: () -> Unit,
     onClick: () -> Unit,
 ) {
@@ -349,7 +351,7 @@ fun FavoriteOriginalItem(
         )
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp13))
         Text(
-            text = original.title,
+            text = original.title.orEmpty(),
             style = MaterialTheme.localTextStyles.poppins12Bold,
             color = MaterialTheme.localColors.white,
             maxLines = 2,

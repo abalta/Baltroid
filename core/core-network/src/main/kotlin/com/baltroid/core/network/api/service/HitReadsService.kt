@@ -12,6 +12,7 @@ import com.baltroid.core.network.model.response.BookmarkDto
 import com.baltroid.core.network.model.response.CommentDto
 import com.baltroid.core.network.model.response.EpisodeResponseDto
 import com.baltroid.core.network.model.response.FavoriteDto
+import com.baltroid.core.network.model.response.FavoriteOriginalDto
 import com.baltroid.core.network.model.response.LoginDto
 import com.baltroid.core.network.model.response.NotificationDto
 import com.baltroid.core.network.model.response.ProfileDto
@@ -28,6 +29,7 @@ import com.baltroid.core.network.util.Constants.Fields.TYPE
 import com.baltroid.core.network.util.Constants.Path.BOOKMARK
 import com.baltroid.core.network.util.Constants.Path.BY_ME
 import com.baltroid.core.network.util.Constants.Path.COMMENT
+import com.baltroid.core.network.util.Constants.Path.END
 import com.baltroid.core.network.util.Constants.Path.EPISODE
 import com.baltroid.core.network.util.Constants.Path.FAVORITE
 import com.baltroid.core.network.util.Constants.Path.LIKE
@@ -37,6 +39,7 @@ import com.baltroid.core.network.util.Constants.Path.ORIGINALS_INDEX
 import com.baltroid.core.network.util.Constants.Path.PROFILE
 import com.baltroid.core.network.util.Constants.Path.REGISTER
 import com.baltroid.core.network.util.Constants.Path.SHOW
+import com.baltroid.core.network.util.Constants.Path.START
 import com.baltroid.core.network.util.Constants.Path.TAG
 import com.baltroid.core.network.util.Constants.Path.UNLIKE
 import com.baltroid.core.network.util.Constants.Path.WELCOME
@@ -72,6 +75,12 @@ interface HitReadsService {
 
     @PUT("$ORIGINALS_INDEX/{id}/$UNLIKE")
     suspend fun unlikeOriginal(@Path("id") id: Int): BaltroidResult<HitReadsResponse<Unit>>
+
+    @GET("$ORIGINALS_INDEX/{id}/$START")
+    suspend fun startReadingEpisode(@Path("id") episodeId: Int): BaltroidResult<HitReadsResponse<Unit>>
+
+    @GET("$ORIGINALS_INDEX/{id}/$END")
+    suspend fun endReadingEpisode(@Path("id") episodeId: Int): BaltroidResult<HitReadsResponse<Unit>>
 
     @FormUrlEncoded
     @POST("$LOGIN")
@@ -158,5 +167,10 @@ interface HitReadsService {
 
     @GET("$NOTIFICATION")
     suspend fun getAllNotifications(): BaltroidResult<HitReadsResponse<NotificationDto>>
+
+    @GET("$FAVORITE")
+    suspend fun getFavoriteOriginals(
+        @Query(TYPE) type: String = "originals"
+    ): BaltroidResult<HitReadsResponse<List<FavoriteOriginalDto>>>
 
 }

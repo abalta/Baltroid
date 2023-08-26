@@ -6,6 +6,7 @@ import com.hitreads.core.domain.model.BookmarkModel
 import com.hitreads.core.domain.model.CommentModel
 import com.hitreads.core.domain.model.EpisodeModel
 import com.hitreads.core.domain.model.FavoriteModel
+import com.hitreads.core.domain.model.FavoriteOriginalModel
 import com.hitreads.core.domain.model.OriginalModel
 import com.hitreads.core.domain.model.PackageModel
 import com.hitreads.core.domain.model.SeasonModel
@@ -20,6 +21,7 @@ import com.hitreads.core.model.Bookmark
 import com.hitreads.core.model.Comment
 import com.hitreads.core.model.Episode
 import com.hitreads.core.model.Favorite
+import com.hitreads.core.model.FavoriteOriginal
 import com.hitreads.core.model.Original
 import com.hitreads.core.model.Package
 import com.hitreads.core.model.Season
@@ -172,4 +174,25 @@ fun FavoriteModel.asFavorite() = Favorite(
     price = price,
     priceType = priceType,
     sort = sort
+)
+
+fun FavoriteOriginalModel.asFavoriteOriginal() = FavoriteOriginal(
+    id = id,
+    title = title,
+    description = description,
+    authorId = authorId,
+    cover = cover,
+    banner = banner,
+    type = type,
+    isLocked = isLocked,
+    status = status,
+    isActual = isActual,
+    sort = sort,
+    createdAt = createdAt,
+    updatedAt = updatedAt,
+    subtitle = subtitle,
+    hashtag = hashtag,
+    isNew = isNew,
+    viewCount = viewCount,
+    barcode = barcode
 )

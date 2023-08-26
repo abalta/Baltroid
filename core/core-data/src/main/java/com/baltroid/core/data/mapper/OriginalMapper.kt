@@ -15,6 +15,7 @@ import com.baltroid.core.network.model.response.AllCommentsDto
 import com.baltroid.core.network.model.response.BookmarkDto
 import com.baltroid.core.network.model.response.CommentDto
 import com.baltroid.core.network.model.response.FavoriteDto
+import com.baltroid.core.network.model.response.FavoriteOriginalDto
 import com.baltroid.core.network.model.response.TagsWithOriginalsDto
 import com.baltroid.core.network.model.response.WelcomeDto
 import com.baltroid.core.network.model.user.NetworkUserData
@@ -24,6 +25,7 @@ import com.hitreads.core.domain.model.BookmarkModel
 import com.hitreads.core.domain.model.CommentModel
 import com.hitreads.core.domain.model.EpisodeModel
 import com.hitreads.core.domain.model.FavoriteModel
+import com.hitreads.core.domain.model.FavoriteOriginalModel
 import com.hitreads.core.domain.model.OriginalModel
 import com.hitreads.core.domain.model.PackageModel
 import com.hitreads.core.domain.model.SeasonModel
@@ -232,6 +234,27 @@ internal fun FavoriteDto.asFavoriteModel() = FavoriteModel(
     price = price,
     priceType = priceType,
     sort = sort
+)
+
+internal fun FavoriteOriginalDto.asFavoriteOriginalModel() = FavoriteOriginalModel(
+    id = id,
+    title = title,
+    description = description,
+    authorId = authorId,
+    cover = cover,
+    banner = banner,
+    type = type,
+    isLocked = isLocked,
+    status = status,
+    isActual = isActual,
+    sort = sort,
+    createdAt = createdAt,
+    updatedAt = updatedAt,
+    subtitle = subtitle,
+    hashtag = hashtag,
+    isNew = isNew,
+    viewCount = viewCount,
+    barcode = barcode
 )
 
 internal fun TagsWithOriginalsDto.asTagsWithOriginalsModel() = TagsWithOriginalsModel(

@@ -39,7 +39,7 @@ fun IconWithTextBelow(
     ) {
         SimpleIcon(iconResId = iconResId, tint = tint)
         VerticalSpacer(height = spacedBy)
-        Text(text = text, style = textStyle)
+        Text(text = text, style = textStyle, color = MaterialTheme.localColors.white)
     }
 }
 

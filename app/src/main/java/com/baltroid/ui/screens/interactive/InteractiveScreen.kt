@@ -64,7 +64,6 @@ import com.baltroid.ui.common.IconWithTextNextTo
 import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.VerticalSpacer
 import com.baltroid.ui.components.HitReadsTopBar
-import com.baltroid.ui.screens.reading.Titles
 import com.baltroid.ui.screens.viewmodels.OriginalViewModel
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localShapes
@@ -318,11 +317,11 @@ fun InteractiveScreenBottomSection(
             modifier = Modifier.fillMaxWidth()
         ) {
             HorizontalSpacer(width = dimensionResource(id = R.dimen.dp31))
-            Titles(
+           /* Titles(
                 title = original?.title.orEmpty(),
                 subtitle = original?.author?.name.orEmpty(),
                 modifier = Modifier.weight(1f)
-            )
+            )*/
             IconWithTextNextTo(
                 iconResId = R.drawable.ic_comment,
                 text = "12",

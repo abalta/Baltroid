@@ -2,6 +2,7 @@ package com.baltroid.ui.screens.reading
 
 import android.content.Context
 import android.content.Intent
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,19 +22,16 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -64,18 +62,20 @@ import com.baltroid.ui.components.HitReadsSideBar
 import com.baltroid.ui.components.HitReadsTopBar
 import com.baltroid.ui.screens.menu.comments.CommentImage
 import com.baltroid.ui.screens.menu.comments.CommentViewModel
-import com.baltroid.ui.screens.menu.place_marks.EpisodeBanner
 import com.baltroid.ui.screens.reading.comments.CommentsTabState
 import com.baltroid.ui.screens.viewmodels.OriginalViewModel
 import com.baltroid.ui.theme.Poppins
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localTextStyles
+import com.baltroid.util.orEmpty
 import com.baltroid.util.orZero
 import com.hitreads.core.domain.model.OriginalType
+import com.hitreads.core.model.Author
 import com.hitreads.core.model.Comment
-import com.hitreads.core.model.Episode
+import com.hitreads.core.model.Original
 import com.hitreads.core.model.ShowEpisode
 import com.hitreads.core.model.ShowOriginal
+import com.hitreads.core.model.UserData
 
 @Composable
 fun ReadingScreen(
@@ -89,7 +89,11 @@ fun ReadingScreen(
     val comments = commentViewModel.uiState.collectAsStateWithLifecycle().value.commentList
 
     LaunchedEffect(Unit) {
-        viewModel.showOriginal(viewModel.selectedOriginal?.id.orZero())
+        viewModel.apply {
+            viewModel.showOriginal(selectedOriginal?.id.orZero())
+            viewModel.startReadingEpisode(selectedEpisode?.id.orZero())
+            //todo end read
+        }
         commentViewModel.getAllComments("original", viewModel.selectedOriginal?.id)
     }
 
@@ -105,6 +109,12 @@ fun ReadingScreen(
     ReadingScreenContent(
         body = screenState.episode?.content.orEmpty(),
         original = screenState.original,
+        sharedOriginal = sharedOriginal,
+        episode = viewModel.selectedEpisode,
+        onLikeClick = { isLiked, id ->
+            if (isLiked) viewModel.deleteFavorite(id)
+            else viewModel.createFavorite(id)
+        },
     )
 
     /* ReadingScreenContent(
@@ -473,12 +483,15 @@ fun TitleSection(
     title: String,
     subtitle: String,
     isExpanded: Boolean,
+    episodeName: String,
     isLiked: Boolean,
     onDotsClick: () -> Unit,
     onLikeClick: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column {
+    Column(
+        modifier = Modifier.animateContentSize()
+    ) {
         Column(
             modifier = modifier
         ) {
@@ -488,6 +501,8 @@ fun TitleSection(
                 Titles(
                     title = title,
                     subtitle = subtitle,
+                    episodeName = episodeName,
+                    isEpisodeNameVisible = !isExpanded,
                     modifier = Modifier.weight(1f)
                 )
                 SimpleIcon(
@@ -503,7 +518,6 @@ fun TitleSection(
                         }
                 )
                 if (isExpanded) {
-                    HorizontalSpacer(width = dimensionResource(id = R.dimen.dp15))
                     Divider(
                         color = MaterialTheme.localColors.white_alpha05,
                         modifier = Modifier
@@ -522,14 +536,6 @@ fun TitleSection(
                 }
 
             }
-        }
-        if (isExpanded) {
-            Divider(
-                color = MaterialTheme.localColors.white_alpha05,
-                thickness = dimensionResource(id = R.dimen.dp1),
-                modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.dp12))
-            )
-            VerticalSpacer(height = 5.dp)
         }
     }
 }
@@ -559,6 +565,8 @@ fun Titles(
 fun Titles(
     title: String,
     subtitle: String,
+    episodeName: String,
+    isEpisodeNameVisible: Boolean,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -574,10 +582,18 @@ fun Titles(
             style = MaterialTheme.localTextStyles.poppins13Medium,
             color = MaterialTheme.localColors.white
         )
+        if (isEpisodeNameVisible) {
+            VerticalSpacer(height = R.dimen.dp6)
+            Text(
+                text = episodeName,
+                style = MaterialTheme.localTextStyles.poppins13Medium,
+                color = MaterialTheme.localColors.purple
+            )
+        }
     }
 }
 
-@Composable
+/*@Composable
 fun ReadingSection(
     text: String,
     scrollState: ScrollState,
@@ -616,10 +632,10 @@ fun EpisodeSection(
             )
         }
     }
-}
+}*/
 
 
-@Composable
+/*@Composable
 fun EpisodeSectionItem(
     episodeNumber: Int,
     isSelected: Boolean,
@@ -649,7 +665,7 @@ fun EpisodeSectionItem(
             VerticalSpacer(height = dimensionResource(id = R.dimen.dp17))
         }
     }
-}
+}*/
 
 @Composable
 fun CommentSection(
@@ -933,7 +949,7 @@ fun HasTagItem(
     }
 }
 
-@Composable
+/*@Composable
 private fun ScrollState.isEpisodesVisible(): Boolean {
     var previousOffset by remember(this) { mutableStateOf(0) }
     return remember(this) {
@@ -965,7 +981,7 @@ private fun LazyListState.isEpisodesVisible(): Boolean {
             }
         }
     }.value
-}
+}*/
 
 @Composable
 fun SeeAll(
@@ -1004,8 +1020,14 @@ fun SeeAll(
 fun ReadingScreenContent(
     body: String,
     original: ShowOriginal?,
+    sharedOriginal: Original?,
+    episode: ShowEpisode?,
+    onLikeClick: (Boolean, Int) -> Unit,
 ) {
     val scrollState = rememberScrollState()
+    var isSidebarVisible by rememberSaveable {
+        mutableStateOf(true)
+    }
     Column {
         AsyncImage(
             model = original?.cover,
@@ -1013,24 +1035,38 @@ fun ReadingScreenContent(
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.14f),
+                .fillMaxHeight(0.14f)
         )
         Row {
-            HorizontalSpacer(width = dimensionResource(id = R.dimen.dp31))
             Column(
                 modifier = Modifier.weight(1f)
             ) {
                 TitleSection(
                     title = original?.title.orEmpty(),
                     subtitle = original?.author?.name.orEmpty(),
-                    isExpanded = false,
-                    isLiked = false,
-                    onDotsClick = { /*TODO*/ },
-                    onLikeClick = { },
+                    isExpanded = !isSidebarVisible,
+                    isLiked = sharedOriginal?.userData?.isLike == true,
+                    episodeName = episode?.episodeName.orEmpty(),
+                    onDotsClick = {
+                        isSidebarVisible = true
+                    },
+                    onLikeClick = { onLikeClick.invoke(it, original?.id.orZero()) },
                     modifier = Modifier.padding(
                         top = dimensionResource(id = R.dimen.dp12),
+                        start = dimensionResource(id = R.dimen.dp31),
                     )
                 )
+                if (!isSidebarVisible) {
+                    Divider(
+                        color = MaterialTheme.localColors.white_alpha05,
+                        thickness = dimensionResource(id = R.dimen.dp1),
+                        modifier = Modifier.padding(
+                            start = dimensionResource(id = R.dimen.dp17),
+                            end = dimensionResource(id = R.dimen.dp12)
+                        )
+                    )
+                    VerticalSpacer(R.dimen.dp5)
+                }
                 Text(
                     text = body,
                     style = MaterialTheme.localTextStyles.poppins14Regular,
@@ -1038,13 +1074,17 @@ fun ReadingScreenContent(
                     modifier = Modifier
                         .verticalScroll(scrollState)
                         .padding(
+                            start = dimensionResource(id = R.dimen.dp31),
                             end = dimensionResource(id = R.dimen.dp24)
                         )
                 )
             }
             HitReadsSideBar(
                 numberOfComments = 0,
-                onVisibilityChange = { /*TODO*/ },
+                isVisible = isSidebarVisible,
+                onVisibilityChange = {
+                    isSidebarVisible = it
+                },
                 onShowComments = { /*TODO*/ },
                 onCreateComment = { /*TODO*/ },
                 modifier = Modifier
@@ -1063,6 +1103,59 @@ fun ReadingScreenContent(
 @Preview
 @Composable
 fun ReadingScreenPreview() {
-
+    ReadingScreenContent(
+        body = "turpis", original = ShowOriginal(
+            id = 4856,
+            title = "harum",
+            cover = "theophrastus",
+            description = "ornare",
+            isLocked = false,
+            viewCount = 8307,
+            commentsCount = 6035,
+            updatedAt = "platonem",
+            episodes = listOf(),
+            author = Author(id = 5990, name = "Calvin Barry")
+        ),
+        sharedOriginal = Original(
+            author = Author(id = 1539, name = "Taylor Estes"),
+            banner = "iriure",
+            cover = "quod",
+            description = "senectus",
+            id = 2020,
+            isActual = false,
+            isLocked = false,
+            likeCount = 7710,
+            commentCount = 7709,
+            viewCount = 3144,
+            `package` = null,
+            sort = 5293,
+            status = false,
+            title = "fastidii",
+            type = "fugit",
+            userData = UserData(isLike = false, isPurchase = false),
+            tags = listOf(),
+            hashtag = "nominavi",
+            subtitle = "habitant",
+            episodeCount = 4120,
+            seasons = listOf(),
+            isNew = false,
+            barcode = "propriae",
+            continueReadingEpisode = null
+        ),
+        onLikeClick = { _, _ -> },
+        episode = ShowEpisode(
+            id = null,
+            originalId = null,
+            seasonId = null,
+            episodeName = null,
+            assetContent = null,
+            price = null,
+            priceType = null,
+            sort = null,
+            createdAt = null,
+            updatedAt = null,
+            isLocked = false
+        )
+    )
 }
 

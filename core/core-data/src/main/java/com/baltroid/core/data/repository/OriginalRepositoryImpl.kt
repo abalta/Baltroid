@@ -118,5 +118,42 @@ class OriginalRepositoryImpl @Inject constructor(
         }
 
     override suspend fun fetchEpisodeFromUrl(url: String) = networkDataSource.fetchTextFromUrl(url)
+    override fun startReadingEpisode(episodeId: Int): Flow<BaltroidResult<Unit>> = flow {
+        emit(BaltroidResult.loading())
+        val response = networkDataSource.startReadingEpisode(episodeId)
+        when {
+            response.isSuccess() -> {
+                response.value.data?.let {
+                    emit(BaltroidResult.success(Unit))
+                }
+            }
+
+            response.isFailure() -> {
+                val throwable = response.error
+                emit(BaltroidResult.failure(throwable))
+            }
+
+            else -> error("$MESSAGE_UNHANDLED_STATE $response")
+        }
+    }
+
+    override fun endReadingEpisode(episodeId: Int): Flow<BaltroidResult<Unit>> = flow {
+        emit(BaltroidResult.loading())
+        val response = networkDataSource.endReadingEpisode(episodeId)
+        when {
+            response.isSuccess() -> {
+                response.value.data?.let {
+                    emit(BaltroidResult.success(Unit))
+                }
+            }
+
+            response.isFailure() -> {
+                val throwable = response.error
+                emit(BaltroidResult.failure(throwable))
+            }
+
+            else -> error("$MESSAGE_UNHANDLED_STATE $response")
+        }
+    }
 
 }

@@ -22,4 +22,6 @@ interface OriginalRepository {
     fun showOriginal(originalId: Int): Flow<BaltroidResult<ShowOriginalModel>>
     fun showEpisode(episodeId: Int, originalType: String): Flow<BaltroidResult<EpisodeModel>>
     suspend fun fetchEpisodeFromUrl(url: String): String
+    fun startReadingEpisode(episodeId: Int): Flow<BaltroidResult<Unit>>
+    fun endReadingEpisode(episodeId: Int): Flow<BaltroidResult<Unit>>
 }

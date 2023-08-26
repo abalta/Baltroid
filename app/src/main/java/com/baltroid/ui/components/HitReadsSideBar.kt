@@ -1,5 +1,10 @@
 package com.baltroid.ui.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -247,89 +252,100 @@ fun SideBarBottomSection(
 fun HitReadsSideBar(
     numberOfComments: Int,
     modifier: Modifier = Modifier,
-    onVisibilityChange: () -> Unit,
+    isVisible: Boolean,
+    onVisibilityChange: (Boolean) -> Unit,
     onShowComments: () -> Unit,
     onCreateComment: () -> Unit,
     onShowEpisodes: () -> Unit
 ) {
-    Row(
-        modifier = modifier
+    AnimatedVisibility(
+        visible = isVisible,
+        enter = slideInHorizontally(
+            animationSpec = tween(100, easing = LinearEasing)
+        ) { it / 2 },
+        exit = slideOutHorizontally(
+            animationSpec = tween(100, easing = LinearEasing)
+        ) { it / 2 }
     ) {
-        Divider(
-            modifier = Modifier
-                .fillMaxHeight()
-                .width(dimensionResource(id = R.dimen.dp1)),
-            color = MaterialTheme.localColors.white
-        )
-        Column(
-            verticalArrangement = Arrangement.Center
+        Row(
+            modifier = modifier
         ) {
-            SimpleIcon(
-                iconResId = R.drawable.ic_menu,
-                Modifier
-                    .padding(
-                        start = dimensionResource(id = R.dimen.dp12),
-                        bottom = dimensionResource(id = R.dimen.dp11),
-                        top = dimensionResource(id = R.dimen.dp11)
-                    )
-                    .clickable {
-                        onVisibilityChange.invoke()
-                    }
-            )
             Divider(
-                thickness = dimensionResource(id = R.dimen.dp1),
-                color = MaterialTheme.localColors.white
-            )
-            IconWithTextBelow(
-                iconResId = R.drawable.ic_comment,
-                text = numberOfComments.toString(),
-                textStyle = MaterialTheme.localTextStyles.poppins10Regular,
                 modifier = Modifier
-                    .padding(
-                        start = dimensionResource(id = R.dimen.dp12),
-                        bottom = dimensionResource(id = R.dimen.dp9),
-                        top = dimensionResource(id = R.dimen.dp9)
-                    )
-                    .clickable {
-                        onShowComments.invoke()
-                    }
-            )
-            Divider(
-                thickness = dimensionResource(id = R.dimen.dp1),
+                    .fillMaxHeight()
+                    .width(dimensionResource(id = R.dimen.dp0_5)),
                 color = MaterialTheme.localColors.white
             )
-            SimpleIcon(
-                iconResId = R.drawable.ic_add_comment,
-                Modifier
-                    .padding(
-                        start = dimensionResource(id = R.dimen.dp12),
-                        bottom = dimensionResource(id = R.dimen.dp22),
-                        top = dimensionResource(id = R.dimen.dp22)
-                    )
-                    .clickable {
-                        onCreateComment.invoke()
-                    }
-            )
-            Divider(
-                thickness = dimensionResource(id = R.dimen.dp1),
-                color = MaterialTheme.localColors.white
-            )
-            SimpleIcon(
-                iconResId = R.drawable.ic_filter,
-                Modifier
-                    .padding(
-                        start = dimensionResource(id = R.dimen.dp12),
-                        bottom = dimensionResource(id = R.dimen.dp22),
-                        top = dimensionResource(id = R.dimen.dp22)
-                    )
-                    .clickable {
-                        onShowEpisodes.invoke()
-                    }
-            )
-            Divider(
-                thickness = dimensionResource(id = R.dimen.dp1),
-                color = MaterialTheme.localColors.white
-            )
+            Column(
+                verticalArrangement = Arrangement.Center
+            ) {
+                SimpleIcon(
+                    iconResId = R.drawable.ic_menu,
+                    Modifier
+                        .padding(
+                            start = dimensionResource(id = R.dimen.dp12),
+                            bottom = dimensionResource(id = R.dimen.dp11),
+                            top = dimensionResource(id = R.dimen.dp11)
+                        )
+                        .clickable {
+                            onVisibilityChange.invoke(!isVisible)
+                        }
+                )
+                Divider(
+                    thickness = dimensionResource(id = R.dimen.dp0_5),
+                    color = MaterialTheme.localColors.white
+                )
+                IconWithTextBelow(
+                    iconResId = R.drawable.ic_comment,
+                    text = numberOfComments.toString(),
+                    textStyle = MaterialTheme.localTextStyles.poppins10Regular,
+                    modifier = Modifier
+                        .padding(
+                            start = dimensionResource(id = R.dimen.dp12),
+                            bottom = dimensionResource(id = R.dimen.dp9),
+                            top = dimensionResource(id = R.dimen.dp9)
+                        )
+                        .clickable {
+                            onShowComments.invoke()
+                        }
+                )
+                Divider(
+                    thickness = dimensionResource(id = R.dimen.dp0_5),
+                    color = MaterialTheme.localColors.white
+                )
+                SimpleIcon(
+                    iconResId = R.drawable.ic_add_comment,
+                    Modifier
+                        .padding(
+                            start = dimensionResource(id = R.dimen.dp12),
+                            bottom = dimensionResource(id = R.dimen.dp22),
+                            top = dimensionResource(id = R.dimen.dp22)
+                        )
+                        .clickable {
+                            onCreateComment.invoke()
+                        }
+                )
+                Divider(
+                    thickness = dimensionResource(id = R.dimen.dp0_5),
+                    color = MaterialTheme.localColors.white
+                )
+                SimpleIcon(
+                    iconResId = R.drawable.ic_filter,
+                    Modifier
+                        .padding(
+                            start = dimensionResource(id = R.dimen.dp12),
+                            bottom = dimensionResource(id = R.dimen.dp22),
+                            top = dimensionResource(id = R.dimen.dp22)
+                        )
+                        .clickable {
+                            onShowEpisodes.invoke()
+                        }
+                )
+                Divider(
+                    thickness = dimensionResource(id = R.dimen.dp0_5),
+                    color = MaterialTheme.localColors.white
+                )
+            }
         }
     }
 }
@@ -339,6 +355,7 @@ fun HitReadsSideBar(
 fun HitReadsSideBarPreview() {
     HitReadsSideBar(
         12,
+        isVisible = true,
         onVisibilityChange = { /*TODO*/ },
         onShowComments = { /*TODO*/ },
         onCreateComment = { /*TODO*/ }) {

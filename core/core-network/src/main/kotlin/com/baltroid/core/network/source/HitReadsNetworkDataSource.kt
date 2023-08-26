@@ -13,6 +13,7 @@ import com.baltroid.core.network.model.response.BookmarkDto
 import com.baltroid.core.network.model.response.CommentDto
 import com.baltroid.core.network.model.response.EpisodeResponseDto
 import com.baltroid.core.network.model.response.FavoriteDto
+import com.baltroid.core.network.model.response.FavoriteOriginalDto
 import com.baltroid.core.network.model.response.LoginDto
 import com.baltroid.core.network.model.response.ProfileDto
 import com.baltroid.core.network.model.response.TagsWithOriginalsDto
@@ -84,6 +85,12 @@ class HitReadsNetworkDataSource @Inject constructor(private val hitReadsService:
 
     suspend fun showEpisode(episodeId: Int): BaltroidResult<HitReadsResponse<EpisodeResponseDto>> =
         hitReadsService.showEpisode(episodeId)
+
+    suspend fun startReadingEpisode(episodeId: Int): BaltroidResult<HitReadsResponse<Unit>> =
+        hitReadsService.startReadingEpisode(episodeId)
+
+    suspend fun endReadingEpisode(episodeId: Int): BaltroidResult<HitReadsResponse<Unit>> =
+        hitReadsService.endReadingEpisode(episodeId)
 
     suspend fun getComments(
         type: String,
@@ -165,4 +172,7 @@ class HitReadsNetworkDataSource @Inject constructor(private val hitReadsService:
 
     suspend fun getProfile(): BaltroidResult<HitReadsResponse<ProfileDto>> =
         hitReadsService.getProfile()
+
+    suspend fun getFavoriteOriginals(): BaltroidResult<HitReadsResponse<List<FavoriteOriginalDto>>> =
+        hitReadsService.getFavoriteOriginals()
 }
