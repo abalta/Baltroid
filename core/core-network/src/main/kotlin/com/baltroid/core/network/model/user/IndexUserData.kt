@@ -5,8 +5,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class IndexUserData(
-    @SerialName("is_like")
-    val isLike: Boolean?,
+    @SerialName("is_fav")
+    val isFav: Boolean?,
     @SerialName("is_purchase")
     val isPurchase: Boolean?
 )

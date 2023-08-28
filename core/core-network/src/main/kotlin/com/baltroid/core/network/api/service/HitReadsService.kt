@@ -2,13 +2,10 @@ package com.baltroid.core.network.api.service
 
 import com.baltroid.core.common.result.BaltroidResult
 import com.baltroid.core.network.model.HitReadsResponse
-import com.baltroid.core.network.model.originals.IndexNetworkTag
+import com.baltroid.core.network.model.originals.IndexNetworkOriginal
 import com.baltroid.core.network.model.originals.NetworkCreateCommentResponse
-import com.baltroid.core.network.model.originals.ShowOriginalDto
-import com.baltroid.core.network.model.request.CreateBookmarkDto
 import com.baltroid.core.network.model.request.RegisterRequestBody
 import com.baltroid.core.network.model.response.AllCommentsDto
-import com.baltroid.core.network.model.response.BookmarkDto
 import com.baltroid.core.network.model.response.CommentDto
 import com.baltroid.core.network.model.response.EpisodeShowDto
 import com.baltroid.core.network.model.response.FavoriteDto
@@ -26,7 +23,6 @@ import com.baltroid.core.network.util.Constants.Fields.ID
 import com.baltroid.core.network.util.Constants.Fields.PASSWORD
 import com.baltroid.core.network.util.Constants.Fields.RESPONSE_ID
 import com.baltroid.core.network.util.Constants.Fields.TYPE
-import com.baltroid.core.network.util.Constants.Path.BOOKMARK
 import com.baltroid.core.network.util.Constants.Path.BY_ME
 import com.baltroid.core.network.util.Constants.Path.COMMENT
 import com.baltroid.core.network.util.Constants.Path.END
@@ -40,7 +36,6 @@ import com.baltroid.core.network.util.Constants.Path.PROFILE
 import com.baltroid.core.network.util.Constants.Path.REGISTER
 import com.baltroid.core.network.util.Constants.Path.SHOW
 import com.baltroid.core.network.util.Constants.Path.START
-import com.baltroid.core.network.util.Constants.Path.TAG
 import com.baltroid.core.network.util.Constants.Path.UNLIKE
 import com.baltroid.core.network.util.Constants.Path.WELCOME
 import retrofit2.http.Body
@@ -55,26 +50,28 @@ import retrofit2.http.Query
 
 interface HitReadsService {
 
-    // Gets the originals for the home screen
     @GET(ORIGINALS_INDEX)
     suspend fun getOriginals(
         @Query(GET_BY_FAV) getByFav: Boolean? = null,
         @Query(CONTINUE_READING) continueReading: Boolean? = null
     ): BaltroidResult<HitReadsResponse<List<TagWithOriginalsDto>>>
 
-
-    @GET("$ORIGINALS_INDEX/$EPISODE/{id}/$SHOW")
-    suspend fun showEpisode(@Path("id") id: Int): BaltroidResult<HitReadsResponse<EpisodeShowDto>>
-
-
-    @GET("$ORIGINALS_INDEX/{id}")
-    suspend fun showOriginal(@Path("id") id: Int): BaltroidResult<HitReadsResponse<ShowOriginalDto>>
-
     @GET(FAVORITE)
     suspend fun getFavoriteOriginals(
         @Query(TYPE) type: String = "originals"
     ): BaltroidResult<HitReadsResponse<List<FavoriteOriginalDto>>>
 
+    @DELETE(FAVORITE)
+    suspend fun deleteFavorite(
+        @Query(TYPE) type: String,
+        @Query(ID) id: Int
+    ): BaltroidResult<HitReadsResponse<Unit>>
+
+    @GET("$ORIGINALS_INDEX/{id}")
+    suspend fun showOriginal(@Path("id") id: Int): BaltroidResult<HitReadsResponse<IndexNetworkOriginal>>
+
+    @GET("$ORIGINALS_INDEX/$EPISODE/{id}/$SHOW")
+    suspend fun showEpisode(@Path("id") id: Int): BaltroidResult<HitReadsResponse<EpisodeShowDto>>
 
     @PUT("$ORIGINALS_INDEX/{id}/$LIKE")
     suspend fun likeOriginal(@Path("id") id: Int): BaltroidResult<HitReadsResponse<Unit>>
@@ -100,9 +97,6 @@ interface HitReadsService {
         @Body requestBody: RegisterRequestBody
     ): BaltroidResult<HitReadsResponse<Unit>>
 
-    @GET(TAG)
-    suspend fun getTags(): BaltroidResult<HitReadsResponse<List<IndexNetworkTag>>>
-
     @GET(COMMENT)
     suspend fun getComments(
         @Query(TYPE) type: String,
@@ -118,7 +112,6 @@ interface HitReadsService {
     @GET("$COMMENT/$BY_ME")
     suspend fun getCommentsByMe(): BaltroidResult<HitReadsResponse<List<AllCommentsDto>>>
 
-
     @POST("$COMMENT/{id}/$LIKE")
     suspend fun likeComment(@Path("id") id: Int): BaltroidResult<HitReadsResponse<Unit>>
 
@@ -127,12 +120,6 @@ interface HitReadsService {
 
     @GET(WELCOME)
     suspend fun getWelcomeScreen(): BaltroidResult<HitReadsResponse<List<WelcomeDto>>>
-
-    @GET(BOOKMARK)
-    suspend fun getBookmarks(): BaltroidResult<HitReadsResponse<List<BookmarkDto>>>
-
-    @POST(BOOKMARK)
-    suspend fun createBookmark(@Body request: CreateBookmarkDto): BaltroidResult<HitReadsResponse<BookmarkDto>>
 
     @FormUrlEncoded
     @POST(COMMENT)
@@ -150,20 +137,11 @@ interface HitReadsService {
         @Field(ID) id: Int
     ): BaltroidResult<HitReadsResponse<Unit>>
 
-    @DELETE(FAVORITE)
-    suspend fun deleteFavorite(
-        @Query(TYPE) type: String,
-        @Query(ID) id: Int
-    ): BaltroidResult<HitReadsResponse<Unit>>
-
     @GET(FAVORITE)
     suspend fun getFavorites(
         @Query(TYPE) type: String,
         @Query(ID) id: Int?
     ): BaltroidResult<HitReadsResponse<List<FavoriteDto>>>
-
-    @DELETE("$BOOKMARK/{id}")
-    suspend fun deleteBookmark(@Path("id") id: Int): BaltroidResult<HitReadsResponse<Unit>>
 
     @GET(PROFILE)
     suspend fun getProfile(): BaltroidResult<HitReadsResponse<ProfileDto>>
@@ -177,4 +155,16 @@ interface HitReadsService {
         @Query(FILTER_TAG) filter: String? = null,
         @Query(GET_BY_FAV) getByFav: Boolean? = null
     ): BaltroidResult<HitReadsResponse<OriginalResponseDto>>*/
+
+    /*@GET(BOOKMARK)
+    suspend fun getBookmarks(): BaltroidResult<HitReadsResponse<List<BookmarkDto>>>
+
+    @POST(BOOKMARK)
+    suspend fun createBookmark(@Body request: CreateBookmarkDto): BaltroidResult<HitReadsResponse<BookmarkDto>>
+
+    @DELETE("$BOOKMARK/{id}")
+    suspend fun deleteBookmark(@Path("id") id: Int): BaltroidResult<HitReadsResponse<Unit>>
+
+    @GET(TAG)
+    suspend fun getTags(): BaltroidResult<HitReadsResponse<List<IndexNetworkTag>>>*/
 }

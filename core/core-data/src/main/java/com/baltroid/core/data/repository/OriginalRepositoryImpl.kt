@@ -4,17 +4,17 @@ import com.baltroid.core.common.model.XmlContent
 import com.baltroid.core.common.result.BaltroidResult
 import com.baltroid.core.common.result.isFailure
 import com.baltroid.core.common.result.isSuccess
+import com.baltroid.core.data.mapper.asIndexOriginalModel
 import com.baltroid.core.data.mapper.asShowEpisodeModel
-import com.baltroid.core.data.mapper.asShowOriginalModel
 import com.baltroid.core.data.mapper.asTagsWithOriginalsModel
 import com.baltroid.core.network.common.networkBoundResource
 import com.baltroid.core.network.source.HitReadsNetworkDataSource
 import com.baltroid.core.network.util.MESSAGE_UNHANDLED_STATE
 import com.github.underscore.U
 import com.google.gson.Gson
+import com.hitreads.core.domain.model.IndexOriginalModel
 import com.hitreads.core.domain.model.OriginalType
 import com.hitreads.core.domain.model.ShowEpisodeModel
-import com.hitreads.core.domain.model.ShowOriginalModel
 import com.hitreads.core.domain.model.TagsWithOriginalsModel
 import com.hitreads.core.domain.repository.OriginalRepository
 import kotlinx.coroutines.flow.Flow
@@ -69,14 +69,14 @@ class OriginalRepositoryImpl @Inject constructor(
             networkDataSource.unlikeOriginal(originalId)
         }
 
-    override fun showOriginal(originalId: Int): Flow<BaltroidResult<ShowOriginalModel>> = flow {
+    override fun showOriginal(originalId: Int): Flow<BaltroidResult<IndexOriginalModel>> = flow {
         emit(BaltroidResult.loading())
         val response = networkDataSource.showOriginal(originalId)
 
         when {
             response.isSuccess() -> {
                 response.value.data?.let {
-                    emit(BaltroidResult.success(it.asShowOriginalModel()))
+                    emit(BaltroidResult.success(it.asIndexOriginalModel()))
                 }
             }
 
@@ -118,6 +118,7 @@ class OriginalRepositoryImpl @Inject constructor(
         }
 
     override suspend fun fetchEpisodeFromUrl(url: String) = networkDataSource.fetchTextFromUrl(url)
+
     override fun startReadingEpisode(episodeId: Int): Flow<BaltroidResult<Unit>> = flow {
         emit(BaltroidResult.loading())
         val response = networkDataSource.startReadingEpisode(episodeId)

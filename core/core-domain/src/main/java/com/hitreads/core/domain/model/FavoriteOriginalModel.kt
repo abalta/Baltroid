@@ -7,7 +7,7 @@ data class FavoriteOriginalModel(
     val authorId: Int?,
     val cover: String?,
     val banner: String?,
-    val type: Int?,
+    val type: String?,
     val isLocked: Boolean?,
     val status: Boolean?,
     val isActual: Boolean?,

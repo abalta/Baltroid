@@ -1,18 +1,14 @@
 package com.baltroid.di
 
 import com.baltroid.core.data.repository.AuthRepositoryImpl
-import com.baltroid.core.data.repository.BookmarkRepositoryImpl
 import com.baltroid.core.data.repository.CommentRepositoryImpl
 import com.baltroid.core.data.repository.FavoriteRepositoryImpl
 import com.baltroid.core.data.repository.OriginalRepositoryImpl
-import com.baltroid.core.data.repository.TagRepositoryImpl
 import com.baltroid.core.data.repository.WelcomeRepositoryImpl
 import com.hitreads.core.domain.repository.AuthRepository
-import com.hitreads.core.domain.repository.BookmarkRepository
 import com.hitreads.core.domain.repository.CommentRepository
 import com.hitreads.core.domain.repository.FavoriteRepository
 import com.hitreads.core.domain.repository.OriginalRepository
-import com.hitreads.core.domain.repository.TagRepository
 import com.hitreads.core.domain.repository.WelcomeRepository
 import dagger.Binds
 import dagger.Module
@@ -33,10 +29,6 @@ interface RepositoryModule {
 
     @Binds
     @ViewModelScoped
-    fun bindTagRepository(tagRepositoryImpl: TagRepositoryImpl): TagRepository
-
-    @Binds
-    @ViewModelScoped
     fun bindCommentRepository(commentRepositoryImpl: CommentRepositoryImpl): CommentRepository
 
     @Binds
@@ -45,10 +37,16 @@ interface RepositoryModule {
 
     @Binds
     @ViewModelScoped
-    fun bindBookmarkRepository(bookmarkRepository: BookmarkRepositoryImpl): BookmarkRepository
+    fun bindFavoriteRepository(favoriteRepository: FavoriteRepositoryImpl): FavoriteRepository
+
+    /*
+    @Binds
+    @ViewModelScoped
+    fun bindTagRepository(tagRepositoryImpl: TagRepositoryImpl): TagRepository
 
     @Binds
     @ViewModelScoped
-    fun bindFavoriteRepository(favoriteRepository: FavoriteRepositoryImpl): FavoriteRepository
+    fun bindBookmarkRepository(bookmarkRepository: BookmarkRepositoryImpl): BookmarkRepository
+     */
 
 }

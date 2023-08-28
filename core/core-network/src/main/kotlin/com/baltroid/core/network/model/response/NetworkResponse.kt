@@ -236,7 +236,7 @@ data class FavoriteOriginalDto(
     @SerialName("banner")
     val banner: String?,
     @SerialName("type")
-    val type: Int?,
+    val type: String?,
     @SerialName("is_locked")
     val isLocked: Boolean?,
     @SerialName("status")

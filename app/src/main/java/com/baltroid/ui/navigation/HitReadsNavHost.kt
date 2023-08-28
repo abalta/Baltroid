@@ -36,7 +36,6 @@ fun HitReadsNavHost(
     navController: NavHostController = rememberAnimatedNavController(),
     openMenuScreen: () -> Unit = {
         navController.navigate(HitReadsScreens.MenuScreen.route)
-        /* navController.navigate(HitReadsScreens.PlaygroundScreen.route)*/
     }
 ) {
 
@@ -75,37 +74,21 @@ fun HitReadsNavHost(
                 HomeScreen(
                     viewModel = originalViewModel,
                     openMenuScreen = openMenuScreen,
-                ) { route, item ->
-                    if (route != HitReadsScreens.HomeDetailScreen.route) {
-                        originalViewModel.apply {
-                            selectedIndexOriginal = item
-                            selectedEpisode = item?.continueReadingEpisode
-                        }
+                ) { route, originalId ->
+                    originalViewModel.apply {
+                        selectedOriginalId = originalId
                     }
-                    originalViewModel.setSharedUIState(item)
                     navController.navigate(route)
                 }
             }
-            /*composable(
-                route = HitReadsScreens.FilterScreen.route
-            ) {
-                FilterScreen(
-                    originalViewModel
-                ) {
-                    navController.popBackStack()
-                }
-            }*/
             composable(
                 route = HitReadsScreens.HomeDetailScreen.route
             ) {
                 HomeDetailScreen(
                     viewModel = originalViewModel,
                     openMenuScreen = openMenuScreen,
-                ) { route, episode, original ->
-                    originalViewModel.apply {
-                        selectedIndexOriginal = original
-                        selectedEpisode = episode
-                    }
+                ) { route, episodeId ->
+                    originalViewModel.selectedEpisodeId = episodeId
                     navController.navigate(route)
                 }
             }
@@ -114,7 +97,6 @@ fun HitReadsNavHost(
             ) {
                 ReadingScreen(
                     viewModel = originalViewModel,
-                    openMenuScreen = openMenuScreen,
                     navigate = {
                         navController.navigate(it)
                     }
@@ -133,6 +115,15 @@ fun HitReadsNavHost(
             ) {
                 PlaygroundScreen()
             }
+            /*composable(
+                route = HitReadsScreens.FilterScreen.route
+            ) {
+                FilterScreen(
+                    originalViewModel
+                ) {
+                    navController.popBackStack()
+                }
+            }*/
         }
         if (LocalLoadingState.current.value) {
             HitReadsLoading()

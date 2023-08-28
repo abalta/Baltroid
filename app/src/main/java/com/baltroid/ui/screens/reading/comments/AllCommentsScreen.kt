@@ -36,8 +36,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.baltroid.apps.R
 import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.VerticalSpacer
-import com.baltroid.ui.components.SideBarHorizontalDivider
-import com.baltroid.ui.components.SideBarVerticalDivider
 import com.baltroid.ui.screens.menu.comments.CommentViewModel
 import com.baltroid.ui.screens.reading.CommentSection
 import com.baltroid.ui.screens.reading.HashTagSection
@@ -146,7 +144,6 @@ fun AllCommentsScreenSideBar(
     Row(
         modifier = modifier.width(IntrinsicSize.Min)
     ) {
-        SideBarVerticalDivider()
         Box(
             modifier = Modifier
                 .fillMaxHeight()
@@ -167,7 +164,6 @@ fun AllCommentsScreenSideBar(
                         )
                         .clickable { onDotsClick.invoke() }
                 )
-                SideBarHorizontalDivider()
             }
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -176,7 +172,6 @@ fun AllCommentsScreenSideBar(
                     .align(Alignment.BottomCenter)
 
             ) {
-                SideBarHorizontalDivider()
                 VerticalSpacer(height = dimensionResource(id = R.dimen.dp12))
                 SimpleIcon(iconResId = R.drawable.ic_add_comment)
                 VerticalSpacer(height = dimensionResource(id = R.dimen.dp12))

@@ -7,25 +7,17 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -37,6 +29,115 @@ import com.baltroid.ui.theme.localTextStyles
 import com.baltroid.util.conditional
 
 @Composable
+fun HitReadsSideBar(
+    numberOfComments: Int,
+    modifier: Modifier = Modifier,
+    isVisible: Boolean,
+    isFullHeight: Boolean,
+    onVisibilityChange: (Boolean) -> Unit,
+    onShowComments: () -> Unit,
+    onCreateComment: () -> Unit,
+    onShowEpisodes: () -> Unit
+) {
+    val screenHeight = LocalConfiguration.current.screenHeightDp.dp * 2
+    AnimatedVisibility(
+        visible = isVisible,
+        enter = slideInHorizontally(
+            animationSpec = tween(100, easing = LinearEasing)
+        ) { it / 2 },
+        exit = slideOutHorizontally(
+            animationSpec = tween(100, easing = LinearEasing)
+        ) { it / 2 }
+    ) {
+        Row(
+            modifier = modifier
+        ) {
+            Divider(
+                modifier = Modifier
+                    .conditional(isFullHeight) {
+                        fillMaxHeight()
+                    }
+                    .conditional(!isFullHeight) {
+                        height(screenHeight)
+                    }
+                    .width(dimensionResource(id = R.dimen.dp0_5)),
+                color = MaterialTheme.localColors.white
+            )
+            Column(
+                verticalArrangement = Arrangement.Center
+            ) {
+                SimpleIcon(
+                    iconResId = R.drawable.ic_menu,
+                    Modifier
+                        .padding(
+                            start = dimensionResource(id = R.dimen.dp12),
+                            bottom = dimensionResource(id = R.dimen.dp11),
+                            top = dimensionResource(id = R.dimen.dp11)
+                        )
+                        .clickable {
+                            onVisibilityChange.invoke(!isVisible)
+                        }
+                )
+                Divider(
+                    thickness = dimensionResource(id = R.dimen.dp0_5),
+                    color = MaterialTheme.localColors.white
+                )
+                IconWithTextBelow(
+                    iconResId = R.drawable.ic_comment,
+                    text = numberOfComments.toString(),
+                    textStyle = MaterialTheme.localTextStyles.poppins10Regular,
+                    modifier = Modifier
+                        .padding(
+                            start = dimensionResource(id = R.dimen.dp12),
+                            bottom = dimensionResource(id = R.dimen.dp9),
+                            top = dimensionResource(id = R.dimen.dp9)
+                        )
+                        .clickable {
+                            onShowComments.invoke()
+                        }
+                )
+                Divider(
+                    thickness = dimensionResource(id = R.dimen.dp0_5),
+                    color = MaterialTheme.localColors.white
+                )
+                SimpleIcon(
+                    iconResId = R.drawable.ic_add_comment,
+                    Modifier
+                        .padding(
+                            start = dimensionResource(id = R.dimen.dp12),
+                            bottom = dimensionResource(id = R.dimen.dp22),
+                            top = dimensionResource(id = R.dimen.dp22)
+                        )
+                        .clickable {
+                            onCreateComment.invoke()
+                        }
+                )
+                Divider(
+                    thickness = dimensionResource(id = R.dimen.dp0_5),
+                    color = MaterialTheme.localColors.white
+                )
+                SimpleIcon(
+                    iconResId = R.drawable.ic_filter,
+                    Modifier
+                        .padding(
+                            start = dimensionResource(id = R.dimen.dp12),
+                            bottom = dimensionResource(id = R.dimen.dp22),
+                            top = dimensionResource(id = R.dimen.dp22)
+                        )
+                        .clickable {
+                            onShowEpisodes.invoke()
+                        }
+                )
+                Divider(
+                    thickness = dimensionResource(id = R.dimen.dp0_5),
+                    color = MaterialTheme.localColors.white
+                )
+            }
+        }
+    }
+}
+
+/*@Composable
 fun HitReadsSideBar(
     modifier: Modifier = Modifier,
     numberOfViews: Int,
@@ -246,109 +347,7 @@ fun SideBarBottomSection(
                 )
         )
     }
-}
-
-@Composable
-fun HitReadsSideBar(
-    numberOfComments: Int,
-    modifier: Modifier = Modifier,
-    isVisible: Boolean,
-    onVisibilityChange: (Boolean) -> Unit,
-    onShowComments: () -> Unit,
-    onCreateComment: () -> Unit,
-    onShowEpisodes: () -> Unit
-) {
-    AnimatedVisibility(
-        visible = isVisible,
-        enter = slideInHorizontally(
-            animationSpec = tween(100, easing = LinearEasing)
-        ) { it / 2 },
-        exit = slideOutHorizontally(
-            animationSpec = tween(100, easing = LinearEasing)
-        ) { it / 2 }
-    ) {
-        Row(
-            modifier = modifier
-        ) {
-            Divider(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(dimensionResource(id = R.dimen.dp0_5)),
-                color = MaterialTheme.localColors.white
-            )
-            Column(
-                verticalArrangement = Arrangement.Center
-            ) {
-                SimpleIcon(
-                    iconResId = R.drawable.ic_menu,
-                    Modifier
-                        .padding(
-                            start = dimensionResource(id = R.dimen.dp12),
-                            bottom = dimensionResource(id = R.dimen.dp11),
-                            top = dimensionResource(id = R.dimen.dp11)
-                        )
-                        .clickable {
-                            onVisibilityChange.invoke(!isVisible)
-                        }
-                )
-                Divider(
-                    thickness = dimensionResource(id = R.dimen.dp0_5),
-                    color = MaterialTheme.localColors.white
-                )
-                IconWithTextBelow(
-                    iconResId = R.drawable.ic_comment,
-                    text = numberOfComments.toString(),
-                    textStyle = MaterialTheme.localTextStyles.poppins10Regular,
-                    modifier = Modifier
-                        .padding(
-                            start = dimensionResource(id = R.dimen.dp12),
-                            bottom = dimensionResource(id = R.dimen.dp9),
-                            top = dimensionResource(id = R.dimen.dp9)
-                        )
-                        .clickable {
-                            onShowComments.invoke()
-                        }
-                )
-                Divider(
-                    thickness = dimensionResource(id = R.dimen.dp0_5),
-                    color = MaterialTheme.localColors.white
-                )
-                SimpleIcon(
-                    iconResId = R.drawable.ic_add_comment,
-                    Modifier
-                        .padding(
-                            start = dimensionResource(id = R.dimen.dp12),
-                            bottom = dimensionResource(id = R.dimen.dp22),
-                            top = dimensionResource(id = R.dimen.dp22)
-                        )
-                        .clickable {
-                            onCreateComment.invoke()
-                        }
-                )
-                Divider(
-                    thickness = dimensionResource(id = R.dimen.dp0_5),
-                    color = MaterialTheme.localColors.white
-                )
-                SimpleIcon(
-                    iconResId = R.drawable.ic_filter,
-                    Modifier
-                        .padding(
-                            start = dimensionResource(id = R.dimen.dp12),
-                            bottom = dimensionResource(id = R.dimen.dp22),
-                            top = dimensionResource(id = R.dimen.dp22)
-                        )
-                        .clickable {
-                            onShowEpisodes.invoke()
-                        }
-                )
-                Divider(
-                    thickness = dimensionResource(id = R.dimen.dp0_5),
-                    color = MaterialTheme.localColors.white
-                )
-            }
-        }
-    }
-}
+}*/
 
 @Preview(showBackground = true, backgroundColor = 0x000000)
 @Composable
@@ -356,6 +355,7 @@ fun HitReadsSideBarPreview() {
     HitReadsSideBar(
         12,
         isVisible = true,
+        isFullHeight = false,
         onVisibilityChange = { /*TODO*/ },
         onShowComments = { /*TODO*/ },
         onCreateComment = { /*TODO*/ }) {

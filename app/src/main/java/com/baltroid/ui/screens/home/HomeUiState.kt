@@ -9,7 +9,7 @@ data class HomeUiState(
     val originals: List<TagsWithOriginals> = emptyList(),
     val favorites: List<FavoriteOriginal> = emptyList(),
     val continueReading: List<IndexOriginal> = emptyList(),
-    val profileModel: ProfileModel? = null,
+    val profileModel: ProfileModel = ProfileModel(),
     val isUserLoggedIn: Boolean = false,
     val isLoading: Boolean = false,
     val error: Throwable? = null,

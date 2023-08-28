@@ -4,7 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.baltroid.core.common.result.handle
 import com.baltroid.ui.screens.home.HomeUiState
+import com.baltroid.ui.screens.home.detail.HomeDetailUIState
 import com.baltroid.ui.screens.reading.ReadingUiState
+import com.baltroid.util.ORIGINALS
 import com.hitreads.core.domain.usecase.CreateCommentUseCase
 import com.hitreads.core.domain.usecase.CreateFavoriteUseCase
 import com.hitreads.core.domain.usecase.DeleteFavoriteUseCase
@@ -21,7 +23,6 @@ import com.hitreads.core.model.ShowEpisode
 import com.hitreads.core.ui.mapper.asFavoriteOriginal
 import com.hitreads.core.ui.mapper.asIndexOriginal
 import com.hitreads.core.ui.mapper.asShowEpisode
-import com.hitreads.core.ui.mapper.asShowOriginal
 import com.hitreads.core.ui.mapper.asTagsWithOriginals
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -43,36 +44,33 @@ class OriginalViewModel @Inject constructor(
     private val startReadingEpisodeUseCase: StartReadingEpisodeUseCase,
     private val endReadingEpisodeUseCase: EndReadingEpisodeUseCase,
     private val getFavoriteOriginalsUseCase: GetFavoriteOriginalsUseCase,
-    //private val getTagsUseCase: GetTagsUseCase,
-    //private val createBookmarkUseCase: CreateBookmarkUseCase,
-    //private val deleteBookmarkUseCase: DeleteBookmarkUseCase
 ) : ViewModel() {
-
-    private val _uiStateReading = MutableStateFlow(ReadingUiState())
-    val uiStateReading = _uiStateReading.asStateFlow()
 
     private val _uiStateHome = MutableStateFlow(HomeUiState())
     val uiStateHome = _uiStateHome.asStateFlow()
 
-    private val _sharedUIState = MutableStateFlow<IndexOriginal?>(null)
-    val sharedUIState = _sharedUIState.asStateFlow()
+    private val _uiStateDetail: MutableStateFlow<HomeDetailUIState> =
+        MutableStateFlow(HomeDetailUIState())
+    val uiStateDetail = _uiStateDetail.asStateFlow()
 
-    init {
-        loadOriginals()
-        isLogged()
+    private val _uiStateReading = MutableStateFlow(ReadingUiState())
+    val uiStateReading = _uiStateReading.asStateFlow()
+
+    var selectedOriginalId: Int? = null
+    var selectedEpisodeId: Int? = null
+
+    fun selectedEpisode(): ShowEpisode? = _uiStateDetail.value.original.episodes.firstOrNull {
+        it.id == selectedEpisodeId
     }
 
-    var selectedIndexOriginal: IndexOriginal? = null
-    var selectedEpisode: ShowEpisode? = null
-
-    private fun loadOriginals() = viewModelScope.launch {
-        getOriginalsUseCase().handle {
+    fun loadOriginals() = viewModelScope.launch {
+        getOriginalsUseCase(null, null).handle {
             onLoading {
                 _uiStateHome.update { it.copy(isLoading = true) }
             }
             onSuccess { result ->
-                _uiStateHome.update {
-                    it.copy(
+                _uiStateHome.update { uiState ->
+                    uiState.copy(
                         originals = result.map { it.asTagsWithOriginals() },
                         isLoading = false
                     )
@@ -86,14 +84,14 @@ class OriginalViewModel @Inject constructor(
 
     private fun loadContinueReading() = viewModelScope.launch {
         val continueReading = mutableListOf<IndexOriginal>()
-        getOriginalsUseCase.invoke(continueReading = true).handle {
+        getOriginalsUseCase.invoke(getByFav = null, continueReading = true).handle {
             onLoading {
                 _uiStateHome.update { it.copy(isLoading = true) }
             }
             onSuccess { result ->
                 result.forEach {
-                    it.indexOriginalModels?.forEach {
-                        continueReading.add(it.asIndexOriginal())
+                    it.indexOriginalModels?.forEach { indexOriginalModel ->
+                        continueReading.add(indexOriginalModel.asIndexOriginal())
                     }
                 }
                 _uiStateHome.update {
@@ -125,31 +123,85 @@ class OriginalViewModel @Inject constructor(
         }
     }
 
-    fun getFavoriteOriginals() = viewModelScope.launch {
-        getFavoriteOriginalsUseCase.invoke().handle {
+    private fun getFavoriteOriginals() = viewModelScope.launch {
+        getFavoriteOriginalsUseCase().handle {
+            onLoading {
+                _uiStateHome.update { it.copy(isLoading = true) }
+            }
             onSuccess { favorites ->
-                _uiStateHome.update {
-                    it.copy(favorites = favorites.map { it.asFavoriteOriginal() })
+                _uiStateHome.update { uiState ->
+                    uiState.copy(
+                        favorites = favorites.map { it.asFavoriteOriginal() },
+                        isLoading = false
+                    )
                 }
+            }
+            onFailure {
+                _uiStateHome.update { it.copy(isLoading = false) }
             }
         }
     }
 
-    /*fun createFavorite(id: Int) = viewModelScope.launch {
-        createFavoriteUseCase.invoke("episode", id).handle {
-            onSuccess {
-                _uiStateReading.update { it.copy(episode = it.episode?.copy(isFav = true)) }
+    fun deleteFavoriteHome(id: Int) {
+        viewModelScope.launch {
+            deleteFavoriteUseCase.invoke(ORIGINALS, id).handle {
+                onLoading {
+                    _uiStateHome.update { it.copy(isLoading = true) }
+                }
+                onSuccess {
+                    _uiStateHome.update { uiState ->
+                        val newFavorites = uiState.favorites.toMutableList()
+                        newFavorites.removeIf { it.id == id }
+                        uiState.copy(favorites = newFavorites, isLoading = false)
+                    }
+                }
+                onFailure { _uiStateHome.update { it.copy(isLoading = false) } }
             }
         }
-    }*/
+    }
+
+    fun createFavorite(id: Int) = viewModelScope.launch {
+        createFavoriteUseCase.invoke(ORIGINALS, id).handle {
+            onLoading {
+                _uiStateReading.update { it.copy(isLoading = true) }
+            }
+            onSuccess {
+                _uiStateReading.update { it.copy(isLoading = false) }
+                _uiStateDetail.update {
+                    it.copy(
+                        original = it.original.copy(
+                            indexUserData = it.original.indexUserData.copy(
+                                isFav = true
+                            )
+                        )
+                    )
+                }
+            }
+            onFailure {
+                _uiStateReading.update { it.copy(isLoading = false) }
+            }
+        }
+    }
 
     fun deleteFavorite(id: Int) = viewModelScope.launch {
-        deleteFavoriteUseCase.invoke("originals", id).handle {
+        deleteFavoriteUseCase.invoke(ORIGINALS, id).handle {
+            onLoading {
+                _uiStateReading.update { it.copy(isLoading = true) }
+            }
             onSuccess {
-                _sharedUIState.update { original ->
-                    original?.indexUserData?.copy(isLike = false)
-                        ?.let { it1 -> original.copy(indexUserData = it1) }
+                _uiStateReading.update { it.copy(isLoading = false) }
+                _uiStateDetail.update {
+                    it.copy(
+                        original = it.original.copy(
+                            indexUserData = it.original.indexUserData.copy(
+                                isFav = false
+                            )
+                        )
+                    )
                 }
+            }
+            onFailure {
+                _uiStateReading.update { it.copy(isLoading = false) }
             }
         }
     }
@@ -203,22 +255,21 @@ class OriginalViewModel @Inject constructor(
     }
 
 
-    private fun isLogged() = viewModelScope.launch {
+    fun isLogged() = viewModelScope.launch {
         isLoggedUseCase().handle {
+            onLoading {
+                _uiStateHome.update { it.copy(isLoading = true) }
+            }
             onSuccess { isUserLoggedIn ->
-                _uiStateHome.update { it.copy(isUserLoggedIn = isUserLoggedIn) }
-                getFavoriteOriginals()
+                _uiStateHome.update { it.copy(isUserLoggedIn = isUserLoggedIn, isLoading = false) }
                 getProfile()
+                getFavoriteOriginals()
                 loadContinueReading()
             }
             onFailure {
-                _uiStateHome.update { it.copy(isUserLoggedIn = false) }
+                _uiStateHome.update { it.copy(isUserLoggedIn = false, isLoading = false) }
             }
         }
-    }
-
-    fun setSharedUIState(indexOriginal: IndexOriginal?) {
-        _sharedUIState.update { indexOriginal }
     }
 
     /*private fun loadFavorites() = viewModelScope.launch {
@@ -241,26 +292,25 @@ class OriginalViewModel @Inject constructor(
         }
     }*/
 
-    fun showOriginal(id: Int) = viewModelScope.launch {
-        showOriginalUseCase(id).handle {
-            onLoading { originalModel ->
-                _uiStateReading.update {
+    fun showOriginal() = viewModelScope.launch {
+        showOriginalUseCase(selectedOriginalId ?: -1).handle {
+            onLoading {
+                _uiStateDetail.update {
                     it.copy(
-                        original = originalModel?.asShowOriginal(),
                         isLoading = true
                     )
                 }
             }
             onSuccess { originalModel ->
-                _uiStateReading.update {
+                _uiStateDetail.update {
                     it.copy(
-                        original = originalModel.asShowOriginal(),
+                        original = originalModel.asIndexOriginal(),
                         isLoading = false
                     )
                 }
             }
             onFailure {
-                _uiStateHome.update { it.copy(isLoading = false) }
+                _uiStateDetail.update { it.copy(isLoading = false) }
             }
         }
     }
@@ -297,10 +347,8 @@ class OriginalViewModel @Inject constructor(
             content,
             responseId
         ).handle {
-            onSuccess { newComment ->
-                _sharedUIState.update {
-                    it?.copy(commentCount = it.commentCount + 1)
-                }
+            onSuccess { _ ->
+
             }
         }
     }

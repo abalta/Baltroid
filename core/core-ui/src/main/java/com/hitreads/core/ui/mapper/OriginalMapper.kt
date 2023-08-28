@@ -50,7 +50,7 @@ fun IndexOriginalModel.asIndexOriginal() = IndexOriginal(
     title = title.orEmpty(),
     type = type.orEmpty(),
     indexUserData = userData?.asIndexUserData() ?: IndexUserData(
-        isLike = false,
+        isFav = false,
         isPurchase = false
     ),
     hashtag = hashtag.orEmpty(),
@@ -59,7 +59,8 @@ fun IndexOriginalModel.asIndexOriginal() = IndexOriginal(
     episodeCount = episodeCount ?: 0,
     isNew = isNew ?: false,
     barcode = barcode.orEmpty(),
-    continueReadingEpisode = continueReadingEpisode?.asShowEpisode()
+    continueReadingEpisode = continueReadingEpisode?.asShowEpisode(),
+    episodes = episodes?.map { it.asShowEpisodeIndex() }.orEmpty()
 )
 
 fun IndexContinueReadingEpisodeModel.asShowEpisode() = ShowEpisode(
@@ -126,7 +127,27 @@ fun ShowEpisodeModel.asShowEpisode() = ShowEpisode(
     bundleAssets = bundleAssets?.map { it.asInteractiveBundleAssets() },
     assetContents = assetContents,
     xmlContents = xmlContents,
-    episodeContent = episodeContent
+    episodeContent = episodeContent?.replace("\\", "")
+)
+
+fun ShowEpisodeModel.asShowEpisodeIndex() = ShowEpisode(
+    id = id ?: -1,
+    episodeName = episodeName.orEmpty(),
+    price = price ?: -1,
+    episodeSort = episodeSort ?: 0,
+    priceType = priceType.orEmpty(),
+    sort = sort ?: 0,
+    createdAt = createdAt.orEmpty(),
+    updatedAt = updatedAt.orEmpty(),
+    originalId = originalId ?: -1,
+    seasonId = seasonId ?: -1,
+    isLocked = isLocked ?: false,
+    isLastEpisode = isLastEpisode ?: false,
+    original = null,
+    bundleAssets = bundleAssets?.map { it.asInteractiveBundleAssets() },
+    assetContents = assetContents,
+    xmlContents = xmlContents,
+    episodeContent = episodeContent?.replace("\\", "")
 )
 
 fun IndexPackageModel.asIndexPackage() = IndexPackage(
@@ -137,7 +158,7 @@ fun IndexAuthorModel.asIndexAuthor() = IndexAuthor(
     id ?: -1, name.orEmpty()
 )
 
-fun IndexUserDataModel.asIndexUserData() = IndexUserData(isLike ?: false, isPurchase ?: false)
+fun IndexUserDataModel.asIndexUserData() = IndexUserData(isFav ?: false, isPurchase ?: false)
 
 fun IndexTagModel.asIndexTag() = IndexTag(id ?: -1, name.orEmpty(), icon.orEmpty())
 
@@ -213,22 +234,22 @@ fun FavoriteModel.asFavorite() = Favorite(
 )
 
 fun FavoriteOriginalModel.asFavoriteOriginal() = FavoriteOriginal(
-    id = id,
-    title = title,
-    description = description,
-    authorId = authorId,
-    cover = cover,
-    banner = banner,
-    type = type,
-    isLocked = isLocked,
-    status = status,
-    isActual = isActual,
-    sort = sort,
-    createdAt = createdAt,
-    updatedAt = updatedAt,
-    subtitle = subtitle,
-    hashtag = hashtag,
-    isNew = isNew,
-    viewCount = viewCount,
-    barcode = barcode
+    id = id ?: -1,
+    title = title.orEmpty(),
+    description = description.orEmpty(),
+    authorId = authorId ?: -1,
+    cover = cover.orEmpty(),
+    banner = banner.orEmpty(),
+    type = type.orEmpty(),
+    isLocked = isLocked ?: false,
+    status = status ?: false,
+    isActual = isActual ?: false,
+    sort = sort ?: 0,
+    createdAt = createdAt.orEmpty(),
+    updatedAt = updatedAt.orEmpty(),
+    subtitle = subtitle.orEmpty(),
+    hashtag = hashtag.orEmpty(),
+    isNew = isNew ?: false,
+    viewCount = viewCount ?: 0,
+    barcode = barcode.orEmpty()
 )

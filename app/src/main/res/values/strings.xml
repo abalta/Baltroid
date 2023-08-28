@@ -4,6 +4,7 @@
     <string name="menu">Menu</string>
     <string name="story_summary">TÜM KATEGORİLERDEKİ %1$d HİKAYE LİSTELENİYOR</string>
     <string name="episode_size">Bölüm %1$s</string>
+    <string name="episode_size_detail">%1$s BÖLÜM</string>
     <string name="all_stories">TÜM HİKAYELER</string>
     <string name="all_stories_text">TÜM HİKAYELER</string>
     <string name="favorites_with_size">FAVORİLER</string>

@@ -1,6 +1,7 @@
 package com.baltroid.core.network.model.originals
 
 import com.baltroid.core.network.model.author.IndexNetworkAuthor
+import com.baltroid.core.network.model.episode.NetworkShowEpisode
 import com.baltroid.core.network.model.user.IndexUserData
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -52,6 +53,8 @@ data class IndexNetworkOriginal(
     @SerialName("barcode")
     val barcode: String?,
     @SerialName("continue_reading_episode")
-    val continueReadingEpisode: IndexNetworkContinueReadingEpisode?
+    val continueReadingEpisode: IndexNetworkContinueReadingEpisode?,
+    @SerialName("episodes")
+    val episodes: List<NetworkShowEpisode>?
 )
 

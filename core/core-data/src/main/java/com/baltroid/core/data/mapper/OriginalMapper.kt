@@ -60,7 +60,8 @@ internal fun IndexNetworkOriginal.asIndexOriginalModel() = IndexOriginalModel(
     hashtag = hashtag,
     isNew = isNew,
     barcode = barcode,
-    continueReadingEpisode = continueReadingEpisode?.asIndexContinueReadingEpisodeModel()
+    continueReadingEpisode = continueReadingEpisode?.asIndexContinueReadingEpisodeModel(),
+    episodes = episodes?.map { it.asShowEpisodeModelIndex() }
 )
 
 internal fun InteractiveNetworkBundleAsset.asInteractiveBundleAssetsModel() =
@@ -91,7 +92,8 @@ internal fun NetworkCommentOriginal.asIndexOriginalModel() = IndexOriginalModel(
     hashtag = hashtag.orEmpty(),
     isNew = false,
     barcode = "",
-    continueReadingEpisode = null
+    continueReadingEpisode = null,
+    episodes = null
 )
 
 internal fun ShowOriginalDto.asShowOriginalModel() = ShowOriginalModel(
@@ -128,11 +130,31 @@ internal fun IndexNetworkAuthor.asIndexAuthorModel() = IndexAuthorModel(
 )
 
 internal fun IndexUserData.asIndexUserDataModel() = IndexUserDataModel(
-    isLike = isLike, isPurchase = isPurchase
+    isFav = isFav, isPurchase = isPurchase
 )
 
 internal fun IndexNetworkTag.asIndexTagModel() = IndexTagModel(
     id, name ?: title.orEmpty(), icon
+)
+
+internal fun NetworkShowEpisode.asShowEpisodeModelIndex() = ShowEpisodeModel(
+    id = id ?: -1,
+    episodeName = episodeName.orEmpty(),
+    price = price ?: -1,
+    episodeSort = episodeSort ?: 0,
+    priceType = priceType.orEmpty(),
+    sort = sort ?: 0,
+    createdAt = createdAt.orEmpty(),
+    updatedAt = updatedAt.orEmpty(),
+    originalId = originalId ?: -1,
+    seasonId = seasonId ?: -1,
+    isLocked = isLocked ?: false,
+    isLastEpisode = isLastEpisode ?: false,
+    original = null,
+    bundleAssets = bundleAssets?.map { it.asInteractiveBundleAssetsModel() },
+    assetContents = assetContents,
+    xmlContents = null,
+    episodeContent = null
 )
 
 internal fun NetworkShowEpisode.asShowEpisodeModel(
@@ -267,6 +289,8 @@ internal fun FavoriteOriginalDto.asFavoriteOriginalModel() = FavoriteOriginalMod
 )
 
 internal fun TagWithOriginalsDto.asTagsWithOriginalsModel() =
-    TagsWithOriginalsModel(tagName = tagName,
+    TagsWithOriginalsModel(
+        tagName = tagName,
         tagId = tagId,
-        indexOriginalModels = originals?.map { it.asIndexOriginalModel() })
+        indexOriginalModels = originals?.map { it.asIndexOriginalModel() }
+    )

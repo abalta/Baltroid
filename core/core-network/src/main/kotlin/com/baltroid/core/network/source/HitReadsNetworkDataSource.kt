@@ -3,13 +3,10 @@ package com.baltroid.core.network.source
 import com.baltroid.core.common.result.BaltroidResult
 import com.baltroid.core.network.api.service.HitReadsService
 import com.baltroid.core.network.model.HitReadsResponse
-import com.baltroid.core.network.model.originals.IndexNetworkTag
+import com.baltroid.core.network.model.originals.IndexNetworkOriginal
 import com.baltroid.core.network.model.originals.NetworkCreateCommentResponse
-import com.baltroid.core.network.model.originals.ShowOriginalDto
-import com.baltroid.core.network.model.request.CreateBookmarkDto
 import com.baltroid.core.network.model.request.RegisterRequestBody
 import com.baltroid.core.network.model.response.AllCommentsDto
-import com.baltroid.core.network.model.response.BookmarkDto
 import com.baltroid.core.network.model.response.CommentDto
 import com.baltroid.core.network.model.response.EpisodeShowDto
 import com.baltroid.core.network.model.response.FavoriteDto
@@ -18,6 +15,7 @@ import com.baltroid.core.network.model.response.LoginDto
 import com.baltroid.core.network.model.response.ProfileDto
 import com.baltroid.core.network.model.response.TagWithOriginalsDto
 import com.baltroid.core.network.model.response.WelcomeDto
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -27,13 +25,10 @@ import okhttp3.ResponseBody
 import java.io.IOException
 import javax.inject.Inject
 
-class HitReadsNetworkDataSource @Inject constructor(private val hitReadsService: HitReadsService) {
-    /*suspend fun getOriginals(
-        page: Int = DEFAULT_PAGE,
-        filter: String? = null,
-        getByFav: Boolean? = null
-    ): BaltroidResult<HitReadsResponse<OriginalResponseDto>> =
-        hitReadsService.getOriginals(page, filter, getByFav)*/
+class HitReadsNetworkDataSource @Inject constructor(
+    private val hitReadsService: HitReadsService,
+    private val ioDispatcher: CoroutineDispatcher
+) {
 
     suspend fun getOriginals(
         getByFav: Boolean?,
@@ -77,11 +72,8 @@ class HitReadsNetworkDataSource @Inject constructor(private val hitReadsService:
     )
 
 
-    suspend fun showOriginal(originalId: Int): BaltroidResult<HitReadsResponse<ShowOriginalDto>> =
+    suspend fun showOriginal(originalId: Int): BaltroidResult<HitReadsResponse<IndexNetworkOriginal>> =
         hitReadsService.showOriginal(originalId)
-
-    suspend fun getTags(): BaltroidResult<HitReadsResponse<List<IndexNetworkTag>>> =
-        hitReadsService.getTags()
 
     suspend fun showEpisode(episodeId: Int): BaltroidResult<HitReadsResponse<EpisodeShowDto>> =
         hitReadsService.showEpisode(episodeId)
@@ -145,19 +137,6 @@ class HitReadsNetworkDataSource @Inject constructor(private val hitReadsService:
     suspend fun getWelcomeScreen(): BaltroidResult<HitReadsResponse<List<WelcomeDto>>> =
         hitReadsService.getWelcomeScreen()
 
-    suspend fun getBookmarkList(): BaltroidResult<HitReadsResponse<List<BookmarkDto>>> =
-        hitReadsService.getBookmarks()
-
-    suspend fun createBookmark(
-        originalId: Int,
-        episodeId: Int
-    ): BaltroidResult<HitReadsResponse<BookmarkDto>> = hitReadsService.createBookmark(
-        CreateBookmarkDto(originalId, episodeId)
-    )
-
-    suspend fun deleteBookmark(bookmarkId: Int): BaltroidResult<HitReadsResponse<Unit>> =
-        hitReadsService.deleteBookmark(bookmarkId)
-
     suspend fun createFavorite(type: String, id: Int): BaltroidResult<HitReadsResponse<Unit>> =
         hitReadsService.createFavorite(type, id)
 
@@ -175,4 +154,27 @@ class HitReadsNetworkDataSource @Inject constructor(private val hitReadsService:
 
     suspend fun getFavoriteOriginals(): BaltroidResult<HitReadsResponse<List<FavoriteOriginalDto>>> =
         hitReadsService.getFavoriteOriginals()
+
+    /*suspend fun getOriginals(
+        page: Int = DEFAULT_PAGE,
+        filter: String? = null,
+        getByFav: Boolean? = null
+    ): BaltroidResult<HitReadsResponse<OriginalResponseDto>> =
+        hitReadsService.getOriginals(page, filter, getByFav)
+
+    suspend fun getBookmarkList(): BaltroidResult<HitReadsResponse<List<BookmarkDto>>> =
+        hitReadsService.getBookmarks()
+
+    suspend fun createBookmark(
+        originalId: Int,
+        episodeId: Int
+    ): BaltroidResult<HitReadsResponse<BookmarkDto>> = hitReadsService.createBookmark(
+        CreateBookmarkDto(originalId, episodeId)
+    )
+
+    suspend fun deleteBookmark(bookmarkId: Int): BaltroidResult<HitReadsResponse<Unit>> =
+        hitReadsService.deleteBookmark(bookmarkId)
+
+    suspend fun getTags(): BaltroidResult<HitReadsResponse<List<IndexNetworkTag>>> =
+        hitReadsService.getTags()*/
 }

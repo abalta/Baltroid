@@ -1,7 +1,5 @@
 package com.baltroid.ui.screens.reading
 
-import android.content.Context
-import android.content.Intent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
@@ -16,12 +14,15 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
@@ -29,12 +30,15 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
@@ -46,27 +50,29 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.baltroid.apps.R
 import com.baltroid.ui.common.HorizontalSpacer
 import com.baltroid.ui.common.IconWithTextNextTo
+import com.baltroid.ui.common.SetLoadingState
 import com.baltroid.ui.common.SimpleIcon
+import com.baltroid.ui.common.SimpleImage
 import com.baltroid.ui.common.VerticalSpacer
+import com.baltroid.ui.common.collectValue
 import com.baltroid.ui.components.HitReadsSideBar
 import com.baltroid.ui.components.HitReadsTopBar
 import com.baltroid.ui.screens.menu.comments.CommentImage
-import com.baltroid.ui.screens.menu.comments.CommentViewModel
 import com.baltroid.ui.screens.reading.comments.CommentsTabState
 import com.baltroid.ui.screens.viewmodels.OriginalViewModel
 import com.baltroid.ui.theme.Poppins
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localTextStyles
+import com.baltroid.util.conditional
 import com.baltroid.util.orEmpty
 import com.baltroid.util.orZero
 import com.hitreads.core.domain.model.OriginalType
@@ -76,48 +82,730 @@ import com.hitreads.core.model.IndexOriginal
 import com.hitreads.core.model.IndexPackage
 import com.hitreads.core.model.IndexUserData
 import com.hitreads.core.model.ShowEpisode
-import com.hitreads.core.model.ShowOriginal
 
 @Composable
 fun ReadingScreen(
     viewModel: OriginalViewModel,
-    commentViewModel: CommentViewModel = hiltViewModel(),
-    openMenuScreen: () -> Unit,
     navigate: (String) -> Unit
 ) {
-    val screenState = viewModel.uiStateReading.collectAsStateWithLifecycle().value
-    val sharedOriginal = viewModel.sharedUIState.collectAsStateWithLifecycle().value
-    val comments = commentViewModel.uiState.collectAsStateWithLifecycle().value.commentList
+    val readingUIState = viewModel.uiStateReading.collectValue()
+    SetLoadingState(isLoading = readingUIState.isLoading)
 
     LaunchedEffect(Unit) {
         viewModel.apply {
-            viewModel.showOriginal(selectedIndexOriginal?.id.orZero())
-            viewModel.startReadingEpisode(selectedEpisode?.id.orZero())
+            selectedEpisodeId?.let { viewModel.startReadingEpisode(it) }
             //todo end read
         }
-        commentViewModel.getAllComments("original", viewModel.selectedIndexOriginal?.id)
     }
 
-    LaunchedEffect(screenState.original) {
-        if (screenState.original != null) {
-            viewModel.showEpisode(
-                viewModel.selectedEpisode?.id.orZero(),
-                OriginalType.TEXT
-            )
-        }
+    LaunchedEffect(Unit) {
+        viewModel.showEpisode(
+            viewModel.selectedEpisodeId ?: -1, OriginalType.TEXT
+        )
     }
 
     ReadingScreenContent(
-        body = screenState.episode?.episodeContent.orEmpty(),
-        original = screenState.original,
-        sharedIndexOriginal = sharedOriginal,
-        episode = viewModel.selectedEpisode,
+        body = readingUIState.episode?.episodeContent.orEmpty(),
+        original = viewModel.uiStateDetail.collectValue().original,
+        episode = viewModel.selectedEpisode(),
         onLikeClick = { isLiked, id ->
             if (isLiked) viewModel.deleteFavorite(id)
+            else viewModel.createFavorite(id)
         },
     )
+}
 
-    /* ReadingScreenContent(
+@Composable
+fun ReadingScreenContent(
+    body: String,
+    original: IndexOriginal?,
+    episode: ShowEpisode?,
+    onLikeClick: (Boolean, Int) -> Unit,
+) {
+    val scrollState = rememberScrollState()
+    var isSidebarVisible by rememberSaveable {
+        mutableStateOf(true)
+    }
+    if (scrollState.value != 0 && isSidebarVisible) {
+        isSidebarVisible = scrollState.isSidebarVisible()
+    }
+    var isReadingSection by rememberSaveable {
+        mutableStateOf(true)
+    }
+
+    Column(
+        Modifier
+            .navigationBarsPadding()
+            .conditional(isReadingSection) {
+                verticalScroll(scrollState)
+            }
+    ) {
+        AsyncImage(
+            model = original?.cover,
+            contentDescription = null,
+            placeholder = painterResource(id = R.drawable.hitreads_placeholder),
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(dimensionResource(id = R.dimen.dp120))
+        )
+        Box {
+            Row {
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    if (isReadingSection) {
+                        TitleSection(
+                            title = original?.title.orEmpty(),
+                            subtitle = original?.indexAuthor?.name.orEmpty(),
+                            isExpanded = !isSidebarVisible,
+                            isLiked = original?.indexUserData?.isFav == true,
+                            episodeName = episode?.episodeName.orEmpty(),
+                            onDotsClick = {
+                                isSidebarVisible = true
+                            },
+                            onLikeClick = { onLikeClick.invoke(it, original?.id.orZero()) },
+                            modifier = Modifier.padding(
+                                top = dimensionResource(id = R.dimen.dp12),
+                                start = dimensionResource(id = R.dimen.dp31),
+                            )
+                        )
+                        ReadingSection(body = body, isLastEpisode = episode?.isLastEpisode == true)
+                    } else {
+                        CommentSectionTabs(
+                            tabState = CommentsTabState.AllComments,
+                            onTabSelect = {})
+                        CommentSection(
+                            lazyListState = rememberLazyListState(),
+                            comments = listOf(),
+                            onLikeClick = { _, _ -> },
+                            onReplyClick = {},
+                            onExpanseClicked = {}
+                        )
+                    }
+                }
+                HitReadsSideBar(
+                    numberOfComments = 0,
+                    isVisible = isSidebarVisible,
+                    onVisibilityChange = {
+                        isSidebarVisible = it
+                    },
+                    isFullHeight = !isReadingSection,
+                    onShowComments = { isReadingSection = !isReadingSection },
+                    onCreateComment = { /*TODO*/ },
+                    modifier = Modifier
+                        .width(IntrinsicSize.Min)
+                        .padding(
+                            top = dimensionResource(id = R.dimen.dp12),
+                            end = dimensionResource(id = R.dimen.dp12)
+                        )
+                ) {
+
+                }
+            }
+            /* Box(
+                 modifier = Modifier
+                     .fillMaxWidth()
+                     .wrapContentWidth(Alignment.End)
+                     .size(300.dp, 600.dp)
+                     .padding(top = dimensionResource(id = R.dimen.dp50))
+                     .background(Color.Yellow)
+             )*/
+        }
+    }
+}
+
+@Composable
+fun ReadingSection(
+    body: String,
+    isLastEpisode: Boolean
+) {
+    Column {
+        Text(
+            text = body,
+            style = MaterialTheme.localTextStyles.poppins14Regular,
+            color = MaterialTheme.localColors.white_alpha08,
+            modifier = Modifier.padding(
+                horizontal = dimensionResource(id = R.dimen.dp24)
+            )
+        )
+        if (!isLastEpisode && body.isNotEmpty()) {
+            VerticalSpacer(height = R.dimen.dp40)
+            SimpleImage(
+                imgResId = R.drawable.ic_arrow_right,
+                modifier = Modifier
+                    .padding(end = dimensionResource(id = R.dimen.dp25))
+                    .size(dimensionResource(id = R.dimen.dp46))
+                    .align(Alignment.End)
+                    .alpha(0.5f)
+            )
+        }
+    }
+}
+
+
+@Composable
+fun ScrollBar(
+    scrollState: ScrollState, modifier: Modifier = Modifier
+) {
+    val localColors = MaterialTheme.localColors
+
+    Box(modifier = modifier
+        .width(dimensionResource(id = R.dimen.dp6))
+        .fillMaxHeight()
+        .drawWithContent {
+            val maxScrollValue = scrollState.maxValue
+            val currentScrollValue = scrollState.value
+            val scrollPercent = currentScrollValue.toFloat() / maxScrollValue.toFloat()
+            val scrollOffsetY = (size.height - 50.dp.toPx()) * scrollPercent
+
+            drawRoundRect(
+                color = localColors.white_alpha05, topLeft = Offset(
+                    x = 0f, y = scrollOffsetY
+                ), style = Stroke(1.dp.toPx()), cornerRadius = CornerRadius(
+                    6.dp.toPx(), 6.dp.toPx()
+                ), size = Size(
+                    width = 6.dp.toPx(), height = 50.dp.toPx()
+                )
+            )
+        })
+}
+
+@Composable
+fun HitReadsPageHeader(
+    numberOfNotification: Int,
+    onMenuClick: () -> Unit,
+    onIconCLicked: () -> Unit,
+    imgUrl: String,
+    modifier: Modifier = Modifier
+) {
+    ConstraintLayout(
+        modifier = modifier
+    ) {
+        val (image, topBar) = createRefs()
+        AsyncImage(model = imgUrl,
+            contentDescription = null,
+            error = painterResource(id = R.drawable.hitreads_placeholder),
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.constrainAs(image) {
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+                top.linkTo(parent.top)
+                bottom.linkTo(topBar.bottom, margin = (-5).dp)
+                width = Dimension.fillToConstraints
+                height = Dimension.fillToConstraints
+            })
+        HitReadsTopBar(
+            modifier = Modifier.constrainAs(topBar) {
+                top.linkTo(parent.top)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+            },
+            onNotificationClick = {},
+            iconResId = R.drawable.ic_bell,
+            numberOfNotification = numberOfNotification,
+            onMenuClick = onMenuClick,
+            onIconClick = onIconCLicked
+        )
+    }
+}
+
+@Composable
+fun TitleSection(
+    title: String,
+    subtitle: String,
+    isExpanded: Boolean,
+    episodeName: String,
+    isLiked: Boolean,
+    onDotsClick: () -> Unit,
+    onLikeClick: (Boolean) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = Modifier.animateContentSize()
+    ) {
+        Column(
+            modifier = modifier
+        ) {
+            Row(
+                modifier = Modifier.height(IntrinsicSize.Min)
+            ) {
+                Titles(
+                    title = title,
+                    subtitle = subtitle,
+                    episodeName = episodeName,
+                    isEpisodeNameVisible = !isExpanded,
+                    modifier = Modifier.weight(1f)
+                )
+                SimpleIcon(iconResId = if (isLiked) R.drawable.ic_star else R.drawable.ic_star_outlined,
+                    tint = if (isLiked) MaterialTheme.localColors.yellow else Color.Unspecified,
+                    modifier = Modifier
+                        .padding(
+                            top = dimensionResource(id = R.dimen.dp8),
+                            end = dimensionResource(id = R.dimen.dp15),
+                        )
+                        .clickable {
+                            onLikeClick(isLiked)
+                        })
+                if (isExpanded) {
+                    Divider(
+                        color = MaterialTheme.localColors.white_alpha05,
+                        modifier = Modifier
+                            .width(dimensionResource(id = R.dimen.dp1))
+                            .fillMaxHeight()
+                    )
+                    HorizontalSpacer(width = dimensionResource(id = R.dimen.dp10))
+                    SimpleIcon(iconResId = R.drawable.ic_menu, modifier = Modifier
+                        .padding(
+                            top = dimensionResource(id = R.dimen.dp12),
+                            end = dimensionResource(id = R.dimen.dp20)
+                        )
+                        .clickable { onDotsClick.invoke() })
+                }
+
+            }
+        }
+        if (isExpanded) {
+            Divider(
+                color = MaterialTheme.localColors.white_alpha05,
+                thickness = dimensionResource(id = R.dimen.dp1),
+                modifier = Modifier.padding(
+                    start = dimensionResource(id = R.dimen.dp17),
+                    end = dimensionResource(id = R.dimen.dp12)
+                )
+            )
+            VerticalSpacer(R.dimen.dp5)
+        }
+    }
+}
+
+@Composable
+fun Titles(
+    title: String,
+    subtitle: String,
+    episodeName: String,
+    isEpisodeNameVisible: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.localTextStyles.poppins17Light,
+            color = MaterialTheme.localColors.white
+        )
+        Text(
+            text = subtitle,
+            style = MaterialTheme.localTextStyles.poppins13Medium,
+            color = MaterialTheme.localColors.white
+        )
+        if (isEpisodeNameVisible) {
+            VerticalSpacer(height = R.dimen.dp6)
+            Text(
+                text = episodeName,
+                style = MaterialTheme.localTextStyles.poppins13Medium,
+                color = MaterialTheme.localColors.purple
+            )
+        }
+    }
+}
+
+@Composable
+fun CommentSection(
+    lazyListState: LazyListState,
+    comments: List<Comment>,
+    modifier: Modifier = Modifier,
+    onLikeClick: (Boolean, Int) -> Unit,
+    onReplyClick: (Comment) -> Unit,
+    onExpanseClicked: (Int) -> Unit
+) {
+
+    Column(
+        modifier = modifier
+    ) {
+        LazyColumn(
+            state = lazyListState,
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp15)),
+            contentPadding = PaddingValues(top = dimensionResource(id = R.dimen.dp14)),
+        ) {
+            items(comments) { comment ->
+                CommentItem(model = comment,
+                    isChatSelected = false,
+                    onLikeClick = onLikeClick,
+                    onReplyClick = { onReplyClick.invoke(comment) })
+                VerticalSpacer(height = dimensionResource(id = R.dimen.dp12))
+                CommentItem(model = comment.replies.firstOrNull() ?: return@items,
+                    isChatSelected = false,
+                    onLikeClick = onLikeClick,
+                    onReplyClick = {
+                        onReplyClick.invoke(comment)
+                    })
+                if (!comment.isExpanded && comment.replies.size > 1) {
+                    SeeAll {
+                        onExpanseClicked.invoke(comment.id)
+                    }
+                }
+                if (comment.isExpanded) {
+                    comment.replies.forEachIndexed { index, comment ->
+                        if (index != 0) {
+                            CommentItem(model = comment,
+                                isChatSelected = false,
+                                onLikeClick = onLikeClick,
+                                onReplyClick = {
+                                    onReplyClick.invoke(comment)
+                                })
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun CommentSectionTabs(
+    tabState: CommentsTabState,
+    scrollState: ScrollState = rememberScrollState(),
+    onTabSelect: (CommentsTabState) -> Unit
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp9)),
+        modifier = Modifier.horizontalScroll(scrollState)
+    ) {
+        TabItem(
+            title = stringResource(id = R.string.all_comments),
+            isSelected = tabState == CommentsTabState.AllComments
+        ) {
+            onTabSelect.invoke(CommentsTabState.AllComments)
+        }
+        TabItem(
+            title = stringResource(id = R.string.my_favorite_comments),
+            isSelected = tabState == CommentsTabState.MyFavorites
+        ) {
+            onTabSelect.invoke(CommentsTabState.MyFavorites)
+        }
+        TabItem(
+            title = stringResource(id = R.string.my_comments),
+            isSelected = tabState == CommentsTabState.MyComments
+        ) {
+            onTabSelect.invoke(CommentsTabState.MyComments)
+        }
+    }
+}
+
+@Composable
+private fun TabItem(
+    title: String, isSelected: Boolean, onTabSelect: (CommentsTabState) -> Unit
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier.width(IntrinsicSize.Max),
+    ) {
+        Text(text = title,
+            style = MaterialTheme.localTextStyles.poppins13Medium,
+            color = if (isSelected) MaterialTheme.localColors.white else MaterialTheme.localColors.white_alpha07,
+            modifier = Modifier.clickable { onTabSelect.invoke(CommentsTabState.AllComments) })
+        if (isSelected) {
+            Box(
+                modifier = Modifier
+                    .background(MaterialTheme.localColors.white_alpha07)
+                    .fillMaxWidth()
+                    .height(dimensionResource(id = R.dimen.dp4))
+            )
+        }
+    }
+}
+
+@Composable
+fun CommentItem(
+    model: Comment,
+    isChatSelected: Boolean,
+    modifier: Modifier = Modifier,
+    onLikeClick: (Boolean, Int) -> Unit,
+    onReplyClick: () -> Unit
+) {
+    ConstraintLayout(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        val (subCommentIcon, commentHeader, comment) = createRefs()
+        if (model.isReply) {
+            SimpleIcon(iconResId = R.drawable.ic_subcomment_arrow,
+                modifier = Modifier.constrainAs(subCommentIcon) {
+                    start.linkTo(parent.start)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(commentHeader.bottom)
+                })
+        }
+        Row(verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.constrainAs(commentHeader) {
+                if (model.isReply) {
+                    start.linkTo(subCommentIcon.end, 11.dp)
+                } else {
+                    start.linkTo(parent.start)
+                }
+                top.linkTo(parent.top)
+                end.linkTo(parent.end, 34.dp)
+                width = Dimension.fillToConstraints
+            }) {
+            CommentImage(
+                imgUrl = model.imgUrl,
+                letter = if (model.authorName.isNotEmpty()) model.authorName.first()
+                    .toString() else "?"
+            )
+            HorizontalSpacer(width = dimensionResource(id = R.dimen.dp13))
+            Column(
+                verticalArrangement = Arrangement.Bottom,
+            ) {
+                Text(
+                    text = model.authorName,
+                    style = MaterialTheme.localTextStyles.poppins13Medium,
+                    color = MaterialTheme.localColors.white
+                )
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(
+                        text = model.createdAt,
+                        style = MaterialTheme.localTextStyles.poppins10Regular,
+                        color = MaterialTheme.localColors.white_alpha07
+                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp12)),
+                    ) {
+                        SimpleIcon(iconResId = if (model.isLiked) R.drawable.ic_heart_filled else R.drawable.ic_heart_outlined,
+                            modifier = Modifier.clickable {
+                                onLikeClick.invoke(
+                                    model.isLiked, model.id
+                                )
+                            })
+                        IconWithTextNextTo(
+                            iconResId = if (isChatSelected) R.drawable.ic_chat_filled else R.drawable.ic_chat_outlined,
+                            text = model.repliesCount.toString(),
+                            spacedBy = dimensionResource(id = R.dimen.dp6),
+                            textStyle = MaterialTheme.localTextStyles.poppins10Regular,
+                            isTextVisible = !model.isReply,
+                            onIconClick = { onReplyClick.invoke() },
+                        )
+                        SimpleIcon(iconResId = R.drawable.ic_menu_horizontal)
+                    }
+                }
+            }
+        }
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp14))
+        Text(text = model.content,
+            style = MaterialTheme.localTextStyles.poppins12Regular,
+            color = MaterialTheme.localColors.white_alpha08,
+            modifier = Modifier.constrainAs(comment) {
+                start.linkTo(commentHeader.start)
+                top.linkTo(commentHeader.bottom)
+                end.linkTo(parent.end)
+                width = Dimension.fillToConstraints
+            })
+    }
+}
+
+@Composable
+fun HashTagSection(
+    paddingValues: PaddingValues, modifier: Modifier = Modifier
+) {
+    LazyRow(
+        contentPadding = paddingValues,
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp23)),
+        modifier = modifier,
+    ) {
+        item { HasTagItem(hashTag = "TÜMÜ", commentSize = 1678, isSelected = true) }
+        item { HasTagItem(hashTag = "#KGD", commentSize = 220, isSelected = true) }
+        item { HasTagItem(hashTag = "#MKV", commentSize = 0, isSelected = false) }
+        item { HasTagItem(hashTag = "#FRK", commentSize = 47, isSelected = false) }
+        item { HasTagItem(hashTag = "#HLS", commentSize = 4, isSelected = false) }
+        item { HasTagItem(hashTag = "#BRF", commentSize = 17, isSelected = false) }
+    }
+}
+
+@Composable
+fun HasTagItem(
+    hashTag: String,
+    commentSize: Int,
+    isSelected: Boolean,
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp5)),
+        modifier = Modifier.width(IntrinsicSize.Min),
+    ) {
+        IconWithTextNextTo(
+            iconResId = R.drawable.ic_comment,
+            text = commentSize.toString(),
+            spacedBy = dimensionResource(id = R.dimen.dp3),
+            tint = MaterialTheme.localColors.white_alpha04,
+            textStyle = MaterialTheme.localTextStyles.poppins11Medium,
+            onIconClick = {},
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.Start)
+        )
+        Text(
+            text = hashTag, style = MaterialTheme.localTextStyles.spaceGrotesk16Medium
+        )
+        if (isSelected) {
+            Box(
+                modifier = Modifier
+                    .height(dimensionResource(id = R.dimen.dp3))
+                    .fillMaxWidth()
+                    .background(MaterialTheme.localColors.orange)
+            )
+        } else {
+            Box(
+                modifier = Modifier
+                    .height(dimensionResource(id = R.dimen.dp1))
+                    .fillMaxWidth()
+                    .background(MaterialTheme.localColors.grey)
+            )
+        }
+
+    }
+}
+
+@Composable
+private fun ScrollState.isSidebarVisible(): Boolean {
+    return remember(this) {
+        derivedStateOf {
+            value <= 300
+        }
+    }.value
+}
+
+@Composable
+fun SeeAll(
+    onClick: () -> Unit
+) {
+    Row(verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.clickable { onClick.invoke() }) {
+        Box(
+            modifier = Modifier
+                .height(dimensionResource(id = R.dimen.dp1))
+                .width(dimensionResource(id = R.dimen.dp100))
+                .background(MaterialTheme.localColors.white_alpha07)
+                .fillMaxWidth()
+        )
+        HorizontalSpacer(width = dimensionResource(id = R.dimen.dp12))
+        Text(
+            text = "Tüm Cevapları Göster",
+            color = MaterialTheme.localColors.white_alpha07,
+            fontFamily = Poppins,
+            fontSize = 10.sp
+        )
+        HorizontalSpacer(width = dimensionResource(id = R.dimen.dp12))
+        Box(
+            modifier = Modifier
+                .height(dimensionResource(id = R.dimen.dp1))
+                .width(dimensionResource(id = R.dimen.dp100))
+                .background(MaterialTheme.localColors.white_alpha07)
+                .fillMaxWidth()
+        )
+    }
+}
+
+@Preview
+@Composable
+fun ReadingScreenPreview() {
+    ReadingScreenContent(
+        body = LoremIpsum(100).values.joinToString { it }, original = IndexOriginal(
+            indexAuthor = IndexAuthor(id = 2598, name = "Carson Martinez"),
+            banner = "ancillae",
+            cover = "fusce",
+            description = "partiendo",
+            id = 2875,
+            isActual = false,
+            isLocked = false,
+            likeCount = 2628,
+            commentCount = 7416,
+            viewCount = 9434,
+            indexPackage = IndexPackage(
+                id = 4164,
+                price = 3134,
+                priceType = "elitr"
+            ),
+            sort = 6775,
+            status = false,
+            title = "dis",
+            type = "mauris",
+            indexUserData = IndexUserData(isFav = false, isPurchase = false),
+            indexTags = listOf(),
+            hashtag = "eirmod",
+            subtitle = "mei",
+            episodeCount = 5819,
+            isNew = false,
+            barcode = "error",
+            continueReadingEpisode = null,
+            episodes = listOf()
+        ), onLikeClick = { _, _ -> }, episode = ShowEpisode(
+            id = 3919,
+            episodeName = "Ashlee Atkinson",
+            price = 5396,
+            episodeSort = 6437,
+            priceType = "signiferumque",
+            sort = 5256,
+            createdAt = "nunc",
+            updatedAt = "diam",
+            originalId = 3275,
+            seasonId = 9062,
+            isLocked = false,
+            isLastEpisode = false,
+            original = null,
+            bundleAssets = listOf(),
+            assetContents = null,
+            xmlContents = null,
+            episodeContent = null
+
+        )
+    )
+}
+
+/*@Composable
+fun Titles(
+    title: String,
+    subtitle: String,
+    modifier: Modifier = Modifier,
+    episodeTitle: String? = null
+) {
+    Column(
+        modifier = modifier
+    ) {
+        Text(text = title, style = MaterialTheme.localTextStyles.title)
+        Text(text = subtitle, style = MaterialTheme.localTextStyles.subtitle)
+        episodeTitle?.let {
+            Text(
+                text = episodeTitle,
+                style = MaterialTheme.localTextStyles.readingPurpleSubTitle
+            )
+        }
+    }
+}*/
+
+/*@Composable
+private fun LazyListState.isEpisodesVisible(): Boolean {
+    var previousIndex by remember(this) { mutableStateOf(firstVisibleItemIndex) }
+    return remember(this) {
+        derivedStateOf {
+            if (previousIndex != 0) {
+                previousIndex > firstVisibleItemIndex
+            } else {
+                firstVisibleItemIndex == 0
+            }.also {
+                previousIndex = firstVisibleItemIndex
+            }
+        }
+    }.value
+}*/
+
+/*
+/* ReadingScreenContent(
          commentViewModel,
          originalViewModel = viewModel,
          screenState = screenState,
@@ -153,9 +841,7 @@ fun ReadingScreen(
              commentViewModel.expanseComment(it)
          },
      )*/
-}
 
-/*
 @Composable
 private fun ReadingScreenContent(
     commentVM: CommentViewModel,
@@ -326,273 +1012,6 @@ private fun ReadingScreenContent(
 }
 */
 
-fun share(title: String?, ctx: Context) {
-    Intent(Intent.ACTION_SEND).apply {
-        type = "text/plain"
-        putExtra(Intent.EXTRA_SUBJECT, R.string.app_name)
-        putExtra(Intent.EXTRA_TEXT, title)
-        ctx.startActivity(Intent.createChooser(this, "Original"))
-    }
-}
-
-@Composable
-fun ScrollBar(
-    scrollState: ScrollState,
-    modifier: Modifier = Modifier
-) {
-    val localColors = MaterialTheme.localColors
-
-    Box(
-        modifier = modifier
-            .width(dimensionResource(id = R.dimen.dp6))
-            .fillMaxHeight()
-            .drawWithContent {
-                val maxScrollValue = scrollState.maxValue
-                val currentScrollValue = scrollState.value
-                val scrollPercent = currentScrollValue.toFloat() / maxScrollValue.toFloat()
-                val scrollOffsetY = (size.height - 50.dp.toPx()) * scrollPercent
-
-                drawRoundRect(
-                    color = localColors.white_alpha05,
-                    topLeft = Offset(
-                        x = 0f,
-                        y = scrollOffsetY
-                    ),
-                    style = Stroke(1.dp.toPx()),
-                    cornerRadius = CornerRadius(
-                        6.dp.toPx(),
-                        6.dp.toPx()
-                    ),
-                    size = Size(
-                        width = 6.dp.toPx(),
-                        height = 50.dp.toPx()
-                    )
-                )
-            }
-    )
-}
-
-@Composable
-fun HitReadsPageHeader(
-    numberOfNotification: Int,
-    onMenuClick: () -> Unit,
-    onIconCLicked: () -> Unit,
-    imgUrl: String,
-    modifier: Modifier = Modifier
-) {
-    ConstraintLayout(
-        modifier = modifier
-    ) {
-        val (image, topBar) = createRefs()
-        AsyncImage(
-            model = imgUrl,
-            contentDescription = null,
-            error = painterResource(id = R.drawable.hitreads_placeholder),
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.constrainAs(image) {
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-                top.linkTo(parent.top)
-                bottom.linkTo(topBar.bottom, margin = (-5).dp)
-                width = Dimension.fillToConstraints
-                height = Dimension.fillToConstraints
-            }
-        )
-        HitReadsTopBar(
-            modifier = Modifier.constrainAs(topBar) {
-                top.linkTo(parent.top)
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-            },
-            onNotificationClick = {},
-            iconResId = R.drawable.ic_bell,
-            numberOfNotification = numberOfNotification,
-            onMenuClick = onMenuClick,
-            onIconClick = onIconCLicked
-        )
-    }
-}
-
-/*@Composable
-fun TitleSection(
-    title: String,
-    subtitle: String,
-    isExpanded: Boolean,
-    episodeName: String,
-    isLiked: Boolean,
-    onDotsClick: () -> Unit,
-    onLikeClick: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier
-    ) {
-        Row(
-            modifier = Modifier.height(IntrinsicSize.Min)
-        ) {
-            Titles(
-                title = title,
-                subtitle = subtitle,
-                episodeTitle = episodeName,
-                modifier = Modifier.weight(1f)
-            )
-            SimpleIcon(
-                iconResId = if (isLiked) R.drawable.ic_star else R.drawable.ic_star_outlined,
-                tint = if (isLiked) MaterialTheme.localColors.yellow else Color.Unspecified,
-                modifier = Modifier
-                    .padding(
-                        top = dimensionResource(id = R.dimen.dp12),
-                        end = dimensionResource(id = R.dimen.dp15)
-                    )
-                    .clickable {
-                        onLikeClick(isLiked)
-                    }
-            )
-            if (isExpanded) {
-                HorizontalSpacer(width = dimensionResource(id = R.dimen.dp15))
-                Divider(
-                    color = MaterialTheme.localColors.white_alpha05,
-                    modifier = Modifier
-                        .width(MaterialTheme.localDimens.dp0_5)
-                        .fillMaxHeight()
-                )
-                HorizontalSpacer(width = dimensionResource(id = R.dimen.dp10))
-                SimpleIcon(
-                    iconResId = R.drawable.ic_menu,
-                    modifier = Modifier
-                        .padding(
-                            top = dimensionResource(id = R.dimen.dp12),
-                            end = dimensionResource(id = R.dimen.dp20)
-                        )
-                        .clickable { onDotsClick.invoke() })
-            }
-
-        }
-        if (isExpanded) {
-            Divider(
-                color = MaterialTheme.localColors.white_alpha05,
-                thickness = MaterialTheme.localDimens.dp0_5
-            )
-            VerticalSpacer(height = MaterialTheme.localDimens.dp4_5)
-        }
-    }
-}*/
-
-@Composable
-fun TitleSection(
-    title: String,
-    subtitle: String,
-    isExpanded: Boolean,
-    episodeName: String,
-    isLiked: Boolean,
-    onDotsClick: () -> Unit,
-    onLikeClick: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = Modifier.animateContentSize()
-    ) {
-        Column(
-            modifier = modifier
-        ) {
-            Row(
-                modifier = Modifier.height(IntrinsicSize.Min)
-            ) {
-                Titles(
-                    title = title,
-                    subtitle = subtitle,
-                    episodeName = episodeName,
-                    isEpisodeNameVisible = !isExpanded,
-                    modifier = Modifier.weight(1f)
-                )
-                SimpleIcon(
-                    iconResId = if (isLiked) R.drawable.ic_star else R.drawable.ic_star_outlined,
-                    tint = if (isLiked) MaterialTheme.localColors.yellow else Color.Unspecified,
-                    modifier = Modifier
-                        .padding(
-                            top = dimensionResource(id = R.dimen.dp8),
-                            end = dimensionResource(id = R.dimen.dp15),
-                        )
-                        .clickable {
-                            onLikeClick(isLiked)
-                        }
-                )
-                if (isExpanded) {
-                    Divider(
-                        color = MaterialTheme.localColors.white_alpha05,
-                        modifier = Modifier
-                            .width(dimensionResource(id = R.dimen.dp1))
-                            .fillMaxHeight()
-                    )
-                    HorizontalSpacer(width = dimensionResource(id = R.dimen.dp10))
-                    SimpleIcon(
-                        iconResId = R.drawable.ic_menu,
-                        modifier = Modifier
-                            .padding(
-                                top = dimensionResource(id = R.dimen.dp12),
-                                end = dimensionResource(id = R.dimen.dp20)
-                            )
-                            .clickable { onDotsClick.invoke() })
-                }
-
-            }
-        }
-    }
-}
-
-/*@Composable
-fun Titles(
-    title: String,
-    subtitle: String,
-    modifier: Modifier = Modifier,
-    episodeTitle: String? = null
-) {
-    Column(
-        modifier = modifier
-    ) {
-        Text(text = title, style = MaterialTheme.localTextStyles.title)
-        Text(text = subtitle, style = MaterialTheme.localTextStyles.subtitle)
-        episodeTitle?.let {
-            Text(
-                text = episodeTitle,
-                style = MaterialTheme.localTextStyles.readingPurpleSubTitle
-            )
-        }
-    }
-}*/
-
-@Composable
-fun Titles(
-    title: String,
-    subtitle: String,
-    episodeName: String,
-    isEpisodeNameVisible: Boolean,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        modifier = modifier
-    ) {
-        Text(
-            text = title,
-            style = MaterialTheme.localTextStyles.poppins17Light,
-            color = MaterialTheme.localColors.white
-        )
-        Text(
-            text = subtitle,
-            style = MaterialTheme.localTextStyles.poppins13Medium,
-            color = MaterialTheme.localColors.white
-        )
-        if (isEpisodeNameVisible) {
-            VerticalSpacer(height = R.dimen.dp6)
-            Text(
-                text = episodeName,
-                style = MaterialTheme.localTextStyles.poppins13Medium,
-                color = MaterialTheme.localColors.purple
-            )
-        }
-    }
-}
-
 /*@Composable
 fun ReadingSection(
     text: String,
@@ -667,501 +1086,77 @@ fun EpisodeSectionItem(
     }
 }*/
 
-@Composable
-fun CommentSection(
-    lazyListState: LazyListState,
-    comments: List<Comment>,
-    modifier: Modifier = Modifier,
-    onLikeClick: (Boolean, Int) -> Unit,
-    onReplyClick: (Comment) -> Unit,
-    onExpanseClicked: (Int) -> Unit
+/*@Composable
+fun TitleSection(
+    title: String,
+    subtitle: String,
+    isExpanded: Boolean,
+    episodeName: String,
+    isLiked: Boolean,
+    onDotsClick: () -> Unit,
+    onLikeClick: (Boolean) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-
     Column(
         modifier = modifier
     ) {
-        LazyColumn(
-            state = lazyListState,
-            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp15)),
-            contentPadding = PaddingValues(top = dimensionResource(id = R.dimen.dp14)),
-        ) {
-            items(comments) { comment ->
-                CommentItem(
-                    model = comment,
-                    isChatSelected = false,
-                    onLikeClick = onLikeClick,
-                    onReplyClick = { onReplyClick.invoke(comment) }
-                )
-                VerticalSpacer(height = dimensionResource(id = R.dimen.dp12))
-                CommentItem(
-                    model = comment.replies.firstOrNull() ?: return@items,
-                    isChatSelected = false,
-                    onLikeClick = onLikeClick,
-                    onReplyClick = {
-                        onReplyClick.invoke(comment)
-                    }
-                )
-                if (!comment.isExpanded && comment.replies.size > 1) {
-                    SeeAll {
-                        onExpanseClicked.invoke(comment.id)
-                    }
-                }
-                if (comment.isExpanded) {
-                    comment.replies.forEachIndexed { index, comment ->
-                        if (index != 0) {
-                            CommentItem(
-                                model = comment,
-                                isChatSelected = false,
-                                onLikeClick = onLikeClick,
-                                onReplyClick = {
-                                    onReplyClick.invoke(comment)
-                                }
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun CommentSectionTabs(
-    tabState: CommentsTabState,
-    scrollState: ScrollState = rememberScrollState(),
-    onTabSelect: (CommentsTabState) -> Unit
-) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp9)),
-        modifier = Modifier.horizontalScroll(scrollState)
-    ) {
-        TabItem(
-            title = stringResource(id = R.string.all_comments),
-            isSelected = tabState == CommentsTabState.AllComments
-        ) {
-            onTabSelect.invoke(CommentsTabState.AllComments)
-        }
-        TabItem(
-            title = stringResource(id = R.string.my_favorite_comments),
-            isSelected = tabState == CommentsTabState.MyFavorites
-        ) {
-            onTabSelect.invoke(CommentsTabState.MyFavorites)
-        }
-        TabItem(
-            title = stringResource(id = R.string.my_comments),
-            isSelected = tabState == CommentsTabState.MyComments
-        ) {
-            onTabSelect.invoke(CommentsTabState.MyComments)
-        }
-    }
-}
-
-@Composable
-private fun TabItem(
-    title: String,
-    isSelected: Boolean,
-    onTabSelect: (CommentsTabState) -> Unit
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier.width(IntrinsicSize.Max),
-    ) {
-        Text(
-            text = title,
-            style = MaterialTheme.localTextStyles.poppins13Medium,
-            color = if (isSelected) MaterialTheme.localColors.white else MaterialTheme.localColors.white_alpha07,
-            modifier = Modifier.clickable { onTabSelect.invoke(CommentsTabState.AllComments) }
-        )
-        if (isSelected) {
-            Box(
-                modifier = Modifier
-                    .background(MaterialTheme.localColors.white_alpha07)
-                    .fillMaxWidth()
-                    .height(dimensionResource(id = R.dimen.dp4))
-            )
-        }
-    }
-}
-
-@Composable
-fun CommentItem(
-    model: Comment,
-    isChatSelected: Boolean,
-    modifier: Modifier = Modifier,
-    onLikeClick: (Boolean, Int) -> Unit,
-    onReplyClick: () -> Unit
-) {
-    ConstraintLayout(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        val (subCommentIcon, commentHeader, comment) = createRefs()
-        if (model.isReply) {
-            SimpleIcon(
-                iconResId = R.drawable.ic_subcomment_arrow,
-                modifier = Modifier.constrainAs(subCommentIcon) {
-                    start.linkTo(parent.start)
-                    top.linkTo(parent.top)
-                    bottom.linkTo(commentHeader.bottom)
-                }
-            )
-        }
         Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .constrainAs(commentHeader) {
-                    if (model.isReply) {
-                        start.linkTo(subCommentIcon.end, 11.dp)
-                    } else {
-                        start.linkTo(parent.start)
-                    }
-                    top.linkTo(parent.top)
-                    end.linkTo(parent.end, 34.dp)
-                    width = Dimension.fillToConstraints
-                }
+            modifier = Modifier.height(IntrinsicSize.Min)
         ) {
-            CommentImage(
-                imgUrl = model.imgUrl,
-                letter = if (model.authorName.isNotEmpty()) model.authorName.first()
-                    .toString() else "?"
-            )
-            HorizontalSpacer(width = dimensionResource(id = R.dimen.dp13))
-            Column(
-                verticalArrangement = Arrangement.Bottom,
-            ) {
-                Text(
-                    text = model.authorName,
-                    style = MaterialTheme.localTextStyles.poppins13Medium,
-                    color = MaterialTheme.localColors.white
-                )
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text(
-                        text = model.createdAt,
-                        style = MaterialTheme.localTextStyles.poppins10Regular,
-                        color = MaterialTheme.localColors.white_alpha07
-                    )
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp12)),
-                    ) {
-                        SimpleIcon(
-                            iconResId = if (model.isLiked) R.drawable.ic_heart_filled else R.drawable.ic_heart_outlined,
-                            modifier = Modifier.clickable {
-                                onLikeClick.invoke(
-                                    model.isLiked,
-                                    model.id
-                                )
-                            }
-                        )
-                        IconWithTextNextTo(
-                            iconResId = if (isChatSelected) R.drawable.ic_chat_filled else R.drawable.ic_chat_outlined,
-                            text = model.repliesCount.toString(),
-                            spacedBy = dimensionResource(id = R.dimen.dp6),
-                            textStyle = MaterialTheme.localTextStyles.poppins10Regular,
-                            isTextVisible = !model.isReply,
-                            onIconClick = { onReplyClick.invoke() },
-                        )
-                        SimpleIcon(iconResId = R.drawable.ic_menu_horizontal)
-                    }
-                }
-            }
-        }
-        VerticalSpacer(height = dimensionResource(id = R.dimen.dp14))
-        Text(
-            text = model.content,
-            style = MaterialTheme.localTextStyles.poppins12Regular,
-            color = MaterialTheme.localColors.white_alpha08,
-            modifier = Modifier.constrainAs(comment) {
-                start.linkTo(commentHeader.start)
-                top.linkTo(commentHeader.bottom)
-                end.linkTo(parent.end)
-                width = Dimension.fillToConstraints
-            }
-        )
-    }
-}
-
-@Composable
-fun HashTagSection(
-    paddingValues: PaddingValues,
-    modifier: Modifier = Modifier
-) {
-    LazyRow(
-        contentPadding = paddingValues,
-        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp23)),
-        modifier = modifier,
-    ) {
-        item { HasTagItem(hashTag = "TÜMÜ", commentSize = 1678, isSelected = true) }
-        item { HasTagItem(hashTag = "#KGD", commentSize = 220, isSelected = true) }
-        item { HasTagItem(hashTag = "#MKV", commentSize = 0, isSelected = false) }
-        item { HasTagItem(hashTag = "#FRK", commentSize = 47, isSelected = false) }
-        item { HasTagItem(hashTag = "#HLS", commentSize = 4, isSelected = false) }
-        item { HasTagItem(hashTag = "#BRF", commentSize = 17, isSelected = false) }
-    }
-}
-
-@Composable
-fun HasTagItem(
-    hashTag: String,
-    commentSize: Int,
-    isSelected: Boolean,
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp5)),
-        modifier = Modifier.width(IntrinsicSize.Min),
-    ) {
-        IconWithTextNextTo(
-            iconResId = R.drawable.ic_comment,
-            text = commentSize.toString(),
-            spacedBy = dimensionResource(id = R.dimen.dp3),
-            tint = MaterialTheme.localColors.white_alpha04,
-            textStyle = MaterialTheme.localTextStyles.poppins11Medium,
-            onIconClick = {},
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.Start)
-        )
-        Text(
-            text = hashTag,
-            style = MaterialTheme.localTextStyles.spaceGrotesk16Medium
-        )
-        if (isSelected) {
-            Box(
-                modifier = Modifier
-                    .height(dimensionResource(id = R.dimen.dp3))
-                    .fillMaxWidth()
-                    .background(MaterialTheme.localColors.orange)
-            )
-        } else {
-            Box(
-                modifier = Modifier
-                    .height(dimensionResource(id = R.dimen.dp1))
-                    .fillMaxWidth()
-                    .background(MaterialTheme.localColors.grey)
-            )
-        }
-
-    }
-}
-
-/*@Composable
-private fun ScrollState.isEpisodesVisible(): Boolean {
-    var previousOffset by remember(this) { mutableStateOf(0) }
-    return remember(this) {
-        derivedStateOf {
-            if (value == 0) {
-                true
-            } else if (value > previousOffset) {
-                false
-            } else {
-                value < maxValue
-            }.also {
-                previousOffset = value
-            }
-        }
-    }.value
-}
-
-@Composable
-private fun LazyListState.isEpisodesVisible(): Boolean {
-    var previousIndex by remember(this) { mutableStateOf(firstVisibleItemIndex) }
-    return remember(this) {
-        derivedStateOf {
-            if (previousIndex != 0) {
-                previousIndex > firstVisibleItemIndex
-            } else {
-                firstVisibleItemIndex == 0
-            }.also {
-                previousIndex = firstVisibleItemIndex
-            }
-        }
-    }.value
-}*/
-
-@Composable
-fun SeeAll(
-    onClick: () -> Unit
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.clickable { onClick.invoke() }
-    ) {
-        Box(
-            modifier = Modifier
-                .height(dimensionResource(id = R.dimen.dp1))
-                .width(dimensionResource(id = R.dimen.dp100))
-                .background(MaterialTheme.localColors.white_alpha07)
-                .fillMaxWidth()
-        )
-        HorizontalSpacer(width = dimensionResource(id = R.dimen.dp12))
-        Text(
-            text = "Tüm Cevapları Göster",
-            color = MaterialTheme.localColors.white_alpha07,
-            fontFamily = Poppins,
-            fontSize = 10.sp
-        )
-        HorizontalSpacer(width = dimensionResource(id = R.dimen.dp12))
-        Box(
-            modifier = Modifier
-                .height(dimensionResource(id = R.dimen.dp1))
-                .width(dimensionResource(id = R.dimen.dp100))
-                .background(MaterialTheme.localColors.white_alpha07)
-                .fillMaxWidth()
-        )
-    }
-}
-
-@Composable
-fun ReadingScreenContent(
-    body: String,
-    original: ShowOriginal?,
-    sharedIndexOriginal: IndexOriginal?,
-    episode: ShowEpisode?,
-    onLikeClick: (Boolean, Int) -> Unit,
-) {
-    val scrollState = rememberScrollState()
-    var isSidebarVisible by rememberSaveable {
-        mutableStateOf(true)
-    }
-    Column {
-        AsyncImage(
-            model = original?.cover,
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(0.14f)
-        )
-        Row {
-            Column(
+            Titles(
+                title = title,
+                subtitle = subtitle,
+                episodeTitle = episodeName,
                 modifier = Modifier.weight(1f)
-            ) {
-                TitleSection(
-                    title = original?.title.orEmpty(),
-                    subtitle = original?.indexAuthor?.name.orEmpty(),
-                    isExpanded = !isSidebarVisible,
-                    isLiked = sharedIndexOriginal?.indexUserData?.isLike == true,
-                    episodeName = episode?.episodeName.orEmpty(),
-                    onDotsClick = {
-                        isSidebarVisible = true
-                    },
-                    onLikeClick = { onLikeClick.invoke(it, original?.id.orZero()) },
-                    modifier = Modifier.padding(
-                        top = dimensionResource(id = R.dimen.dp12),
-                        start = dimensionResource(id = R.dimen.dp31),
-                    )
-                )
-                if (!isSidebarVisible) {
-                    Divider(
-                        color = MaterialTheme.localColors.white_alpha05,
-                        thickness = dimensionResource(id = R.dimen.dp1),
-                        modifier = Modifier.padding(
-                            start = dimensionResource(id = R.dimen.dp17),
-                            end = dimensionResource(id = R.dimen.dp12)
-                        )
-                    )
-                    VerticalSpacer(R.dimen.dp5)
-                }
-                Text(
-                    text = body,
-                    style = MaterialTheme.localTextStyles.poppins14Regular,
-                    color = MaterialTheme.localColors.white_alpha08,
-                    modifier = Modifier
-                        .verticalScroll(scrollState)
-                        .padding(
-                            start = dimensionResource(id = R.dimen.dp31),
-                            end = dimensionResource(id = R.dimen.dp24)
-                        )
-                )
-            }
-            HitReadsSideBar(
-                numberOfComments = 0,
-                isVisible = isSidebarVisible,
-                onVisibilityChange = {
-                    isSidebarVisible = it
-                },
-                onShowComments = { /*TODO*/ },
-                onCreateComment = { /*TODO*/ },
+            )
+            SimpleIcon(
+                iconResId = if (isLiked) R.drawable.ic_star else R.drawable.ic_star_outlined,
+                tint = if (isLiked) MaterialTheme.localColors.yellow else Color.Unspecified,
                 modifier = Modifier
-                    .width(IntrinsicSize.Min)
                     .padding(
                         top = dimensionResource(id = R.dimen.dp12),
-                        end = dimensionResource(id = R.dimen.dp12)
+                        end = dimensionResource(id = R.dimen.dp15)
                     )
-            ) {
-
+                    .clickable {
+                        onLikeClick(isLiked)
+                    }
+            )
+            if (isExpanded) {
+                HorizontalSpacer(width = dimensionResource(id = R.dimen.dp15))
+                Divider(
+                    color = MaterialTheme.localColors.white_alpha05,
+                    modifier = Modifier
+                        .width(MaterialTheme.localDimens.dp0_5)
+                        .fillMaxHeight()
+                )
+                HorizontalSpacer(width = dimensionResource(id = R.dimen.dp10))
+                SimpleIcon(
+                    iconResId = R.drawable.ic_menu,
+                    modifier = Modifier
+                        .padding(
+                            top = dimensionResource(id = R.dimen.dp12),
+                            end = dimensionResource(id = R.dimen.dp20)
+                        )
+                        .clickable { onDotsClick.invoke() })
             }
+
+        }
+        if (isExpanded) {
+            Divider(
+                color = MaterialTheme.localColors.white_alpha05,
+                thickness = MaterialTheme.localDimens.dp0_5
+            )
+            VerticalSpacer(height = MaterialTheme.localDimens.dp4_5)
         }
     }
-}
+}*/
 
-@Preview
-@Composable
-fun ReadingScreenPreview() {
-    ReadingScreenContent(
-        body = "turpis", original = ShowOriginal(
-            id = 4856,
-            title = "harum",
-            cover = "theophrastus",
-            description = "ornare",
-            isLocked = false,
-            viewCount = 8307,
-            commentsCount = 6035,
-            updatedAt = "platonem",
-            episodes = listOf(),
-            indexAuthor = IndexAuthor(id = 5990, name = "Calvin Barry")
-        ),
-        sharedIndexOriginal = IndexOriginal(
-            indexAuthor = IndexAuthor(id = 1539, name = "Taylor Estes"),
-            banner = "iriure",
-            cover = "quod",
-            description = "senectus",
-            id = 2020,
-            isActual = false,
-            isLocked = false,
-            likeCount = 7710,
-            commentCount = 7709,
-            viewCount = 3144,
-            indexPackage = IndexPackage(id = 8018, price = 4137, priceType = "vocibus"),
-            sort = 5293,
-            status = false,
-            title = "fastidii",
-            type = "fugit",
-            indexUserData = IndexUserData(isLike = false, isPurchase = false),
-            indexTags = listOf(),
-            hashtag = "nominavi",
-            subtitle = "habitant",
-            episodeCount = 4120,
-            isNew = false,
-            barcode = "propriae",
-            continueReadingEpisode = null
-        ),
-        onLikeClick = { _, _ -> },
-        episode = ShowEpisode(
-            id = 3919,
-            episodeName = "Ashlee Atkinson",
-            price = 5396,
-            episodeSort = 6437,
-            priceType = "signiferumque",
-            sort = 5256,
-            createdAt = "nunc",
-            updatedAt = "diam",
-            originalId = 3275,
-            seasonId = 9062,
-            isLocked = false,
-            isLastEpisode = false,
-            original = null,
-            bundleAssets = listOf(),
-            assetContents = null,
-            xmlContents = null,
-            episodeContent = null
-
-        )
-    )
-}
+/*fun share(title: String?, ctx: Context) {
+    Intent(Intent.ACTION_SEND).apply {
+        type = "text/plain"
+        putExtra(Intent.EXTRA_SUBJECT, R.string.app_name)
+        putExtra(Intent.EXTRA_TEXT, title)
+        ctx.startActivity(Intent.createChooser(this, "Original"))
+    }
+}*/
 

@@ -27,7 +27,8 @@ data class IndexOriginalModel(
     val hashtag: String?,
     val isNew: Boolean?,
     val barcode: String?,
-    val continueReadingEpisode: IndexContinueReadingEpisodeModel?
+    val continueReadingEpisode: IndexContinueReadingEpisodeModel?,
+    val episodes: List<ShowEpisodeModel>?
 )
 
 @Retention(AnnotationRetention.SOURCE)

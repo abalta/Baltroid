@@ -10,6 +10,8 @@ data class ShowOriginalDto(
     val id: Int,
     @SerialName("title")
     val title: String,
+    @SerialName("subtitle")
+    val titsle: String,
     @SerialName("cover")
     val cover: String,
     @SerialName("description")

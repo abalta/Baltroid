@@ -23,9 +23,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -41,12 +43,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
 import com.baltroid.apps.R
 import com.baltroid.ui.common.HorizontalSpacer
 import com.baltroid.ui.common.SetLoadingState
+import com.baltroid.ui.common.SimpleImage
 import com.baltroid.ui.common.VerticalSpacer
+import com.baltroid.ui.common.collectValue
 import com.baltroid.ui.components.HitReadsTopBar
 import com.baltroid.ui.navigation.HitReadsScreens
 import com.baltroid.ui.screens.menu.favorites.YellowStarBox
@@ -54,6 +58,7 @@ import com.baltroid.ui.screens.viewmodels.OriginalViewModel
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
+import com.baltroid.util.INTERACTIVE
 import com.baltroid.util.orEmpty
 import com.baltroid.util.orZero
 import com.hitreads.core.model.FavoriteOriginal
@@ -65,15 +70,23 @@ import com.hitreads.core.model.TagsWithOriginals
 fun HomeScreen(
     viewModel: OriginalViewModel,
     openMenuScreen: () -> Unit,
-    navigate: (route: String, item: IndexOriginal?) -> Unit
+    navigate: (route: String, originalId: Int?) -> Unit
 ) {
-    val homeUiState = viewModel.uiStateHome.collectAsStateWithLifecycle().value
+    val homeUiState = viewModel.uiStateHome.collectValue()
+
     SetLoadingState(isLoading = homeUiState.isLoading)
+
+    LaunchedEffect(Unit) {
+        viewModel.apply {
+            loadOriginals()
+            isLogged()
+        }
+    }
 
     HomeScreenContent(
         homeUiState = homeUiState,
         openMenuScreen = openMenuScreen,
-        deleteFavorite = {},
+        deleteFavorite = viewModel::deleteFavoriteHome,
         navigate = navigate
     )
 }
@@ -82,8 +95,8 @@ fun HomeScreen(
 fun HomeScreenContent(
     homeUiState: HomeUiState,
     openMenuScreen: () -> Unit,
-    deleteFavorite: (IndexOriginal?) -> Unit,
-    navigate: (route: String, item: IndexOriginal?) -> Unit
+    deleteFavorite: (id: Int) -> Unit,
+    navigate: (route: String, originalId: Int?) -> Unit
 ) {
     var tabState by rememberSaveable {
         mutableStateOf(HomeScreenTabs.AllStories)
@@ -97,7 +110,7 @@ fun HomeScreenContent(
             numberOfNotification = 0,
             isGemEnabled = true,
             isUserLoggedIn = homeUiState.isUserLoggedIn,
-            gemCount = homeUiState.profileModel?.gem.orZero(),
+            gemCount = homeUiState.profileModel.gem,
             onMenuClick = openMenuScreen,
             onNotificationClick = {/* no-op */ }
         )
@@ -108,27 +121,25 @@ fun HomeScreenContent(
                 .padding(
                     horizontal = dimensionResource(id = R.dimen.dp32)
                 )
-        ) {
-            tabState = it
-        }
+        ) { tabState = it }
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp31))
         when (tabState) {
             HomeScreenTabs.AllStories -> {
-                Originals(
+                IndexOriginals(
                     originals = homeUiState.originals,
                     state = rememberLazyListState(),
                     modifier = Modifier.weight(1f)
                 ) {
-                    navigate.invoke(HitReadsScreens.HomeDetailScreen.route, it)
+                    navigate.invoke(HitReadsScreens.HomeDetailScreen.route, it?.id)
                 }
             }
 
             HomeScreenTabs.Favorites -> {
                 FavoriteOriginals(
                     originals = homeUiState.favorites, state = rememberLazyListState(),
-                    onStarClicked = {}
+                    onStarClicked = deleteFavorite
                 ) {
-                    //navigate.invoke(HitReadsScreens.HomeDetailScreen.route, it)
+                    navigate.invoke(HitReadsScreens.HomeDetailScreen.route, it?.id)
                 }
             }
 
@@ -137,10 +148,10 @@ fun HomeScreenContent(
                     indexOriginals = homeUiState.continueReading,
                     state = rememberLazyListState()
                 ) {
-                    if (it?.type == "interactive") {
-                        navigate.invoke(HitReadsScreens.InteractiveScreen.route, it)
+                    if (it?.type == INTERACTIVE) {
+                        navigate.invoke(HitReadsScreens.InteractiveScreen.route, it.id)
                     } else {
-                        navigate.invoke(HitReadsScreens.ReadingScreen.route, it)
+                        navigate.invoke(HitReadsScreens.ReadingScreen.route, it?.id)
                     }
                 }
             }
@@ -149,7 +160,7 @@ fun HomeScreenContent(
 }
 
 @Composable
-private fun Originals(
+private fun IndexOriginals(
     originals: List<TagsWithOriginals>,
     state: LazyListState,
     modifier: Modifier = Modifier,
@@ -172,7 +183,7 @@ private fun Originals(
                 horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp16))
             ) {
                 items(item.indexOriginals.orEmpty()) { original ->
-                    OriginalItem(indexOriginal = original) {
+                    IndexOriginalItem(indexOriginal = original) {
                         onItemClicked.invoke(original)
                     }
                 }
@@ -186,7 +197,7 @@ private fun FavoriteOriginals(
     originals: List<FavoriteOriginal>,
     state: LazyListState,
     modifier: Modifier = Modifier,
-    onStarClicked: (FavoriteOriginal?) -> Unit,
+    onStarClicked: (id: Int) -> Unit,
     onItemClicked: (FavoriteOriginal?) -> Unit,
 ) {
     LazyRow(
@@ -198,7 +209,7 @@ private fun FavoriteOriginals(
         items(originals) { original ->
             FavoriteOriginalItem(
                 original = original,
-                onStarClicked = { onStarClicked.invoke(original) }) {
+                onStarClicked = { onStarClicked.invoke(original.id.orZero()) }) {
                 onItemClicked.invoke(original)
             }
         }
@@ -270,7 +281,7 @@ fun ContinueReadingItem(
 }
 
 @Composable
-private fun OriginalItem(
+private fun IndexOriginalItem(
     indexOriginal: IndexOriginal,
     onClick: () -> Unit
 ) {
@@ -281,12 +292,12 @@ private fun OriginalItem(
             .clickable { onClick.invoke() }
     ) {
         Box {
-            AsyncImage(
+            SubcomposeAsyncImage(
                 model = indexOriginal.cover,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
-                placeholder = painterResource(id = R.drawable.hitreads_placeholder),
-                error = painterResource(id = R.drawable.hitreads_placeholder),
+                loading = { CircularProgressIndicator() },
+                error = { SimpleImage(imgResId = R.drawable.hitreads_placeholder) },
                 modifier = Modifier
                     .size(
                         dimensionResource(id = R.dimen.dp129),
@@ -491,7 +502,7 @@ fun GenreSection(
                 .align(Alignment.Bottom)
         ) {
             Text(
-                text = stringResource(id = R.string.episode_size, episodeSize),
+                text = stringResource(id = R.string.episode_size_detail, episodeSize),
                 style = MaterialTheme.localTextStyles.poppins12Regular,
                 color = MaterialTheme.localColors.white,
                 modifier = Modifier.width(IntrinsicSize.Max)
@@ -801,7 +812,6 @@ fun HomeScreenPreview() {
         ),
         openMenuScreen = {},
         deleteFavorite = {},
-        navigate = { _: String, _: IndexOriginal? -> }
-
+        navigate = { _: String, _: Int? -> }
     )
 }

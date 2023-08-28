@@ -69,7 +69,6 @@ import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
 import com.baltroid.util.orEmpty
-import com.hitreads.core.domain.model.OriginalType
 import com.hitreads.core.model.Episode
 import com.hitreads.core.model.IndexAuthor
 import com.hitreads.core.model.IndexOriginal
@@ -83,11 +82,10 @@ fun InteractiveScreen(
     openMenuScreen: () -> Unit
 ) {
 
-    val original = viewModel.sharedUIState.collectAsStateWithLifecycle().value
 
-    LaunchedEffect(original) {
+    /*LaunchedEffect(original) {
         original?.id?.let { viewModel.showEpisode(761, OriginalType.INTERACTIVE) }
-    }
+    }*/
 
     val interactiveContent =
         viewModel.uiStateReading.collectAsStateWithLifecycle().value.episode?.xmlContents
@@ -166,7 +164,36 @@ fun InteractiveScreen(
                 }
             }
             InteractiveScreenBottomSection(
-                indexOriginal = original,
+                indexOriginal = IndexOriginal(
+                    indexAuthor = IndexAuthor(id = 2331, name = "Santiago Long"),
+                    banner = "audire",
+                    cover = "oratio",
+                    description = "praesent",
+                    id = 6480,
+                    isActual = false,
+                    isLocked = false,
+                    likeCount = 7490,
+                    commentCount = 8721,
+                    viewCount = 2254,
+                    indexPackage = IndexPackage(
+                        id = 5977,
+                        price = 7310,
+                        priceType = "sed"
+                    ),
+                    sort = 9124,
+                    status = false,
+                    title = "interdum",
+                    type = "interpretaris",
+                    indexUserData = IndexUserData(isFav = false, isPurchase = false),
+                    indexTags = listOf(),
+                    hashtag = "fuisset",
+                    subtitle = "quo",
+                    episodeCount = 6177,
+                    isNew = false,
+                    barcode = "aliquam",
+                    continueReadingEpisode = null,
+                    episodes = listOf()
+                ),
                 episode = episode
             )
         }
@@ -705,14 +732,15 @@ fun InteractiveScreenPreview() {
             status = false,
             title = "at",
             type = "pertinax",
-            indexUserData = IndexUserData(isLike = false, isPurchase = false),
+            indexUserData = IndexUserData(isFav = false, isPurchase = false),
             indexTags = listOf(),
             hashtag = "salutatus",
             subtitle = "aeque",
             episodeCount = 3147,
             isNew = false,
             barcode = "21312312",
-            continueReadingEpisode = null
+            continueReadingEpisode = null,
+            episodes = listOf()
         ),
         ShowEpisode(
             id = 4809,
