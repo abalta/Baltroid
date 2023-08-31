@@ -24,7 +24,7 @@ data class IndexNetworkOriginal(
     val isLocked: Boolean?,
     @SerialName("like_count")
     val likeCount: Int?,
-    @SerialName("comment_count")
+    @SerialName("comments_count")
     val commentCount: Int?,
     @SerialName("view_count")
     val viewCount: Int?,

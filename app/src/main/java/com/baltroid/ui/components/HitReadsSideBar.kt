@@ -17,6 +17,8 @@ import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,12 +36,14 @@ fun HitReadsSideBar(
     modifier: Modifier = Modifier,
     isVisible: Boolean,
     isFullHeight: Boolean,
+    isCommentsSelected: Boolean,
     onVisibilityChange: (Boolean) -> Unit,
     onShowComments: () -> Unit,
     onCreateComment: () -> Unit,
     onShowEpisodes: () -> Unit
 ) {
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp * 2
+    val localColors = MaterialTheme.localColors
     AnimatedVisibility(
         visible = isVisible,
         enter = slideInHorizontally(
@@ -87,6 +91,17 @@ fun HitReadsSideBar(
                     text = numberOfComments.toString(),
                     textStyle = MaterialTheme.localTextStyles.poppins10Regular,
                     modifier = Modifier
+                        .conditional(isCommentsSelected) {
+                            drawBehind {
+                                drawRoundRect(
+                                    color = localColors.orange,
+                                    size = Size(
+                                        width = 3.dp.toPx(),
+                                        height = size.height
+                                    )
+                                )
+                            }
+                        }
                         .padding(
                             start = dimensionResource(id = R.dimen.dp12),
                             bottom = dimensionResource(id = R.dimen.dp9),
@@ -358,6 +373,7 @@ fun HitReadsSideBarPreview() {
         isFullHeight = false,
         onVisibilityChange = { /*TODO*/ },
         onShowComments = { /*TODO*/ },
+        isCommentsSelected = false,
         onCreateComment = { /*TODO*/ }) {
 
     }

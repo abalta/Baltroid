@@ -45,10 +45,7 @@ import com.baltroid.ui.theme.localTextStyles
 
 @Composable
 fun CommentWritingCard(
-    author: String,
-    hashTag: String,
-    onBackClick: () -> Unit,
-    sendComment: (comment: String) -> Unit
+    author: String, hashTag: String, onBackClick: () -> Unit, sendComment: (comment: String) -> Unit
 ) {
     var comment by rememberSaveable {
         mutableStateOf("")
@@ -76,16 +73,14 @@ fun CommentWritingCard(
             .background(MaterialTheme.localColors.black)
             .imePadding()
     ) {
-        SimpleImage(
-            imgResId = R.drawable.ic_close,
+        SimpleImage(imgResId = R.drawable.ic_close,
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(
                     top = dimensionResource(id = R.dimen.dp14),
                     end = dimensionResource(id = R.dimen.dp22)
                 )
-                .clickable { onBackClick.invoke() }
-        )
+                .clickable { onBackClick.invoke() })
         Column {
             Column(
                 modifier = Modifier.weight(1f)
@@ -106,8 +101,7 @@ fun CommentWritingCard(
                     )
                     HorizontalSpacer(width = dimensionResource(id = R.dimen.dp13))
                     Column(
-                        modifier = Modifier
-                            .align(Alignment.Bottom)
+                        modifier = Modifier.align(Alignment.Bottom)
                     ) {
                         Text(
                             text = hashTag,
@@ -134,7 +128,7 @@ fun CommentWritingCard(
                 BasicTextField(
                     value = comment,
                     onValueChange = { comment = if (comment.length < 1200) it else comment },
-                    textStyle = MaterialTheme.localTextStyles.poppins16Regular,
+                    textStyle = MaterialTheme.localTextStyles.poppins16Regular.copy(color = MaterialTheme.localColors.white),
                     cursorBrush = SolidColor(MaterialTheme.localColors.white_alpha08),
                     modifier = Modifier
                         .focusRequester(focusRequester)
@@ -146,9 +140,7 @@ fun CommentWritingCard(
                 )
             }
             Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxWidth()
+                horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()
 
             ) {
                 Text(
@@ -162,8 +154,7 @@ fun CommentWritingCard(
                             bottom = dimensionResource(id = R.dimen.dp16)
                         )
                 )
-                Text(
-                    text = stringResource(id = R.string.send),
+                Text(text = stringResource(id = R.string.send),
                     style = MaterialTheme.localTextStyles.poppins12Medium,
                     color = MaterialTheme.localColors.black,
                     modifier = Modifier
@@ -175,8 +166,7 @@ fun CommentWritingCard(
                         .background(MaterialTheme.localColors.white_alpha08)
                         .clickable { sendComment.invoke(comment) }
                         .padding(
-                            vertical = 8.dp,
-                            horizontal = dimensionResource(id = R.dimen.dp18)
+                            vertical = 8.dp, horizontal = dimensionResource(id = R.dimen.dp18)
                         )
 
                 )

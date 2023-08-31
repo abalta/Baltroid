@@ -20,6 +20,7 @@ import com.baltroid.core.network.util.Constants.Fields.CONTINUE_READING
 import com.baltroid.core.network.util.Constants.Fields.EMAIL
 import com.baltroid.core.network.util.Constants.Fields.GET_BY_FAV
 import com.baltroid.core.network.util.Constants.Fields.ID
+import com.baltroid.core.network.util.Constants.Fields.ORIGINALS
 import com.baltroid.core.network.util.Constants.Fields.PASSWORD
 import com.baltroid.core.network.util.Constants.Fields.RESPONSE_ID
 import com.baltroid.core.network.util.Constants.Fields.TYPE
@@ -58,7 +59,7 @@ interface HitReadsService {
 
     @GET(FAVORITE)
     suspend fun getFavoriteOriginals(
-        @Query(TYPE) type: String = "originals"
+        @Query(TYPE) type: String = ORIGINALS
     ): BaltroidResult<HitReadsResponse<List<FavoriteOriginalDto>>>
 
     @DELETE(FAVORITE)
@@ -72,6 +73,12 @@ interface HitReadsService {
 
     @GET("$ORIGINALS_INDEX/$EPISODE/{id}/$SHOW")
     suspend fun showEpisode(@Path("id") id: Int): BaltroidResult<HitReadsResponse<EpisodeShowDto>>
+
+    @GET(COMMENT)
+    suspend fun getComments(
+        @Query(TYPE) type: String,
+        @Query(ID) id: Int
+    ): BaltroidResult<HitReadsResponse<List<CommentDto>>>
 
     @PUT("$ORIGINALS_INDEX/{id}/$LIKE")
     suspend fun likeOriginal(@Path("id") id: Int): BaltroidResult<HitReadsResponse<Unit>>
@@ -96,12 +103,6 @@ interface HitReadsService {
     suspend fun register(
         @Body requestBody: RegisterRequestBody
     ): BaltroidResult<HitReadsResponse<Unit>>
-
-    @GET(COMMENT)
-    suspend fun getComments(
-        @Query(TYPE) type: String,
-        @Query(ID) id: Int
-    ): BaltroidResult<HitReadsResponse<List<CommentDto>>>
 
     @GET(COMMENT)
     suspend fun getAllComments(

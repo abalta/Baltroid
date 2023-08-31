@@ -32,12 +32,14 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.baltroid.apps.R
 import com.baltroid.ui.common.HorizontalSpacer
@@ -114,7 +116,9 @@ private fun HomeDetailScreenContent(
             placeholder = painterResource(id = R.drawable.woods_image),
             error = painterResource(id = R.drawable.woods_image),
             contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .blur(10.dp)
         )
         Box(
             Modifier
@@ -416,6 +420,7 @@ fun DetailEpisodes(
 @Composable
 fun EpisodeItem(
     episode: ShowEpisode,
+    showEpisodeName: Boolean = true,
     onClick: (ShowEpisode) -> Unit,
 ) {
     Row(
@@ -435,16 +440,21 @@ fun EpisodeItem(
             color = MaterialTheme.localColors.white
         )
         HorizontalSpacer(width = dimensionResource(id = R.dimen.dp20))
-        Text(
-            text = episode.episodeName.orEmpty(),
-            style = MaterialTheme.localTextStyles.spaceGrotesk14Regular,
-            color = MaterialTheme.localColors.white,
-            modifier = Modifier.weight(1f)
-        )
+        if (showEpisodeName) {
+            Text(
+                text = episode.episodeName.orEmpty(),
+                style = MaterialTheme.localTextStyles.spaceGrotesk14Regular,
+                color = MaterialTheme.localColors.white,
+                modifier = Modifier.weight(1f)
+            )
+        }
         if (episode.isLocked) {
             SimpleIcon(
                 iconResId = R.drawable.ic_lock,
-                modifier = Modifier.padding(end = dimensionResource(id = R.dimen.dp22))
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentWidth(Alignment.End)
+                    .padding(end = dimensionResource(id = R.dimen.dp22))
             )
         }
     }

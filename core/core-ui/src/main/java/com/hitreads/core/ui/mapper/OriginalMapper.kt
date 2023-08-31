@@ -127,7 +127,7 @@ fun ShowEpisodeModel.asShowEpisode() = ShowEpisode(
     bundleAssets = bundleAssets?.map { it.asInteractiveBundleAssets() },
     assetContents = assetContents,
     xmlContents = xmlContents,
-    episodeContent = episodeContent?.replace("\\", "")
+    episodeContent = episodeContent?.replace("\n", "")?.replace("\\", "")
 )
 
 fun ShowEpisodeModel.asShowEpisodeIndex() = ShowEpisode(
@@ -187,7 +187,7 @@ fun CommentModel.asComment() = Comment(
     createdAt = createdAt,
     isLiked = activeUserLike,
     isReply = isReply,
-    replies = replies.map { it.asComment() },
+    replies = replies?.map { it.asComment() }.orEmpty(),
     episode = "",
     indexOriginal = original?.asIndexOriginal()
 )

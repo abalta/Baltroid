@@ -1,6 +1,13 @@
 package com.baltroid.ui.screens.reading
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,6 +25,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
@@ -39,6 +47,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
@@ -50,7 +59,6 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -64,23 +72,22 @@ import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.SimpleImage
 import com.baltroid.ui.common.VerticalSpacer
 import com.baltroid.ui.common.collectValue
+import com.baltroid.ui.components.CommentWritingCard
 import com.baltroid.ui.components.HitReadsSideBar
 import com.baltroid.ui.components.HitReadsTopBar
-import com.baltroid.ui.screens.menu.comments.CommentImage
+import com.baltroid.ui.screens.home.detail.EpisodeItem
 import com.baltroid.ui.screens.reading.comments.CommentsTabState
 import com.baltroid.ui.screens.viewmodels.OriginalViewModel
 import com.baltroid.ui.theme.Poppins
 import com.baltroid.ui.theme.localColors
+import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
 import com.baltroid.util.conditional
 import com.baltroid.util.orEmpty
 import com.baltroid.util.orZero
 import com.hitreads.core.domain.model.OriginalType
 import com.hitreads.core.model.Comment
-import com.hitreads.core.model.IndexAuthor
 import com.hitreads.core.model.IndexOriginal
-import com.hitreads.core.model.IndexPackage
-import com.hitreads.core.model.IndexUserData
 import com.hitreads.core.model.ShowEpisode
 
 @Composable
@@ -88,26 +95,28 @@ fun ReadingScreen(
     viewModel: OriginalViewModel,
     navigate: (String) -> Unit
 ) {
-    val readingUIState = viewModel.uiStateReading.collectValue()
-    SetLoadingState(isLoading = readingUIState.isLoading)
+    val uiState = viewModel.uiStateReading.collectValue()
+    SetLoadingState(isLoading = uiState.isLoading)
 
     LaunchedEffect(Unit) {
-        viewModel.apply {
-            selectedEpisodeId?.let { viewModel.startReadingEpisode(it) }
-            //todo end read
-        }
+        viewModel.startReadingEpisode()
+        //todo end read
     }
 
-    LaunchedEffect(Unit) {
-        viewModel.showEpisode(
-            viewModel.selectedEpisodeId ?: -1, OriginalType.TEXT
-        )
+    LaunchedEffect(viewModel.selectedEpisodeId.value) {
+        viewModel.showEpisode(OriginalType.TEXT)
     }
 
     ReadingScreenContent(
-        body = readingUIState.episode?.episodeContent.orEmpty(),
+        uiState = uiState,
         original = viewModel.uiStateDetail.collectValue().original,
         episode = viewModel.selectedEpisode(),
+        onEpisodeChange = viewModel::setSelectedEpisodeId,
+        loadComments = viewModel::getOriginalComments,
+        onNextClicked = viewModel::nextEpisode,
+        onCreateComment = { comment ->
+            viewModel.createComment(comment, null)
+        },
         onLikeClick = { isLiked, id ->
             if (isLiked) viewModel.deleteFavorite(id)
             else viewModel.createFavorite(id)
@@ -117,50 +126,66 @@ fun ReadingScreen(
 
 @Composable
 fun ReadingScreenContent(
-    body: String,
+    uiState: ReadingUiState,
     original: IndexOriginal?,
     episode: ShowEpisode?,
+    onNextClicked: () -> Unit,
+    onCreateComment: (String) -> Unit,
+    loadComments: () -> Unit,
+    onEpisodeChange: (Int) -> Unit,
     onLikeClick: (Boolean, Int) -> Unit,
 ) {
     val scrollState = rememberScrollState()
     var isSidebarVisible by rememberSaveable {
         mutableStateOf(true)
     }
-    if (scrollState.value != 0 && isSidebarVisible) {
-        isSidebarVisible = scrollState.isSidebarVisible()
-    }
     var isReadingSection by rememberSaveable {
         mutableStateOf(true)
     }
+    if (scrollState.value != 0 && isSidebarVisible && isReadingSection) {
+        isSidebarVisible = scrollState.isSidebarVisible()
+    }
+    var isSideEpisodesSheetVisible by remember {
+        mutableStateOf(false)
+    }
 
-    Column(
-        Modifier
-            .navigationBarsPadding()
-            .conditional(isReadingSection) {
-                verticalScroll(scrollState)
-            }
-    ) {
-        AsyncImage(
-            model = original?.cover,
-            contentDescription = null,
-            placeholder = painterResource(id = R.drawable.hitreads_placeholder),
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(dimensionResource(id = R.dimen.dp120))
-        )
-        Box {
-            Row {
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    if (isReadingSection) {
+    var isWriteCardShown by remember {
+        mutableStateOf(false)
+    }
+
+    var selectedCommentTab by rememberSaveable {
+        mutableStateOf(CommentsTabState.AllComments)
+    }
+
+    Box {
+        Column(
+            Modifier
+                .navigationBarsPadding()
+                .conditional(isReadingSection) {
+                    verticalScroll(scrollState)
+                }
+        ) {
+            AsyncImage(
+                model = original?.cover,
+                contentDescription = null,
+                placeholder = painterResource(id = R.drawable.hitreads_placeholder),
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(dimensionResource(id = R.dimen.dp120))
+            )
+            Box {
+                Row {
+                    Column(
+                        modifier = Modifier.weight(1f)
+                    ) {
                         TitleSection(
                             title = original?.title.orEmpty(),
                             subtitle = original?.indexAuthor?.name.orEmpty(),
                             isExpanded = !isSidebarVisible,
                             isLiked = original?.indexUserData?.isFav == true,
                             episodeName = episode?.episodeName.orEmpty(),
+                            isEpisodeNameVisible = isSidebarVisible && isReadingSection,
                             onDotsClick = {
                                 isSidebarVisible = true
                             },
@@ -170,47 +195,133 @@ fun ReadingScreenContent(
                                 start = dimensionResource(id = R.dimen.dp31),
                             )
                         )
-                        ReadingSection(body = body, isLastEpisode = episode?.isLastEpisode == true)
-                    } else {
-                        CommentSectionTabs(
-                            tabState = CommentsTabState.AllComments,
-                            onTabSelect = {})
-                        CommentSection(
-                            lazyListState = rememberLazyListState(),
-                            comments = listOf(),
-                            onLikeClick = { _, _ -> },
-                            onReplyClick = {},
-                            onExpanseClicked = {}
-                        )
+                        if (isReadingSection) {
+                            ReadingSection(
+                                body = uiState.episode?.episodeContent.orEmpty(),
+                                isLastEpisode = episode?.isLastEpisode == true,
+                                onNextClicked = onNextClicked
+                            )
+                        } else {
+                            VerticalSpacer(height = R.dimen.dp8)
+                            CommentSectionTabs(
+                                tabState = selectedCommentTab,
+                                onTabSelect = { selectedCommentTab = it }
+                            )
+                            CommentSection(
+                                lazyListState = rememberLazyListState(),
+                                comments = uiState.comments,
+                                onLikeClick = { _, _ -> },
+                                onReplyClick = {},
+                                onExpanseClicked = {},
+                                modifier = Modifier.padding(start = dimensionResource(id = R.dimen.dp30))
+                            )
+                        }
+                    }
+                    HitReadsSideBar(
+                        numberOfComments = original?.commentCount.orZero(),
+                        isVisible = isSidebarVisible,
+                        onVisibilityChange = {
+                            isSidebarVisible = it
+                        },
+                        isFullHeight = !isReadingSection,
+                        onShowComments = {
+                            isReadingSection = !isReadingSection
+                            if (!isReadingSection) {
+                                loadComments.invoke()
+                            }
+                        },
+                        isCommentsSelected = !isReadingSection,
+                        onCreateComment = { isWriteCardShown = true },
+                        onShowEpisodes = { isSideEpisodesSheetVisible = true },
+                        modifier = Modifier
+                            .width(IntrinsicSize.Min)
+                            .padding(
+                                top = dimensionResource(id = R.dimen.dp12),
+                                end = dimensionResource(id = R.dimen.dp12)
+                            )
+                    )
+                }
+                this@Column.AnimatedVisibility(
+                    visible = isSideEpisodesSheetVisible,
+                    enter = slideInHorizontally(
+                        animationSpec = tween(100, easing = LinearEasing)
+                    ) { it / 2 },
+                    exit = slideOutHorizontally(
+                        animationSpec = tween(100, easing = LinearEasing)
+                    ) { it / 2 }
+                ) {
+                    SideEpisodesSheet(
+                        indexOriginal = original,
+                        onEpisodeChange = onEpisodeChange,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentWidth(Alignment.End)
+                            .width(dimensionResource(id = R.dimen.dp200))
+                            .padding(top = dimensionResource(id = R.dimen.dp50))
+                            .background(Color.Black)
+                    ) {
+                        isSideEpisodesSheetVisible = false
                     }
                 }
-                HitReadsSideBar(
-                    numberOfComments = 0,
-                    isVisible = isSidebarVisible,
-                    onVisibilityChange = {
-                        isSidebarVisible = it
-                    },
-                    isFullHeight = !isReadingSection,
-                    onShowComments = { isReadingSection = !isReadingSection },
-                    onCreateComment = { /*TODO*/ },
-                    modifier = Modifier
-                        .width(IntrinsicSize.Min)
-                        .padding(
-                            top = dimensionResource(id = R.dimen.dp12),
-                            end = dimensionResource(id = R.dimen.dp12)
-                        )
-                ) {
-
-                }
             }
-            /* Box(
-                 modifier = Modifier
-                     .fillMaxWidth()
-                     .wrapContentWidth(Alignment.End)
-                     .size(300.dp, 600.dp)
-                     .padding(top = dimensionResource(id = R.dimen.dp50))
-                     .background(Color.Yellow)
-             )*/
+        }
+
+        AnimatedVisibility(visible = isWriteCardShown, enter = fadeIn(), exit = fadeOut()) {
+            CommentWritingCard(
+                author = original?.indexAuthor?.name.orEmpty(),
+                original?.hashtag.orEmpty(),
+                onBackClick = { isWriteCardShown = !isWriteCardShown }
+            ) { comment ->
+                onCreateComment(comment)
+                isWriteCardShown = false
+            }
+        }
+    }
+}
+
+@Composable
+fun SideEpisodesSheet(
+    indexOriginal: IndexOriginal?,
+    modifier: Modifier = Modifier,
+    onEpisodeChange: (Int) -> Unit,
+    onCloseClicked: () -> Unit,
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
+    ) {
+        VerticalSpacer(height = R.dimen.dp15)
+        SimpleIcon(
+            iconResId = R.drawable.ic_close,
+            modifier = Modifier
+                .align(Alignment.Start)
+                .padding(start = dimensionResource(id = R.dimen.dp17))
+                .clickable { onCloseClicked.invoke() }
+        )
+        VerticalSpacer(height = R.dimen.dp10)
+        AsyncImage(
+            model = indexOriginal?.cover,
+            placeholder = painterResource(id = R.drawable.hitreads_placeholder),
+            contentDescription = null, modifier = Modifier
+                .size(dimensionResource(id = R.dimen.dp127), dimensionResource(id = R.dimen.dp177))
+                .clip(MaterialTheme.localShapes.roundedDp18)
+        )
+        VerticalSpacer(height = R.dimen.dp38)
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(dimensionResource(id = R.dimen.dp280))
+        ) {
+            items(indexOriginal?.episodes.orEmpty()) { episode ->
+                EpisodeItem(episode = episode, showEpisodeName = false) {
+                    onEpisodeChange.invoke(it.id)
+                }
+                Divider(
+                    color = MaterialTheme.localColors.white,
+                    thickness = dimensionResource(id = R.dimen.dp1),
+                    modifier = Modifier.padding(start = dimensionResource(id = R.dimen.dp8))
+                )
+            }
         }
     }
 }
@@ -218,7 +329,8 @@ fun ReadingScreenContent(
 @Composable
 fun ReadingSection(
     body: String,
-    isLastEpisode: Boolean
+    isLastEpisode: Boolean,
+    onNextClicked: () -> Unit
 ) {
     Column {
         Text(
@@ -230,12 +342,12 @@ fun ReadingSection(
             )
         )
         if (!isLastEpisode && body.isNotEmpty()) {
-            VerticalSpacer(height = R.dimen.dp40)
             SimpleImage(
                 imgResId = R.drawable.ic_arrow_right,
                 modifier = Modifier
                     .padding(end = dimensionResource(id = R.dimen.dp25))
                     .size(dimensionResource(id = R.dimen.dp46))
+                    .clickable { onNextClicked.invoke() }
                     .align(Alignment.End)
                     .alpha(0.5f)
             )
@@ -316,6 +428,7 @@ fun TitleSection(
     subtitle: String,
     isExpanded: Boolean,
     episodeName: String,
+    isEpisodeNameVisible: Boolean,
     isLiked: Boolean,
     onDotsClick: () -> Unit,
     onLikeClick: (Boolean) -> Unit,
@@ -334,7 +447,7 @@ fun TitleSection(
                     title = title,
                     subtitle = subtitle,
                     episodeName = episodeName,
-                    isEpisodeNameVisible = !isExpanded,
+                    isEpisodeNameVisible = isEpisodeNameVisible,
                     modifier = Modifier.weight(1f)
                 )
                 SimpleIcon(iconResId = if (isLiked) R.drawable.ic_star else R.drawable.ic_star_outlined,
@@ -430,28 +543,34 @@ fun CommentSection(
             contentPadding = PaddingValues(top = dimensionResource(id = R.dimen.dp14)),
         ) {
             items(comments) { comment ->
-                CommentItem(model = comment,
+                CommentItem(
+                    model = comment,
                     isChatSelected = false,
                     onLikeClick = onLikeClick,
+                    isSeeAllEnabled = false,
+                    onExpanseClicked = { /* no-op */ },
                     onReplyClick = { onReplyClick.invoke(comment) })
                 VerticalSpacer(height = dimensionResource(id = R.dimen.dp12))
-                CommentItem(model = comment.replies.firstOrNull() ?: return@items,
+                CommentItem(
+                    model = comment.replies.firstOrNull() ?: return@items,
                     isChatSelected = false,
                     onLikeClick = onLikeClick,
+                    isSeeAllEnabled = !comment.isExpanded && comment.replies.size > 1,
+                    onExpanseClicked = {
+
+                    },
                     onReplyClick = {
                         onReplyClick.invoke(comment)
                     })
-                if (!comment.isExpanded && comment.replies.size > 1) {
-                    SeeAll {
-                        onExpanseClicked.invoke(comment.id)
-                    }
-                }
+
                 if (comment.isExpanded) {
                     comment.replies.forEachIndexed { index, comment ->
                         if (index != 0) {
                             CommentItem(model = comment,
                                 isChatSelected = false,
                                 onLikeClick = onLikeClick,
+                                isSeeAllEnabled = false,
+                                onExpanseClicked = { /* no-op */ },
                                 onReplyClick = {
                                     onReplyClick.invoke(comment)
                                 })
@@ -471,7 +590,9 @@ fun CommentSectionTabs(
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp9)),
-        modifier = Modifier.horizontalScroll(scrollState)
+        modifier = Modifier
+            .horizontalScroll(scrollState)
+            .padding(horizontal = dimensionResource(id = R.dimen.dp30))
     ) {
         TabItem(
             title = stringResource(id = R.string.all_comments),
@@ -522,14 +643,15 @@ private fun TabItem(
 fun CommentItem(
     model: Comment,
     isChatSelected: Boolean,
-    modifier: Modifier = Modifier,
+    isSeeAllEnabled: Boolean,
+    onExpanseClicked: (commentId: Int) -> Unit,
     onLikeClick: (Boolean, Int) -> Unit,
     onReplyClick: () -> Unit
 ) {
     ConstraintLayout(
         modifier = Modifier.fillMaxWidth()
     ) {
-        val (subCommentIcon, commentHeader, comment) = createRefs()
+        val (subCommentIcon, commentHeader, comment, seeAll) = createRefs()
         if (model.isReply) {
             SimpleIcon(iconResId = R.drawable.ic_subcomment_arrow,
                 modifier = Modifier.constrainAs(subCommentIcon) {
@@ -549,10 +671,15 @@ fun CommentItem(
                 end.linkTo(parent.end, 34.dp)
                 width = Dimension.fillToConstraints
             }) {
-            CommentImage(
-                imgUrl = model.imgUrl,
-                letter = if (model.authorName.isNotEmpty()) model.authorName.first()
-                    .toString() else "?"
+            AsyncImage(
+                model = model.imgUrl,
+                placeholder = painterResource(id = R.drawable.hitreads_placeholder),
+                error = painterResource(id = R.drawable.hitreads_placeholder),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(dimensionResource(id = R.dimen.dp48))
+                    .clip(MaterialTheme.localShapes.circleShape),
+                contentScale = ContentScale.Crop
             )
             HorizontalSpacer(width = dimensionResource(id = R.dimen.dp13))
             Column(
@@ -564,7 +691,7 @@ fun CommentItem(
                     color = MaterialTheme.localColors.white
                 )
                 Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                    horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp24)),
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth(),
                 ) {
@@ -605,7 +732,20 @@ fun CommentItem(
                 top.linkTo(commentHeader.bottom)
                 end.linkTo(parent.end)
                 width = Dimension.fillToConstraints
-            })
+            }
+        )
+        if (isSeeAllEnabled) {
+            SeeAll(
+                modifier = Modifier.constrainAs(seeAll) {
+                    start.linkTo(comment.start)
+                    end.linkTo(commentHeader.end)
+                    top.linkTo(comment.bottom)
+                    width = Dimension.fillToConstraints
+                }
+            ) {
+                onExpanseClicked.invoke(model.id)
+            }
+        }
     }
 }
 
@@ -682,31 +822,35 @@ private fun ScrollState.isSidebarVisible(): Boolean {
 
 @Composable
 fun SeeAll(
+    modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
-    Row(verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.clickable { onClick.invoke() }) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center,
+        modifier = modifier.clickable { onClick.invoke() }) {
         Box(
             modifier = Modifier
                 .height(dimensionResource(id = R.dimen.dp1))
-                .width(dimensionResource(id = R.dimen.dp100))
                 .background(MaterialTheme.localColors.white_alpha07)
-                .fillMaxWidth()
+                .weight(1f)
         )
         HorizontalSpacer(width = dimensionResource(id = R.dimen.dp12))
         Text(
-            text = "Tüm Cevapları Göster",
+            text = stringResource(id = R.string.see_all),
             color = MaterialTheme.localColors.white_alpha07,
             fontFamily = Poppins,
-            fontSize = 10.sp
+            fontSize = 10.sp,
+            minLines = 1,
+            maxLines = 1,
+            modifier = Modifier.width(IntrinsicSize.Max)
         )
         HorizontalSpacer(width = dimensionResource(id = R.dimen.dp12))
         Box(
             modifier = Modifier
                 .height(dimensionResource(id = R.dimen.dp1))
-                .width(dimensionResource(id = R.dimen.dp100))
                 .background(MaterialTheme.localColors.white_alpha07)
-                .fillMaxWidth()
+                .weight(1f)
         )
     }
 }
@@ -714,57 +858,7 @@ fun SeeAll(
 @Preview
 @Composable
 fun ReadingScreenPreview() {
-    ReadingScreenContent(
-        body = LoremIpsum(100).values.joinToString { it }, original = IndexOriginal(
-            indexAuthor = IndexAuthor(id = 2598, name = "Carson Martinez"),
-            banner = "ancillae",
-            cover = "fusce",
-            description = "partiendo",
-            id = 2875,
-            isActual = false,
-            isLocked = false,
-            likeCount = 2628,
-            commentCount = 7416,
-            viewCount = 9434,
-            indexPackage = IndexPackage(
-                id = 4164,
-                price = 3134,
-                priceType = "elitr"
-            ),
-            sort = 6775,
-            status = false,
-            title = "dis",
-            type = "mauris",
-            indexUserData = IndexUserData(isFav = false, isPurchase = false),
-            indexTags = listOf(),
-            hashtag = "eirmod",
-            subtitle = "mei",
-            episodeCount = 5819,
-            isNew = false,
-            barcode = "error",
-            continueReadingEpisode = null,
-            episodes = listOf()
-        ), onLikeClick = { _, _ -> }, episode = ShowEpisode(
-            id = 3919,
-            episodeName = "Ashlee Atkinson",
-            price = 5396,
-            episodeSort = 6437,
-            priceType = "signiferumque",
-            sort = 5256,
-            createdAt = "nunc",
-            updatedAt = "diam",
-            originalId = 3275,
-            seasonId = 9062,
-            isLocked = false,
-            isLastEpisode = false,
-            original = null,
-            bundleAssets = listOf(),
-            assetContents = null,
-            xmlContents = null,
-            episodeContent = null
 
-        )
-    )
 }
 
 /*@Composable

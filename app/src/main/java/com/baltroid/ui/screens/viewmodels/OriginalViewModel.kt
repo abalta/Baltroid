@@ -1,16 +1,22 @@
 package com.baltroid.ui.screens.viewmodels
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.baltroid.core.common.result.handle
 import com.baltroid.ui.screens.home.HomeUiState
 import com.baltroid.ui.screens.home.detail.HomeDetailUIState
 import com.baltroid.ui.screens.reading.ReadingUiState
+import com.baltroid.util.ORIGINAL
 import com.baltroid.util.ORIGINALS
+import com.baltroid.util.orZero
 import com.hitreads.core.domain.usecase.CreateCommentUseCase
 import com.hitreads.core.domain.usecase.CreateFavoriteUseCase
 import com.hitreads.core.domain.usecase.DeleteFavoriteUseCase
 import com.hitreads.core.domain.usecase.EndReadingEpisodeUseCase
+import com.hitreads.core.domain.usecase.GetCommentsUseCase
 import com.hitreads.core.domain.usecase.GetFavoriteOriginalsUseCase
 import com.hitreads.core.domain.usecase.GetOriginalsUseCase
 import com.hitreads.core.domain.usecase.IsLoggedUseCase
@@ -20,6 +26,7 @@ import com.hitreads.core.domain.usecase.ShowOriginalUseCase
 import com.hitreads.core.domain.usecase.StartReadingEpisodeUseCase
 import com.hitreads.core.model.IndexOriginal
 import com.hitreads.core.model.ShowEpisode
+import com.hitreads.core.ui.mapper.asComment
 import com.hitreads.core.ui.mapper.asFavoriteOriginal
 import com.hitreads.core.ui.mapper.asIndexOriginal
 import com.hitreads.core.ui.mapper.asShowEpisode
@@ -44,6 +51,7 @@ class OriginalViewModel @Inject constructor(
     private val startReadingEpisodeUseCase: StartReadingEpisodeUseCase,
     private val endReadingEpisodeUseCase: EndReadingEpisodeUseCase,
     private val getFavoriteOriginalsUseCase: GetFavoriteOriginalsUseCase,
+    private val getCommentsUseCase: GetCommentsUseCase,
 ) : ViewModel() {
 
     private val _uiStateHome = MutableStateFlow(HomeUiState())
@@ -57,10 +65,12 @@ class OriginalViewModel @Inject constructor(
     val uiStateReading = _uiStateReading.asStateFlow()
 
     var selectedOriginalId: Int? = null
-    var selectedEpisodeId: Int? = null
+
+    private val _selectedEpisodeId: MutableState<Int> = mutableStateOf(0)
+    val selectedEpisodeId: State<Int> = _selectedEpisodeId
 
     fun selectedEpisode(): ShowEpisode? = _uiStateDetail.value.original.episodes.firstOrNull {
-        it.id == selectedEpisodeId
+        it.id == _selectedEpisodeId.value
     }
 
     fun loadOriginals() = viewModelScope.launch {
@@ -206,6 +216,30 @@ class OriginalViewModel @Inject constructor(
         }
     }
 
+    fun getOriginalComments() {
+        viewModelScope.launch {
+            getCommentsUseCase(type = ORIGINAL, selectedOriginalId.orZero()).handle {
+                onLoading {
+                    _uiStateReading.update { it.copy(isLoading = true) }
+                }
+                onSuccess { comments ->
+                    _uiStateReading.update {
+                        it.copy(
+                            isLoading = false,
+                            comments = comments.map { it.asComment() })
+                    }
+                }
+                onFailure {
+                    _uiStateReading.update { it.copy(isLoading = false) }
+                }
+            }
+        }
+    }
+
+    fun nextEpisode() {
+
+    }
+
     /* fun deleteFavorite(original: Original?) = viewModelScope.launch {
          original?.let {
              deleteFavoriteUseCase.invoke("originals", it.id).handle {
@@ -222,9 +256,9 @@ class OriginalViewModel @Inject constructor(
          }
      }*/
 
-    fun startReadingEpisode(episodeId: Int) {
+    fun startReadingEpisode() {
         viewModelScope.launch {
-            startReadingEpisodeUseCase(episodeId).handle {
+            startReadingEpisodeUseCase(_selectedEpisodeId.value).handle {
                 onLoading {
 
                 }
@@ -302,9 +336,12 @@ class OriginalViewModel @Inject constructor(
                 }
             }
             onSuccess { originalModel ->
+                val original = originalModel.copy(
+                    episodes = originalModel.episodes?.sortedBy { it.sort }
+                )
                 _uiStateDetail.update {
                     it.copy(
-                        original = originalModel.asIndexOriginal(),
+                        original = original.asIndexOriginal(),
                         isLoading = false
                     )
                 }
@@ -315,9 +352,13 @@ class OriginalViewModel @Inject constructor(
         }
     }
 
+    fun setSelectedEpisodeId(id: Int) {
+        _selectedEpisodeId.value = id
+    }
+
     // 761 OriginalType.INTERACTIVE
-    fun showEpisode(id: Int, type: String) = viewModelScope.launch {
-        showEpisodeUseCase(id, type).handle {
+    fun showEpisode(type: String) = viewModelScope.launch {
+        showEpisodeUseCase(_selectedEpisodeId.value, type).handle {
             onLoading { episodeModel ->
                 _uiStateReading.update {
                     it.copy(
@@ -340,15 +381,22 @@ class OriginalViewModel @Inject constructor(
         }
     }
 
-    fun createComment(id: Int, content: String, responseId: Int?) = viewModelScope.launch {
+    fun createComment(content: String, responseId: Int?) = viewModelScope.launch {
         createCommentUseCase(
             type = "original",
-            id,
+            selectedOriginalId.orZero(),
             content,
             responseId
         ).handle {
+            onLoading {
+                _uiStateReading.update { it.copy(isLoading = true) }
+            }
             onSuccess { _ ->
-
+                _uiStateReading.update { it.copy(isLoading = false) }
+                _uiStateDetail.update { it.copy(original = it.original.copy(commentCount = it.original.commentCount + 1)) }
+            }
+            onFailure {
+                _uiStateReading.update { it.copy(isLoading = false) }
             }
         }
     }

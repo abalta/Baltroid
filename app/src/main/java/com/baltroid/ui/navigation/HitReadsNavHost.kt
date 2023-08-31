@@ -25,6 +25,7 @@ import com.baltroid.ui.screens.reading.ReadingScreen
 import com.baltroid.ui.screens.viewmodels.OriginalViewModel
 import com.baltroid.ui.theme.LocalLoadingState
 import com.baltroid.ui.theme.localColors
+import com.baltroid.util.orZero
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
@@ -88,7 +89,7 @@ fun HitReadsNavHost(
                     viewModel = originalViewModel,
                     openMenuScreen = openMenuScreen,
                 ) { route, episodeId ->
-                    originalViewModel.selectedEpisodeId = episodeId
+                    originalViewModel.setSelectedEpisodeId(episodeId.orZero())
                     navController.navigate(route)
                 }
             }

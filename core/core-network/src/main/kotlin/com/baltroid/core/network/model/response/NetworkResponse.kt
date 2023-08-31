@@ -123,6 +123,8 @@ data class CommentDto(
     val replyCommentId: Int?,
     @SerialName("Original")
     val original: NetworkCommentOriginal?,
+    @SerialName("replies")
+    val replies: List<AllCommentsDto>?
 )
 
 @Serializable

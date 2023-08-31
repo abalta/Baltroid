@@ -10,6 +10,6 @@ data class CommentModel(
     val likesCount: Int,
     val repliesCount: Int,
     val replyCommentId: Int,
-    val replies: List<AllCommentsModel>,
+    val replies: List<AllCommentsModel>?,
     val original: IndexOriginalModel?
 )

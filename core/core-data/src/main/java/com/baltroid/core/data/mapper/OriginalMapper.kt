@@ -193,7 +193,7 @@ internal fun CommentDto.asCommentModel() = CommentModel(
     likesCount = likesCount ?: 0,
     repliesCount = repliesCount ?: 0,
     replyCommentId = replyCommentId ?: 0,
-    replies = emptyList(),
+    replies = replies?.map { it.asAllCommentsModel() },
     original = original?.asIndexOriginalModel()
 )
 
