@@ -1,17 +1,16 @@
 package com.baltroid.core.firestore
 
-import android.util.Log
-import com.baltroid.core.firestore.model.NetworkCity
+ import com.baltroid.core.firestore.model.NetworkCity
 import com.baltroid.core.firestore.model.NetworkMall
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
 
 private interface FirestoreApi {
     suspend fun getCities(): List<NetworkCity>
-    suspend fun getMalls(): List<NetworkMall>
+    suspend fun getMalls():  List<NetworkMall>
+    suspend fun getMall(id: String): NetworkMall?
 }
 
 @Singleton
@@ -25,8 +24,13 @@ class MallQuestFirestore @Inject constructor(
     }
 
     override suspend fun getMalls(): List<NetworkMall> {
-        val mallRef = firestore.collectionGroup("malls").get().await()
-        return mallRef.toObjects(NetworkMall::class.java)
+        val mallsRef = firestore.collection("malls").get().await()
+        return mallsRef.toObjects(NetworkMall::class.java)
+    }
+
+    override suspend fun getMall(id: String): NetworkMall? {
+        val mallRef = firestore.document("malls/$id/detail/$id").get().await()
+        return mallRef.toObject(NetworkMall::class.java)
     }
 
 }

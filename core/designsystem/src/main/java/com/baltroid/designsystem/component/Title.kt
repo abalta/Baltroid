@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.baltroid.designsystem.theme.bodyStyle
 import com.baltroid.designsystem.theme.captionStyle
+import com.baltroid.designsystem.theme.grayColor
 import com.baltroid.designsystem.theme.hollyColor
 import com.baltroid.designsystem.theme.h1TitleStyle
 import com.baltroid.designsystem.theme.h2TitleStyle
@@ -74,7 +75,7 @@ fun previewHeadline() = Headline(text = "Headline")
 fun Body(text: String, modifier: Modifier = Modifier) {
     Text(
         text = text,
-        color = MaterialTheme.colorScheme.hollyColor,
+        color = MaterialTheme.colorScheme.grayColor,
         modifier = modifier,
         style = MaterialTheme.typography.bodyStyle
     )

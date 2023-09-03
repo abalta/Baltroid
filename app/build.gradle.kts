@@ -78,6 +78,7 @@ dependencies {
     implementation(libs.androidx.profileinstaller)
     implementation(libs.kotlinx.coroutines.guava)
     implementation(libs.coil.kt)
+    implementation(libs.coil.kt.compose)
     implementation(libs.fire.coil)
 
     implementation(platform(libs.firebase.bom))

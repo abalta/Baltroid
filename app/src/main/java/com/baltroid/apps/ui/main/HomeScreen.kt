@@ -12,28 +12,39 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.rememberAsyncImagePainter
+import com.baltroid.apps.R
 import com.baltroid.designsystem.component.Banner
 import com.baltroid.designsystem.component.CardMedium
 import com.baltroid.designsystem.component.H3Title
 
 @Composable
-internal fun HomeScreen(
+internal fun HomeRoute(
+    onMallClick: (String) -> Unit,
     viewModel: MainViewModel = hiltViewModel(),
-    onMallClick: () -> Unit
 ) {
     val mainState by viewModel.mainState.collectAsStateWithLifecycle()
+    HomeScreen(mainState, onMallClick)
+}
 
+@Composable
+internal fun HomeScreen(
+    mainState: MainUiState,
+    onMallClick: (String) -> Unit,
+    viewModel: MainViewModel = hiltViewModel()
+) {
     when (mainState) {
         is MainUiState.Success -> {
             LazyColumn(
                 contentPadding = PaddingValues(vertical = 24.dp),
                 verticalArrangement = Arrangement.spacedBy(34.dp)
             ) {
-                items((mainState as MainUiState.Success).cityList) { city ->
-                    H3Title("${city.name}", modifier = Modifier.padding(horizontal = 20.dp))
+                items(mainState.cityList) { city ->
+                    H3Title(city.name, modifier = Modifier.padding(horizontal = 20.dp))
                     Spacer(modifier = Modifier.height(24.dp))
                     if (city.malls.isEmpty()) {
                         Banner(modifier = Modifier.padding(horizontal = 20.dp))
@@ -44,9 +55,13 @@ internal fun HomeScreen(
                         ) {
                             items(items = city.malls, itemContent = { mall ->
                                 CardMedium(
+                                    avmId = mall.id,
                                     avmName = mall.name,
-                                    viewModel.imageLoader,
-                                    viewModel.fireStorage.getReferenceFromUrl(mall.logo),
+                                    painter = rememberAsyncImagePainter(
+                                        model = viewModel.fireStorage.getReferenceFromUrl(mall.logo),
+                                        imageLoader = viewModel.imageLoader,
+                                        placeholder = painterResource(id = com.baltroid.core.designsystem.R.drawable.bg_banner)
+                                    ),
                                     onMallClick
                                 )
                             })
@@ -57,6 +72,10 @@ internal fun HomeScreen(
         }
         MainUiState.Loading -> {
             Log.i("MQ", "Home Loading")
+        }
+
+        else -> {
+
         }
     }
 }

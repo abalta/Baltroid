@@ -12,11 +12,14 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class CitiesRepositoryImpl @Inject constructor(
     @Dispatcher(BaltroidDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
     private val firestore: MallQuestFirestore
 ): CitiesRepository {
+
     override fun getCities(): Flow<List<City>> = flow {
         emit(firestore.getCities().map {
             it.asCity()
@@ -27,5 +30,9 @@ class CitiesRepositoryImpl @Inject constructor(
         emit(firestore.getMalls().map {
             it.asMall()
         })
+    }.flowOn(ioDispatcher)
+
+    override fun getMall(id: String): Flow<Mall> = flow {
+        emit(firestore.getMall(id)!!.asMall())
     }.flowOn(ioDispatcher)
 }

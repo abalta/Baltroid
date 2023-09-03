@@ -7,4 +7,5 @@ import kotlinx.coroutines.flow.Flow
 interface CitiesRepository {
     fun getCities(): Flow<List<City>>
     fun getMalls(): Flow<List<Mall>>
+    fun getMall(id: String): Flow<Mall>
 }

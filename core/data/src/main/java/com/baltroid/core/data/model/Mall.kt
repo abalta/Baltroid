@@ -4,6 +4,7 @@ import com.baltroid.core.firestore.model.NetworkMall
 import com.baltroid.model.Mall
 
 fun NetworkMall.asMall() = Mall(
+    id = id.orEmpty(),
     cityCode = cityCode ?: 0,
     address = address.orEmpty(),
     email = email.orEmpty(),
@@ -13,6 +14,6 @@ fun NetworkMall.asMall() = Mall(
     phone = phone.orEmpty(),
     services = services.orEmpty(),
     web = web.orEmpty(),
-    logo = logo.orEmpty()
-
+    logo = logo.orEmpty(),
+    photos = photos.orEmpty()
 )

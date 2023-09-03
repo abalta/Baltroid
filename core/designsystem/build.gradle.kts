@@ -24,8 +24,6 @@ dependencies {
     api(libs.androidx.compose.ui.util)
 
     debugApi(libs.androidx.compose.ui.tooling)
-    implementation(platform(libs.firebase.bom))
     implementation(libs.androidx.core.ktx)
     implementation(libs.coil.kt.compose)
-    implementation(libs.firebase.storage)
 }

@@ -1,8 +1,11 @@
 package com.baltroid.core.firestore.model
 
+import com.google.firebase.firestore.DocumentId
 import com.google.firebase.firestore.GeoPoint
 
 data class NetworkMall(
+    @DocumentId
+    val id: String? = null,
     val cityCode: Int? = null,
     val address: String? = null,
     val email: String? = null,
@@ -12,5 +15,6 @@ data class NetworkMall(
     val phone: String? = null,
     val services: List<Int>? = null,
     val web: String? = null,
-    val logo: String? = null
+    val logo: String? = null,
+    val photos: List<String>? = null
 )
