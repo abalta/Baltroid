@@ -54,7 +54,7 @@ fun AllCommentsScreen(
     val comments = viewModel.uiState.collectAsStateWithLifecycle().value
 
     LaunchedEffect(Unit) {
-        viewModel.getAllComments("all", null)
+
     }
 
     var sideBarVisibility by remember {

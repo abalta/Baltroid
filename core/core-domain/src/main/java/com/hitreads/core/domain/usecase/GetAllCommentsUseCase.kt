@@ -4,5 +4,5 @@ import com.hitreads.core.domain.repository.CommentRepository
 import javax.inject.Inject
 
 class GetAllCommentsUseCase @Inject constructor(private val repository: CommentRepository) {
-    operator fun invoke(type: String, id: Int?) = repository.getAllComments(type, id)
+    operator fun invoke(type: String) = repository.getAllComments(type)
 }

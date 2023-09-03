@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.baltroid.apps.R
+import com.baltroid.ui.common.SetLoadingState
 import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.VerticalSpacer
 import com.baltroid.ui.components.CommentWritingCard
@@ -64,12 +65,16 @@ fun CommentsScreen(
     onBackClick: () -> Unit
 ) {
 
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+    SetLoadingState(isLoading = state.isLoading)
+
     LaunchedEffect(Unit) {
-        viewModel.getAllComments("all", null)
+        viewModel.getAllComments("all")
+        viewModel.getCommentsByMe()
     }
 
     CommentsScreenContent(
-        viewModel.uiState.collectAsStateWithLifecycle().value.commentList,
+        state,
         onBackClick,
         createComment = { comment, content ->
             viewModel.createComment(
@@ -90,7 +95,7 @@ fun CommentsScreen(
 
 @Composable
 private fun CommentsScreenContent(
-    comments: List<Comment>,
+    uiState: CommentsUiState,
     onBackClick: () -> Unit,
     createComment: (Comment?, String) -> Unit,
     onLikeClick: (Boolean, Int) -> Unit,
@@ -137,7 +142,7 @@ private fun CommentsScreenContent(
                 CommentsTabState.AllComments -> {
                     CommentSection(
                         lazyListState = rememberLazyListState(),
-                        comments = comments,
+                        comments = uiState.commentList,
                         modifier = Modifier.padding(start = dimensionResource(id = R.dimen.dp30)),
                         onLikeClick = onLikeClick,
                         onReplyClick = {
@@ -149,13 +154,13 @@ private fun CommentsScreenContent(
                 }
 
                 CommentsTabState.MyFavorites -> {
-                    Comments(comments) {
+                    Comments(uiState.commentsByme) {
 
                     }
                 }
 
                 CommentsTabState.MyComments -> {
-                    Comments(comments) {
+                    Comments(uiState.commentsByme) {
 
                     }
                 }

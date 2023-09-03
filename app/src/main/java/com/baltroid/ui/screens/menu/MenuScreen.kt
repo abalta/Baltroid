@@ -103,8 +103,6 @@ fun MenuScreenGuestContent(
                 scrollSection
             ) = createRefs()
 
-            val bottomGuideLine = createGuidelineFromBottom(0.075f)
-
             RoundedIconCard(
                 text = "0",
                 iconResId = R.drawable.ic_diamond,
@@ -193,14 +191,6 @@ fun MenuScreenGuestContent(
                     modifier = Modifier
                 ) {}
                 MenuItem(
-                    title = stringResource(id = R.string.place_marks),
-                    iconResId = R.drawable.ic_banner_filled,
-                    isEnabled = false,
-                    modifier = Modifier
-                ) {
-                    navigate.invoke(HitReadsScreens.PlaceMarksScreen.route)
-                }
-                MenuItem(
                     title = stringResource(id = R.string.favorites),
                     iconResId = R.drawable.ic_star,
                     isEnabled = false,
@@ -251,8 +241,6 @@ private fun MenuScreenLoggedInContent(
                 profileButton, close, divider,
                 scrollSection, themeButtons
             ) = createRefs()
-
-            val bottomGuideLine = createGuidelineFromBottom(0.075f)
 
             RoundedIconCard(
                 text = balance.toString(),
@@ -348,14 +336,6 @@ private fun MenuScreenLoggedInContent(
                     isEnabled = true,
                     modifier = Modifier
                 ) {}
-                MenuItem(
-                    title = stringResource(id = R.string.place_marks),
-                    iconResId = R.drawable.ic_banner_filled,
-                    isEnabled = true,
-                    modifier = Modifier
-                ) {
-                    navigate.invoke(HitReadsScreens.PlaceMarksScreen.route)
-                }
                 MenuItem(
                     title = stringResource(id = R.string.favorites),
                     iconResId = R.drawable.ic_star,

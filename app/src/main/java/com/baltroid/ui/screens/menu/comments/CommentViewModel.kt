@@ -3,8 +3,10 @@ package com.baltroid.ui.screens.menu.comments
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.baltroid.core.common.result.handle
+import com.baltroid.util.ORIGINAL
 import com.hitreads.core.domain.usecase.CreateCommentUseCase
 import com.hitreads.core.domain.usecase.GetAllCommentsUseCase
+import com.hitreads.core.domain.usecase.GetCommentsByMe
 import com.hitreads.core.domain.usecase.LikeCommentUseCase
 import com.hitreads.core.domain.usecase.UnlikeCommentUseCase
 import com.hitreads.core.model.Comment
@@ -22,15 +24,14 @@ class CommentViewModel @Inject constructor(
     private val commentLikeCommentUseCase: LikeCommentUseCase,
     private val commentUnlikeCommentUseCase: UnlikeCommentUseCase,
     private val createCommentUseCase: CreateCommentUseCase,
-
-
-    ) : ViewModel() {
+    private val getCommentsByMe: GetCommentsByMe
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CommentsUiState())
     val uiState = _uiState.asStateFlow()
 
-    fun getAllComments(type: String, id: Int?) = viewModelScope.launch {
-        getAllCommentsUseCase(type, id).handle {
+    fun getAllComments(type: String) = viewModelScope.launch {
+        getAllCommentsUseCase(type).handle {
             onLoading {
                 _uiState.update { it.copy(isLoading = true) }
             }
@@ -40,6 +41,26 @@ class CommentViewModel @Inject constructor(
                 }
             }
             onFailure(::handleFailure)
+        }
+    }
+
+    fun getCommentsByMe() {
+        viewModelScope.launch {
+            getCommentsByMe.invoke().handle {
+                onLoading {
+                    _uiState.update { it.copy(isLoading = true) }
+                }
+                onSuccess { comments ->
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            commentsByme = comments.map { it.asComment() })
+                    }
+                }
+                onFailure {
+                    _uiState.update { it.copy(isLoading = false) }
+                }
+            }
         }
     }
 
@@ -53,7 +74,7 @@ class CommentViewModel @Inject constructor(
 
     fun createComment(id: Int, content: String, responseId: Int?) = viewModelScope.launch {
         createCommentUseCase(
-            type = "original",
+            type = ORIGINAL,
             id,
             content,
             responseId

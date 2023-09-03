@@ -3,12 +3,10 @@ package com.baltroid.core.data.repository
 import com.baltroid.core.common.result.BaltroidResult
 import com.baltroid.core.common.result.isFailure
 import com.baltroid.core.common.result.isSuccess
-import com.baltroid.core.data.mapper.asAllCommentsModel
 import com.baltroid.core.data.mapper.asCommentModel
 import com.baltroid.core.network.common.networkBoundResource
 import com.baltroid.core.network.source.HitReadsNetworkDataSource
 import com.baltroid.core.network.util.MESSAGE_UNHANDLED_STATE
-import com.hitreads.core.domain.model.AllCommentsModel
 import com.hitreads.core.domain.model.CommentModel
 import com.hitreads.core.domain.repository.CommentRepository
 import kotlinx.coroutines.flow.Flow
@@ -43,18 +41,17 @@ class CommentRepositoryImpl @Inject constructor(
         }
 
     override fun getAllComments(
-        type: String,
-        id: Int?
-    ): Flow<BaltroidResult<List<AllCommentsModel>>> =
+        type: String
+    ): Flow<BaltroidResult<List<CommentModel>>> =
         flow {
             emit(BaltroidResult.loading())
-            val response = networkDataSource.getAllComments(type, id)
+            val response = networkDataSource.getAllComments(type)
 
             when {
                 response.isSuccess() -> {
                     response.value.data?.let {
                         emit(BaltroidResult.success(it.map { dto ->
-                            dto.asAllCommentsModel()
+                            dto.asCommentModel()
                         }))
                     }
                 }
@@ -93,7 +90,7 @@ class CommentRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getCommentsByMe(): Flow<BaltroidResult<List<AllCommentsModel>>> =
+    override fun getCommentsByMe(): Flow<BaltroidResult<List<CommentModel>>> =
         flow {
             emit(BaltroidResult.loading())
             val response = networkDataSource.getCommentsByMe()
@@ -102,7 +99,7 @@ class CommentRepositoryImpl @Inject constructor(
                 response.isSuccess() -> {
                     response.value.data?.let {
                         emit(BaltroidResult.success(it.map { dto ->
-                            dto.asAllCommentsModel()
+                            dto.asCommentModel()
                         }))
                     }
                 }

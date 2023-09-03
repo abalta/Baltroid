@@ -45,6 +45,7 @@ import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
 import com.baltroid.util.orZero
 import com.hitreads.core.model.Favorite
+import com.hitreads.core.model.FavoriteOriginal
 
 @Composable
 fun FavoritesScreen(
@@ -61,7 +62,7 @@ fun FavoritesScreen(
     FavoritesScreenContent(
         scrollState = rememberScrollState(),
         authors = favorites.authors,
-        episodes = favorites.episodes,
+        originals = favorites.originals,
         onBackClick = onBackClick
     )
 }
@@ -70,7 +71,7 @@ fun FavoritesScreen(
 fun FavoritesScreenContent(
     scrollState: ScrollState,
     authors: List<Favorite>,
-    episodes: List<Favorite>,
+    originals: List<FavoriteOriginal>,
     onBackClick: () -> Unit
 ) {
     Column(
@@ -98,7 +99,7 @@ fun FavoritesScreenContent(
             )
             VerticalSpacer(height = dimensionResource(id = R.dimen.dp22))
             StoryItemFavoritesList(
-                episodes = episodes
+                originals = originals
             )
             VerticalSpacer(height = dimensionResource(id = R.dimen.dp25))
             Text(
@@ -183,7 +184,7 @@ fun AuthorsFavoritesList(
 
 @Composable
 fun StoryItemFavoritesList(
-    episodes: List<Favorite>,
+    originals: List<FavoriteOriginal>,
     modifier: Modifier = Modifier
 ) {
     LazyRow(
@@ -192,10 +193,10 @@ fun StoryItemFavoritesList(
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp30))
     ) {
         items(
-            episodes,
+            originals,
             key = { it.id.orZero() }
         ) { item ->
-            StoryItemFavorites(favoriteEpisode = item)
+            StoryItemFavorites(favoriteOriginal = item)
         }
     }
 }
@@ -222,14 +223,14 @@ fun YellowStarBox(
 
 @Composable
 fun StoryItemFavorites(
-    favoriteEpisode: Favorite
+    favoriteOriginal: FavoriteOriginal
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.width(IntrinsicSize.Min)
     ) {
         AsyncImage(
-            model = favoriteEpisode.assetContents,
+            model = favoriteOriginal.cover,
             contentDescription = null,
             contentScale = ContentScale.Crop,
             error = painterResource(id = R.drawable.hitreads_placeholder),
@@ -242,7 +243,7 @@ fun StoryItemFavorites(
         )
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp13))
         Text(
-            text = favoriteEpisode.episodeName.orEmpty(),
+            text = favoriteOriginal.title,
             style = MaterialTheme.localTextStyles.poppins12Medium,
             color = MaterialTheme.localColors.white_alpha05, textAlign = TextAlign.Center
         )

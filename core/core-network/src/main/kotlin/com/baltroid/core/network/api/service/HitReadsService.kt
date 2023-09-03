@@ -5,7 +5,6 @@ import com.baltroid.core.network.model.HitReadsResponse
 import com.baltroid.core.network.model.originals.IndexNetworkOriginal
 import com.baltroid.core.network.model.originals.NetworkCreateCommentResponse
 import com.baltroid.core.network.model.request.RegisterRequestBody
-import com.baltroid.core.network.model.response.AllCommentsDto
 import com.baltroid.core.network.model.response.CommentDto
 import com.baltroid.core.network.model.response.EpisodeShowDto
 import com.baltroid.core.network.model.response.FavoriteDto
@@ -77,8 +76,11 @@ interface HitReadsService {
     @GET(COMMENT)
     suspend fun getComments(
         @Query(TYPE) type: String,
-        @Query(ID) id: Int
+        @Query(ID) id: Int?
     ): BaltroidResult<HitReadsResponse<List<CommentDto>>>
+
+    @GET("$COMMENT/$BY_ME")
+    suspend fun getCommentsByMe(): BaltroidResult<HitReadsResponse<List<CommentDto>>>
 
     @PUT("$ORIGINALS_INDEX/{id}/$LIKE")
     suspend fun likeOriginal(@Path("id") id: Int): BaltroidResult<HitReadsResponse<Unit>>
@@ -103,15 +105,6 @@ interface HitReadsService {
     suspend fun register(
         @Body requestBody: RegisterRequestBody
     ): BaltroidResult<HitReadsResponse<Unit>>
-
-    @GET(COMMENT)
-    suspend fun getAllComments(
-        @Query(TYPE) type: String,
-        @Query(ID) id: Int?
-    ): BaltroidResult<HitReadsResponse<List<AllCommentsDto>>>
-
-    @GET("$COMMENT/$BY_ME")
-    suspend fun getCommentsByMe(): BaltroidResult<HitReadsResponse<List<AllCommentsDto>>>
 
     @POST("$COMMENT/{id}/$LIKE")
     suspend fun likeComment(@Path("id") id: Int): BaltroidResult<HitReadsResponse<Unit>>
