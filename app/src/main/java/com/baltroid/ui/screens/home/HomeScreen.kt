@@ -43,6 +43,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import coil.compose.SubcomposeAsyncImage
 import com.baltroid.apps.R
@@ -50,7 +51,6 @@ import com.baltroid.ui.common.HorizontalSpacer
 import com.baltroid.ui.common.SetLoadingState
 import com.baltroid.ui.common.SimpleImage
 import com.baltroid.ui.common.VerticalSpacer
-import com.baltroid.ui.common.collectValue
 import com.baltroid.ui.components.HitReadsTopBar
 import com.baltroid.ui.navigation.HitReadsScreens
 import com.baltroid.ui.screens.menu.favorites.YellowStarBox
@@ -72,7 +72,7 @@ fun HomeScreen(
     openMenuScreen: () -> Unit,
     navigate: (route: String, originalId: Int?) -> Unit
 ) {
-    val homeUiState = viewModel.uiStateHome.collectValue()
+    val homeUiState by viewModel.uiStateHome.collectAsStateWithLifecycle()
 
     SetLoadingState(isLoading = homeUiState.isLoading)
 

@@ -63,6 +63,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.baltroid.apps.R
 import com.baltroid.ui.common.HorizontalSpacer
@@ -71,7 +72,6 @@ import com.baltroid.ui.common.SetLoadingState
 import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.SimpleImage
 import com.baltroid.ui.common.VerticalSpacer
-import com.baltroid.ui.common.collectValue
 import com.baltroid.ui.components.CommentWritingCard
 import com.baltroid.ui.components.HitReadsSideBar
 import com.baltroid.ui.components.HitReadsTopBar
@@ -95,7 +95,8 @@ fun ReadingScreen(
     viewModel: OriginalViewModel,
     navigate: (String) -> Unit
 ) {
-    val uiState = viewModel.uiStateReading.collectValue()
+    val uiState by viewModel.uiStateReading.collectAsStateWithLifecycle()
+    val uiStateDetail by viewModel.uiStateDetail.collectAsStateWithLifecycle()
     SetLoadingState(isLoading = uiState.isLoading)
 
     LaunchedEffect(Unit) {
@@ -109,7 +110,7 @@ fun ReadingScreen(
 
     ReadingScreenContent(
         uiState = uiState,
-        original = viewModel.uiStateDetail.collectValue().original,
+        original = uiStateDetail.original,
         episode = viewModel.selectedEpisode(),
         onEpisodeChange = viewModel::setSelectedEpisodeId,
         loadComments = viewModel::getOriginalComments,
