@@ -7,6 +7,7 @@ import com.baltroid.util.ORIGINAL
 import com.hitreads.core.domain.usecase.CreateCommentUseCase
 import com.hitreads.core.domain.usecase.GetAllCommentsUseCase
 import com.hitreads.core.domain.usecase.GetCommentsByMe
+import com.hitreads.core.domain.usecase.GetCommentsLikedByMe
 import com.hitreads.core.domain.usecase.LikeCommentUseCase
 import com.hitreads.core.domain.usecase.UnlikeCommentUseCase
 import com.hitreads.core.model.Comment
@@ -24,7 +25,8 @@ class CommentViewModel @Inject constructor(
     private val commentLikeCommentUseCase: LikeCommentUseCase,
     private val commentUnlikeCommentUseCase: UnlikeCommentUseCase,
     private val createCommentUseCase: CreateCommentUseCase,
-    private val getCommentsByMe: GetCommentsByMe
+    private val getCommentsByMe: GetCommentsByMe,
+    private val getCommentsLikedByMe: GetCommentsLikedByMe
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CommentsUiState())
@@ -54,7 +56,7 @@ class CommentViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            commentsByme = comments.map { it.asComment() })
+                            commentsByMe = comments.map { it.asComment() })
                     }
                 }
                 onFailure {
@@ -103,7 +105,10 @@ class CommentViewModel @Inject constructor(
                     )
                     val index = it.commentList.indexOfFirst { it.id == responseId }
                     oldList.removeAt(index)
-                    oldComment?.copy(replies = newReplies?.toList().orEmpty())?.let { it1 ->
+                    oldComment?.copy(
+                        repliesCount = newReplies?.toList().orEmpty().size,
+                        replies = newReplies?.toList().orEmpty()
+                    )?.let { it1 ->
                         oldList.add(
                             index,
                             it1
@@ -162,6 +167,26 @@ class CommentViewModel @Inject constructor(
             error = error,
             isLoading = false
         )
+    }
+
+    fun getCommentsLikedByMe() {
+        viewModelScope.launch {
+            getCommentsLikedByMe.invoke().handle {
+                onLoading {
+                    _uiState.update { it.copy(isLoading = true) }
+                }
+                onSuccess { comments ->
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            commentsLikedByMe = comments.map { it.asComment() })
+                    }
+                }
+                onFailure {
+                    _uiState.update { it.copy(isLoading = false) }
+                }
+            }
+        }
     }
 
 }

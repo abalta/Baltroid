@@ -30,6 +30,8 @@ data class NetworkShowEpisode(
     val seasonId: Int?,
     @SerialName("is_locked")
     val isLocked: Boolean?,
+    @SerialName("next_episode")
+    val nextEpisodeId: Int?,
     @SerialName("is_last_episode")
     val isLastEpisode: Boolean?,
     @SerialName("original")

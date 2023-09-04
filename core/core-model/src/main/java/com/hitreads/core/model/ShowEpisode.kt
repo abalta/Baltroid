@@ -19,5 +19,6 @@ data class ShowEpisode(
     val bundleAssets: List<InteractiveBundleAsset>?,
     val assetContents: String?,
     val xmlContents: XmlContent?,
-    val episodeContent: String?
+    val episodeContent: String?,
+    val nextEpisodeId: Int
 )

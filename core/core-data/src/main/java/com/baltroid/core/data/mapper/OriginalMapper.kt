@@ -122,6 +122,7 @@ internal fun IndexNetworkContinueReadingEpisode.asIndexContinueReadingEpisodeMod
         sort = sort,
         createdAt = createdAt,
         updatedAt = updatedAt,
+        nextEpisodeId = nextEpisodeId,
         isLocked = isLocked
     )
 
@@ -154,6 +155,7 @@ internal fun NetworkShowEpisode.asShowEpisodeModelIndex() = ShowEpisodeModel(
     bundleAssets = bundleAssets?.map { it.asInteractiveBundleAssetsModel() },
     assetContents = assetContents,
     xmlContents = null,
+    nextEpisodeId = nextEpisodeId,
     episodeContent = null
 )
 
@@ -176,6 +178,7 @@ internal fun NetworkShowEpisode.asShowEpisodeModel(
     bundleAssets = bundleAssets?.map { it.asInteractiveBundleAssetsModel() },
     assetContents = assetContents,
     xmlContents = xmlContent,
+    nextEpisodeId = nextEpisodeId,
     episodeContent = episodeContent
 )
 

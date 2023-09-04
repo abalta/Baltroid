@@ -77,4 +77,7 @@
     <string name="barcode">BARKOD</string>
     <string name="summary">ÖZET</string>
     <string name="see_all">Tüm Cevapları Göster</string>
+    <string name="add_favorite">FAVORİLERE EKLE</string>
+    <string name="share">PAYLAŞ</string>
+    <string name="go_to_beginning">BAŞA DÖN</string>
 </resources>

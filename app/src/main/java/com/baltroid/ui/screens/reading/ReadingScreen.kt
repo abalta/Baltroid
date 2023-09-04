@@ -10,6 +10,7 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -58,6 +59,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -118,10 +120,13 @@ fun ReadingScreen(
         onCreateComment = { comment ->
             viewModel.createComment(comment, null)
         },
-        onLikeClick = { isLiked, id ->
-            if (isLiked) viewModel.deleteFavorite(id)
-            else viewModel.createFavorite(id)
+        onLikeClick = { isLiked ->
+            if (isLiked) viewModel.deleteFavorite()
+            else viewModel.createFavorite()
         },
+        goToFirstEpisode = {},
+        onShare = {},
+        onCreateFavorite = { viewModel.createFavorite() },
     )
 }
 
@@ -134,7 +139,10 @@ fun ReadingScreenContent(
     onCreateComment: (String) -> Unit,
     loadComments: () -> Unit,
     onEpisodeChange: (Int) -> Unit,
-    onLikeClick: (Boolean, Int) -> Unit,
+    onLikeClick: (Boolean) -> Unit,
+    onCreateFavorite: () -> Unit,
+    onShare: () -> Unit,
+    goToFirstEpisode: () -> Unit,
 ) {
     val scrollState = rememberScrollState()
     var isSidebarVisible by rememberSaveable {
@@ -190,7 +198,7 @@ fun ReadingScreenContent(
                             onDotsClick = {
                                 isSidebarVisible = true
                             },
-                            onLikeClick = { onLikeClick.invoke(it, original?.id.orZero()) },
+                            onLikeClick = { onLikeClick.invoke(it) },
                             modifier = Modifier.padding(
                                 top = dimensionResource(id = R.dimen.dp12),
                                 start = dimensionResource(id = R.dimen.dp31),
@@ -200,6 +208,9 @@ fun ReadingScreenContent(
                             ReadingSection(
                                 body = uiState.episode?.episodeContent.orEmpty(),
                                 isLastEpisode = episode?.isLastEpisode == true,
+                                onCreateFavorite = onCreateFavorite,
+                                onShare = onShare,
+                                goToFirstEpisode = goToFirstEpisode,
                                 onNextClicked = onNextClicked
                             )
                         } else {
@@ -331,7 +342,10 @@ fun SideEpisodesSheet(
 fun ReadingSection(
     body: String,
     isLastEpisode: Boolean,
-    onNextClicked: () -> Unit
+    onNextClicked: () -> Unit,
+    onCreateFavorite: () -> Unit,
+    onShare: () -> Unit,
+    goToFirstEpisode: () -> Unit
 ) {
     Column {
         Text(
@@ -353,6 +367,106 @@ fun ReadingSection(
                     .alpha(0.5f)
             )
         }
+        VerticalSpacer(height = R.dimen.dp24)
+        if (isLastEpisode) {
+            LastEpisodeSection(
+                onCreateFavorite = onCreateFavorite,
+                onShare = onShare,
+                goToFirstEpisode = goToFirstEpisode,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentWidth(Alignment.CenterHorizontally)
+            )
+            VerticalSpacer(height = R.dimen.dp50)
+        }
+    }
+}
+
+@Composable
+fun LastEpisodeSection(
+    onCreateFavorite: () -> Unit,
+    onShare: () -> Unit,
+    goToFirstEpisode: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.width(IntrinsicSize.Min)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Divider(
+                modifier = Modifier.width(dimensionResource(id = R.dimen.dp90)),
+                color = MaterialTheme.localColors.yellow,
+                thickness = dimensionResource(id = R.dimen.dp0_5)
+            )
+            HorizontalSpacer(width = R.dimen.dp24)
+            Text(
+                text = "SON",
+                style = MaterialTheme.localTextStyles.spaceGrotesk22Medium,
+                color = MaterialTheme.localColors.yellow
+            )
+            HorizontalSpacer(width = R.dimen.dp24)
+            Divider(
+                modifier = Modifier.width(dimensionResource(id = R.dimen.dp90)),
+                color = MaterialTheme.localColors.yellow,
+                thickness = dimensionResource(id = R.dimen.dp0_5)
+            )
+        }
+        VerticalSpacer(height = R.dimen.dp36)
+        Text(
+            text = stringResource(id = R.string.add_favorite),
+            style = MaterialTheme.localTextStyles.spaceGrotesk22Medium,
+            color = MaterialTheme.localColors.white,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .clickable {
+                    onCreateFavorite.invoke()
+                }
+                .fillMaxWidth()
+                .border(
+                    dimensionResource(id = R.dimen.dp1),
+                    color = MaterialTheme.localColors.white_alpha05,
+                    shape = MaterialTheme.localShapes.roundedDp24
+                )
+                .padding(vertical = dimensionResource(id = R.dimen.dp15))
+        )
+        VerticalSpacer(height = R.dimen.dp18)
+        Text(
+            text = stringResource(id = R.string.share),
+            style = MaterialTheme.localTextStyles.spaceGrotesk22Medium,
+            color = MaterialTheme.localColors.white,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .clickable {
+                    onShare.invoke()
+                }
+                .fillMaxWidth()
+                .border(
+                    dimensionResource(id = R.dimen.dp1),
+                    color = MaterialTheme.localColors.white_alpha05,
+                    shape = MaterialTheme.localShapes.roundedDp24
+                )
+                .padding(vertical = dimensionResource(id = R.dimen.dp15))
+        )
+        VerticalSpacer(height = R.dimen.dp18)
+        Text(
+            text = stringResource(id = R.string.go_to_beginning),
+            style = MaterialTheme.localTextStyles.spaceGrotesk22Medium,
+            color = MaterialTheme.localColors.white,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .clickable {
+                    goToFirstEpisode.invoke()
+                }
+                .fillMaxWidth()
+                .border(
+                    dimensionResource(id = R.dimen.dp1),
+                    color = MaterialTheme.localColors.white_alpha05,
+                    shape = MaterialTheme.localShapes.roundedDp24
+                )
+                .padding(vertical = dimensionResource(id = R.dimen.dp15))
+        )
     }
 }
 
@@ -543,29 +657,29 @@ fun CommentSection(
             verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp15)),
             contentPadding = PaddingValues(top = dimensionResource(id = R.dimen.dp14)),
         ) {
-            items(comments) { comment ->
+            items(comments) { upperComment ->
                 CommentItem(
-                    model = comment,
+                    model = upperComment,
                     isChatSelected = false,
                     onLikeClick = onLikeClick,
                     isSeeAllEnabled = false,
                     onExpanseClicked = { /* no-op */ },
-                    onReplyClick = { onReplyClick.invoke(comment) })
+                    onReplyClick = { onReplyClick.invoke(upperComment) })
                 VerticalSpacer(height = dimensionResource(id = R.dimen.dp12))
                 CommentItem(
-                    model = comment.replies.firstOrNull() ?: return@items,
+                    model = upperComment.replies.firstOrNull() ?: return@items,
                     isChatSelected = false,
                     onLikeClick = onLikeClick,
-                    isSeeAllEnabled = !comment.isExpanded && comment.replies.size > 1,
+                    isSeeAllEnabled = !upperComment.isExpanded && upperComment.replies.size > 1,
                     onExpanseClicked = {
-
+                        onExpanseClicked.invoke(upperComment.id)
                     },
                     onReplyClick = {
-                        onReplyClick.invoke(comment)
+                        onReplyClick.invoke(upperComment)
                     })
 
-                if (comment.isExpanded) {
-                    comment.replies.forEachIndexed { index, comment ->
+                if (upperComment.isExpanded) {
+                    upperComment.replies.forEachIndexed { index, comment ->
                         if (index != 0) {
                             CommentItem(model = comment,
                                 isChatSelected = false,
@@ -573,7 +687,7 @@ fun CommentSection(
                                 isSeeAllEnabled = false,
                                 onExpanseClicked = { /* no-op */ },
                                 onReplyClick = {
-                                    onReplyClick.invoke(comment)
+                                    onReplyClick.invoke(upperComment)
                                 })
                         }
                     }
@@ -645,7 +759,7 @@ fun CommentItem(
     model: Comment,
     isChatSelected: Boolean,
     isSeeAllEnabled: Boolean,
-    onExpanseClicked: (commentId: Int) -> Unit,
+    onExpanseClicked: () -> Unit,
     onLikeClick: (Boolean, Int) -> Unit,
     onReplyClick: () -> Unit
 ) {
@@ -742,10 +856,9 @@ fun CommentItem(
                     end.linkTo(commentHeader.end)
                     top.linkTo(comment.bottom)
                     width = Dimension.fillToConstraints
-                }
-            ) {
-                onExpanseClicked.invoke(model.id)
-            }
+                },
+                onClick = onExpanseClicked
+            )
         }
     }
 }
@@ -859,7 +972,7 @@ fun SeeAll(
 @Preview
 @Composable
 fun ReadingScreenPreview() {
-
+    LastEpisodeSection(onCreateFavorite = {}, onShare = { /*TODO*/ }, {})
 }
 
 /*@Composable

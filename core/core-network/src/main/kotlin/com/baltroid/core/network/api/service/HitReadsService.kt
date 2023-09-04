@@ -82,6 +82,9 @@ interface HitReadsService {
     @GET("$COMMENT/$BY_ME")
     suspend fun getCommentsByMe(): BaltroidResult<HitReadsResponse<List<CommentDto>>>
 
+    @GET("$COMMENT/$LIKE/$BY_ME")
+    suspend fun getCommentsLikedByMe(): BaltroidResult<HitReadsResponse<List<CommentDto>>>
+
     @PUT("$ORIGINALS_INDEX/{id}/$LIKE")
     suspend fun likeOriginal(@Path("id") id: Int): BaltroidResult<HitReadsResponse<Unit>>
 

@@ -52,6 +52,7 @@ data class TextStyles(
     val spaceGrotesk18Regular: TextStyle,
     val spaceGrotesk18Medium: TextStyle,
     val spaceGrotesk20Medium: TextStyle,
+    val spaceGrotesk22Medium: TextStyle,
     val spaceGrotesk24Medium: TextStyle,
 )
 
@@ -177,6 +178,11 @@ val HitReadsTextStyles = TextStyles(
         fontFamily = SpaceGrotesk,
         fontWeight = FontWeight.Medium,
         fontSize = 18.sp
+    ),
+    spaceGrotesk22Medium = TextStyle(
+        fontFamily = SpaceGrotesk,
+        fontWeight = FontWeight.Medium,
+        fontSize = 22.sp
     ),
     poppins12Bold = TextStyle(
         fontFamily = Poppins,

@@ -12,6 +12,7 @@ import com.baltroid.ui.screens.reading.ReadingUiState
 import com.baltroid.util.ORIGINAL
 import com.baltroid.util.ORIGINALS
 import com.baltroid.util.orZero
+import com.hitreads.core.domain.model.OriginalType
 import com.hitreads.core.domain.usecase.CreateCommentUseCase
 import com.hitreads.core.domain.usecase.CreateFavoriteUseCase
 import com.hitreads.core.domain.usecase.DeleteFavoriteUseCase
@@ -170,8 +171,8 @@ class OriginalViewModel @Inject constructor(
         }
     }
 
-    fun createFavorite(id: Int) = viewModelScope.launch {
-        createFavoriteUseCase.invoke(ORIGINALS, id).handle {
+    fun createFavorite() = viewModelScope.launch {
+        createFavoriteUseCase.invoke(ORIGINALS, selectedOriginalId ?: -1).handle {
             onLoading {
                 _uiStateReading.update { it.copy(isLoading = true) }
             }
@@ -193,8 +194,8 @@ class OriginalViewModel @Inject constructor(
         }
     }
 
-    fun deleteFavorite(id: Int) = viewModelScope.launch {
-        deleteFavoriteUseCase.invoke(ORIGINALS, id).handle {
+    fun deleteFavorite() = viewModelScope.launch {
+        deleteFavoriteUseCase.invoke(ORIGINALS, selectedOriginalId ?: -1).handle {
             onLoading {
                 _uiStateReading.update { it.copy(isLoading = true) }
             }
@@ -237,7 +238,10 @@ class OriginalViewModel @Inject constructor(
     }
 
     fun nextEpisode() {
-
+        _uiStateReading.value.episode?.nextEpisodeId?.let {
+            _selectedEpisodeId.value = it
+            showEpisode(OriginalType.TEXT)
+        }
     }
 
     /* fun deleteFavorite(original: Original?) = viewModelScope.launch {

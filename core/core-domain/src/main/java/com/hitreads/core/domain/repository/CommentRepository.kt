@@ -10,6 +10,7 @@ interface CommentRepository {
     fun getCommentsByMe(): Flow<BaltroidResult<List<CommentModel>>>
     fun likeComment(commentId: Int): Flow<BaltroidResult<Unit?>>
     fun unlikeComment(commentId: Int): Flow<BaltroidResult<Unit?>>
+    fun getCommentsLikedByMe(): Flow<BaltroidResult<List<CommentModel>>>
     fun createComment(
         type: String,
         id: Int,

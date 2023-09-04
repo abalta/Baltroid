@@ -80,7 +80,8 @@ fun IndexContinueReadingEpisodeModel.asShowEpisode() = ShowEpisode(
     bundleAssets = null,
     assetContents = assetContent,
     xmlContents = null,
-    episodeContent = null
+    episodeContent = null,
+    nextEpisodeId = nextEpisodeId ?: -1
 )
 
 fun InteractiveBundleAssetModel.asInteractiveBundleAssets() = InteractiveBundleAsset(
@@ -127,6 +128,7 @@ fun ShowEpisodeModel.asShowEpisode() = ShowEpisode(
     bundleAssets = bundleAssets?.map { it.asInteractiveBundleAssets() },
     assetContents = assetContents,
     xmlContents = xmlContents,
+    nextEpisodeId = nextEpisodeId ?: -1,
     episodeContent = episodeContent?.replace("\n", "")?.replace("\\", "")
 )
 
@@ -147,6 +149,7 @@ fun ShowEpisodeModel.asShowEpisodeIndex() = ShowEpisode(
     bundleAssets = bundleAssets?.map { it.asInteractiveBundleAssets() },
     assetContents = assetContents,
     xmlContents = xmlContents,
+    nextEpisodeId = nextEpisodeId ?: -1,
     episodeContent = episodeContent?.replace("\\", "")
 )
 

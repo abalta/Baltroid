@@ -3,6 +3,7 @@ package com.baltroid.ui.screens.menu.favorites
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -21,6 +22,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,6 +39,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.baltroid.apps.R
 import com.baltroid.ui.common.CroppedImage
+import com.baltroid.ui.common.SetLoadingState
 import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.VerticalSpacer
 import com.baltroid.ui.components.MenuBar
@@ -58,12 +61,16 @@ fun FavoritesScreen(
         viewModel.getFavoriteEpisodes()
     }
 
-    val favorites = viewModel.uiStateFavorites.collectAsStateWithLifecycle().value
+    val favorites by viewModel.uiStateFavorites.collectAsStateWithLifecycle()
+    SetLoadingState(isLoading = favorites.isLoading)
+
     FavoritesScreenContent(
         scrollState = rememberScrollState(),
         authors = favorites.authors,
         originals = favorites.originals,
-        onBackClick = onBackClick
+        onBackClick = onBackClick,
+        removeFavoriteAuthor = viewModel::deleteFavoriteAuthor,
+        removeFavoriteOriginal = viewModel::deleteFavoriteOriginal
     )
 }
 
@@ -72,6 +79,8 @@ fun FavoritesScreenContent(
     scrollState: ScrollState,
     authors: List<Favorite>,
     originals: List<FavoriteOriginal>,
+    removeFavoriteAuthor: (Int) -> Unit,
+    removeFavoriteOriginal: (Int) -> Unit,
     onBackClick: () -> Unit
 ) {
     Column(
@@ -91,34 +100,41 @@ fun FavoritesScreenContent(
         Column(
             modifier = Modifier.verticalScroll(scrollState)
         ) {
-            Text(
-                text = stringResource(id = R.string.stories),
-                style = MaterialTheme.localTextStyles.spaceGrotesk20Medium,
-                color = MaterialTheme.localColors.white_alpha09,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-            VerticalSpacer(height = dimensionResource(id = R.dimen.dp22))
-            StoryItemFavoritesList(
-                originals = originals
-            )
-            VerticalSpacer(height = dimensionResource(id = R.dimen.dp25))
-            Text(
-                text = stringResource(id = R.string.authors),
-                style = MaterialTheme.localTextStyles.spaceGrotesk20Medium,
-                color = MaterialTheme.localColors.white_alpha09,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-            VerticalSpacer(height = dimensionResource(id = R.dimen.dp25))
-            AuthorsFavoritesList(
-                authors = authors
-            )
+            if (originals.isNotEmpty()) {
+                Text(
+                    text = stringResource(id = R.string.stories),
+                    style = MaterialTheme.localTextStyles.spaceGrotesk20Medium,
+                    color = MaterialTheme.localColors.white_alpha09,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+                VerticalSpacer(height = dimensionResource(id = R.dimen.dp22))
+                StoryItemFavoritesList(
+                    originals = originals,
+                    removeFavoriteOriginal = removeFavoriteOriginal
+                )
+                VerticalSpacer(height = dimensionResource(id = R.dimen.dp25))
+            }
+            if (authors.isNotEmpty()) {
+                Text(
+                    text = stringResource(id = R.string.authors),
+                    style = MaterialTheme.localTextStyles.spaceGrotesk20Medium,
+                    color = MaterialTheme.localColors.white_alpha09,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+                VerticalSpacer(height = dimensionResource(id = R.dimen.dp25))
+                AuthorsFavoritesList(
+                    authors = authors,
+                    removeFavoriteAuthor = removeFavoriteAuthor
+                )
+            }
         }
     }
 }
 
 @Composable
 fun AuthorsItem(
-    favoriteAuthor: Favorite
+    favoriteAuthor: Favorite,
+    onRemoveFavorite: () -> Unit
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
@@ -140,7 +156,7 @@ fun AuthorsItem(
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp19))
-        YellowStarBox()
+        YellowStarBox(onClick = onRemoveFavorite)
     }
 }
 
@@ -159,14 +175,17 @@ fun NamelessAuthorItem(
                 .clip(MaterialTheme.localShapes.circleShape)
         )
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp20))
-        YellowStarBox()
+        YellowStarBox {
+
+        }
     }
 }
 
 @Composable
 fun AuthorsFavoritesList(
     authors: List<Favorite>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    removeFavoriteAuthor: (Int) -> Unit
 ) {
     LazyRow(
         modifier = modifier,
@@ -177,7 +196,12 @@ fun AuthorsFavoritesList(
             authors,
             key = { it.id.orZero() }
         ) { author ->
-            AuthorsItem(favoriteAuthor = author)
+            AuthorsItem(
+                favoriteAuthor = author,
+                onRemoveFavorite = {
+                    removeFavoriteAuthor.invoke(author.id ?: -1)
+                }
+            )
         }
     }
 }
@@ -185,7 +209,8 @@ fun AuthorsFavoritesList(
 @Composable
 fun StoryItemFavoritesList(
     originals: List<FavoriteOriginal>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    removeFavoriteOriginal: (id: Int) -> Unit
 ) {
     LazyRow(
         modifier = modifier,
@@ -196,19 +221,23 @@ fun StoryItemFavoritesList(
             originals,
             key = { it.id.orZero() }
         ) { item ->
-            StoryItemFavorites(favoriteOriginal = item)
+            StoryItemFavorites(favoriteOriginal = item) {
+                removeFavoriteOriginal.invoke(item.id)
+            }
         }
     }
 }
 
 @Composable
 fun YellowStarBox(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
 ) {
     SimpleIcon(
         iconResId = R.drawable.ic_star,
         tint = MaterialTheme.localColors.yellow,
         modifier = modifier
+            .clickable { onClick.invoke() }
             .border(
                 dimensionResource(id = R.dimen.dp1),
                 color = MaterialTheme.localColors.white,
@@ -223,7 +252,8 @@ fun YellowStarBox(
 
 @Composable
 fun StoryItemFavorites(
-    favoriteOriginal: FavoriteOriginal
+    favoriteOriginal: FavoriteOriginal,
+    removeFavoriteOriginal: () -> Unit
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -248,7 +278,10 @@ fun StoryItemFavorites(
             color = MaterialTheme.localColors.white_alpha05, textAlign = TextAlign.Center
         )
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp11))
-        YellowStarBox(modifier = Modifier.align(Alignment.CenterHorizontally))
+        YellowStarBox(
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            onClick = removeFavoriteOriginal
+        )
     }
 }
 

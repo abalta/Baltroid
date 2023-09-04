@@ -759,6 +759,7 @@ fun InteractiveScreenPreview() {
             bundleAssets = listOf(),
             assetContents = null,
             xmlContents = null,
+            nextEpisodeId = 0,
             episodeContent = null
         )
     )

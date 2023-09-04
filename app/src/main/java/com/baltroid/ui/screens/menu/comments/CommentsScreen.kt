@@ -55,6 +55,7 @@ import com.baltroid.ui.theme.Poppins
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
+import com.baltroid.util.ALL
 import com.baltroid.util.orZero
 import com.hitreads.core.model.Comment
 import kotlin.random.Random
@@ -69,8 +70,9 @@ fun CommentsScreen(
     SetLoadingState(isLoading = state.isLoading)
 
     LaunchedEffect(Unit) {
-        viewModel.getAllComments("all")
+        viewModel.getAllComments(ALL)
         viewModel.getCommentsByMe()
+        viewModel.getCommentsLikedByMe()
     }
 
     CommentsScreenContent(
@@ -154,13 +156,13 @@ private fun CommentsScreenContent(
                 }
 
                 CommentsTabState.MyFavorites -> {
-                    Comments(uiState.commentsByme) {
+                    Comments(uiState.commentsLikedByMe) {
 
                     }
                 }
 
                 CommentsTabState.MyComments -> {
-                    Comments(uiState.commentsByme) {
+                    Comments(uiState.commentsByMe) {
 
                     }
                 }

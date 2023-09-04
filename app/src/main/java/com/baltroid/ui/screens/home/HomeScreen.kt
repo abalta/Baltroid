@@ -370,9 +370,9 @@ fun FavoriteOriginalItem(
             textAlign = TextAlign.Center,
         )
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp28))
-        YellowStarBox(
-            modifier = Modifier.clickable { onStarClicked.invoke() }
-        )
+        YellowStarBox {
+            onStarClicked.invoke()
+        }
     }
 }
 
