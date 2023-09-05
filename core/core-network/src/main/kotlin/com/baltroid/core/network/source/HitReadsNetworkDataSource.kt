@@ -15,7 +15,6 @@ import com.baltroid.core.network.model.response.LoginDto
 import com.baltroid.core.network.model.response.ProfileDto
 import com.baltroid.core.network.model.response.TagWithOriginalsDto
 import com.baltroid.core.network.model.response.WelcomeDto
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -27,7 +26,6 @@ import javax.inject.Inject
 
 class HitReadsNetworkDataSource @Inject constructor(
     private val hitReadsService: HitReadsService,
-    private val ioDispatcher: CoroutineDispatcher
 ) {
 
     suspend fun getOriginals(
