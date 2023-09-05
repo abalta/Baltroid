@@ -1,7 +1,6 @@
 package com.baltroid.ui.screens.menu.profile
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
@@ -19,7 +17,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,9 +33,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.baltroid.apps.R
 import com.baltroid.ui.common.RoundedIconCard
+import com.baltroid.ui.common.SetLoadingState
 import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.VerticalSpacer
 import com.baltroid.ui.components.IconlessMenuBar
+import com.baltroid.ui.screens.menu.login.IconBetweenDividers
 import com.baltroid.ui.screens.menu.login.TextBetweenDividers
 import com.baltroid.ui.screens.viewmodels.AuthenticationViewModel
 import com.baltroid.ui.theme.localColors
@@ -51,12 +51,9 @@ fun ProfileScreen(
     viewModel: AuthenticationViewModel = hiltViewModel(),
     onBackClick: () -> Unit
 ) {
-    LaunchedEffect(Unit) {
-        viewModel.getProfile()
-    }
-
-    val profile = viewModel.profileState.collectAsStateWithLifecycle().value.profile
-    ProfileScreenContent(profile = profile, onBackClick = onBackClick)
+    val profileState by viewModel.profileState.collectAsStateWithLifecycle()
+    SetLoadingState(isLoading = profileState.isLoading)
+    ProfileScreenContent(profile = profileState.profile, onBackClick = onBackClick)
 }
 
 @Composable
@@ -93,30 +90,69 @@ fun ProfileScreenContent(
                     modifier = Modifier.fillMaxWidth()
                 )
                 VerticalSpacer(height = dimensionResource(id = R.dimen.dp40))
-                ProfileItem(title = profile?.name.orEmpty()) {
-
-                }
-                VerticalSpacer(height = dimensionResource(id = R.dimen.dp33))
-                ProfileItem(title = profile?.userName.orEmpty()) {
-
-                }
-                VerticalSpacer(height = dimensionResource(id = R.dimen.dp33))
-                ProfileItem(title = profile?.email.orEmpty()) {
-
-                }
+                ProfileItem(title = profile?.name.orEmpty())
+                VerticalSpacer(height = R.dimen.dp22)
+                Divider(
+                    thickness = dimensionResource(id = R.dimen.dp0_5),
+                    color = MaterialTheme.localColors.white_alpha06,
+                )
+                VerticalSpacer(height = dimensionResource(id = R.dimen.dp22))
+                ProfileItem(title = profile?.userName.orEmpty())
+                VerticalSpacer(height = R.dimen.dp22)
+                Divider(
+                    thickness = dimensionResource(id = R.dimen.dp0_5),
+                    color = MaterialTheme.localColors.white_alpha06,
+                )
+                VerticalSpacer(height = dimensionResource(id = R.dimen.dp22))
+                ProfileItem(title = profile?.email.orEmpty())
             }
         }
+        Divider(
+            thickness = dimensionResource(id = R.dimen.dp1),
+            color = MaterialTheme.localColors.white_alpha06
+        )
+        IconBetweenDividers(
+            R.drawable.ic_edit
+        ) {
+
+        }
+        Divider(
+            thickness = dimensionResource(id = R.dimen.dp1),
+            color = MaterialTheme.localColors.white_alpha06
+        )
         TextBetweenDividers(
             text = stringResource(id = R.string.forgot_password),
             textStyle = MaterialTheme.localTextStyles.spaceGrotesk18Medium,
             onClick = {
 
             })
+        Divider(
+            thickness = dimensionResource(id = R.dimen.dp1),
+            color = MaterialTheme.localColors.white_alpha06
+        )
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp50))
     }
 }
 
 @Composable
+fun ProfileItem(
+    title: String,
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(
+            title,
+            style = MaterialTheme.localTextStyles.poppins18Regular,
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.localColors.white,
+            modifier = Modifier
+                .fillMaxWidth()
+        )
+    }
+}
+
+/*@Composable
 fun ProfileItem(
     title: String,
     onClick: () -> Unit
@@ -129,6 +165,7 @@ fun ProfileItem(
             title,
             style = MaterialTheme.localTextStyles.poppins18Regular,
             textAlign = TextAlign.Center,
+            color = MaterialTheme.localColors.white,
             modifier = Modifier
                 .border(
                     dimensionResource(id = R.dimen.dp1),
@@ -141,7 +178,7 @@ fun ProfileItem(
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp17))
         SimpleIcon(iconResId = R.drawable.ic_edit)
     }
-}
+}*/
 
 @Composable
 fun IconsAndProfileImage(
@@ -223,7 +260,18 @@ fun EditProfileSection(
 @Preview(device = Devices.DEFAULT)
 @Composable
 fun ProfileScreenPreview() {
-    ProfileScreen {
+    ProfileScreenContent(
+        profile = Profile(
+            name = "Traci Schwartz",
+            userName = "Sheena Wiley",
+            email = "dorian.logan@example.com",
+            karma = 1934,
+            avatar = "et",
+            is_beta = false,
+            gem = 4820,
+            imgUrl = "https://duckduckgo.com/?q=sed"
+        )
+    ) {
 
     }
 }

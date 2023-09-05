@@ -1,4 +1,4 @@
-package com.baltroid.ui
+package com.baltroid.ui.screens.menu
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.ScrollState
@@ -22,6 +22,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,6 +41,7 @@ import coil.compose.AsyncImage
 import com.baltroid.apps.R
 import com.baltroid.ui.common.HorizontalSpacer
 import com.baltroid.ui.common.RoundedIconCard
+import com.baltroid.ui.common.SetLoadingState
 import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.SimpleImage
 import com.baltroid.ui.common.VerticalSpacer
@@ -57,7 +59,8 @@ fun MenuScreen(
     viewModel: AuthenticationViewModel = hiltViewModel(),
     navigate: (route: String) -> Unit,
 ) {
-    val uiState = viewModel.profileState.collectAsStateWithLifecycle().value
+    val uiState by viewModel.profileState.collectAsStateWithLifecycle()
+    SetLoadingState(isLoading = uiState.isLoading)
     if (isLoggedIn) {
         MenuScreenLoggedInContent(
             balance = uiState.profile?.gem ?: 0,
@@ -104,7 +107,7 @@ fun MenuScreenGuestContent(
             ) = createRefs()
 
             RoundedIconCard(
-                text = "0",
+                text = balance.toString(),
                 iconResId = R.drawable.ic_diamond,
                 modifier = Modifier
                     .constrainAs(diamond) {
@@ -189,7 +192,9 @@ fun MenuScreenGuestContent(
                     iconResId = R.drawable.ic_open_book,
                     isEnabled = true,
                     modifier = Modifier
-                ) {}
+                ) {
+                    navigate.invoke(HitReadsScreens.HomeScreen.route)
+                }
                 MenuItem(
                     title = stringResource(id = R.string.favorites),
                     iconResId = R.drawable.ic_star,
@@ -335,7 +340,9 @@ private fun MenuScreenLoggedInContent(
                     iconResId = R.drawable.ic_open_book,
                     isEnabled = true,
                     modifier = Modifier
-                ) {}
+                ) {
+                    navigate.invoke(HitReadsScreens.HomeScreen.route)
+                }
                 MenuItem(
                     title = stringResource(id = R.string.favorites),
                     iconResId = R.drawable.ic_star,

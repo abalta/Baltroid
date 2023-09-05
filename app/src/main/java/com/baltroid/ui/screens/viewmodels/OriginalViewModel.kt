@@ -26,7 +26,6 @@ import com.hitreads.core.domain.usecase.ShowEpisodeUseCase
 import com.hitreads.core.domain.usecase.ShowOriginalUseCase
 import com.hitreads.core.domain.usecase.StartReadingEpisodeUseCase
 import com.hitreads.core.model.IndexOriginal
-import com.hitreads.core.model.ShowEpisode
 import com.hitreads.core.ui.mapper.asComment
 import com.hitreads.core.ui.mapper.asFavoriteOriginal
 import com.hitreads.core.ui.mapper.asIndexOriginal
@@ -65,14 +64,10 @@ class OriginalViewModel @Inject constructor(
     private val _uiStateReading = MutableStateFlow(ReadingUiState())
     val uiStateReading = _uiStateReading.asStateFlow()
 
-    var selectedOriginalId: Int? = null
-
     private val _selectedEpisodeId: MutableState<Int> = mutableStateOf(0)
     val selectedEpisodeId: State<Int> = _selectedEpisodeId
 
-    fun selectedEpisode(): ShowEpisode? = _uiStateDetail.value.original.episodes.firstOrNull {
-        it.id == _selectedEpisodeId.value
-    }
+    var selectedOriginalId: Int? = null
 
     fun loadOriginals() = viewModelScope.launch {
         getOriginalsUseCase(null, null).handle {

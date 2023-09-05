@@ -462,7 +462,7 @@ fun EpisodeItem(
 
 @Composable
 fun OriginalBarcode(
-    original: IndexOriginal,
+    original: IndexOriginal?,
     onCloseClicked: () -> Unit
 ) {
     Column(
@@ -491,7 +491,7 @@ fun OriginalBarcode(
                 .width(IntrinsicSize.Min)
         ) {
             AsyncImage(
-                model = original.cover,
+                model = original?.cover,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -510,7 +510,7 @@ fun OriginalBarcode(
             )
             VerticalSpacer(height = dimensionResource(id = R.dimen.dp2))
             Text(
-                text = original.barcode.orEmpty(),
+                text = original?.barcode.orEmpty(),
                 style = MaterialTheme.localTextStyles.spaceGrotesk14Regular,
                 color = MaterialTheme.localColors.black,
             )

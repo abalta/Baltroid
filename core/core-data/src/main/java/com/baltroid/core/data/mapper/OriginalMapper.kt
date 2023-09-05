@@ -37,8 +37,7 @@ import com.hitreads.core.domain.model.ShowOriginalModel
 import com.hitreads.core.domain.model.TagsWithOriginalsModel
 import com.hitreads.core.domain.model.WelcomeModel
 
-internal fun IndexNetworkOriginal.asIndexOriginalModel() = IndexOriginalModel(
-    type = type,
+internal fun IndexNetworkOriginal.asIndexOriginalModel() = IndexOriginalModel(type = type,
     id = id,
     title = title,
     description = description,
@@ -61,8 +60,7 @@ internal fun IndexNetworkOriginal.asIndexOriginalModel() = IndexOriginalModel(
     isNew = isNew,
     barcode = barcode,
     continueReadingEpisode = continueReadingEpisode?.asIndexContinueReadingEpisodeModel(),
-    episodes = episodes?.map { it.asShowEpisodeModelIndex() }
-)
+    episodes = episodes?.map { it.asShowEpisodeModelIndex() })
 
 internal fun InteractiveNetworkBundleAsset.asInteractiveBundleAssetsModel() =
     InteractiveBundleAssetModel(
@@ -292,8 +290,6 @@ internal fun FavoriteOriginalDto.asFavoriteOriginalModel() = FavoriteOriginalMod
 )
 
 internal fun TagWithOriginalsDto.asTagsWithOriginalsModel() =
-    TagsWithOriginalsModel(
-        tagName = tagName,
+    TagsWithOriginalsModel(tagName = tagName,
         tagId = tagId,
-        indexOriginalModels = originals?.map { it.asIndexOriginalModel() }
-    )
+        indexOriginalModels = originals?.map { it.asIndexOriginalModel() })

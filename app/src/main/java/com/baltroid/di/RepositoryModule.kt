@@ -6,6 +6,7 @@ import com.baltroid.core.data.repository.FavoriteRepositoryImpl
 import com.baltroid.core.data.repository.OriginalRepositoryImpl
 import com.baltroid.core.data.repository.WelcomeRepositoryImpl
 import com.hitreads.core.domain.repository.AuthRepository
+import com.hitreads.core.domain.repository.AuthorRepository
 import com.hitreads.core.domain.repository.CommentRepository
 import com.hitreads.core.domain.repository.FavoriteRepository
 import com.hitreads.core.domain.repository.OriginalRepository
@@ -38,6 +39,10 @@ interface RepositoryModule {
     @Binds
     @ViewModelScoped
     fun bindFavoriteRepository(favoriteRepository: FavoriteRepositoryImpl): FavoriteRepository
+
+    @Binds
+    @ViewModelScoped
+    fun bindAuthorRepository(authorRepository: AuthorRepository): AuthorRepository
 
     /*
     @Binds

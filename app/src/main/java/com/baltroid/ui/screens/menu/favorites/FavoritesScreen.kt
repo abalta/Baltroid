@@ -9,10 +9,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -105,7 +107,9 @@ fun FavoritesScreenContent(
                     text = stringResource(id = R.string.stories),
                     style = MaterialTheme.localTextStyles.spaceGrotesk20Medium,
                     color = MaterialTheme.localColors.white_alpha09,
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentWidth(Alignment.CenterHorizontally)
                 )
                 VerticalSpacer(height = dimensionResource(id = R.dimen.dp22))
                 StoryItemFavoritesList(
@@ -119,7 +123,9 @@ fun FavoritesScreenContent(
                     text = stringResource(id = R.string.authors),
                     style = MaterialTheme.localTextStyles.spaceGrotesk20Medium,
                     color = MaterialTheme.localColors.white_alpha09,
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentWidth(Alignment.CenterHorizontally)
                 )
                 VerticalSpacer(height = dimensionResource(id = R.dimen.dp25))
                 AuthorsFavoritesList(

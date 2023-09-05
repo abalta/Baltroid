@@ -5,6 +5,7 @@ import com.baltroid.core.network.model.HitReadsResponse
 import com.baltroid.core.network.model.originals.IndexNetworkOriginal
 import com.baltroid.core.network.model.originals.NetworkCreateCommentResponse
 import com.baltroid.core.network.model.request.RegisterRequestBody
+import com.baltroid.core.network.model.response.AuthorDto
 import com.baltroid.core.network.model.response.CommentDto
 import com.baltroid.core.network.model.response.EpisodeShowDto
 import com.baltroid.core.network.model.response.FavoriteDto
@@ -23,6 +24,7 @@ import com.baltroid.core.network.util.Constants.Fields.ORIGINALS
 import com.baltroid.core.network.util.Constants.Fields.PASSWORD
 import com.baltroid.core.network.util.Constants.Fields.RESPONSE_ID
 import com.baltroid.core.network.util.Constants.Fields.TYPE
+import com.baltroid.core.network.util.Constants.Path.AUTHOR
 import com.baltroid.core.network.util.Constants.Path.BY_ME
 import com.baltroid.core.network.util.Constants.Path.COMMENT
 import com.baltroid.core.network.util.Constants.Path.END
@@ -139,6 +141,11 @@ interface HitReadsService {
         @Query(TYPE) type: String,
         @Query(ID) id: Int?
     ): BaltroidResult<HitReadsResponse<List<FavoriteDto>>>
+
+    @GET("$AUTHOR/{id}")
+    suspend fun showAuthor(
+        @Path("id") id: Int
+    ): BaltroidResult<HitReadsResponse<AuthorDto>>
 
     @GET(PROFILE)
     suspend fun getProfile(): BaltroidResult<HitReadsResponse<ProfileDto>>

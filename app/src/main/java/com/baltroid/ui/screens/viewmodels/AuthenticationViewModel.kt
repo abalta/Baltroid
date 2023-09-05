@@ -29,11 +29,21 @@ class AuthenticationViewModel @Inject constructor(
     private val _uiStateRegister = MutableStateFlow(RegisterScreenUIState())
     val uiStateRegister = _uiStateRegister.asStateFlow()
 
+    init {
+        getProfile()
+    }
+
     fun getProfile() = viewModelScope.launch {
         profileUseCase().handle {
             onSuccess { profileModel ->
+                onLoading {
+                    _profileState.update { it.copy(isLoading = true) }
+                }
                 _profileState.update {
-                    it.copy(profile = profileModel.asProfile())
+                    it.copy(profile = profileModel.asProfile(), isLoading = false)
+                }
+                onFailure {
+                    _profileState.update { it.copy(isLoading = false) }
                 }
             }
         }

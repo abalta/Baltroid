@@ -1,5 +1,6 @@
 package com.baltroid.ui.screens.menu.login
 
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -29,6 +30,7 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.baltroid.apps.R
+import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.SimpleImage
 import com.baltroid.ui.common.VerticalSpacer
 import com.baltroid.ui.navigation.HitReadsScreens
@@ -174,17 +176,25 @@ fun TextBetweenDividers(
         modifier = modifier.clickable { onClick() },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Divider(
-            thickness = dimensionResource(id = R.dimen.dp1),
-            color = MaterialTheme.localColors.white_alpha06
-        )
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp20))
         Text(text = text, style = textStyle, color = MaterialTheme.localColors.orange)
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp20))
-        Divider(
-            thickness = dimensionResource(id = R.dimen.dp1),
-            color = MaterialTheme.localColors.white_alpha06
-        )
+    }
+}
+
+@Composable
+fun IconBetweenDividers(
+    @DrawableRes iconRes: Int,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    Column(
+        modifier = modifier.clickable { onClick() },
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp20))
+        SimpleIcon(iconResId = iconRes)
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp20))
     }
 }
 

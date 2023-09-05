@@ -24,6 +24,7 @@ internal object Constants {
         internal const val BOOKMARK = "bookmark"
         internal const val REGISTER = "register"
         internal const val FAVORITE = "favorite"
+        internal const val AUTHOR = "author"
         internal const val PROFILE = "profile"
         internal const val NOTIFICATION = "notification"
     }

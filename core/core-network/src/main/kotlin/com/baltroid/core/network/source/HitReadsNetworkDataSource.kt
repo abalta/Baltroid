@@ -6,6 +6,7 @@ import com.baltroid.core.network.model.HitReadsResponse
 import com.baltroid.core.network.model.originals.IndexNetworkOriginal
 import com.baltroid.core.network.model.originals.NetworkCreateCommentResponse
 import com.baltroid.core.network.model.request.RegisterRequestBody
+import com.baltroid.core.network.model.response.AuthorDto
 import com.baltroid.core.network.model.response.CommentDto
 import com.baltroid.core.network.model.response.EpisodeShowDto
 import com.baltroid.core.network.model.response.FavoriteDto
@@ -155,6 +156,9 @@ class HitReadsNetworkDataSource @Inject constructor(
 
     suspend fun getFavoriteOriginals(): BaltroidResult<HitReadsResponse<List<FavoriteOriginalDto>>> =
         hitReadsService.getFavoriteOriginals()
+
+    suspend fun showAuthor(id: Int): BaltroidResult<HitReadsResponse<AuthorDto>> =
+        hitReadsService.showAuthor(id)
 
     /*suspend fun getOriginals(
         page: Int = DEFAULT_PAGE,

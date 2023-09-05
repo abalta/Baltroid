@@ -1,5 +1,6 @@
 package com.baltroid.ui.screens.reading
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearEasing
@@ -78,6 +79,7 @@ import com.baltroid.ui.components.CommentWritingCard
 import com.baltroid.ui.components.HitReadsSideBar
 import com.baltroid.ui.components.HitReadsTopBar
 import com.baltroid.ui.screens.home.detail.EpisodeItem
+import com.baltroid.ui.screens.home.detail.OriginalBarcode
 import com.baltroid.ui.screens.reading.comments.CommentsTabState
 import com.baltroid.ui.screens.viewmodels.OriginalViewModel
 import com.baltroid.ui.theme.Poppins
@@ -90,7 +92,6 @@ import com.baltroid.util.orZero
 import com.hitreads.core.domain.model.OriginalType
 import com.hitreads.core.model.Comment
 import com.hitreads.core.model.IndexOriginal
-import com.hitreads.core.model.ShowEpisode
 
 @Composable
 fun ReadingScreen(
@@ -113,19 +114,15 @@ fun ReadingScreen(
     ReadingScreenContent(
         uiState = uiState,
         original = uiStateDetail.original,
-        episode = viewModel.selectedEpisode(),
         onEpisodeChange = viewModel::setSelectedEpisodeId,
         loadComments = viewModel::getOriginalComments,
         onNextClicked = viewModel::nextEpisode,
-        onCreateComment = { comment ->
-            viewModel.createComment(comment, null)
-        },
+        onCreateComment = { comment -> viewModel.createComment(comment, null) },
         onLikeClick = { isLiked ->
             if (isLiked) viewModel.deleteFavorite()
             else viewModel.createFavorite()
         },
-        goToFirstEpisode = {},
-        onShare = {},
+        goToFirstEpisode = viewModel::setSelectedEpisodeId,
         onCreateFavorite = { viewModel.createFavorite() },
     )
 }
@@ -134,15 +131,13 @@ fun ReadingScreen(
 fun ReadingScreenContent(
     uiState: ReadingUiState,
     original: IndexOriginal?,
-    episode: ShowEpisode?,
     onNextClicked: () -> Unit,
     onCreateComment: (String) -> Unit,
     loadComments: () -> Unit,
     onEpisodeChange: (Int) -> Unit,
     onLikeClick: (Boolean) -> Unit,
     onCreateFavorite: () -> Unit,
-    onShare: () -> Unit,
-    goToFirstEpisode: () -> Unit,
+    goToFirstEpisode: (id: Int) -> Unit,
 ) {
     val scrollState = rememberScrollState()
     var isSidebarVisible by rememberSaveable {
@@ -165,6 +160,14 @@ fun ReadingScreenContent(
     var selectedCommentTab by rememberSaveable {
         mutableStateOf(CommentsTabState.AllComments)
     }
+
+    var isBarcodeEnabled by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    BackHandler(
+        enabled = isBarcodeEnabled
+    ) { isBarcodeEnabled = false }
 
     Box {
         Column(
@@ -193,7 +196,7 @@ fun ReadingScreenContent(
                             subtitle = original?.indexAuthor?.name.orEmpty(),
                             isExpanded = !isSidebarVisible,
                             isLiked = original?.indexUserData?.isFav == true,
-                            episodeName = episode?.episodeName.orEmpty(),
+                            episodeName = uiState.episode?.episodeName.orEmpty(),
                             isEpisodeNameVisible = isSidebarVisible && isReadingSection,
                             onDotsClick = {
                                 isSidebarVisible = true
@@ -207,10 +210,16 @@ fun ReadingScreenContent(
                         if (isReadingSection) {
                             ReadingSection(
                                 body = uiState.episode?.episodeContent.orEmpty(),
-                                isLastEpisode = episode?.isLastEpisode == true,
+                                isLastEpisode = uiState.episode?.isLastEpisode == true,
                                 onCreateFavorite = onCreateFavorite,
-                                onShare = onShare,
-                                goToFirstEpisode = goToFirstEpisode,
+                                onShare = {
+                                    isBarcodeEnabled = true
+                                },
+                                goToFirstEpisode = {
+                                    goToFirstEpisode.invoke(
+                                        original?.episodes?.firstOrNull()?.id ?: -1
+                                    )
+                                },
                                 onNextClicked = onNextClicked
                             )
                         } else {
@@ -286,6 +295,11 @@ fun ReadingScreenContent(
             ) { comment ->
                 onCreateComment(comment)
                 isWriteCardShown = false
+            }
+        }
+        if (isBarcodeEnabled) {
+            OriginalBarcode(original = original) {
+                isBarcodeEnabled = false
             }
         }
     }
@@ -366,9 +380,8 @@ fun ReadingSection(
                     .align(Alignment.End)
                     .alpha(0.5f)
             )
-        }
-        VerticalSpacer(height = R.dimen.dp24)
-        if (isLastEpisode) {
+        } else if (isLastEpisode) {
+            VerticalSpacer(height = R.dimen.dp24)
             LastEpisodeSection(
                 onCreateFavorite = onCreateFavorite,
                 onShare = onShare,

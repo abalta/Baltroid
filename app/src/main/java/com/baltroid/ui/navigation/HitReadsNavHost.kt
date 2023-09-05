@@ -17,7 +17,18 @@ import androidx.navigation.NavOptionsBuilder
 import com.baltroid.ui.screens.home.HomeScreen
 import com.baltroid.ui.screens.home.detail.HomeDetailScreen
 import com.baltroid.ui.screens.interactive.InteractiveScreen
+import com.baltroid.ui.screens.menu.MenuScreen
+import com.baltroid.ui.screens.menu.author.AuthorScreen
+import com.baltroid.ui.screens.menu.comments.CommentsScreen
+import com.baltroid.ui.screens.menu.favorites.FavoritesScreen
+import com.baltroid.ui.screens.menu.login.LoginScreen
 import com.baltroid.ui.screens.menu.login.LoginViewModel
+import com.baltroid.ui.screens.menu.place_marks.PlaceMarksScreen
+import com.baltroid.ui.screens.menu.profile.ProfileScreen
+import com.baltroid.ui.screens.menu.register.RegisterScreen
+import com.baltroid.ui.screens.menu.settings.SettingsScreen
+import com.baltroid.ui.screens.menu.shop.ShopScreen
+import com.baltroid.ui.screens.menu.shop.ShopScreenState
 import com.baltroid.ui.screens.onboarding.OnboardingScreen
 import com.baltroid.ui.screens.onboarding.OnboardingViewModel
 import com.baltroid.ui.screens.playground.PlaygroundScreen
@@ -52,7 +63,78 @@ fun HitReadsNavHost(
                 .background(MaterialTheme.localColors.black)
         ) {
 
-            menuGraph(navController, loginViewModel)
+            composable(
+                HitReadsScreens.MenuScreen.route
+            ) {
+                MenuScreen(
+                    isLoggedIn = loginViewModel.uiStateIsLogged.collectAsStateWithLifecycle().value,
+                    onBackClick = { navController.popBackStack() }
+                ) { route ->
+                    navController.navigate(route) {
+                        if (route == HitReadsScreens.HomeScreen.route) {
+                            popUpToInclusive(HitReadsScreens.HomeScreen.route)
+                        }
+                    }
+                }
+            }
+            composable(route = HitReadsScreens.PlaceMarksScreen.route) {
+                PlaceMarksScreen(
+                    onBackClick = { navController.popBackStack() }
+                )
+            }
+            composable(route = HitReadsScreens.FavoritesScreen.route) {
+                FavoritesScreen(
+                    onBackClick = { navController.popBackStack() }
+                )
+            }
+            composable(route = HitReadsScreens.SettingsScreen.route) {
+                SettingsScreen(
+                    onBackClick = { navController.popBackStack() }
+                )
+            }
+            composable(route = HitReadsScreens.ProfileScreen.route) {
+                ProfileScreen(
+                    onBackClick = { navController.popBackStack() }
+                )
+            }
+            composable(route = HitReadsScreens.AuthorScreen.route) {
+                AuthorScreen(
+                    onBackClick = { navController.popBackStack() }
+                )
+            }
+            composable(route = HitReadsScreens.ShopScreen.route) {
+                val screenState = ShopScreenState(
+                    currentPoint = 4500,
+                    currentBalance = 15f
+                )
+                ShopScreen(
+                    screenState = screenState,
+                    onBackClick = { navController.popBackStack() }
+                )
+            }
+            composable(route = HitReadsScreens.LoginScreen.route) {
+                LoginScreen(
+                    loginViewModel,
+                    navigate = { navController.navigate(it) }
+                ) {
+                    navController.popBackStack()
+                }
+            }
+            composable(route = HitReadsScreens.RegisterScreen.route) {
+                RegisterScreen(
+                    navigate = {
+                        navController.navigate(it)
+                    }
+                ) {
+                    navController.popBackStack()
+                }
+            }
+            composable(route = HitReadsScreens.CommentsScreen.route) {
+                CommentsScreen(
+                    viewModel = hiltViewModel(),
+                    onBackClick = { navController.popBackStack() }
+                )
+            }
 
             composable(
                 route = HitReadsScreens.OnboardingScreen.route

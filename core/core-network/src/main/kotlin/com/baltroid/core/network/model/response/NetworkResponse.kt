@@ -1,5 +1,6 @@
 package com.baltroid.core.network.model.response
 
+import com.baltroid.core.network.model.author.NetworkAuthor
 import com.baltroid.core.network.model.episode.NetworkShowEpisode
 import com.baltroid.core.network.model.notification.NetworkView
 import com.baltroid.core.network.model.originals.IndexNetworkOriginal
@@ -179,6 +180,12 @@ data class FavoriteDto(
     val priceType: String?,
     @SerialName("sort")
     val sort: Int?
+)
+
+@Serializable
+data class AuthorDto(
+    @SerialName("author")
+    val author: NetworkAuthor?
 )
 
 @Serializable
