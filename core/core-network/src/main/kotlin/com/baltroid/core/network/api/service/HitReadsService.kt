@@ -31,6 +31,7 @@ import com.baltroid.core.network.util.Constants.Path.END
 import com.baltroid.core.network.util.Constants.Path.EPISODE
 import com.baltroid.core.network.util.Constants.Path.FAVORITE
 import com.baltroid.core.network.util.Constants.Path.LIKE
+import com.baltroid.core.network.util.Constants.Path.LIKED_BY_ME
 import com.baltroid.core.network.util.Constants.Path.LOGIN
 import com.baltroid.core.network.util.Constants.Path.NOTIFICATION
 import com.baltroid.core.network.util.Constants.Path.ORIGINALS_INDEX
@@ -78,7 +79,8 @@ interface HitReadsService {
     @GET(COMMENT)
     suspend fun getComments(
         @Query(TYPE) type: String,
-        @Query(ID) id: Int?
+        @Query(ID) id: Int?,
+        @Query(LIKED_BY_ME) likedByMe: Boolean? = null
     ): BaltroidResult<HitReadsResponse<List<CommentDto>>>
 
     @GET("$COMMENT/$BY_ME")

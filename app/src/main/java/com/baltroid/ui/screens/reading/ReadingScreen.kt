@@ -123,7 +123,12 @@ fun ReadingScreen(
             else viewModel.createFavorite()
         },
         goToFirstEpisode = viewModel::setSelectedEpisodeId,
+        expanseComment = viewModel::expanseComment,
         onCreateFavorite = { viewModel.createFavorite() },
+        likeComment = { isLiked, id, tabState ->
+            if (isLiked) viewModel.unlikeComment(id, tabState)
+            else viewModel.likeComment(id, tabState)
+        },
     )
 }
 
@@ -137,6 +142,8 @@ fun ReadingScreenContent(
     onEpisodeChange: (Int) -> Unit,
     onLikeClick: (Boolean) -> Unit,
     onCreateFavorite: () -> Unit,
+    likeComment: (Boolean, Int, CommentsTabState) -> Unit,
+    expanseComment: (Int, CommentsTabState) -> Unit,
     goToFirstEpisode: (id: Int) -> Unit,
 ) {
     val scrollState = rememberScrollState()
@@ -230,10 +237,18 @@ fun ReadingScreenContent(
                             )
                             CommentSection(
                                 lazyListState = rememberLazyListState(),
-                                comments = uiState.comments,
-                                onLikeClick = { _, _ -> },
+                                comments = when (selectedCommentTab) {
+                                    CommentsTabState.AllComments -> uiState.allComments
+                                    CommentsTabState.MyFavorites -> uiState.commentsLikedByMe
+                                    else -> emptyList()
+                                },
+                                onLikeClick = { isLiked, id ->
+                                    likeComment.invoke(isLiked, id, selectedCommentTab)
+                                },
                                 onReplyClick = {},
-                                onExpanseClicked = {},
+                                onExpanseClicked = {
+                                    expanseComment.invoke(it, selectedCommentTab)
+                                },
                                 modifier = Modifier.padding(start = dimensionResource(id = R.dimen.dp30))
                             )
                         }

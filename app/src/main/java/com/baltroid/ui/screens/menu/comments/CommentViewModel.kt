@@ -6,8 +6,8 @@ import com.baltroid.core.common.result.handle
 import com.baltroid.util.ORIGINAL
 import com.hitreads.core.domain.usecase.CreateCommentUseCase
 import com.hitreads.core.domain.usecase.GetAllCommentsUseCase
-import com.hitreads.core.domain.usecase.GetCommentsByMe
-import com.hitreads.core.domain.usecase.GetCommentsLikedByMe
+import com.hitreads.core.domain.usecase.GetCommentsByMeUseCase
+import com.hitreads.core.domain.usecase.GetCommentsLikedByMeUseCase
 import com.hitreads.core.domain.usecase.LikeCommentUseCase
 import com.hitreads.core.domain.usecase.UnlikeCommentUseCase
 import com.hitreads.core.model.Comment
@@ -25,8 +25,8 @@ class CommentViewModel @Inject constructor(
     private val commentLikeCommentUseCase: LikeCommentUseCase,
     private val commentUnlikeCommentUseCase: UnlikeCommentUseCase,
     private val createCommentUseCase: CreateCommentUseCase,
-    private val getCommentsByMe: GetCommentsByMe,
-    private val getCommentsLikedByMe: GetCommentsLikedByMe
+    private val getCommentsByMeUseCase: GetCommentsByMeUseCase,
+    private val getCommentsLikedByMeUseCase: GetCommentsLikedByMeUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CommentsUiState())
@@ -48,7 +48,7 @@ class CommentViewModel @Inject constructor(
 
     fun getCommentsByMe() {
         viewModelScope.launch {
-            getCommentsByMe.invoke().handle {
+            getCommentsByMeUseCase.invoke().handle {
                 onLoading {
                     _uiState.update { it.copy(isLoading = true) }
                 }
@@ -171,7 +171,7 @@ class CommentViewModel @Inject constructor(
 
     fun getCommentsLikedByMe() {
         viewModelScope.launch {
-            getCommentsLikedByMe.invoke().handle {
+            getCommentsLikedByMeUseCase.invoke().handle {
                 onLoading {
                     _uiState.update { it.copy(isLoading = true) }
                 }

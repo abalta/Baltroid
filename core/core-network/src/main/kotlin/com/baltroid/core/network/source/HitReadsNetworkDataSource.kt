@@ -120,6 +120,12 @@ class HitReadsNetworkDataSource @Inject constructor(
     ): BaltroidResult<HitReadsResponse<List<CommentDto>>> =
         hitReadsService.getComments(type, null)
 
+    suspend fun getCommentsLikedByMe(
+        type: String,
+        id: Int
+    ): BaltroidResult<HitReadsResponse<List<CommentDto>>> =
+        hitReadsService.getComments(type, id, true)
+
     suspend fun getCommentsByMe(): BaltroidResult<HitReadsResponse<List<CommentDto>>> =
         hitReadsService.getCommentsByMe()
 

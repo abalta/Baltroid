@@ -9,6 +9,7 @@ import com.baltroid.core.common.result.handle
 import com.baltroid.ui.screens.home.HomeUiState
 import com.baltroid.ui.screens.home.detail.HomeDetailUIState
 import com.baltroid.ui.screens.reading.ReadingUiState
+import com.baltroid.ui.screens.reading.comments.CommentsTabState
 import com.baltroid.util.ORIGINAL
 import com.baltroid.util.ORIGINALS
 import com.baltroid.util.orZero
@@ -17,14 +18,17 @@ import com.hitreads.core.domain.usecase.CreateCommentUseCase
 import com.hitreads.core.domain.usecase.CreateFavoriteUseCase
 import com.hitreads.core.domain.usecase.DeleteFavoriteUseCase
 import com.hitreads.core.domain.usecase.EndReadingEpisodeUseCase
+import com.hitreads.core.domain.usecase.GetCommentsLikedByMeByIdUseCase
 import com.hitreads.core.domain.usecase.GetCommentsUseCase
 import com.hitreads.core.domain.usecase.GetFavoriteOriginalsUseCase
 import com.hitreads.core.domain.usecase.GetOriginalsUseCase
 import com.hitreads.core.domain.usecase.IsLoggedUseCase
+import com.hitreads.core.domain.usecase.LikeCommentUseCase
 import com.hitreads.core.domain.usecase.ProfileUseCase
 import com.hitreads.core.domain.usecase.ShowEpisodeUseCase
 import com.hitreads.core.domain.usecase.ShowOriginalUseCase
 import com.hitreads.core.domain.usecase.StartReadingEpisodeUseCase
+import com.hitreads.core.domain.usecase.UnlikeCommentUseCase
 import com.hitreads.core.model.IndexOriginal
 import com.hitreads.core.ui.mapper.asComment
 import com.hitreads.core.ui.mapper.asFavoriteOriginal
@@ -48,10 +52,13 @@ class OriginalViewModel @Inject constructor(
     private val deleteFavoriteUseCase: DeleteFavoriteUseCase,
     private val createCommentUseCase: CreateCommentUseCase,
     private val profileUseCase: ProfileUseCase,
+    private val commentLikeCommentUseCase: LikeCommentUseCase,
+    private val commentUnlikeCommentUseCase: UnlikeCommentUseCase,
     private val startReadingEpisodeUseCase: StartReadingEpisodeUseCase,
     private val endReadingEpisodeUseCase: EndReadingEpisodeUseCase,
     private val getFavoriteOriginalsUseCase: GetFavoriteOriginalsUseCase,
     private val getCommentsUseCase: GetCommentsUseCase,
+    private val getCommentsLikedByMeByIdUseCase: GetCommentsLikedByMeByIdUseCase,
 ) : ViewModel() {
 
     private val _uiStateHome = MutableStateFlow(HomeUiState())
@@ -213,8 +220,13 @@ class OriginalViewModel @Inject constructor(
     }
 
     fun getOriginalComments() {
+        getAllOriginalComments()
+        getCommentsLikedByMeById()
+    }
+
+    private fun getAllOriginalComments() {
         viewModelScope.launch {
-            getCommentsUseCase(type = ORIGINAL, selectedOriginalId.orZero()).handle {
+            getCommentsUseCase(type = ORIGINAL, 1).handle {
                 onLoading {
                     _uiStateReading.update { it.copy(isLoading = true) }
                 }
@@ -222,7 +234,27 @@ class OriginalViewModel @Inject constructor(
                     _uiStateReading.update {
                         it.copy(
                             isLoading = false,
-                            comments = comments.map { it.asComment() })
+                            allComments = comments.map { it.asComment() })
+                    }
+                }
+                onFailure {
+                    _uiStateReading.update { it.copy(isLoading = false) }
+                }
+            }
+        }
+    }
+
+    private fun getCommentsLikedByMeById() {
+        viewModelScope.launch {
+            getCommentsLikedByMeByIdUseCase(type = ORIGINAL, 1).handle {
+                onLoading {
+                    _uiStateReading.update { it.copy(isLoading = true) }
+                }
+                onSuccess { comments ->
+                    _uiStateReading.update {
+                        it.copy(
+                            isLoading = false,
+                            commentsLikedByMe = comments.map { it.asComment() })
                     }
                 }
                 onFailure {
@@ -351,6 +383,30 @@ class OriginalViewModel @Inject constructor(
         }
     }
 
+    fun expanseComment(id: Int, tabState: CommentsTabState) {
+        when (tabState) {
+            CommentsTabState.AllComments -> {
+                _uiStateReading.update {
+                    it.copy(allComments = it.allComments.map {
+                        if (it.id == id) it.copy(isExpanded = true) else it
+                    })
+                }
+            }
+
+            CommentsTabState.MyFavorites -> {
+                _uiStateReading.update {
+                    it.copy(commentsLikedByMe = it.commentsLikedByMe.map {
+                        if (it.id == id) it.copy(isExpanded = true) else it
+                    })
+                }
+            }
+
+            CommentsTabState.MyComments -> {/* no-op */
+
+            }
+        }
+    }
+
     fun setSelectedEpisodeId(id: Int) {
         _selectedEpisodeId.value = id
     }
@@ -393,6 +449,98 @@ class OriginalViewModel @Inject constructor(
             onSuccess { _ ->
                 _uiStateReading.update { it.copy(isLoading = false) }
                 _uiStateDetail.update { it.copy(original = it.original.copy(commentCount = it.original.commentCount + 1)) }
+            }
+            onFailure {
+                _uiStateReading.update { it.copy(isLoading = false) }
+            }
+        }
+    }
+
+    fun likeComment(id: Int, tabState: CommentsTabState) = viewModelScope.launch {
+        commentLikeCommentUseCase(id).handle {
+            onLoading {
+                _uiStateReading.update { it.copy(isLoading = true) }
+            }
+            onSuccess {
+                _uiStateReading.update { state ->
+                    when (tabState) {
+                        CommentsTabState.AllComments -> {
+                            val updatedList =
+                                if (state.allComments.firstOrNull { it.id == id } != null) {
+                                    state.allComments.map { if (it.id == id) it.copy(isLiked = true) else it }
+                                } else {
+                                    state.allComments.map {
+                                        it.copy(replies = it.replies.map {
+                                            if (it.id == id) it.copy(isLiked = true) else it
+                                        })
+                                    }
+                                }
+                            state.copy(allComments = updatedList, isLoading = false)
+                        }
+
+                        CommentsTabState.MyFavorites -> {
+                            val updatedList =
+                                if (state.commentsLikedByMe.firstOrNull { it.id == id } != null) {
+                                    state.commentsLikedByMe.map { if (it.id == id) it.copy(isLiked = true) else it }
+                                } else {
+                                    state.commentsLikedByMe.map {
+                                        it.copy(replies = it.replies.map {
+                                            if (it.id == id) it.copy(isLiked = true) else it
+                                        })
+                                    }
+                                }
+                            state.copy(commentsLikedByMe = updatedList, isLoading = false)
+                        }
+
+                        CommentsTabState.MyComments -> state
+                    }
+                }
+            }
+            onFailure {
+                _uiStateReading.update { it.copy(isLoading = false) }
+            }
+        }
+    }
+
+    fun unlikeComment(id: Int, tabState: CommentsTabState) = viewModelScope.launch {
+        commentUnlikeCommentUseCase(id).handle {
+            onLoading {
+                _uiStateReading.update { it.copy(isLoading = true) }
+            }
+            onSuccess {
+                _uiStateReading.update { state ->
+                    when (tabState) {
+                        CommentsTabState.AllComments -> {
+                            val updatedList =
+                                if (state.allComments.firstOrNull { it.id == id } != null) {
+                                    state.allComments.map { if (it.id == id) it.copy(isLiked = false) else it }
+                                } else {
+                                    state.allComments.map {
+                                        it.copy(replies = it.replies.map {
+                                            if (it.id == id) it.copy(isLiked = false) else it
+                                        })
+                                    }
+                                }
+                            state.copy(allComments = updatedList, isLoading = false)
+                        }
+
+                        CommentsTabState.MyFavorites -> {
+                            val updatedList =
+                                if (state.commentsLikedByMe.firstOrNull { it.id == id } != null) {
+                                    state.commentsLikedByMe.map { if (it.id == id) it.copy(isLiked = false) else it }
+                                } else {
+                                    state.commentsLikedByMe.map {
+                                        it.copy(replies = it.replies.map {
+                                            if (it.id == id) it.copy(isLiked = false) else it
+                                        })
+                                    }
+                                }
+                            state.copy(commentsLikedByMe = updatedList, isLoading = false)
+                        }
+
+                        CommentsTabState.MyComments -> state
+                    }
+                }
             }
             onFailure {
                 _uiStateReading.update { it.copy(isLoading = false) }
