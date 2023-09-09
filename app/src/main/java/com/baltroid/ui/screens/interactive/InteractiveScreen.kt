@@ -3,6 +3,7 @@ package com.baltroid.ui.screens.interactive
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -29,6 +30,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -40,6 +42,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
@@ -53,27 +56,33 @@ import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
 import com.baltroid.apps.R
 import com.baltroid.core.common.model.DialogueXml
 import com.baltroid.ui.common.CroppedImage
 import com.baltroid.ui.common.HorizontalSpacer
 import com.baltroid.ui.common.IconWithTextNextTo
+import com.baltroid.ui.common.SetLoadingState
 import com.baltroid.ui.common.SimpleIcon
+import com.baltroid.ui.common.SimpleImage
 import com.baltroid.ui.common.VerticalSpacer
 import com.baltroid.ui.components.HitReadsTopBar
+import com.baltroid.ui.screens.reading.LastEpisodeButtons
 import com.baltroid.ui.screens.viewmodels.OriginalViewModel
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
 import com.baltroid.util.orEmpty
+import com.baltroid.util.orZero
+import com.hitreads.core.domain.model.OriginalType
 import com.hitreads.core.model.Episode
-import com.hitreads.core.model.IndexAuthor
 import com.hitreads.core.model.IndexOriginal
-import com.hitreads.core.model.IndexPackage
-import com.hitreads.core.model.IndexUserData
 import com.hitreads.core.model.ShowEpisode
 
 @Composable
@@ -91,14 +100,21 @@ fun InteractiveScreen(
         viewModel.uiStateReading.collectAsStateWithLifecycle().value.episode?.xmlContents
             ?.episode?.dialogue
 
-    val episode = viewModel.uiStateReading.collectAsStateWithLifecycle().value.episode
+    val readingUiState by viewModel.uiStateReading.collectAsStateWithLifecycle()
 
     var currentDialogue by remember(interactiveContent) {
         mutableStateOf(interactiveContent?.firstOrNull())
     }
 
-    LaunchedEffect(currentDialogue) {
+    val original by viewModel.uiStateDetail.collectAsStateWithLifecycle()
+
+    SetLoadingState(isLoading = readingUiState.isLoading)
+
+    LaunchedEffect(viewModel.selectedEpisodeId.value) {
+        viewModel.setSelectedEpisodeId(761)
+        viewModel.showEpisode(OriginalType.INTERACTIVE)
     }
+
 
     Box(
         modifier = Modifier.navigationBarsPadding()
@@ -107,10 +123,14 @@ fun InteractiveScreen(
             imgResId = R.drawable.woods_image,
             modifier = Modifier.fillMaxSize()
         )
-        if (currentDialogue?.focus != null) {
-            Image(
-                painter = painterResource(id = R.drawable.mock_focus),
+        if (currentDialogue?.focus != null && currentDialogue?.lineType == null) {
+            AsyncImage(
+                model = readingUiState.episode
+                    ?.bundleAssets
+                    ?.firstOrNull { it.type == "focus" && it.typeId.toString() == currentDialogue?.focus }
+                    ?.path.orEmpty(),
                 contentDescription = null,
+                contentScale = ContentScale.Fit,
                 modifier = Modifier.fillMaxSize()
             )
         }
@@ -145,57 +165,72 @@ fun InteractiveScreen(
                                     dialogue.optionThree.toString(),
                                     dialogue.optionThreeNextLineId.toString()
                                 ),
-                            )
+                            ),
+                            modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.dp24))
                         ) { nextLineId ->
                             currentDialogue =
                                 interactiveContent?.firstOrNull { it?.lineId == nextLineId }
                         }
                     }
-                    InteractiveTextBox(
-                        model = dialogue,
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .wrapContentHeight(Alignment.Bottom)
-                    ) { nextLineId ->
-                        currentDialogue =
-                            interactiveContent?.firstOrNull { it?.lineId == nextLineId }
-                    }
 
+                    when (dialogue.lineType) {
+                        null -> {
+                            InteractiveTextBox(
+                                model = dialogue,
+                                episode = readingUiState.episode,
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .wrapContentHeight(Alignment.Bottom)
+                            ) { nextLineId ->
+                                currentDialogue =
+                                    interactiveContent?.firstOrNull { it?.lineId == nextLineId }
+                            }
+                        }
+
+                        "NOT" -> {
+                            InteractiveNote(
+                                dialogue = dialogue,
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .wrapContentHeight(Alignment.CenterVertically)
+                                    .padding(bottom = dimensionResource(id = R.dimen.dp125))
+                            ) { nextLineId ->
+                                currentDialogue =
+                                    interactiveContent?.firstOrNull { it?.lineId == nextLineId }
+                            }
+                        }
+                    }
                 }
             }
-            InteractiveScreenBottomSection(
-                indexOriginal = IndexOriginal(
-                    indexAuthor = IndexAuthor(id = 2331, name = "Santiago Long"),
-                    banner = "audire",
-                    cover = "oratio",
-                    description = "praesent",
-                    id = 6480,
-                    isActual = false,
-                    isLocked = false,
-                    likeCount = 7490,
-                    commentCount = 8721,
-                    viewCount = 2254,
-                    indexPackage = IndexPackage(
-                        id = 5977,
-                        price = 7310,
-                        priceType = "sed"
-                    ),
-                    sort = 9124,
-                    status = false,
-                    title = "interdum",
-                    type = "interpretaris",
-                    indexUserData = IndexUserData(isFav = false, isPurchase = false),
-                    indexTags = listOf(),
-                    hashtag = "fuisset",
-                    subtitle = "quo",
-                    episodeCount = 6177,
-                    isNew = false,
-                    barcode = "aliquam",
-                    continueReadingEpisode = null,
-                    episodes = listOf()
-                ),
-                episode = episode
-            )
+            if (currentDialogue != null && (readingUiState.episode?.isLastEpisode == true && (currentDialogue?.nextLineId == currentDialogue?.lineId || currentDialogue?.nextLineId.isNullOrEmpty()) && currentDialogue?.optionCount == null)) {
+                LastEpisodeButtons(
+                    onCreateFavorite = {},
+                    onShare = { },
+                    goToFirstEpisode = {},
+                    modifier = Modifier
+                        .padding(horizontal = dimensionResource(id = R.dimen.dp65))
+                        .fillMaxWidth()
+                        .wrapContentWidth(Alignment.CenterHorizontally)
+                )
+            }
+            if (currentDialogue?.lineType == "SMS") {
+                InteractiveSmsBox(dialogue = currentDialogue) { nextLineId ->
+                    currentDialogue =
+                        interactiveContent?.firstOrNull { it?.lineId == nextLineId }
+                }
+            } else {
+                InteractiveScreenBottomSection(
+                    indexOriginal = original.original,
+                    episode = readingUiState.episode,
+                    createComment = {
+
+                    },
+                    createFavorite = {
+                        if (it) viewModel.deleteFavorite()
+                        else viewModel.createFavorite()
+                    }
+                )
+            }
         }
     }
 }
@@ -232,54 +267,79 @@ fun RemindingInfo(
 }
 
 @Composable
-fun FirstInteractiveContent(
-    model: DialogueXml,
+fun InteractiveSmsBox(
+    dialogue: DialogueXml?,
     modifier: Modifier = Modifier,
-    isButtonEnabled: Boolean,
-    onNextClick: (nextLineId: String) -> Unit,
+    onClick: (nextLineId: String) -> Unit
 ) {
-    Column(
-        modifier = modifier
-            .verticalScroll(rememberScrollState())
-    ) {
+    Column(Modifier.clickable { onClick.invoke(dialogue?.nextLineId.orEmpty()) }) {
         Text(
-            text = model.text.toString(),
+            text = dialogue?.text.toString(),
             style = MaterialTheme.localTextStyles.poppins14Regular,
             color = MaterialTheme.localColors.white_alpha08,
             modifier = Modifier
-                .fillMaxWidth()
-                .clip(MaterialTheme.localShapes.roundedDp10)
-                .background(MaterialTheme.localColors.black)
                 .padding(
-                    vertical = dimensionResource(id = R.dimen.dp17),
-                    horizontal = dimensionResource(id = R.dimen.dp21)
+                    start = dimensionResource(id = R.dimen.dp16),
+                    bottom = dimensionResource(id = R.dimen.dp8),
+                    end = dimensionResource(id = R.dimen.dp70)
+                )
+                .background(MaterialTheme.localColors.black, MaterialTheme.localShapes.roundedDp20)
+                .padding(
+                    vertical = dimensionResource(id = R.dimen.dp25), horizontal = dimensionResource(
+                        id = R.dimen.dp23
+                    )
                 )
         )
-        if (isButtonEnabled) {
-            VerticalSpacer(height = dimensionResource(id = R.dimen.dp15))
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
+        Box {
+            Column(
+                modifier = modifier.background(MaterialTheme.localColors.black)
+            ) {
+                Divider(
+                    thickness = 0.5.dp,
+                    color = MaterialTheme.localColors.white
+                )
+                VerticalSpacer(height = R.dimen.dp18)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Bir mesaj yaz",
+                        style = MaterialTheme.localTextStyles.poppins14Regular,
+                        color = MaterialTheme.localColors.black_alpha05,
+                        modifier = Modifier
+                            .padding(start = dimensionResource(id = R.dimen.dp16))
+                            .background(
+                                MaterialTheme.localColors.white_alpha06,
+                                shape = MaterialTheme.localShapes.roundedDp12
+                            )
+                            .padding(vertical = dimensionResource(id = R.dimen.dp12))
+                            .padding(start = dimensionResource(id = R.dimen.dp23))
+                            .weight(1f)
+                    )
+                    HorizontalSpacer(width = R.dimen.dp12)
+                    SimpleIcon(iconResId = R.drawable.ic_interactive_arrow)
+                    HorizontalSpacer(width = R.dimen.dp22)
+                }
+                VerticalSpacer(height = R.dimen.dp50)
+            }
+            Box(
+                contentAlignment = Alignment.Center,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentWidth(Alignment.End)
-                    .padding(end = dimensionResource(id = R.dimen.dp4))
-                    .clip(MaterialTheme.localShapes.roundedDp8_5)
-                    .background(MaterialTheme.localColors.black)
-                    .padding(
-                        start = dimensionResource(id = R.dimen.dp19),
-                        end = dimensionResource(id = R.dimen.dp13),
-                        top = 8.dp,
-                        bottom = 8.dp
+                    .align(Alignment.TopCenter)
+                    .size(
+                        dimensionResource(id = R.dimen.dp75),
+                        dimensionResource(id = R.dimen.dp67)
+                    )
+                    .background(
+                        MaterialTheme.localColors.yellow,
+                        MaterialTheme.localShapes.roundedDp8
                     )
             ) {
-                Text(
-                    text = stringResource(id = R.string.next),
-                    style = MaterialTheme.localTextStyles.poppins13Medium,
-                    color = MaterialTheme.localColors.white,
-                    modifier = Modifier.clickable { onNextClick.invoke(model.nextLineId.toString()) }
+                SimpleIcon(
+                    iconResId = R.drawable.ic_menu_horizontal,
+                    modifier = Modifier.alpha(0.5f),
+                    tint = MaterialTheme.localColors.black
                 )
-                HorizontalSpacer(width = dimensionResource(id = R.dimen.dp10))
-                SimpleIcon(iconResId = R.drawable.ic_arrow_forward)
             }
         }
     }
@@ -327,9 +387,32 @@ fun Options(
 }
 
 @Composable
+fun InteractiveNote(
+    dialogue: DialogueXml,
+    modifier: Modifier = Modifier,
+    onClick: (nextLineId: String) -> Unit,
+) {
+    Text(
+        text = dialogue.text.toString(),
+        style = MaterialTheme.localTextStyles.spaceGrotesk22Medium,
+        color = MaterialTheme.localColors.yellow,
+        textAlign = TextAlign.Center,
+        modifier = modifier
+            .padding(horizontal = dimensionResource(id = R.dimen.dp56))
+            .border(dimensionResource(id = R.dimen.dp1), color = MaterialTheme.localColors.white)
+            .fillMaxWidth()
+            .clickable { onClick.invoke(dialogue.nextLineId.orEmpty()) }
+            .background(MaterialTheme.localColors.black)
+            .padding(vertical = dimensionResource(id = R.dimen.dp15))
+    )
+}
+
+@Composable
 fun InteractiveScreenBottomSection(
     indexOriginal: IndexOriginal?,
     episode: ShowEpisode?,
+    createComment: () -> Unit,
+    createFavorite: (Boolean) -> Unit,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
@@ -342,27 +425,43 @@ fun InteractiveScreenBottomSection(
         SimpleIcon(iconResId = R.drawable.ic_menu_horizontal)
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp12))
         Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
             HorizontalSpacer(width = dimensionResource(id = R.dimen.dp31))
-           /* Titles(
-                title = original?.title.orEmpty(),
-                subtitle = original?.author?.name.orEmpty(),
+            Column(
                 modifier = Modifier.weight(1f)
-            )*/
+            ) {
+                Text(
+                    text = indexOriginal?.title.orEmpty(),
+                    style = MaterialTheme.localTextStyles.poppins17Light,
+                    color = MaterialTheme.localColors.white,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.width(dimensionResource(id = R.dimen.dp100))
+                )
+                Text(
+                    text = stringResource(id = R.string.episode_number, episode?.sort.orZero()),
+                    style = MaterialTheme.localTextStyles.poppins13Medium,
+                    color = MaterialTheme.localColors.white
+                )
+            }
             IconWithTextNextTo(
                 iconResId = R.drawable.ic_comment,
-                text = "12",
+                text = indexOriginal?.commentCount.orZero().toString(),
                 textStyle = MaterialTheme.localTextStyles.poppins10SemiBold,
                 spacedBy = dimensionResource(id = R.dimen.dp10),
-                modifier = Modifier.align(Alignment.Bottom)
-            ) {
-
-            }
+                onIconClick = createComment,
+            )
             HorizontalSpacer(width = dimensionResource(id = R.dimen.dp19))
             SimpleIcon(
-                iconResId = R.drawable.ic_star_outlined,
-                modifier = Modifier.align(Alignment.Bottom)
+                iconResId = if (indexOriginal?.indexUserData?.isFav == true) R.drawable.ic_star
+                else R.drawable.ic_star_outlined,
+                tint = if (indexOriginal?.indexUserData?.isFav == true) MaterialTheme.localColors.yellow
+                else Color.Unspecified,
+                modifier = Modifier.clickable {
+                    createFavorite.invoke(indexOriginal?.indexUserData?.isFav ?: false)
+                }
             )
             HorizontalSpacer(
                 width = dimensionResource(id = R.dimen.dp21)
@@ -377,8 +476,6 @@ fun InteractiveScreenBottomBar(
     indexOriginal: IndexOriginal?,
     episode: Episode?,
     onCommentsClicked: () -> Unit,
-    onAddCommentClicked: () -> Unit,
-    onBannerClicked: () -> Unit
 ) {
 
     Column {
@@ -639,18 +736,18 @@ data class InteractiveOptions(
 @Composable
 fun InteractiveTextBox(
     model: DialogueXml,
+    episode: ShowEpisode?,
     modifier: Modifier = Modifier,
     onClick: (nextLineId: String) -> Unit
 ) {
     Box(
         modifier
-            .fillMaxWidth()
-            .height(dimensionResource(id = R.dimen.dp225))
+            .height(dimensionResource(id = R.dimen.dp236))
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(dimensionResource(id = R.dimen.dp308))
+                .height(dimensionResource(id = R.dimen.dp170))
                 .background(MaterialTheme.localColors.black)
                 .align(Alignment.BottomCenter)
         ) {
@@ -698,70 +795,91 @@ fun InteractiveTextBox(
             }
         }
         if (model.talker != null) {
-            CroppedImage(
-                imgResId = R.drawable.mock_talker,
-                modifier = Modifier
-                    .padding(end = dimensionResource(id = R.dimen.dp20))
-                    .size(dimensionResource(id = R.dimen.dp111))
-                    .clip(
-                        CircleShape
-                    )
-                    .align(Alignment.TopEnd)
+            Talker(
+                modifier = Modifier.align(Alignment.TopEnd),
+                imgRes = episode
+                    ?.bundleAssets
+                    ?.firstOrNull { it.type == "talker" && it.typeId == model.talker?.toInt() }
+                    ?.path.orEmpty()
             )
         }
     }
 }
 
-@Preview
 @Composable
-fun InteractiveScreenPreview() {
-    InteractiveScreenBottomSection(
-        IndexOriginal(
-            indexAuthor = IndexAuthor(id = 2213, name = "Eddy Hewitt"),
-            banner = "ipsum",
-            cover = "definitionem",
-            description = "idque",
-            id = 7391,
-            isActual = false,
-            isLocked = false,
-            likeCount = 5261,
-            commentCount = 8102,
-            viewCount = 1789,
-            indexPackage = IndexPackage(id = 1275, price = 4136, priceType = "debet"),
-            sort = 5490,
-            status = false,
-            title = "at",
-            type = "pertinax",
-            indexUserData = IndexUserData(isFav = false, isPurchase = false),
-            indexTags = listOf(),
-            hashtag = "salutatus",
-            subtitle = "aeque",
-            episodeCount = 3147,
-            isNew = false,
-            barcode = "21312312",
-            continueReadingEpisode = null,
-            episodes = listOf()
-        ),
-        ShowEpisode(
-            id = 4809,
-            episodeName = "Annette Boyle",
-            price = 4408,
-            episodeSort = 7816,
-            priceType = "eu",
-            sort = 4046,
-            createdAt = "maluisset",
-            updatedAt = "suavitate",
-            originalId = 5831,
-            seasonId = 9302,
-            isLocked = false,
-            isLastEpisode = false,
-            original = null,
-            bundleAssets = listOf(),
-            assetContents = null,
-            xmlContents = null,
-            nextEpisodeId = 0,
-            episodeContent = null
-        )
+fun Talker(
+    imgRes: String,
+    modifier: Modifier = Modifier
+) {
+    SubcomposeAsyncImage(
+        model = imgRes,
+        contentDescription = null,
+        contentScale = ContentScale.Crop,
+        loading = { CircularProgressIndicator() },
+        error = { SimpleImage(imgResId = R.drawable.hitreads_placeholder) },
+        modifier = modifier
+            .size(dimensionResource(id = R.dimen.dp111))
+            .clip(CircleShape)
+            .background(MaterialTheme.localColors.white)
     )
 }
 
+@Preview
+@Composable
+fun InteractiveScreenPreview() {
+}
+
+
+/*@Composable
+fun FirstInteractiveContent(
+    model: DialogueXml,
+    modifier: Modifier = Modifier,
+    isButtonEnabled: Boolean,
+    onNextClick: (nextLineId: String) -> Unit,
+) {
+    Column(
+        modifier = modifier
+            .verticalScroll(rememberScrollState())
+    ) {
+        Text(
+            text = model.text.toString(),
+            style = MaterialTheme.localTextStyles.poppins14Regular,
+            color = MaterialTheme.localColors.white_alpha08,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(MaterialTheme.localShapes.roundedDp10)
+                .background(MaterialTheme.localColors.black)
+                .padding(
+                    vertical = dimensionResource(id = R.dimen.dp17),
+                    horizontal = dimensionResource(id = R.dimen.dp21)
+                )
+        )
+        if (isButtonEnabled) {
+            VerticalSpacer(height = dimensionResource(id = R.dimen.dp15))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentWidth(Alignment.End)
+                    .padding(end = dimensionResource(id = R.dimen.dp4))
+                    .clip(MaterialTheme.localShapes.roundedDp8_5)
+                    .background(MaterialTheme.localColors.black)
+                    .padding(
+                        start = dimensionResource(id = R.dimen.dp19),
+                        end = dimensionResource(id = R.dimen.dp13),
+                        top = 8.dp,
+                        bottom = 8.dp
+                    )
+            ) {
+                Text(
+                    text = stringResource(id = R.string.next),
+                    style = MaterialTheme.localTextStyles.poppins13Medium,
+                    color = MaterialTheme.localColors.white,
+                    modifier = Modifier.clickable { onNextClick.invoke(model.nextLineId.toString()) }
+                )
+                HorizontalSpacer(width = dimensionResource(id = R.dimen.dp10))
+                SimpleIcon(iconResId = R.drawable.ic_arrow_forward)
+            }
+        }
+    }
+}*/

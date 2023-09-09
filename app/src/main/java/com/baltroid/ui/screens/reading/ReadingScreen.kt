@@ -498,6 +498,78 @@ fun LastEpisodeSection(
     }
 }
 
+@Composable
+fun LastEpisodeButtons(
+    onCreateFavorite: () -> Unit,
+    onShare: () -> Unit,
+    goToFirstEpisode: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier
+    ) {
+        Text(
+            text = stringResource(id = R.string.add_favorite),
+            style = MaterialTheme.localTextStyles.spaceGrotesk22Medium,
+            color = MaterialTheme.localColors.white,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .clickable {
+                    onCreateFavorite.invoke()
+                }
+                .fillMaxWidth()
+                .clip(MaterialTheme.localShapes.roundedDp24)
+                .background(MaterialTheme.localColors.black)
+                .border(
+                    dimensionResource(id = R.dimen.dp1),
+                    color = MaterialTheme.localColors.white_alpha05,
+                    shape = MaterialTheme.localShapes.roundedDp24
+                )
+                .padding(vertical = dimensionResource(id = R.dimen.dp15))
+        )
+        VerticalSpacer(height = R.dimen.dp18)
+        Text(
+            text = stringResource(id = R.string.share),
+            style = MaterialTheme.localTextStyles.spaceGrotesk22Medium,
+            color = MaterialTheme.localColors.white,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .clickable {
+                    onShare.invoke()
+                }
+                .fillMaxWidth()
+                .clip(MaterialTheme.localShapes.roundedDp24)
+                .background(MaterialTheme.localColors.black)
+                .border(
+                    dimensionResource(id = R.dimen.dp1),
+                    color = MaterialTheme.localColors.white_alpha05,
+                    shape = MaterialTheme.localShapes.roundedDp24
+                )
+                .padding(vertical = dimensionResource(id = R.dimen.dp15))
+        )
+        VerticalSpacer(height = R.dimen.dp18)
+        Text(
+            text = stringResource(id = R.string.go_to_beginning),
+            style = MaterialTheme.localTextStyles.spaceGrotesk22Medium,
+            color = MaterialTheme.localColors.white,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .clickable {
+                    goToFirstEpisode.invoke()
+                }
+                .fillMaxWidth()
+                .clip(MaterialTheme.localShapes.roundedDp24)
+                .background(MaterialTheme.localColors.black)
+                .border(
+                    dimensionResource(id = R.dimen.dp1),
+                    color = MaterialTheme.localColors.white_alpha05,
+                    shape = MaterialTheme.localShapes.roundedDp24
+                )
+                .padding(vertical = dimensionResource(id = R.dimen.dp15))
+        )
+    }
+}
+
 
 @Composable
 fun ScrollBar(
@@ -505,25 +577,26 @@ fun ScrollBar(
 ) {
     val localColors = MaterialTheme.localColors
 
-    Box(modifier = modifier
-        .width(dimensionResource(id = R.dimen.dp6))
-        .fillMaxHeight()
-        .drawWithContent {
-            val maxScrollValue = scrollState.maxValue
-            val currentScrollValue = scrollState.value
-            val scrollPercent = currentScrollValue.toFloat() / maxScrollValue.toFloat()
-            val scrollOffsetY = (size.height - 50.dp.toPx()) * scrollPercent
+    Box(
+        modifier = modifier
+            .width(dimensionResource(id = R.dimen.dp6))
+            .fillMaxHeight()
+            .drawWithContent {
+                val maxScrollValue = scrollState.maxValue
+                val currentScrollValue = scrollState.value
+                val scrollPercent = currentScrollValue.toFloat() / maxScrollValue.toFloat()
+                val scrollOffsetY = (size.height - 50.dp.toPx()) * scrollPercent
 
-            drawRoundRect(
-                color = localColors.white_alpha05, topLeft = Offset(
-                    x = 0f, y = scrollOffsetY
-                ), style = Stroke(1.dp.toPx()), cornerRadius = CornerRadius(
-                    6.dp.toPx(), 6.dp.toPx()
-                ), size = Size(
-                    width = 6.dp.toPx(), height = 50.dp.toPx()
+                drawRoundRect(
+                    color = localColors.white_alpha05, topLeft = Offset(
+                        x = 0f, y = scrollOffsetY
+                    ), style = Stroke(1.dp.toPx()), cornerRadius = CornerRadius(
+                        6.dp.toPx(), 6.dp.toPx()
+                    ), size = Size(
+                        width = 6.dp.toPx(), height = 50.dp.toPx()
+                    )
                 )
-            )
-        })
+            })
 }
 
 @Composable
