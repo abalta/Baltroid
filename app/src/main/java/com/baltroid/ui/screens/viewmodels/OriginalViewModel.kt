@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.baltroid.core.common.result.handle
 import com.baltroid.ui.screens.home.HomeUiState
 import com.baltroid.ui.screens.home.detail.HomeDetailUIState
+import com.baltroid.ui.screens.interactive.InteractiveScreenAction
 import com.baltroid.ui.screens.reading.ReadingUiState
 import com.baltroid.ui.screens.reading.comments.CommentsTabState
 import com.baltroid.util.ORIGINAL
@@ -544,6 +545,30 @@ class OriginalViewModel @Inject constructor(
             }
             onFailure {
                 _uiStateReading.update { it.copy(isLoading = false) }
+            }
+        }
+    }
+
+    fun handleUiEvent(interactiveScreenAction: InteractiveScreenAction) {
+        when (interactiveScreenAction) {
+            InteractiveScreenAction.CREATE_FAVORITE -> {
+
+            }
+
+            InteractiveScreenAction.SHARE -> {
+
+            }
+
+            InteractiveScreenAction.GO_TO_BEGINNING -> {
+
+            }
+
+            InteractiveScreenAction.NEXT_EPISODE -> {
+
+            }
+
+            InteractiveScreenAction.CREATE_COMMENT -> {
+
             }
         }
     }

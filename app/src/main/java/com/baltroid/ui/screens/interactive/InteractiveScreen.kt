@@ -1,6 +1,5 @@
 package com.baltroid.ui.screens.interactive
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -8,7 +7,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -18,12 +16,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeight
-import androidx.compose.foundation.layout.requiredWidthIn
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -36,6 +31,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,11 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.layoutId
@@ -60,6 +52,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
+import androidx.constraintlayout.compose.Visibility.Companion.Gone
+import androidx.constraintlayout.compose.Visibility.Companion.Visible
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import coil.compose.SubcomposeAsyncImage
@@ -72,8 +68,7 @@ import com.baltroid.ui.common.SetLoadingState
 import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.SimpleImage
 import com.baltroid.ui.common.VerticalSpacer
-import com.baltroid.ui.components.HitReadsTopBar
-import com.baltroid.ui.screens.reading.LastEpisodeButtons
+import com.baltroid.ui.screens.reading.ReadingUiState
 import com.baltroid.ui.screens.viewmodels.OriginalViewModel
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localShapes
@@ -82,30 +77,18 @@ import com.baltroid.util.orEmpty
 import com.baltroid.util.orZero
 import com.hitreads.core.domain.model.OriginalType
 import com.hitreads.core.model.Episode
+import com.hitreads.core.model.IndexAuthor
 import com.hitreads.core.model.IndexOriginal
+import com.hitreads.core.model.IndexPackage
+import com.hitreads.core.model.IndexUserData
 import com.hitreads.core.model.ShowEpisode
 
 @Composable
 fun InteractiveScreen(
-    viewModel: OriginalViewModel,
-    openMenuScreen: () -> Unit
+    viewModel: OriginalViewModel
 ) {
 
-
-    /*LaunchedEffect(original) {
-        original?.id?.let { viewModel.showEpisode(761, OriginalType.INTERACTIVE) }
-    }*/
-
-    val interactiveContent =
-        viewModel.uiStateReading.collectAsStateWithLifecycle().value.episode?.xmlContents
-            ?.episode?.dialogue
-
     val readingUiState by viewModel.uiStateReading.collectAsStateWithLifecycle()
-
-    var currentDialogue by remember(interactiveContent) {
-        mutableStateOf(interactiveContent?.firstOrNull())
-    }
-
     val original by viewModel.uiStateDetail.collectAsStateWithLifecycle()
 
     SetLoadingState(isLoading = readingUiState.isLoading)
@@ -115,124 +98,287 @@ fun InteractiveScreen(
         viewModel.showEpisode(OriginalType.INTERACTIVE)
     }
 
+    InteractiveScreenContent(
+        original = original.original,
+        readingUiState = readingUiState,
+        action = viewModel::handleUiEvent,
+    )
+}
 
-    Box(
-        modifier = Modifier.navigationBarsPadding()
+@Composable
+fun InteractiveScreenContent(
+    original: IndexOriginal,
+    readingUiState: ReadingUiState,
+    action: (InteractiveScreenAction) -> Unit,
+) {
+
+    val interactiveContent = readingUiState.episode?.xmlContents?.episode?.dialogue
+    var currentDialogue by remember(interactiveContent) {
+        mutableStateOf(interactiveContent?.firstOrNull())
+    }
+
+    val focusImg by remember(currentDialogue) {
+        derivedStateOf {
+            // todo ?.firstOrNull { it.type == "focus" && it.typeId.toString() == currentDialogue?.focus }
+            readingUiState.episode
+                ?.bundleAssets
+                ?.firstOrNull { it.type == "talker" && it.typeId.toString() == currentDialogue?.talker }
+                ?.path.orEmpty()
+        }
+    }
+
+    val talker by remember(currentDialogue) {
+        derivedStateOf {
+            readingUiState.episode
+                ?.bundleAssets
+                ?.firstOrNull { it.type == "talker" && it.typeId.toString() == currentDialogue?.talker }
+                ?.path.orEmpty()
+        }
+    }
+
+    val isEndOfEpisode by remember(currentDialogue) {
+        derivedStateOf {
+            currentDialogue?.nextLineId == currentDialogue?.lineId
+        }
+    }
+
+    ConstraintLayout(
+        modifier = Modifier
+            .navigationBarsPadding()
+            .fillMaxSize()
     ) {
+        val (toolbar, bottombar, focusCharacter,
+            textBox, options, comments,
+            episodes, note, smsBar,
+            talkerCircle, episodeEndButtons) = createRefs()
+
+        val guideLine = createGuidelineFromTop(0.3f)
+
         CroppedImage(
             imgResId = R.drawable.woods_image,
             modifier = Modifier.fillMaxSize()
         )
-        if (currentDialogue?.focus != null && currentDialogue?.lineType == null) {
-            AsyncImage(
-                model = readingUiState.episode
-                    ?.bundleAssets
-                    ?.firstOrNull { it.type == "focus" && it.typeId.toString() == currentDialogue?.focus }
-                    ?.path.orEmpty(),
-                contentDescription = null,
-                contentScale = ContentScale.Fit,
-                modifier = Modifier.fillMaxSize()
-            )
-        }
-        Column(
+
+        AsyncImage(
+            model = talker,
+            error = painterResource(id = R.drawable.mock_talker),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
             modifier = Modifier
-                .align(Alignment.BottomCenter)
+                .size(dimensionResource(id = R.dimen.dp120))
+                .clip(CircleShape)
+                .background(MaterialTheme.localColors.black)
+                .constrainAs(talkerCircle) {
+                    bottom.linkTo(guideLine)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    visibility = if (currentDialogue?.lineType == "SMS") Visible else Gone
+                }
+        )
+
+        AsyncImage(
+            model = focusImg,
+            error = painterResource(id = R.drawable.mock_focus),
+            contentDescription = null,
+            contentScale = ContentScale.Fit,
+            modifier = Modifier
+                .fillMaxWidth()
+                .constrainAs(focusCharacter) {
+                    bottom.linkTo(bottombar.top)
+                    top.linkTo(toolbar.bottom)
+                    height = Dimension.fillToConstraints
+                    visibility =
+                        if (currentDialogue?.focus != null &&
+                            currentDialogue?.lineType == null &&
+                            currentDialogue?.optionCount == null
+                        ) Visible
+                        else Gone
+                }
+        )
+
+        InteractiveNote(
+            dialogue = currentDialogue,
+            modifier = Modifier.constrainAs(note) {
+                top.linkTo(guideLine)
+                start.linkTo(parent.start, 60.dp)
+                end.linkTo(parent.end, 60.dp)
+                width = Dimension.fillToConstraints
+                visibility = if (currentDialogue?.lineType == "NOT") Visible else Gone
+            }
+        ) { nextLineId ->
+            currentDialogue =
+                interactiveContent?.firstOrNull { it?.lineId == nextLineId }
+        }
+
+        Options(
+            items = listOf(
+                InteractiveOptions(
+                    currentDialogue?.optionOne.toString(),
+                    currentDialogue?.optionOneNextLineId.toString()
+                ),
+                InteractiveOptions(
+                    currentDialogue?.optionTwo.toString(),
+                    currentDialogue?.optionTwoNextLineId.toString()
+                ),
+                InteractiveOptions(
+                    currentDialogue?.optionThree.toString(),
+                    currentDialogue?.optionThreeNextLineId.toString()
+                ),
+            ),
+            modifier = Modifier.constrainAs(options) {
+                top.linkTo(guideLine)
+                start.linkTo(parent.start, 20.dp)
+                end.linkTo(parent.end, 20.dp)
+                bottom.linkTo(textBox.top)
+                width = Dimension.fillToConstraints
+                height = Dimension.fillToConstraints
+                visibility = if (currentDialogue?.optionCount != null) Visible else Gone
+            }
+        ) { nextLineId ->
+            currentDialogue =
+                interactiveContent?.firstOrNull { it?.lineId == nextLineId }
+        }
+
+        EpisodeEndButtons(
+            isLastEpisode = readingUiState.episode?.isLastEpisode == true,
+            onClick = action,
+            modifier = Modifier
+                .constrainAs(episodeEndButtons) {
+                    bottom.linkTo(parent.bottom, 56.dp)
+                    start.linkTo(note.start)
+                    end.linkTo(note.end)
+                    width = Dimension.fillToConstraints
+                    visibility = if (isEndOfEpisode) Visible
+                    else Gone
+                }
+        )
+
+        InteractiveSmsBox(
+            dialogue = currentDialogue,
+            modifier = Modifier
+                .fillMaxWidth()
+                .constrainAs(smsBar) {
+                    bottom.linkTo(parent.bottom)
+                    visibility = if (currentDialogue?.lineType == "SMS") Visible else Gone
+                }
+        ) { nextLineId ->
+            currentDialogue =
+                interactiveContent?.firstOrNull { it?.lineId == nextLineId }
+
+        }
+
+        InteractiveScreenBottomSection(
+            indexOriginal = original,
+            episode = readingUiState.episode,
+            createComment = {},
+            createFavorite = {},
+            modifier = Modifier
+                .fillMaxWidth()
+                .constrainAs(bottombar) {
+                    bottom.linkTo(parent.bottom)
+                    visibility =
+                        if (currentDialogue?.lineType == "SMS" || isEndOfEpisode) Gone else Visible
+                }
+        )
+
+        InteractiveText(
+            model = currentDialogue,
+            talker = talker,
+            modifier = Modifier
+                .fillMaxWidth()
+                .constrainAs(textBox) {
+                    bottom.linkTo(bottombar.top)
+                    visibility =
+                        if (currentDialogue?.lineType == null && currentDialogue != null) Visible else Gone
+                }
+        ) { nextLineId ->
+            currentDialogue =
+                interactiveContent?.firstOrNull { it?.lineId == nextLineId }
+        }
+
+        InteractiveScreenToolbar(
+            gemCount = 1500,
+            modifier = Modifier
+                .statusBarsPadding()
+                .constrainAs(toolbar) {
+                    top.linkTo(parent.top)
+                }
         ) {
-            HitReadsTopBar(
-                iconResId = R.drawable.ic_bell,
-                numberOfNotification = 12,
-                onMenuClick = openMenuScreen,
-                modifier = Modifier
-                    .padding(top = dimensionResource(id = R.dimen.dp11))
-            ) {}
-            Column(
-                modifier = Modifier
-                    .weight(1f)
+
+        }
+    }
+}
+
+@Composable
+fun EpisodeEndButtons(
+    isLastEpisode: Boolean,
+    modifier: Modifier = Modifier,
+    onClick: (action: InteractiveScreenAction) -> Unit
+) {
+    if (isLastEpisode) {
+        Column(modifier) {
+            EpisodeButton(
+                buttonTitle = stringResource(id = R.string.add_favorite),
+                modifier = Modifier.fillMaxWidth()
             ) {
-                currentDialogue?.let { dialogue ->
-                    if (dialogue.optionCount != null) {
-                        Options(
-                            listOf(
-                                InteractiveOptions(
-                                    dialogue.optionOne.toString(),
-                                    dialogue.optionOneNextLineId.toString()
-                                ),
-                                InteractiveOptions(
-                                    dialogue.optionTwo.toString(),
-                                    dialogue.optionTwoNextLineId.toString()
-                                ),
-                                InteractiveOptions(
-                                    dialogue.optionThree.toString(),
-                                    dialogue.optionThreeNextLineId.toString()
-                                ),
-                            ),
-                            modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.dp24))
-                        ) { nextLineId ->
-                            currentDialogue =
-                                interactiveContent?.firstOrNull { it?.lineId == nextLineId }
-                        }
-                    }
-
-                    when (dialogue.lineType) {
-                        null -> {
-                            InteractiveTextBox(
-                                model = dialogue,
-                                episode = readingUiState.episode,
-                                modifier = Modifier
-                                    .fillMaxHeight()
-                                    .wrapContentHeight(Alignment.Bottom)
-                            ) { nextLineId ->
-                                currentDialogue =
-                                    interactiveContent?.firstOrNull { it?.lineId == nextLineId }
-                            }
-                        }
-
-                        "NOT" -> {
-                            InteractiveNote(
-                                dialogue = dialogue,
-                                modifier = Modifier
-                                    .fillMaxHeight()
-                                    .wrapContentHeight(Alignment.CenterVertically)
-                                    .padding(bottom = dimensionResource(id = R.dimen.dp125))
-                            ) { nextLineId ->
-                                currentDialogue =
-                                    interactiveContent?.firstOrNull { it?.lineId == nextLineId }
-                            }
-                        }
-                    }
-                }
+                onClick.invoke(InteractiveScreenAction.CREATE_FAVORITE)
             }
-            if (currentDialogue != null && (readingUiState.episode?.isLastEpisode == true && (currentDialogue?.nextLineId == currentDialogue?.lineId || currentDialogue?.nextLineId.isNullOrEmpty()) && currentDialogue?.optionCount == null)) {
-                LastEpisodeButtons(
-                    onCreateFavorite = {},
-                    onShare = { },
-                    goToFirstEpisode = {},
-                    modifier = Modifier
-                        .padding(horizontal = dimensionResource(id = R.dimen.dp65))
-                        .fillMaxWidth()
-                        .wrapContentWidth(Alignment.CenterHorizontally)
-                )
+            VerticalSpacer(height = R.dimen.dp17)
+            EpisodeButton(
+                buttonTitle = stringResource(id = R.string.share),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                onClick.invoke(InteractiveScreenAction.SHARE)
             }
-            if (currentDialogue?.lineType == "SMS") {
-                InteractiveSmsBox(dialogue = currentDialogue) { nextLineId ->
-                    currentDialogue =
-                        interactiveContent?.firstOrNull { it?.lineId == nextLineId }
-                }
-            } else {
-                InteractiveScreenBottomSection(
-                    indexOriginal = original.original,
-                    episode = readingUiState.episode,
-                    createComment = {
-
-                    },
-                    createFavorite = {
-                        if (it) viewModel.deleteFavorite()
-                        else viewModel.createFavorite()
-                    }
-                )
+            VerticalSpacer(height = R.dimen.dp17)
+            EpisodeButton(
+                buttonTitle = stringResource(id = R.string.go_to_beginning),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                onClick.invoke(InteractiveScreenAction.GO_TO_BEGINNING)
+            }
+        }
+    } else {
+        Column(modifier) {
+            EpisodeButton(
+                buttonTitle = stringResource(id = R.string.go_to_beginning),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                onClick.invoke(InteractiveScreenAction.GO_TO_BEGINNING)
+            }
+            VerticalSpacer(height = R.dimen.dp17)
+            EpisodeButton(
+                buttonTitle = stringResource(id = R.string.next_episode),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                onClick.invoke(InteractiveScreenAction.NEXT_EPISODE)
             }
         }
     }
+}
+
+@Composable
+fun EpisodeButton(
+    buttonTitle: String,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    Text(
+        text = buttonTitle,
+        style = MaterialTheme.localTextStyles.spaceGrotesk22Medium,
+        color = MaterialTheme.localColors.white,
+        textAlign = TextAlign.Center,
+        modifier = modifier
+            .clip(MaterialTheme.localShapes.roundedDp24)
+            .clickable(onClick = onClick)
+            .background(MaterialTheme.localColors.black)
+            .border(
+                dimensionResource(id = R.dimen.dp1),
+                color = MaterialTheme.localColors.white_alpha05,
+                shape = MaterialTheme.localShapes.roundedDp24
+            )
+            .padding(vertical = dimensionResource(id = R.dimen.dp15))
+    )
 }
 
 @Composable
@@ -259,10 +405,6 @@ fun RemindingInfo(
     ) {
         ImageWithNameCard()
         HorizontalSpacer(width = dimensionResource(id = R.dimen.dp13))
-        TextBalloon(
-            text = model.text.toString(),
-            modifier = Modifier.align(Alignment.Bottom)
-        )
     }
 }
 
@@ -272,7 +414,7 @@ fun InteractiveSmsBox(
     modifier: Modifier = Modifier,
     onClick: (nextLineId: String) -> Unit
 ) {
-    Column(Modifier.clickable { onClick.invoke(dialogue?.nextLineId.orEmpty()) }) {
+    Column(modifier.clickable { onClick.invoke(dialogue?.nextLineId.orEmpty()) }) {
         Text(
             text = dialogue?.text.toString(),
             style = MaterialTheme.localTextStyles.poppins14Regular,
@@ -292,7 +434,7 @@ fun InteractiveSmsBox(
         )
         Box {
             Column(
-                modifier = modifier.background(MaterialTheme.localColors.black)
+                modifier = Modifier.background(MaterialTheme.localColors.black)
             ) {
                 Divider(
                     thickness = 0.5.dp,
@@ -388,20 +530,19 @@ fun Options(
 
 @Composable
 fun InteractiveNote(
-    dialogue: DialogueXml,
+    dialogue: DialogueXml?,
     modifier: Modifier = Modifier,
     onClick: (nextLineId: String) -> Unit,
 ) {
     Text(
-        text = dialogue.text.toString(),
+        text = dialogue?.text.toString(),
         style = MaterialTheme.localTextStyles.spaceGrotesk22Medium,
         color = MaterialTheme.localColors.yellow,
         textAlign = TextAlign.Center,
         modifier = modifier
-            .padding(horizontal = dimensionResource(id = R.dimen.dp56))
             .border(dimensionResource(id = R.dimen.dp1), color = MaterialTheme.localColors.white)
             .fillMaxWidth()
-            .clickable { onClick.invoke(dialogue.nextLineId.orEmpty()) }
+            .clickable { onClick.invoke(dialogue?.nextLineId.orEmpty()) }
             .background(MaterialTheme.localColors.black)
             .padding(vertical = dimensionResource(id = R.dimen.dp15))
     )
@@ -412,9 +553,11 @@ fun InteractiveScreenBottomSection(
     indexOriginal: IndexOriginal?,
     episode: ShowEpisode?,
     createComment: () -> Unit,
-    createFavorite: (Boolean) -> Unit,
+    createFavorite: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Column(
+        modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Divider(
@@ -459,9 +602,7 @@ fun InteractiveScreenBottomSection(
                 else R.drawable.ic_star_outlined,
                 tint = if (indexOriginal?.indexUserData?.isFav == true) MaterialTheme.localColors.yellow
                 else Color.Unspecified,
-                modifier = Modifier.clickable {
-                    createFavorite.invoke(indexOriginal?.indexUserData?.isFav ?: false)
-                }
+                modifier = Modifier.clickable(onClick = createFavorite)
             )
             HorizontalSpacer(
                 width = dimensionResource(id = R.dimen.dp21)
@@ -628,7 +769,7 @@ fun ImageWithNameCard(
     }
 }
 
-@Composable
+/*@Composable
 fun TextBalloon(
     text: String,
     modifier: Modifier = Modifier,
@@ -721,12 +862,12 @@ fun TextBalloon(
         )
 
     }
-}
+}*/
 
-enum class PointerLocation {
+/*enum class PointerLocation {
     LEFT,
     RIGHT
-}
+}*/
 
 data class InteractiveOptions(
     val option: String,
@@ -734,9 +875,76 @@ data class InteractiveOptions(
 )
 
 @Composable
+fun InteractiveText(
+    model: DialogueXml?,
+    talker: String,
+    modifier: Modifier = Modifier,
+    onClick: (nextLineId: String) -> Unit
+) {
+    ConstraintLayout(modifier = modifier) {
+
+        val (background, title, content, image, icon) = createRefs()
+        Box(
+            modifier = Modifier
+                .background(MaterialTheme.localColors.black)
+                .constrainAs(background) {
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    top.linkTo(title.top, (-23).dp)
+                    bottom.linkTo(parent.bottom)
+                    width = Dimension.fillToConstraints
+                    height = Dimension.fillToConstraints
+                }
+        )
+
+        Text(
+            text = "Talker: ${model?.talker}",
+            style = MaterialTheme.localTextStyles.poppins14Medium,
+            color = MaterialTheme.localColors.white,
+            modifier = Modifier.constrainAs(title) {
+                bottom.linkTo(content.top, 16.dp)
+                start.linkTo(parent.start, 31.dp)
+            }
+        )
+        Text(
+            text = model?.text.orEmpty(),
+            style = MaterialTheme.localTextStyles.poppins14Regular,
+            color = MaterialTheme.localColors.white_alpha08,
+            modifier = Modifier.constrainAs(content) {
+                start.linkTo(title.start)
+                bottom.linkTo(icon.bottom, goneMargin = 18.dp)
+                end.linkTo(icon.start, goneMargin = 22.dp)
+                width = Dimension.fillToConstraints
+            }
+        )
+
+        SimpleIcon(
+            iconResId = R.drawable.ic_arrow_forward,
+            modifier = Modifier
+                .constrainAs(icon) {
+                    bottom.linkTo(parent.bottom, 18.dp)
+                    end.linkTo(parent.end, 22.dp)
+                    visibility = if (model?.optionCount == null) Visible else Gone
+                }
+                .size(dimensionResource(id = R.dimen.dp19))
+                .clickable { onClick.invoke(model?.nextLineId.orEmpty()) }
+        )
+
+        Talker(
+            imgRes = talker,
+            modifier = Modifier.constrainAs(image) {
+                bottom.linkTo(content.top, 9.dp)
+                end.linkTo(parent.end)
+                visibility = if (model?.talker != null) Visible else Gone
+            }
+        )
+    }
+}
+
+@Composable
 fun InteractiveTextBox(
-    model: DialogueXml,
-    episode: ShowEpisode?,
+    model: DialogueXml?,
+    talker: String,
     modifier: Modifier = Modifier,
     onClick: (nextLineId: String) -> Unit
 ) {
@@ -752,7 +960,7 @@ fun InteractiveTextBox(
                 .align(Alignment.BottomCenter)
         ) {
             Column {
-                model.talker?.let {
+                model?.talker?.let {
                     Text(
                         text = "Talker: $it",
                         style = MaterialTheme.localTextStyles.poppins14Medium,
@@ -765,7 +973,7 @@ fun InteractiveTextBox(
                 }
                 Row {
                     Text(
-                        text = model.text.orEmpty(),
+                        text = model?.text.orEmpty(),
                         style = MaterialTheme.localTextStyles.poppins14Regular,
                         color = MaterialTheme.localColors.white_alpha08,
                         modifier = Modifier
@@ -777,7 +985,7 @@ fun InteractiveTextBox(
                                 top = dimensionResource(id = R.dimen.dp15)
                             )
                     )
-                    if (model.optionCount == null) {
+                    if (model?.optionCount == null) {
                         SimpleIcon(
                             iconResId = R.drawable.ic_arrow_forward,
                             modifier = Modifier
@@ -788,19 +996,16 @@ fun InteractiveTextBox(
                                 .size(dimensionResource(id = R.dimen.dp19))
                                 .fillMaxHeight()
                                 .align(Alignment.Bottom)
-                                .clickable { onClick.invoke(model.nextLineId.orEmpty()) }
+                                .clickable { onClick.invoke(model?.nextLineId.orEmpty()) }
                         )
                     }
                 }
             }
         }
-        if (model.talker != null) {
+        if (model?.talker != null) {
             Talker(
                 modifier = Modifier.align(Alignment.TopEnd),
-                imgRes = episode
-                    ?.bundleAssets
-                    ?.firstOrNull { it.type == "talker" && it.typeId == model.talker?.toInt() }
-                    ?.path.orEmpty()
+                imgRes = talker
             )
         }
     }
@@ -824,9 +1029,103 @@ fun Talker(
     )
 }
 
+@Composable
+fun InteractiveScreenToolbar(
+    gemCount: Int,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = modifier
+            .padding(
+                start = dimensionResource(id = R.dimen.dp36),
+                end = dimensionResource(id = R.dimen.dp46)
+            )
+            .fillMaxWidth()
+    ) {
+        SimpleImage(imgResId = R.drawable.ic_hitreads)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .clip(MaterialTheme.localShapes.roundedDp4)
+                .border(
+                    width = dimensionResource(id = R.dimen.dp1),
+                    color = MaterialTheme.localColors.white,
+                    MaterialTheme.localShapes.roundedDp4
+                )
+                .background(MaterialTheme.localColors.black)
+                .height(IntrinsicSize.Min)
+                .clickable(onClick = onClick)
+        ) {
+            SimpleIcon(
+                iconResId = R.drawable.ic_diamond,
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.dp6))
+            )
+            Divider(
+                color = MaterialTheme.localColors.white,
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(dimensionResource(id = R.dimen.dp1))
+            )
+            Text(
+                text = gemCount.toString(),
+                style = MaterialTheme.localTextStyles.poppins12Bold,
+                color = MaterialTheme.localColors.white,
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.dp6))
+            )
+        }
+    }
+}
+
+enum class InteractiveScreenAction {
+    CREATE_FAVORITE,
+    SHARE,
+    GO_TO_BEGINNING,
+    NEXT_EPISODE,
+    CREATE_COMMENT
+}
+
 @Preview
 @Composable
 fun InteractiveScreenPreview() {
+    InteractiveScreenContent(original = IndexOriginal(
+        indexAuthor = IndexAuthor(id = 1716, name = "Thurman Hancock"),
+        banner = "curae",
+        cover = "audire",
+        description = "tamquam",
+        id = 5159,
+        isActual = false,
+        isLocked = false,
+        likeCount = 5176,
+        commentCount = 2756,
+        viewCount = 6357,
+        indexPackage = IndexPackage(
+            id = 6462,
+            price = 7301,
+            priceType = "legere"
+        ),
+        sort = 6620,
+        status = false,
+        title = "praesent",
+        type = "duis",
+        indexUserData = IndexUserData(isFav = false, isPurchase = false),
+        indexTags = listOf(),
+        hashtag = "blandit",
+        subtitle = "ferri",
+        episodeCount = 7855,
+        isNew = false,
+        barcode = "dolore",
+        continueReadingEpisode = null,
+        episodes = listOf()
+    ), readingUiState = ReadingUiState(
+        episode = null,
+        allComments = listOf(),
+        commentsLikedByMe = listOf(),
+        isLoading = false,
+        error = null
+    ), action = {})
 }
 
 

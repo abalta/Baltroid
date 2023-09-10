@@ -189,8 +189,7 @@ fun HitReadsNavHost(
                 route = HitReadsScreens.InteractiveScreen.route
             ) {
                 InteractiveScreen(
-                    viewModel = originalViewModel,
-                    openMenuScreen = openMenuScreen
+                    viewModel = originalViewModel
                 )
             }
             composable(
