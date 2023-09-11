@@ -356,6 +356,7 @@ fun GenreAndInteractions(
 fun EpisodeSheet(
     episodes: List<ShowEpisode>,
     modifier: Modifier = Modifier,
+    lazyColumnHeightFraction: Float = 1f,
     closeSheet: () -> Unit,
     onEpisodeClick: (ShowEpisode) -> Unit
 ) {
@@ -377,7 +378,9 @@ fun EpisodeSheet(
         )
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp33))
         LazyColumn(
-            Modifier.fillMaxWidth()
+            Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(lazyColumnHeightFraction)
         ) {
             items(episodes) { episode ->
                 EpisodeItem(episode = episode) {

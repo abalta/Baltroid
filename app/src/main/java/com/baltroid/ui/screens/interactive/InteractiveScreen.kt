@@ -1,5 +1,6 @@
 package com.baltroid.ui.screens.interactive
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -68,6 +69,7 @@ import com.baltroid.ui.common.SetLoadingState
 import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.SimpleImage
 import com.baltroid.ui.common.VerticalSpacer
+import com.baltroid.ui.screens.home.detail.EpisodeSheet
 import com.baltroid.ui.screens.reading.ReadingUiState
 import com.baltroid.ui.screens.viewmodels.OriginalViewModel
 import com.baltroid.ui.theme.localColors
@@ -77,10 +79,7 @@ import com.baltroid.util.orEmpty
 import com.baltroid.util.orZero
 import com.hitreads.core.domain.model.OriginalType
 import com.hitreads.core.model.Episode
-import com.hitreads.core.model.IndexAuthor
 import com.hitreads.core.model.IndexOriginal
-import com.hitreads.core.model.IndexPackage
-import com.hitreads.core.model.IndexUserData
 import com.hitreads.core.model.ShowEpisode
 
 @Composable
@@ -142,6 +141,14 @@ fun InteractiveScreenContent(
         }
     }
 
+    var isEpisodesEnabled by remember {
+        mutableStateOf(false)
+    }
+
+    BackHandler(isEpisodesEnabled) {
+        isEpisodesEnabled = false
+    }
+
     ConstraintLayout(
         modifier = Modifier
             .navigationBarsPadding()
@@ -190,7 +197,8 @@ fun InteractiveScreenContent(
                     visibility =
                         if (currentDialogue?.focus != null &&
                             currentDialogue?.lineType == null &&
-                            currentDialogue?.optionCount == null
+                            currentDialogue?.optionCount == null &&
+                            isEpisodesEnabled.not()
                         ) Visible
                         else Gone
                 }
@@ -203,7 +211,8 @@ fun InteractiveScreenContent(
                 start.linkTo(parent.start, 60.dp)
                 end.linkTo(parent.end, 60.dp)
                 width = Dimension.fillToConstraints
-                visibility = if (currentDialogue?.lineType == "NOT") Visible else Gone
+                visibility =
+                    if (currentDialogue?.lineType == "NOT" && isEpisodesEnabled.not()) Visible else Gone
             }
         ) { nextLineId ->
             currentDialogue =
@@ -232,7 +241,8 @@ fun InteractiveScreenContent(
                 bottom.linkTo(textBox.top)
                 width = Dimension.fillToConstraints
                 height = Dimension.fillToConstraints
-                visibility = if (currentDialogue?.optionCount != null) Visible else Gone
+                visibility =
+                    if (currentDialogue?.optionCount != null && isEndOfEpisode.not()) Visible else Gone
             }
         ) { nextLineId ->
             currentDialogue =
@@ -248,18 +258,19 @@ fun InteractiveScreenContent(
                     start.linkTo(note.start)
                     end.linkTo(note.end)
                     width = Dimension.fillToConstraints
-                    visibility = if (isEndOfEpisode) Visible
+                    visibility = if (isEndOfEpisode && isEpisodesEnabled.not()) Visible
                     else Gone
                 }
         )
 
-        InteractiveSmsBox(
+        InteractiveSmsBar(
             dialogue = currentDialogue,
             modifier = Modifier
                 .fillMaxWidth()
                 .constrainAs(smsBar) {
                     bottom.linkTo(parent.bottom)
-                    visibility = if (currentDialogue?.lineType == "SMS") Visible else Gone
+                    visibility =
+                        if (currentDialogue?.lineType == "SMS" && isEpisodesEnabled.not()) Visible else Gone
                 }
         ) { nextLineId ->
             currentDialogue =
@@ -272,12 +283,13 @@ fun InteractiveScreenContent(
             episode = readingUiState.episode,
             createComment = {},
             createFavorite = {},
+            onEpisodesClicked = { isEpisodesEnabled = true },
             modifier = Modifier
                 .fillMaxWidth()
                 .constrainAs(bottombar) {
                     bottom.linkTo(parent.bottom)
                     visibility =
-                        if (currentDialogue?.lineType == "SMS" || isEndOfEpisode) Gone else Visible
+                        if ((currentDialogue?.lineType == "SMS")) Gone else Visible
                 }
         )
 
@@ -289,7 +301,7 @@ fun InteractiveScreenContent(
                 .constrainAs(textBox) {
                     bottom.linkTo(bottombar.top)
                     visibility =
-                        if (currentDialogue?.lineType == null && currentDialogue != null) Visible else Gone
+                        if (currentDialogue?.lineType == null && currentDialogue != null && isEpisodesEnabled.not()) Visible else Gone
                 }
         ) { nextLineId ->
             currentDialogue =
@@ -306,6 +318,20 @@ fun InteractiveScreenContent(
         ) {
 
         }
+        EpisodeSheet(
+            episodes = original.episodes,
+            lazyColumnHeightFraction = 0.6f,
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.8f)
+                .background(MaterialTheme.localColors.black_alpha05)
+                .constrainAs(episodes) {
+                    bottom.linkTo(parent.bottom)
+                    visibility = if (isEpisodesEnabled) Visible else Gone
+                },
+            closeSheet = { isEpisodesEnabled = false },
+            onEpisodeClick = {}
+        )
     }
 }
 
@@ -405,6 +431,118 @@ fun RemindingInfo(
     ) {
         ImageWithNameCard()
         HorizontalSpacer(width = dimensionResource(id = R.dimen.dp13))
+    }
+}
+
+@Composable
+fun InteractiveSmsBar(
+    dialogue: DialogueXml?,
+    modifier: Modifier = Modifier,
+    onClick: (nextLineId: String) -> Unit
+) {
+    ConstraintLayout(
+        modifier
+    ) {
+
+        val (background, textfield, yellowBox, textBox, icon, divider) = createRefs()
+
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .constrainAs(background) {
+                bottom.linkTo(parent.bottom)
+                top.linkTo(textfield.top, (-18).dp)
+                height = Dimension.fillToConstraints
+            }
+            .background(MaterialTheme.localColors.black)
+        )
+        Divider(
+            thickness = 1.dp,
+            color = Color.White,
+            modifier = Modifier
+                .constrainAs(divider) {
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    top.linkTo(background.top)
+                    width = Dimension.fillToConstraints
+                }
+        )
+        Text(
+            text = stringResource(id = R.string.write_message),
+            style = MaterialTheme.localTextStyles.poppins14Regular,
+            color = MaterialTheme.localColors.black_alpha05,
+            modifier = Modifier
+                .constrainAs(textfield) {
+                    start.linkTo(parent.start)
+                    bottom.linkTo(parent.bottom, 50.dp)
+                    end.linkTo(icon.start, 12.dp)
+                    width = Dimension.fillToConstraints
+                }
+                .padding(start = dimensionResource(id = R.dimen.dp16))
+                .background(
+                    MaterialTheme.localColors.white_alpha06,
+                    shape = MaterialTheme.localShapes.roundedDp12
+                )
+                .padding(vertical = dimensionResource(id = R.dimen.dp12))
+                .padding(start = dimensionResource(id = R.dimen.dp23))
+        )
+        SimpleIcon(
+            iconResId = R.drawable.ic_interactive_arrow,
+            modifier = Modifier
+                .clickable {
+                    onClick.invoke(dialogue?.nextLineId.orEmpty())
+                }
+                .constrainAs(icon) {
+                    end.linkTo(parent.end, 22.dp)
+                    top.linkTo(textfield.top)
+                    bottom.linkTo(textfield.bottom)
+                }
+        )
+        Text(
+            text = dialogue?.text.toString(),
+            style = MaterialTheme.localTextStyles.poppins14Regular,
+            color = MaterialTheme.localColors.white_alpha08,
+            modifier = Modifier
+                .constrainAs(textBox) {
+                    bottom.linkTo(yellowBox.top, (-18).dp)
+                    start.linkTo(parent.start)
+                    end.linkTo(textfield.end)
+                    width = Dimension.fillToConstraints
+                }
+                .padding(
+                    start = dimensionResource(id = R.dimen.dp16),
+                    bottom = dimensionResource(id = R.dimen.dp8),
+                    end = dimensionResource(id = R.dimen.dp70)
+                )
+                .background(MaterialTheme.localColors.black, MaterialTheme.localShapes.roundedDp20)
+                .padding(
+                    vertical = dimensionResource(id = R.dimen.dp25), horizontal = dimensionResource(
+                        id = R.dimen.dp23
+                    )
+                )
+        )
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .constrainAs(yellowBox) {
+                    bottom.linkTo(textfield.bottom, 18.dp)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+                .size(
+                    dimensionResource(id = R.dimen.dp75),
+                    dimensionResource(id = R.dimen.dp67)
+                )
+                .background(
+                    MaterialTheme.localColors.yellow,
+                    MaterialTheme.localShapes.roundedDp8
+                )
+        ) {
+            SimpleIcon(
+                iconResId = R.drawable.ic_menu_horizontal,
+                modifier = Modifier.alpha(0.5f),
+                tint = MaterialTheme.localColors.black
+            )
+        }
     }
 }
 
@@ -554,6 +692,7 @@ fun InteractiveScreenBottomSection(
     episode: ShowEpisode?,
     createComment: () -> Unit,
     createFavorite: () -> Unit,
+    onEpisodesClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -565,7 +704,10 @@ fun InteractiveScreenBottomSection(
             color = MaterialTheme.localColors.white
         )
         VerticalSpacer(height = 7.dp)
-        SimpleIcon(iconResId = R.drawable.ic_menu_horizontal)
+        SimpleIcon(
+            iconResId = R.drawable.ic_menu_horizontal,
+            Modifier.clickable(onClick = onEpisodesClicked)
+        )
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp12))
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -1090,42 +1232,7 @@ enum class InteractiveScreenAction {
 @Preview
 @Composable
 fun InteractiveScreenPreview() {
-    InteractiveScreenContent(original = IndexOriginal(
-        indexAuthor = IndexAuthor(id = 1716, name = "Thurman Hancock"),
-        banner = "curae",
-        cover = "audire",
-        description = "tamquam",
-        id = 5159,
-        isActual = false,
-        isLocked = false,
-        likeCount = 5176,
-        commentCount = 2756,
-        viewCount = 6357,
-        indexPackage = IndexPackage(
-            id = 6462,
-            price = 7301,
-            priceType = "legere"
-        ),
-        sort = 6620,
-        status = false,
-        title = "praesent",
-        type = "duis",
-        indexUserData = IndexUserData(isFav = false, isPurchase = false),
-        indexTags = listOf(),
-        hashtag = "blandit",
-        subtitle = "ferri",
-        episodeCount = 7855,
-        isNew = false,
-        barcode = "dolore",
-        continueReadingEpisode = null,
-        episodes = listOf()
-    ), readingUiState = ReadingUiState(
-        episode = null,
-        allComments = listOf(),
-        commentsLikedByMe = listOf(),
-        isLoading = false,
-        error = null
-    ), action = {})
+    InteractiveSmsBar(dialogue = null, modifier = Modifier, onClick = {})
 }
 
 
