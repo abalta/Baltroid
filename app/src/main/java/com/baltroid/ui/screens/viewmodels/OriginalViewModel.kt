@@ -369,7 +369,7 @@ class OriginalViewModel @Inject constructor(
             }
             onSuccess { originalModel ->
                 val original = originalModel.copy(
-                    episodes = originalModel.episodes?.sortedBy { it.sort }
+                    episodes = originalModel.episodes?.sortedBy { it.episodeSort }
                 )
                 _uiStateDetail.update {
                     it.copy(
@@ -552,7 +552,11 @@ class OriginalViewModel @Inject constructor(
     fun handleUiEvent(interactiveScreenAction: InteractiveScreenAction) {
         when (interactiveScreenAction) {
             InteractiveScreenAction.CREATE_FAVORITE -> {
-
+                if (_uiStateDetail.value.original.indexUserData.isFav) {
+                    deleteFavorite()
+                } else {
+                    createFavorite()
+                }
             }
 
             InteractiveScreenAction.SHARE -> {
@@ -560,11 +564,12 @@ class OriginalViewModel @Inject constructor(
             }
 
             InteractiveScreenAction.GO_TO_BEGINNING -> {
-
+                _selectedEpisodeId.value = _uiStateDetail.value.original.episodes
+                    .firstOrNull { it.sort == 1 }?.nextEpisodeId.orZero()
             }
 
             InteractiveScreenAction.NEXT_EPISODE -> {
-
+                _selectedEpisodeId.value = _uiStateReading.value.episode?.nextEpisodeId.orZero()
             }
 
             InteractiveScreenAction.CREATE_COMMENT -> {

@@ -1,5 +1,6 @@
 package com.baltroid.core.network.source
 
+import android.util.Log
 import com.baltroid.core.common.result.BaltroidResult
 import com.baltroid.core.network.api.service.HitReadsService
 import com.baltroid.core.network.model.HitReadsResponse
@@ -21,7 +22,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody
-import java.io.IOException
 import javax.inject.Inject
 
 class HitReadsNetworkDataSource @Inject constructor(
@@ -98,10 +98,12 @@ class HitReadsNetworkDataSource @Inject constructor(
                 if (response.isSuccessful && body != null) {
                     body.string()
                 } else {
-                    throw IOException("Error fetching text from URL: ${response.code}")
+                    Log.e("fetchTextFromUrl", "Error fetching text from URL: ${response.code}")
+                    return@withContext ""
                 }
             } catch (e: Exception) {
-                throw IOException("Error fetching text from URL: ${e.message}")
+                Log.e("fetchTextFromUrl", "Error fetching text from URL: ${e.message}")
+                return@withContext ""
             }
         }
     }

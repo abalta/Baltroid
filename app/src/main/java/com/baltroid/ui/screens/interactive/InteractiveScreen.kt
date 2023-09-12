@@ -70,6 +70,7 @@ import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.SimpleImage
 import com.baltroid.ui.common.VerticalSpacer
 import com.baltroid.ui.screens.home.detail.EpisodeSheet
+import com.baltroid.ui.screens.home.detail.OriginalBarcode
 import com.baltroid.ui.screens.reading.ReadingUiState
 import com.baltroid.ui.screens.viewmodels.OriginalViewModel
 import com.baltroid.ui.theme.localColors
@@ -93,7 +94,6 @@ fun InteractiveScreen(
     SetLoadingState(isLoading = readingUiState.isLoading)
 
     LaunchedEffect(viewModel.selectedEpisodeId.value) {
-        viewModel.setSelectedEpisodeId(761)
         viewModel.showEpisode(OriginalType.INTERACTIVE)
     }
 
@@ -101,6 +101,7 @@ fun InteractiveScreen(
         original = original.original,
         readingUiState = readingUiState,
         action = viewModel::handleUiEvent,
+        onEpisodeChange = viewModel::setSelectedEpisodeId,
     )
 }
 
@@ -109,6 +110,7 @@ fun InteractiveScreenContent(
     original: IndexOriginal,
     readingUiState: ReadingUiState,
     action: (InteractiveScreenAction) -> Unit,
+    onEpisodeChange: (episodeId: Int) -> Unit,
 ) {
 
     val interactiveContent = readingUiState.episode?.xmlContents?.episode?.dialogue
@@ -142,6 +144,10 @@ fun InteractiveScreenContent(
     }
 
     var isEpisodesEnabled by remember {
+        mutableStateOf(false)
+    }
+
+    var isBarcodeEnabled by remember {
         mutableStateOf(false)
     }
 
@@ -206,6 +212,7 @@ fun InteractiveScreenContent(
 
         InteractiveNote(
             dialogue = currentDialogue,
+            isEnabled = currentDialogue?.lineType == "NOT" && isEpisodesEnabled.not(),
             modifier = Modifier.constrainAs(note) {
                 top.linkTo(guideLine)
                 start.linkTo(parent.start, 60.dp)
@@ -251,7 +258,13 @@ fun InteractiveScreenContent(
 
         EpisodeEndButtons(
             isLastEpisode = readingUiState.episode?.isLastEpisode == true,
-            onClick = action,
+            onClick = {
+                if (it == InteractiveScreenAction.SHARE) {
+                    isBarcodeEnabled = true
+                } else {
+                    action.invoke(it)
+                }
+            },
             modifier = Modifier
                 .constrainAs(episodeEndButtons) {
                     bottom.linkTo(parent.bottom, 56.dp)
@@ -281,15 +294,15 @@ fun InteractiveScreenContent(
         InteractiveScreenBottomSection(
             indexOriginal = original,
             episode = readingUiState.episode,
-            createComment = {},
-            createFavorite = {},
+            createComment = { },
+            createFavorite = { action.invoke(InteractiveScreenAction.CREATE_FAVORITE) },
             onEpisodesClicked = { isEpisodesEnabled = true },
             modifier = Modifier
                 .fillMaxWidth()
                 .constrainAs(bottombar) {
                     bottom.linkTo(parent.bottom)
                     visibility =
-                        if ((currentDialogue?.lineType == "SMS")) Gone else Visible
+                        if ((currentDialogue?.lineType == "SMS") || isEndOfEpisode) Gone else Visible
                 }
         )
 
@@ -330,8 +343,15 @@ fun InteractiveScreenContent(
                     visibility = if (isEpisodesEnabled) Visible else Gone
                 },
             closeSheet = { isEpisodesEnabled = false },
-            onEpisodeClick = {}
+            onEpisodeClick = {
+                onEpisodeChange.invoke(it.id)
+            }
         )
+        if (isBarcodeEnabled) {
+            OriginalBarcode(original = original) {
+                isBarcodeEnabled = false
+            }
+        }
     }
 }
 
@@ -669,6 +689,7 @@ fun Options(
 @Composable
 fun InteractiveNote(
     dialogue: DialogueXml?,
+    isEnabled: Boolean,
     modifier: Modifier = Modifier,
     onClick: (nextLineId: String) -> Unit,
 ) {
@@ -680,7 +701,7 @@ fun InteractiveNote(
         modifier = modifier
             .border(dimensionResource(id = R.dimen.dp1), color = MaterialTheme.localColors.white)
             .fillMaxWidth()
-            .clickable { onClick.invoke(dialogue?.nextLineId.orEmpty()) }
+            .clickable(enabled = isEnabled) { onClick.invoke(dialogue?.nextLineId.orEmpty()) }
             .background(MaterialTheme.localColors.black)
             .padding(vertical = dimensionResource(id = R.dimen.dp15))
     )
@@ -726,7 +747,10 @@ fun InteractiveScreenBottomSection(
                     modifier = Modifier.width(dimensionResource(id = R.dimen.dp100))
                 )
                 Text(
-                    text = stringResource(id = R.string.episode_number, episode?.sort.orZero()),
+                    text = stringResource(
+                        id = R.string.episode_number,
+                        episode?.episodeSort.orZero()
+                    ),
                     style = MaterialTheme.localTextStyles.poppins13Medium,
                     color = MaterialTheme.localColors.white
                 )

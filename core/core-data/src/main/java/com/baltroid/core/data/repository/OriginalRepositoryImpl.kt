@@ -99,9 +99,16 @@ class OriginalRepositoryImpl @Inject constructor(
                     response.value.data?.let {
                         val episodeContent = fetchEpisodeFromUrl(it.episode.assetContents.orEmpty())
                         if (type == OriginalType.INTERACTIVE) {
-                            val xmlContent: XmlContent =
-                                Gson().fromJson(U.xmlToJson(episodeContent), XmlContent::class.java)
-                            emit(BaltroidResult.success(it.episode.asShowEpisodeModel(xmlContent = xmlContent)))
+                            try {
+                                val xmlContent: XmlContent =
+                                    Gson().fromJson(
+                                        U.xmlToJson(episodeContent),
+                                        XmlContent::class.java
+                                    )
+                                emit(BaltroidResult.success(it.episode.asShowEpisodeModel(xmlContent = xmlContent)))
+                            } catch (e: Exception) {
+                                emit(BaltroidResult.failure(e))
+                            }
                         } else {
                             emit(BaltroidResult.success(it.episode.asShowEpisodeModel(episodeContent = episodeContent)))
                         }

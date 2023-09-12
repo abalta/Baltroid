@@ -267,7 +267,7 @@ private fun HomeDetailScreenContent(
                         if (original.type == INTERACTIVE) {
                             navigate.invoke(
                                 HitReadsScreens.InteractiveScreen.route,
-                                original.episodes.firstOrNull()?.id
+                                it.id
                             )
                         } else {
                             navigate.invoke(HitReadsScreens.ReadingScreen.route, it.id)
@@ -438,7 +438,7 @@ fun EpisodeItem(
             )
     ) {
         Text(
-            text = stringResource(id = R.string.episode_number, episode.sort.orZero()),
+            text = stringResource(id = R.string.episode_number, episode.episodeSort.orZero()),
             style = MaterialTheme.localTextStyles.poppins15Bold,
             color = MaterialTheme.localColors.white
         )
@@ -525,7 +525,7 @@ fun OriginalBarcode(
             )
             VerticalSpacer(height = dimensionResource(id = R.dimen.dp3))
             Text(
-                text = "Kim olduğunu sorguladıkça dünyasının sahtelikten İbaret olduğunu anlamaya başlayan Işıl Özsoydan, öğrendiği gerçekler...",
+                text = original?.description.orEmpty(),
                 style = MaterialTheme.localTextStyles.spaceGrotesk14Regular,
                 color = MaterialTheme.localColors.black
             )
