@@ -527,7 +527,8 @@ fun OriginalBarcode(
             Text(
                 text = original?.description.orEmpty(),
                 style = MaterialTheme.localTextStyles.spaceGrotesk14Regular,
-                color = MaterialTheme.localColors.black
+                color = MaterialTheme.localColors.black,
+                modifier = Modifier.verticalScroll(rememberScrollState())
             )
         }
     }

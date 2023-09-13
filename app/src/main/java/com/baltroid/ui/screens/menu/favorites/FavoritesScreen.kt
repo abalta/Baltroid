@@ -33,6 +33,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -281,7 +282,11 @@ fun StoryItemFavorites(
         Text(
             text = favoriteOriginal.title,
             style = MaterialTheme.localTextStyles.poppins12Medium,
-            color = MaterialTheme.localColors.white_alpha05, textAlign = TextAlign.Center
+            color = MaterialTheme.localColors.white_alpha05,
+            textAlign = TextAlign.Center,
+            maxLines = 2,
+            minLines = 2,
+            overflow = TextOverflow.Ellipsis
         )
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp11))
         YellowStarBox(

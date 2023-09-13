@@ -30,12 +30,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.baltroid.apps.R
-import com.baltroid.ui.common.CroppedImage
 import com.baltroid.ui.common.HorizontalSpacer
 import com.baltroid.ui.common.SimpleImage
 import com.baltroid.ui.common.VerticalSpacer
@@ -45,7 +47,11 @@ import com.baltroid.ui.theme.localTextStyles
 
 @Composable
 fun CommentWritingCard(
-    author: String, hashTag: String, onBackClick: () -> Unit, sendComment: (comment: String) -> Unit
+    author: String,
+    hashTag: String,
+    imgUrl: String,
+    onBackClick: () -> Unit,
+    sendComment: (comment: String) -> Unit
 ) {
     var comment by rememberSaveable {
         mutableStateOf("")
@@ -93,8 +99,11 @@ fun CommentWritingCard(
                             top = dimensionResource(id = R.dimen.dp27)
                         )
                 ) {
-                    CroppedImage(
-                        imgResId = R.drawable.woods_image,
+                    AsyncImage(
+                        model = imgUrl,
+                        error = painterResource(id = R.drawable.hitreads_placeholder),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .size(dimensionResource(id = R.dimen.dp48))
                             .clip(MaterialTheme.localShapes.circleShape)
@@ -179,6 +188,6 @@ fun CommentWritingCard(
 @Preview(widthDp = 300, heightDp = 400)
 @Composable
 fun CommentWritingCardPreview() {
-    CommentWritingCard("SELEN PEKMEZCİ", "#KGD B12", {}) {}
+    CommentWritingCard("SELEN PEKMEZCİ", "#h", "#KGD B12", {}) {}
 }
 

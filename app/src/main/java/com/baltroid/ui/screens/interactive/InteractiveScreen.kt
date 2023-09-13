@@ -1,6 +1,9 @@
 package com.baltroid.ui.screens.interactive
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -22,6 +25,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -36,6 +40,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -69,9 +74,13 @@ import com.baltroid.ui.common.SetLoadingState
 import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.SimpleImage
 import com.baltroid.ui.common.VerticalSpacer
+import com.baltroid.ui.components.CommentWritingCard
 import com.baltroid.ui.screens.home.detail.EpisodeSheet
 import com.baltroid.ui.screens.home.detail.OriginalBarcode
+import com.baltroid.ui.screens.reading.CommentSection
+import com.baltroid.ui.screens.reading.CommentSectionTabs
 import com.baltroid.ui.screens.reading.ReadingUiState
+import com.baltroid.ui.screens.reading.comments.CommentsTabState
 import com.baltroid.ui.screens.viewmodels.OriginalViewModel
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localShapes
@@ -79,7 +88,7 @@ import com.baltroid.ui.theme.localTextStyles
 import com.baltroid.util.orEmpty
 import com.baltroid.util.orZero
 import com.hitreads.core.domain.model.OriginalType
-import com.hitreads.core.model.Episode
+import com.hitreads.core.model.Comment
 import com.hitreads.core.model.IndexOriginal
 import com.hitreads.core.model.ShowEpisode
 
@@ -90,6 +99,7 @@ fun InteractiveScreen(
 
     val readingUiState by viewModel.uiStateReading.collectAsStateWithLifecycle()
     val original by viewModel.uiStateDetail.collectAsStateWithLifecycle()
+    val homeState by viewModel.uiStateHome.collectAsStateWithLifecycle()
 
     SetLoadingState(isLoading = readingUiState.isLoading)
 
@@ -101,7 +111,17 @@ fun InteractiveScreen(
         original = original.original,
         readingUiState = readingUiState,
         action = viewModel::handleUiEvent,
+        gem = homeState.profileModel.gem,
+        loadComments = viewModel::getOriginalComments,
+        setReplyComment = viewModel::setReplyComment,
         onEpisodeChange = viewModel::setSelectedEpisodeId,
+        expanseComment = viewModel::expanseComment,
+        replyComment = viewModel::replyComment,
+        createComment = viewModel::createComment,
+        likeComment = { isLiked, id, tabState ->
+            if (isLiked) viewModel.unlikeComment(id, tabState)
+            else viewModel.likeComment(id, tabState)
+        },
     )
 }
 
@@ -109,8 +129,15 @@ fun InteractiveScreen(
 fun InteractiveScreenContent(
     original: IndexOriginal,
     readingUiState: ReadingUiState,
+    gem: Int,
+    setReplyComment: (Comment) -> Unit,
+    loadComments: () -> Unit,
+    likeComment: (Boolean, Int, CommentsTabState) -> Unit,
     action: (InteractiveScreenAction) -> Unit,
+    replyComment: (String, CommentsTabState) -> Unit,
+    createComment: (String, Int?) -> Unit,
     onEpisodeChange: (episodeId: Int) -> Unit,
+    expanseComment: (Int, CommentsTabState) -> Unit,
 ) {
 
     val interactiveContent = readingUiState.episode?.xmlContents?.episode?.dialogue
@@ -148,6 +175,22 @@ fun InteractiveScreenContent(
     }
 
     var isBarcodeEnabled by remember {
+        mutableStateOf(false)
+    }
+
+    var isCommentsEnabled by remember {
+        mutableStateOf(false)
+    }
+
+    var isWriteCardShown by remember {
+        mutableStateOf(false)
+    }
+
+    var selectedCommentTab by rememberSaveable {
+        mutableStateOf(CommentsTabState.AllComments)
+    }
+
+    var createComment by rememberSaveable {
         mutableStateOf(false)
     }
 
@@ -294,7 +337,10 @@ fun InteractiveScreenContent(
         InteractiveScreenBottomSection(
             indexOriginal = original,
             episode = readingUiState.episode,
-            createComment = { },
+            createComment = {
+                loadComments.invoke()
+                isCommentsEnabled = true
+            },
             createFavorite = { action.invoke(InteractiveScreenAction.CREATE_FAVORITE) },
             onEpisodesClicked = { isEpisodesEnabled = true },
             modifier = Modifier
@@ -322,7 +368,7 @@ fun InteractiveScreenContent(
         }
 
         InteractiveScreenToolbar(
-            gemCount = 1500,
+            gemCount = gem,
             modifier = Modifier
                 .statusBarsPadding()
                 .constrainAs(toolbar) {
@@ -350,6 +396,52 @@ fun InteractiveScreenContent(
         if (isBarcodeEnabled) {
             OriginalBarcode(original = original) {
                 isBarcodeEnabled = false
+            }
+        }
+
+        InteractiveCommentsSection(
+            modifier = Modifier.constrainAs(comments) {
+                top.linkTo(toolbar.bottom, 9.dp)
+                bottom.linkTo(bottombar.top, 14.dp)
+                start.linkTo(parent.start, 7.dp)
+                end.linkTo(parent.end, 7.dp)
+                width = Dimension.fillToConstraints
+                height = Dimension.percent(0.7f)
+                visibility = if (isCommentsEnabled) Visible else Gone
+            },
+            likeComment = likeComment,
+            expanseComment = expanseComment,
+            uiState = readingUiState,
+            setReplyComment = setReplyComment,
+            onBackClick = {
+                isCommentsEnabled = false
+            },
+            showWriteCard = {
+                isWriteCardShown = true
+            },
+            setSelectedCommentTab = {
+                selectedCommentTab = it
+            },
+            createComment = {
+                createComment = true
+                isWriteCardShown = true
+            },
+            selectedCommentTab = selectedCommentTab
+        )
+        AnimatedVisibility(visible = isWriteCardShown, enter = fadeIn(), exit = fadeOut()) {
+            CommentWritingCard(
+                author = original.indexAuthor.name.orEmpty(),
+                original.hashtag.orEmpty(),
+                imgUrl = "",
+                onBackClick = { isWriteCardShown = false }
+            ) { comment ->
+                if (createComment) {
+                    createComment(comment, null)
+                    createComment = false
+                } else {
+                    replyComment.invoke(comment, selectedCommentTab)
+                }
+                isWriteCardShown = false
             }
         }
     }
@@ -778,78 +870,7 @@ fun InteractiveScreenBottomSection(
     }
 }
 
-@Composable
-fun InteractiveScreenBottomBar(
-    indexOriginal: IndexOriginal?,
-    episode: Episode?,
-    onCommentsClicked: () -> Unit,
-) {
 
-    Column {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(IntrinsicSize.Min)
-        ) {
-            Text(
-                text = indexOriginal?.hashtag.orEmpty(),
-                style = MaterialTheme.localTextStyles.poppins15Medium,
-                color = MaterialTheme.localColors.white
-            )
-            IconWithTextNextTo(
-                iconResId = R.drawable.ic_eye,
-                text = indexOriginal?.viewCount.toString(),
-                textStyle = MaterialTheme.localTextStyles.poppins10Regular,
-                spacedBy = dimensionResource(id = R.dimen.dp9),
-            ) {}
-            IconWithTextNextTo(
-                iconResId = R.drawable.ic_comment,
-                text = indexOriginal?.commentCount.toString(),
-                textStyle = MaterialTheme.localTextStyles.poppins10Regular,
-                spacedBy = dimensionResource(id = R.dimen.dp9),
-                modifier = Modifier
-                    .clickable { onCommentsClicked.invoke() }
-            ) {}
-            Row {
-                Divider(
-                    color = MaterialTheme.localColors.white,
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .width(dimensionResource(id = R.dimen.dp1))
-                )
-                SimpleIcon(
-                    iconResId = R.drawable.ic_add_comment, modifier = Modifier
-                        .fillMaxHeight()
-                        .padding(
-                            horizontal = dimensionResource(id = R.dimen.dp12),
-                            vertical = 8.dp
-                        )
-                )
-                Divider(
-                    color = MaterialTheme.localColors.white,
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .width(dimensionResource(id = R.dimen.dp1))
-                )
-            }
-            Text(
-                text = "BÖLÜM ${episode?.id}",
-                style = MaterialTheme.localTextStyles.poppins13Medium,
-                color = MaterialTheme.localColors.white_alpha07,
-            )
-            SimpleIcon(
-                iconResId = R.drawable.ic_banner_filled,
-                tint = MaterialTheme.localColors.purple
-            )
-        }
-        Divider(
-            thickness = dimensionResource(id = R.dimen.dp1),
-            color = MaterialTheme.localColors.white
-        )
-    }
-}
 
 @Composable
 fun ImageWithNameCard(
@@ -934,106 +955,6 @@ fun ImageWithNameCard(
         }
     }
 }
-
-/*@Composable
-fun TextBalloon(
-    text: String,
-    modifier: Modifier = Modifier,
-    backgroundColor: Color = Color(0xFF050505),
-    pointerLocation: PointerLocation = PointerLocation.LEFT
-) {
-    BoxWithConstraints(
-        modifier = modifier
-            .requiredHeight(126.dp)
-    ) {
-
-        val backgroundCornerRadius = 10.dp
-        val pointerCornerRadius = 2.dp
-        val pointerSize = 23.54.dp
-        val pointerOffsetX = 6.dp
-        val pointerOffsetY = 44.dp
-        val bodyOffsetX = 11.dp
-        val maxHeight = this.maxHeight
-        val maxWidth = this.maxWidth
-        val isPointerLeft = pointerLocation == PointerLocation.LEFT
-
-        Canvas(
-            modifier = Modifier
-                .requiredHeight(maxHeight)
-                .requiredWidthIn(maxWidth)
-        ) {
-            drawRoundRect(
-                color = backgroundColor,
-                size = Size(
-                    width = (maxWidth - bodyOffsetX).toPx(),
-                    height = maxHeight.toPx()
-                ),
-                topLeft = Offset(
-                    x = if (isPointerLeft) bodyOffsetX.toPx()
-                    else 0f,
-                    y = 0f
-                ),
-                cornerRadius = CornerRadius(
-                    x = backgroundCornerRadius.toPx(),
-                    y = backgroundCornerRadius.toPx()
-                )
-            )
-            rotate(
-                degrees = 45f,
-                pivot = Offset(
-                    x = if (isPointerLeft) pointerOffsetX.toPx() +
-                            (pointerSize
-                                    / 2f).toPx()
-                    else pointerOffsetX.toPx() + maxWidth.toPx() -
-                            bodyOffsetX.toPx()
-                            - pointerSize.toPx() + (pointerSize / 2).toPx(),
-                    y = this@Canvas.size.height - pointerOffsetY.toPx() + (
-                            pointerSize
-                                    / 2f).toPx()
-                )
-            ) {
-                drawRoundRect(
-                    color = backgroundColor,
-                    size = Size(pointerSize.toPx(), pointerSize.toPx()),
-                    topLeft = Offset(
-                        x = if (isPointerLeft)
-                            pointerOffsetX.toPx()
-                        else pointerOffsetX.toPx() + maxWidth.toPx() -
-                                bodyOffsetX.toPx()
-                                - pointerSize.toPx(),
-                        y = this@Canvas.size.height - pointerOffsetY.toPx()
-                    ),
-                    cornerRadius = CornerRadius(
-                        pointerCornerRadius.toPx(),
-                        pointerCornerRadius.toPx(),
-                    ),
-                )
-            }
-        }
-
-        Text(
-            text = text,
-            style = MaterialTheme.localTextStyles.poppins14Medium,
-            color = MaterialTheme.localColors.white,
-            modifier = Modifier
-                .width(this.maxWidth)
-                .height(this.maxHeight)
-                .padding(
-                    start = if (isPointerLeft) bodyOffsetX + 22.5.dp else 23.dp,
-                    top = 25.5.dp,
-                    end = if (isPointerLeft) 13.5.dp else bodyOffsetX + 13.dp,
-                    bottom = 13.5.dp,
-                )
-                .verticalScroll(rememberScrollState())
-        )
-
-    }
-}*/
-
-/*enum class PointerLocation {
-    LEFT,
-    RIGHT
-}*/
 
 data class InteractiveOptions(
     val option: String,
@@ -1245,6 +1166,81 @@ fun InteractiveScreenToolbar(
     }
 }
 
+@Composable
+fun InteractiveCommentsSection(
+    uiState: ReadingUiState,
+    modifier: Modifier = Modifier,
+    selectedCommentTab: CommentsTabState,
+    setSelectedCommentTab: (CommentsTabState) -> Unit,
+    expanseComment: (Int, CommentsTabState) -> Unit,
+    setReplyComment: (Comment) -> Unit,
+    likeComment: (Boolean, Int, CommentsTabState) -> Unit,
+    onBackClick: () -> Unit,
+    showWriteCard: () -> Unit,
+    createComment: () -> Unit
+) {
+    Row(
+        modifier
+            .clip(MaterialTheme.localShapes.roundedDp10)
+            .background(MaterialTheme.localColors.black)
+    ) {
+        Column(
+            Modifier.weight(1f)
+        ) {
+            VerticalSpacer(height = dimensionResource(id = R.dimen.dp37))
+            CommentSectionTabs(
+                tabState = selectedCommentTab,
+                onTabSelect = setSelectedCommentTab
+            )
+            CommentSection(
+                lazyListState = rememberLazyListState(),
+                comments = when (selectedCommentTab) {
+                    CommentsTabState.AllComments -> uiState.allComments
+                    CommentsTabState.MyFavorites -> uiState.commentsLikedByMe
+                    else -> emptyList()
+                },
+                onLikeClick = { isLiked, id ->
+                    likeComment.invoke(isLiked, id, selectedCommentTab)
+                },
+                onReplyClick = {
+                    setReplyComment.invoke(it)
+                    showWriteCard.invoke()
+                },
+                onExpanseClicked = {
+                    expanseComment.invoke(it, selectedCommentTab)
+                },
+                modifier = Modifier.padding(start = dimensionResource(id = R.dimen.dp30))
+            )
+        }
+        Column(
+            Modifier
+                .fillMaxHeight()
+                .padding(
+                    bottom = dimensionResource(id = R.dimen.dp50)
+                ),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            SimpleImage(
+                imgResId = R.drawable.ic_close,
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .padding(
+                        top = dimensionResource(id = R.dimen.dp14),
+                        end = dimensionResource(id = R.dimen.dp22)
+                    )
+                    .clickable(onClick = onBackClick)
+            )
+            SimpleImage(
+                imgResId = R.drawable.ic_add_comment,
+                modifier = Modifier
+                    .padding(end = dimensionResource(id = R.dimen.dp16))
+                    .align(Alignment.End)
+                    .clickable(onClick = createComment)
+            )
+        }
+    }
+}
+
 enum class InteractiveScreenAction {
     CREATE_FAVORITE,
     SHARE,
@@ -1313,3 +1309,177 @@ fun FirstInteractiveContent(
         }
     }
 }*/
+
+
+/*@Composable
+fun InteractiveScreenBottomBar(
+    indexOriginal: IndexOriginal?,
+    episode: Episode?,
+    onCommentsClicked: () -> Unit,
+) {
+
+    Column {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(IntrinsicSize.Min)
+        ) {
+            Text(
+                text = indexOriginal?.hashtag.orEmpty(),
+                style = MaterialTheme.localTextStyles.poppins15Medium,
+                color = MaterialTheme.localColors.white
+            )
+            IconWithTextNextTo(
+                iconResId = R.drawable.ic_eye,
+                text = indexOriginal?.viewCount.toString(),
+                textStyle = MaterialTheme.localTextStyles.poppins10Regular,
+                spacedBy = dimensionResource(id = R.dimen.dp9),
+            ) {}
+            IconWithTextNextTo(
+                iconResId = R.drawable.ic_comment,
+                text = indexOriginal?.commentCount.toString(),
+                textStyle = MaterialTheme.localTextStyles.poppins10Regular,
+                spacedBy = dimensionResource(id = R.dimen.dp9),
+                modifier = Modifier
+                    .clickable { onCommentsClicked.invoke() }
+            ) {}
+            Row {
+                Divider(
+                    color = MaterialTheme.localColors.white,
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(dimensionResource(id = R.dimen.dp1))
+                )
+                SimpleIcon(
+                    iconResId = R.drawable.ic_add_comment, modifier = Modifier
+                        .fillMaxHeight()
+                        .padding(
+                            horizontal = dimensionResource(id = R.dimen.dp12),
+                            vertical = 8.dp
+                        )
+                )
+                Divider(
+                    color = MaterialTheme.localColors.white,
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(dimensionResource(id = R.dimen.dp1))
+                )
+            }
+            Text(
+                text = "BÖLÜM ${episode?.id}",
+                style = MaterialTheme.localTextStyles.poppins13Medium,
+                color = MaterialTheme.localColors.white_alpha07,
+            )
+            SimpleIcon(
+                iconResId = R.drawable.ic_banner_filled,
+                tint = MaterialTheme.localColors.purple
+            )
+        }
+        Divider(
+            thickness = dimensionResource(id = R.dimen.dp1),
+            color = MaterialTheme.localColors.white
+        )
+    }
+}*/
+/*@Composable
+fun TextBalloon(
+    text: String,
+    modifier: Modifier = Modifier,
+    backgroundColor: Color = Color(0xFF050505),
+    pointerLocation: PointerLocation = PointerLocation.LEFT
+) {
+    BoxWithConstraints(
+        modifier = modifier
+            .requiredHeight(126.dp)
+    ) {
+
+        val backgroundCornerRadius = 10.dp
+        val pointerCornerRadius = 2.dp
+        val pointerSize = 23.54.dp
+        val pointerOffsetX = 6.dp
+        val pointerOffsetY = 44.dp
+        val bodyOffsetX = 11.dp
+        val maxHeight = this.maxHeight
+        val maxWidth = this.maxWidth
+        val isPointerLeft = pointerLocation == PointerLocation.LEFT
+
+        Canvas(
+            modifier = Modifier
+                .requiredHeight(maxHeight)
+                .requiredWidthIn(maxWidth)
+        ) {
+            drawRoundRect(
+                color = backgroundColor,
+                size = Size(
+                    width = (maxWidth - bodyOffsetX).toPx(),
+                    height = maxHeight.toPx()
+                ),
+                topLeft = Offset(
+                    x = if (isPointerLeft) bodyOffsetX.toPx()
+                    else 0f,
+                    y = 0f
+                ),
+                cornerRadius = CornerRadius(
+                    x = backgroundCornerRadius.toPx(),
+                    y = backgroundCornerRadius.toPx()
+                )
+            )
+            rotate(
+                degrees = 45f,
+                pivot = Offset(
+                    x = if (isPointerLeft) pointerOffsetX.toPx() +
+                            (pointerSize
+                                    / 2f).toPx()
+                    else pointerOffsetX.toPx() + maxWidth.toPx() -
+                            bodyOffsetX.toPx()
+                            - pointerSize.toPx() + (pointerSize / 2).toPx(),
+                    y = this@Canvas.size.height - pointerOffsetY.toPx() + (
+                            pointerSize
+                                    / 2f).toPx()
+                )
+            ) {
+                drawRoundRect(
+                    color = backgroundColor,
+                    size = Size(pointerSize.toPx(), pointerSize.toPx()),
+                    topLeft = Offset(
+                        x = if (isPointerLeft)
+                            pointerOffsetX.toPx()
+                        else pointerOffsetX.toPx() + maxWidth.toPx() -
+                                bodyOffsetX.toPx()
+                                - pointerSize.toPx(),
+                        y = this@Canvas.size.height - pointerOffsetY.toPx()
+                    ),
+                    cornerRadius = CornerRadius(
+                        pointerCornerRadius.toPx(),
+                        pointerCornerRadius.toPx(),
+                    ),
+                )
+            }
+        }
+
+        Text(
+            text = text,
+            style = MaterialTheme.localTextStyles.poppins14Medium,
+            color = MaterialTheme.localColors.white,
+            modifier = Modifier
+                .width(this.maxWidth)
+                .height(this.maxHeight)
+                .padding(
+                    start = if (isPointerLeft) bodyOffsetX + 22.5.dp else 23.dp,
+                    top = 25.5.dp,
+                    end = if (isPointerLeft) 13.5.dp else bodyOffsetX + 13.dp,
+                    bottom = 13.5.dp,
+                )
+                .verticalScroll(rememberScrollState())
+        )
+
+    }
+}*/
+
+/*enum class PointerLocation {
+    LEFT,
+    RIGHT
+}*/
+

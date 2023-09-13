@@ -124,6 +124,8 @@ fun ReadingScreen(
         },
         goToFirstEpisode = viewModel::setSelectedEpisodeId,
         expanseComment = viewModel::expanseComment,
+        setReplyComment = viewModel::setReplyComment,
+        replyComment = viewModel::replyComment,
         onCreateFavorite = { viewModel.createFavorite() },
         likeComment = { isLiked, id, tabState ->
             if (isLiked) viewModel.unlikeComment(id, tabState)
@@ -138,6 +140,8 @@ fun ReadingScreenContent(
     original: IndexOriginal?,
     onNextClicked: () -> Unit,
     onCreateComment: (String) -> Unit,
+    setReplyComment: (Comment) -> Unit,
+    replyComment: (String, CommentsTabState) -> Unit,
     loadComments: () -> Unit,
     onEpisodeChange: (Int) -> Unit,
     onLikeClick: (Boolean) -> Unit,
@@ -245,7 +249,10 @@ fun ReadingScreenContent(
                                 onLikeClick = { isLiked, id ->
                                     likeComment.invoke(isLiked, id, selectedCommentTab)
                                 },
-                                onReplyClick = {},
+                                onReplyClick = {
+                                    setReplyComment.invoke(it)
+                                    isWriteCardShown = true
+                                },
                                 onExpanseClicked = {
                                     expanseComment.invoke(it, selectedCommentTab)
                                 },
@@ -306,9 +313,14 @@ fun ReadingScreenContent(
             CommentWritingCard(
                 author = original?.indexAuthor?.name.orEmpty(),
                 original?.hashtag.orEmpty(),
+                imgUrl = "",
                 onBackClick = { isWriteCardShown = !isWriteCardShown }
             ) { comment ->
-                onCreateComment(comment)
+                if (isReadingSection) {
+                    onCreateComment(comment)
+                } else {
+                    replyComment.invoke(comment, selectedCommentTab)
+                }
                 isWriteCardShown = false
             }
         }
@@ -765,6 +777,7 @@ fun CommentSection(
                     onLikeClick = onLikeClick,
                     isSeeAllEnabled = false,
                     onExpanseClicked = { /* no-op */ },
+                    replySize = upperComment.repliesCount - 1,
                     onReplyClick = { onReplyClick.invoke(upperComment) })
                 VerticalSpacer(height = dimensionResource(id = R.dimen.dp12))
                 CommentItem(
@@ -775,6 +788,7 @@ fun CommentSection(
                     onExpanseClicked = {
                         onExpanseClicked.invoke(upperComment.id)
                     },
+                    replySize = upperComment.repliesCount - 1,
                     onReplyClick = {
                         onReplyClick.invoke(upperComment)
                     })
@@ -786,10 +800,12 @@ fun CommentSection(
                                 isChatSelected = false,
                                 onLikeClick = onLikeClick,
                                 isSeeAllEnabled = false,
+                                replySize = upperComment.repliesCount - 1,
                                 onExpanseClicked = { /* no-op */ },
                                 onReplyClick = {
                                     onReplyClick.invoke(upperComment)
-                                })
+                                }
+                            )
                         }
                     }
                 }
@@ -858,6 +874,7 @@ private fun TabItem(
 @Composable
 fun CommentItem(
     model: Comment,
+    replySize: Int,
     isChatSelected: Boolean,
     isSeeAllEnabled: Boolean,
     onExpanseClicked: () -> Unit,
@@ -958,6 +975,7 @@ fun CommentItem(
                     top.linkTo(comment.bottom)
                     width = Dimension.fillToConstraints
                 },
+                replySize = replySize,
                 onClick = onExpanseClicked
             )
         }
@@ -1037,6 +1055,7 @@ private fun ScrollState.isSidebarVisible(): Boolean {
 
 @Composable
 fun SeeAll(
+    replySize: Int,
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
@@ -1052,7 +1071,8 @@ fun SeeAll(
         )
         HorizontalSpacer(width = dimensionResource(id = R.dimen.dp12))
         Text(
-            text = stringResource(id = R.string.see_all),
+            text = if (replySize <= 1) stringResource(id = R.string.see_all)
+            else stringResource(id = R.string.see_all_size, replySize),
             color = MaterialTheme.localColors.white_alpha07,
             fontFamily = Poppins,
             fontSize = 10.sp,

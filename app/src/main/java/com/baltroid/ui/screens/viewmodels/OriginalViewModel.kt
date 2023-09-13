@@ -30,6 +30,7 @@ import com.hitreads.core.domain.usecase.ShowEpisodeUseCase
 import com.hitreads.core.domain.usecase.ShowOriginalUseCase
 import com.hitreads.core.domain.usecase.StartReadingEpisodeUseCase
 import com.hitreads.core.domain.usecase.UnlikeCommentUseCase
+import com.hitreads.core.model.Comment
 import com.hitreads.core.model.IndexOriginal
 import com.hitreads.core.ui.mapper.asComment
 import com.hitreads.core.ui.mapper.asFavoriteOriginal
@@ -76,6 +77,7 @@ class OriginalViewModel @Inject constructor(
     val selectedEpisodeId: State<Int> = _selectedEpisodeId
 
     var selectedOriginalId: Int? = null
+    var selectedComment: Comment? = null
 
     fun loadOriginals() = viewModelScope.launch {
         getOriginalsUseCase(null, null).handle {
@@ -227,7 +229,7 @@ class OriginalViewModel @Inject constructor(
 
     private fun getAllOriginalComments() {
         viewModelScope.launch {
-            getCommentsUseCase(type = ORIGINAL, 1).handle {
+            getCommentsUseCase(type = ORIGINAL, selectedOriginalId ?: -1).handle {
                 onLoading {
                     _uiStateReading.update { it.copy(isLoading = true) }
                 }
@@ -247,7 +249,7 @@ class OriginalViewModel @Inject constructor(
 
     private fun getCommentsLikedByMeById() {
         viewModelScope.launch {
-            getCommentsLikedByMeByIdUseCase(type = ORIGINAL, 1).handle {
+            getCommentsLikedByMeByIdUseCase(type = ORIGINAL, selectedOriginalId ?: -1).handle {
                 onLoading {
                     _uiStateReading.update { it.copy(isLoading = true) }
                 }
@@ -271,22 +273,6 @@ class OriginalViewModel @Inject constructor(
             showEpisode(OriginalType.TEXT)
         }
     }
-
-    /* fun deleteFavorite(original: Original?) = viewModelScope.launch {
-         original?.let {
-             deleteFavoriteUseCase.invoke("originals", it.id).handle {
-                 onSuccess {
-                     _uiStateHome.update { uiState ->
-                         val newList = uiState.favorites.toMutableList()
-                         newList.remove(original)
-                         uiState.copy(favorites = newList)
-                     }
-                 }
-                 onFailure {
-                 }
-             }
-         }
-     }*/
 
     fun startReadingEpisode() {
         viewModelScope.launch {
@@ -337,26 +323,6 @@ class OriginalViewModel @Inject constructor(
             }
         }
     }
-
-    /*private fun loadFavorites() = viewModelScope.launch {
-        val favoriteOriginals = mutableListOf<Original>()
-        getOriginalsUseCase.invoke(true).handle {
-            onLoading {
-                _uiStateHome.update { it.copy(isLoading = true) }
-            }
-            onSuccess { result ->
-                result.forEach {
-                    it.originals?.forEach {
-                        favoriteOriginals.add(it.asOriginal())
-                    }
-                }
-                _uiStateHome.update { it.copy(favorites = favoriteOriginals, isLoading = false) }
-            }
-            onFailure {
-                _uiStateHome.update { it.copy(isLoading = false) }
-            }
-        }
-    }*/
 
     fun showOriginal() = viewModelScope.launch {
         showOriginalUseCase(selectedOriginalId ?: -1).handle {
@@ -439,7 +405,7 @@ class OriginalViewModel @Inject constructor(
 
     fun createComment(content: String, responseId: Int?) = viewModelScope.launch {
         createCommentUseCase(
-            type = "original",
+            type = ORIGINAL,
             selectedOriginalId.orZero(),
             content,
             responseId
@@ -447,8 +413,27 @@ class OriginalViewModel @Inject constructor(
             onLoading {
                 _uiStateReading.update { it.copy(isLoading = true) }
             }
-            onSuccess { _ ->
-                _uiStateReading.update { it.copy(isLoading = false) }
+            onSuccess { newComment ->
+                _uiStateReading.update {
+                    val newList = it.allComments.toMutableList()
+                    newList.add(
+                        Comment(
+                            id = newComment.id,
+                            imgUrl = "",
+                            content = newComment.content,
+                            repliesCount = newComment.repliesCount,
+                            authorName = newComment.author.name.orEmpty(),
+                            hashtag = "",
+                            createdAt = newComment.createdAt,
+                            isLiked = false,
+                            isReply = false,
+                            replies = listOf(),
+                            episode = "",
+                            indexOriginal = null
+                        )
+                    )
+                    it.copy(isLoading = false, allComments = newList.toList())
+                }
                 _uiStateDetail.update { it.copy(original = it.original.copy(commentCount = it.original.commentCount + 1)) }
             }
             onFailure {
@@ -577,6 +562,147 @@ class OriginalViewModel @Inject constructor(
             }
         }
     }
+
+    fun setReplyComment(comment: Comment) {
+        selectedComment = comment
+    }
+
+    fun replyComment(comment: String, tab: CommentsTabState) = viewModelScope.launch {
+        createCommentUseCase(
+            type = ORIGINAL,
+            selectedOriginalId.orZero(),
+            comment,
+            selectedComment?.id.orZero()
+        ).handle {
+            onLoading {
+                _uiStateReading.update { it.copy(isLoading = true) }
+            }
+            onSuccess { newComment ->
+                when (tab) {
+                    CommentsTabState.AllComments -> {
+                        _uiStateReading.update {
+                            val oldList = it.allComments.toMutableList()
+                            val oldComment =
+                                it.allComments.firstOrNull { it.id == selectedComment?.id }
+                            val oldReplies =
+                                it.allComments.firstOrNull { it.id == selectedComment?.id }?.replies
+                            val newReplies = oldReplies?.toMutableList()
+                            newReplies?.add(
+                                Comment(
+                                    id = newComment.id,
+                                    imgUrl = "",
+                                    content = newComment.content,
+                                    repliesCount = newComment.repliesCount,
+                                    authorName = newComment.author.name.orEmpty(),
+                                    hashtag = "",
+                                    createdAt = newComment.createdAt,
+                                    isLiked = false,
+                                    isReply = true,
+                                    replies = listOf(),
+                                    episode = "",
+                                    indexOriginal = null
+                                )
+                            )
+                            val index = it.allComments.indexOfFirst { it.id == selectedComment?.id }
+                            oldList.removeAt(index)
+                            oldComment?.copy(
+                                repliesCount = newReplies?.toList().orEmpty().size,
+                                replies = newReplies?.toList().orEmpty()
+                            )?.let { it1 ->
+                                oldList.add(
+                                    index,
+                                    it1
+                                )
+                            }
+                            it.copy(isLoading = false, allComments = oldList)
+                        }
+                    }
+
+                    CommentsTabState.MyFavorites -> {
+                        _uiStateReading.update {
+                            val oldList = it.commentsLikedByMe.toMutableList()
+                            val oldComment =
+                                it.commentsLikedByMe.firstOrNull { it.id == selectedComment?.id }
+                            val oldReplies =
+                                it.commentsLikedByMe.firstOrNull { it.id == selectedComment?.id }?.replies
+                            val newReplies = oldReplies?.toMutableList()
+                            newReplies?.add(
+                                Comment(
+                                    id = newComment.id,
+                                    imgUrl = "",
+                                    content = newComment.content,
+                                    repliesCount = newComment.repliesCount,
+                                    authorName = newComment.author.name.orEmpty(),
+                                    hashtag = "",
+                                    createdAt = newComment.createdAt,
+                                    isLiked = false,
+                                    isReply = true,
+                                    replies = listOf(),
+                                    episode = "",
+                                    indexOriginal = null
+                                )
+                            )
+                            val index =
+                                it.commentsLikedByMe.indexOfFirst { it.id == selectedComment?.id }
+                            oldList.removeAt(index)
+                            oldComment?.copy(
+                                repliesCount = newReplies?.toList().orEmpty().size,
+                                replies = newReplies?.toList().orEmpty()
+                            )?.let { it1 ->
+                                oldList.add(
+                                    index,
+                                    it1
+                                )
+                            }
+                            it.copy(isLoading = false, commentsLikedByMe = oldList)
+                        }
+                    }
+
+                    CommentsTabState.MyComments -> {/* no-op */
+                    }
+                }
+            }
+            onFailure {
+                _uiStateReading.update { it.copy(isLoading = false) }
+            }
+        }
+    }
+
+    /* fun deleteFavorite(original: Original?) = viewModelScope.launch {
+        original?.let {
+            deleteFavoriteUseCase.invoke("originals", it.id).handle {
+                onSuccess {
+                    _uiStateHome.update { uiState ->
+                        val newList = uiState.favorites.toMutableList()
+                        newList.remove(original)
+                        uiState.copy(favorites = newList)
+                    }
+                }
+                onFailure {
+                }
+            }
+        }
+    }*/
+
+    /*private fun loadFavorites() = viewModelScope.launch {
+        val favoriteOriginals = mutableListOf<Original>()
+        getOriginalsUseCase.invoke(true).handle {
+            onLoading {
+                _uiStateHome.update { it.copy(isLoading = true) }
+            }
+            onSuccess { result ->
+                result.forEach {
+                    it.originals?.forEach {
+                        favoriteOriginals.add(it.asOriginal())
+                    }
+                }
+                _uiStateHome.update { it.copy(favorites = favoriteOriginals, isLoading = false) }
+            }
+            onFailure {
+                _uiStateHome.update { it.copy(isLoading = false) }
+            }
+        }
+    }*/
 
     /*private val _uiStateFilter = MutableStateFlow(FilterUiState())
     val uiStateFilter = _uiStateFilter.asStateFlow()*/

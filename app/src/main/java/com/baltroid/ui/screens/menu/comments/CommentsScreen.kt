@@ -173,6 +173,7 @@ private fun CommentsScreenContent(
                 author = selectedComment?.authorName.orEmpty(),
                 hashTag = selectedComment?.indexOriginal?.hashtag.orEmpty(),
                 onBackClick = { isCommentWriteActive = false },
+                imgUrl = "",
                 sendComment = { comment ->
                     createComment.invoke(selectedComment, comment)
                     isCommentWriteActive = false
