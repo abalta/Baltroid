@@ -17,11 +17,13 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -29,34 +31,63 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
 import com.baltroid.apps.R
 import com.baltroid.ui.common.CroppedImage
 import com.baltroid.ui.common.HorizontalSpacer
+import com.baltroid.ui.common.SetLoadingState
 import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.VerticalSpacer
 import com.baltroid.ui.components.IconlessMenuBar
+import com.baltroid.ui.navigation.HitReadsScreens
 import com.baltroid.ui.screens.menu.favorites.NamelessAuthorItem
+import com.baltroid.ui.screens.menu.favorites.YellowStarBox
+import com.baltroid.ui.screens.viewmodels.AuthorScreenUiState
+import com.baltroid.ui.screens.viewmodels.AuthorViewModel
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
+import com.hitreads.core.domain.model.IndexOriginalModel
 
 @Composable
 fun AuthorScreen(
+    id: Int,
+    viewModel: AuthorViewModel = hiltViewModel(),
+    navigate: (String, Int?) -> Unit,
     onBackClick: () -> Unit
 ) {
+
+    val state by viewModel.author.collectAsStateWithLifecycle()
+
+    SetLoadingState(isLoading = state.isLoading)
+
+    LaunchedEffect(Unit) {
+        viewModel.showAuthor(id)
+    }
+
     AuthorScreenContent(
+        state = state,
         scrollState = rememberScrollState(),
-        onBackClick = onBackClick
+        onBackClick = onBackClick,
+        navigate = navigate
     )
 }
 
 @Composable
 fun AuthorScreenContent(
+    state: AuthorScreenUiState,
     scrollState: ScrollState,
+    navigate: (String, Int?) -> Unit,
     onBackClick: () -> Unit,
 ) {
     var selectedTab: AuthorScreenTabs by rememberSaveable {
@@ -72,13 +103,15 @@ fun AuthorScreenContent(
     ) {
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp36))
         IconlessMenuBar(
-            title = "ZEYNEP SEY",
+            title = state.author?.authorName.toString(),
             onBackClick = onBackClick,
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
         )
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp22))
         NamelessAuthorItem(
+            imgUrl = state.author?.image,
+            isFavorite = true,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp44))
@@ -89,12 +122,63 @@ fun AuthorScreenContent(
             selectedTab = tabToSelect
         }
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp34))
-        LazyRow(
-            modifier = Modifier.padding(start = dimensionResource(id = R.dimen.dp55)),
-            horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp30))
-        ) {
-
+        if (selectedTab == AuthorScreenTabs.Stories) {
+            LazyRow(
+                modifier = Modifier.padding(start = dimensionResource(id = R.dimen.dp55)),
+                horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp30))
+            ) {
+                items(state.author?.originals.orEmpty()) {
+                    OriginalsItem(
+                        original = it,
+                        onClick = {
+                            navigate.invoke(HitReadsScreens.HomeDetailScreen.route, it.id)
+                        },
+                        removeFavoriteOriginal = {}
+                    )
+                }
+            }
         }
+    }
+}
+
+@Composable
+private fun OriginalsItem(
+    original: IndexOriginalModel,
+    onClick: () -> Unit,
+    removeFavoriteOriginal: () -> Unit
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.width(IntrinsicSize.Min)
+    ) {
+        AsyncImage(
+            model = original.cover,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            error = painterResource(id = R.drawable.hitreads_placeholder),
+            modifier = Modifier
+                .size(
+                    dimensionResource(id = R.dimen.dp127),
+                    dimensionResource(id = R.dimen.dp177)
+                )
+                .clip(MaterialTheme.localShapes.roundedDp18)
+                .clickable(onClick = onClick)
+        )
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp13))
+        Text(
+            text = original.title.toString(),
+            style = MaterialTheme.localTextStyles.poppins12Medium,
+            color = MaterialTheme.localColors.white_alpha05,
+            textAlign = TextAlign.Center,
+            maxLines = 2,
+            minLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
+        VerticalSpacer(height = dimensionResource(id = R.dimen.dp11))
+        YellowStarBox(
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            onClick = removeFavoriteOriginal
+        )
     }
 }
 
@@ -264,7 +348,6 @@ fun AuthorCommentItem(
 @Preview
 @Composable
 fun AuthorScreenPreview() {
-    AuthorScreen {}
 }
 
 enum class AuthorScreenTabs {

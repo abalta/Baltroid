@@ -13,9 +13,9 @@ data class NetworkAuthor(
     @SerialName("image")
     val image: String?,
     @SerialName("comments")
-    val comments: List<Unit>?,
+    val comments: NetworkAuthorComment?,
     @SerialName("originals")
-    val originals: List<NetworkAuthorOriginal>?
+    val originals: NetworkAuthorOriginal?
 )
 
 @Serializable
@@ -24,4 +24,34 @@ data class NetworkAuthorOriginal(
     val count: Int?,
     @SerialName("posts")
     val posts: List<IndexNetworkOriginal>?
+)
+
+@Serializable
+data class NetworkAuthorComment(
+    @SerialName("count")
+    val count: Int?,
+    @SerialName("posts")
+    val posts: List<NetworkAuthorCommentItem>?
+)
+
+@Serializable
+data class NetworkAuthorCommentItem(
+    @SerialName("id")
+    val id: Int?,
+    @SerialName("content")
+    val content: String?,
+    @SerialName("Author")
+    val author: NetworkAuthor?,
+    @SerialName("likes_count")
+    val likesCount: Int?,
+    @SerialName("replies_count")
+    val repliesCount: Int?,
+    @SerialName("active_user_like")
+    val activeUserLike: Boolean?,
+    @SerialName("is_reply")
+    val isReply: Boolean?,
+    @SerialName("reply_comment_id")
+    val replyCommentId: Int?,
+    @SerialName("created_at")
+    val createdAt: String?,
 )

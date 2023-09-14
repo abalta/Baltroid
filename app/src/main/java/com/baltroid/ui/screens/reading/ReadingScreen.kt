@@ -78,6 +78,7 @@ import com.baltroid.ui.common.VerticalSpacer
 import com.baltroid.ui.components.CommentWritingCard
 import com.baltroid.ui.components.HitReadsSideBar
 import com.baltroid.ui.components.HitReadsTopBar
+import com.baltroid.ui.navigation.HitReadsScreens
 import com.baltroid.ui.screens.home.detail.EpisodeItem
 import com.baltroid.ui.screens.home.detail.OriginalBarcode
 import com.baltroid.ui.screens.reading.comments.CommentsTabState
@@ -127,6 +128,7 @@ fun ReadingScreen(
         setReplyComment = viewModel::setReplyComment,
         replyComment = viewModel::replyComment,
         onCreateFavorite = { viewModel.createFavorite() },
+        navigate = navigate,
         likeComment = { isLiked, id, tabState ->
             if (isLiked) viewModel.unlikeComment(id, tabState)
             else viewModel.likeComment(id, tabState)
@@ -143,6 +145,7 @@ fun ReadingScreenContent(
     setReplyComment: (Comment) -> Unit,
     replyComment: (String, CommentsTabState) -> Unit,
     loadComments: () -> Unit,
+    navigate: (String) -> Unit,
     onEpisodeChange: (Int) -> Unit,
     onLikeClick: (Boolean) -> Unit,
     onCreateFavorite: () -> Unit,
@@ -211,6 +214,9 @@ fun ReadingScreenContent(
                             isEpisodeNameVisible = isSidebarVisible && isReadingSection,
                             onDotsClick = {
                                 isSidebarVisible = true
+                            },
+                            onAuthorClick = {
+                                navigate.invoke(HitReadsScreens.AuthorScreen.route + "/${original?.indexAuthor?.id}")
                             },
                             onLikeClick = { onLikeClick.invoke(it) },
                             modifier = Modifier.padding(
@@ -658,6 +664,7 @@ fun TitleSection(
     episodeName: String,
     isEpisodeNameVisible: Boolean,
     isLiked: Boolean,
+    onAuthorClick: () -> Unit,
     onDotsClick: () -> Unit,
     onLikeClick: (Boolean) -> Unit,
     modifier: Modifier = Modifier
@@ -675,8 +682,10 @@ fun TitleSection(
                     title = title,
                     subtitle = subtitle,
                     episodeName = episodeName,
+                    onAuthorClick = onAuthorClick,
                     isEpisodeNameVisible = isEpisodeNameVisible,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier
+                        .weight(1f)
                 )
                 SimpleIcon(iconResId = if (isLiked) R.drawable.ic_star else R.drawable.ic_star_outlined,
                     tint = if (isLiked) MaterialTheme.localColors.yellow else Color.Unspecified,
@@ -725,6 +734,7 @@ fun Titles(
     title: String,
     subtitle: String,
     episodeName: String,
+    onAuthorClick: () -> Unit,
     isEpisodeNameVisible: Boolean,
     modifier: Modifier = Modifier,
 ) {
@@ -739,7 +749,8 @@ fun Titles(
         Text(
             text = subtitle,
             style = MaterialTheme.localTextStyles.poppins13Medium,
-            color = MaterialTheme.localColors.white
+            color = MaterialTheme.localColors.white,
+            modifier = Modifier.clickable(onClick = onAuthorClick)
         )
         if (isEpisodeNameVisible) {
             VerticalSpacer(height = R.dimen.dp6)

@@ -1,6 +1,7 @@
 package com.baltroid.di
 
 import com.baltroid.core.data.repository.AuthRepositoryImpl
+import com.baltroid.core.data.repository.AuthorRepositoryImpl
 import com.baltroid.core.data.repository.CommentRepositoryImpl
 import com.baltroid.core.data.repository.FavoriteRepositoryImpl
 import com.baltroid.core.data.repository.OriginalRepositoryImpl
@@ -42,7 +43,7 @@ interface RepositoryModule {
 
     @Binds
     @ViewModelScoped
-    fun bindAuthorRepository(authorRepository: AuthorRepository): AuthorRepository
+    fun bindAuthorRepository(authorRepository: AuthorRepositoryImpl): AuthorRepository
 
     /*
     @Binds

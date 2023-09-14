@@ -457,7 +457,8 @@ fun TitleSection(
     author: String,
     title: String,
     subTitle: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onAuthorClicked: () -> Unit
 ) {
     Column(
         modifier = modifier
@@ -465,7 +466,8 @@ fun TitleSection(
         Text(
             text = author,
             style = MaterialTheme.localTextStyles.poppins17Medium,
-            color = MaterialTheme.localColors.white
+            color = MaterialTheme.localColors.white,
+            modifier = Modifier.clickable(onClick = onAuthorClicked)
         )
         Text(
             text = title,

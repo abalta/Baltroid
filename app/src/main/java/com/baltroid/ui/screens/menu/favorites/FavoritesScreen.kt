@@ -41,11 +41,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.baltroid.apps.R
-import com.baltroid.ui.common.CroppedImage
 import com.baltroid.ui.common.SetLoadingState
 import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.VerticalSpacer
 import com.baltroid.ui.components.MenuBar
+import com.baltroid.ui.navigation.HitReadsScreens
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
@@ -56,7 +56,8 @@ import com.hitreads.core.model.FavoriteOriginal
 @Composable
 fun FavoritesScreen(
     viewModel: FavoritesViewModel = hiltViewModel(),
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    navigate: (route: String) -> Unit
 ) {
 
     LaunchedEffect(Unit) {
@@ -72,6 +73,7 @@ fun FavoritesScreen(
         authors = favorites.authors,
         originals = favorites.originals,
         onBackClick = onBackClick,
+        navigate = navigate,
         removeFavoriteAuthor = viewModel::deleteFavoriteAuthor,
         removeFavoriteOriginal = viewModel::deleteFavoriteOriginal
     )
@@ -84,7 +86,8 @@ fun FavoritesScreenContent(
     originals: List<FavoriteOriginal>,
     removeFavoriteAuthor: (Int) -> Unit,
     removeFavoriteOriginal: (Int) -> Unit,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    navigate: (route: String) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -131,6 +134,9 @@ fun FavoritesScreenContent(
                 VerticalSpacer(height = dimensionResource(id = R.dimen.dp25))
                 AuthorsFavoritesList(
                     authors = authors,
+                    onItemClick = {
+                        navigate.invoke(HitReadsScreens.AuthorScreen.route + "/$it")
+                    },
                     removeFavoriteAuthor = removeFavoriteAuthor
                 )
             }
@@ -141,6 +147,7 @@ fun FavoritesScreenContent(
 @Composable
 fun AuthorsItem(
     favoriteAuthor: Favorite,
+    onClick: () -> Unit,
     onRemoveFavorite: () -> Unit
 ) {
     Column(
@@ -154,6 +161,7 @@ fun AuthorsItem(
             modifier = Modifier
                 .size(dimensionResource(id = R.dimen.dp111))
                 .clip(MaterialTheme.localShapes.circleShape)
+                .clickable(onClick = onClick)
         )
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp20))
         Text(
@@ -169,21 +177,28 @@ fun AuthorsItem(
 
 @Composable
 fun NamelessAuthorItem(
+    imgUrl: String?,
+    isFavorite: Boolean,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        CroppedImage(
-            imgResId = R.drawable.woods_image,
+        AsyncImage(
+            model = imgUrl,
+            error = painterResource(id = R.drawable.hitreads_placeholder),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
             modifier = Modifier
                 .size(dimensionResource(id = R.dimen.dp111))
                 .clip(MaterialTheme.localShapes.circleShape)
         )
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp20))
-        YellowStarBox {
+        if (isFavorite) {
+            YellowStarBox {
 
+            }
         }
     }
 }
@@ -192,6 +207,7 @@ fun NamelessAuthorItem(
 fun AuthorsFavoritesList(
     authors: List<Favorite>,
     modifier: Modifier = Modifier,
+    onItemClick: (id: Int) -> Unit,
     removeFavoriteAuthor: (Int) -> Unit
 ) {
     LazyRow(
@@ -205,6 +221,7 @@ fun AuthorsFavoritesList(
         ) { author ->
             AuthorsItem(
                 favoriteAuthor = author,
+                onClick = { onItemClick.invoke(author.id ?: -1) },
                 onRemoveFavorite = {
                     removeFavoriteAuthor.invoke(author.id ?: -1)
                 }
@@ -301,6 +318,6 @@ fun StoryItemFavorites(
 @Preview(widthDp = 360, heightDp = 540)
 @Composable
 fun FavoritesScreenPreview() {
-    FavoritesScreen {}
+
 }
 

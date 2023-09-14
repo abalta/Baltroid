@@ -178,7 +178,12 @@ private fun HomeDetailScreenContent(
                         title = original.title.orEmpty(),
                         subTitle = original.subtitle.orEmpty(),
                         modifier = Modifier.padding(start = dimensionResource(id = R.dimen.dp23))
-                    )
+                    ) {
+                        navigate.invoke(
+                            HitReadsScreens.AuthorScreen.route + "/${original.indexAuthor.id}",
+                            null
+                        )
+                    }
                     VerticalSpacer(height = dimensionResource(id = R.dimen.dp11))
                     Column(
                         Modifier

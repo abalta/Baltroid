@@ -2,6 +2,8 @@ package com.baltroid.core.data.mapper
 
 import com.baltroid.core.common.model.XmlContent
 import com.baltroid.core.network.model.author.IndexNetworkAuthor
+import com.baltroid.core.network.model.author.NetworkAuthor
+import com.baltroid.core.network.model.author.NetworkAuthorCommentItem
 import com.baltroid.core.network.model.episode.InteractiveNetworkBundleAsset
 import com.baltroid.core.network.model.episode.NetworkShowEpisode
 import com.baltroid.core.network.model.originals.IndexNetworkContinueReadingEpisode
@@ -12,6 +14,7 @@ import com.baltroid.core.network.model.originals.NetworkCommentOriginal
 import com.baltroid.core.network.model.originals.NetworkCreateCommentResponse
 import com.baltroid.core.network.model.originals.ShowOriginalDto
 import com.baltroid.core.network.model.response.AllCommentsDto
+import com.baltroid.core.network.model.response.AuthorDto
 import com.baltroid.core.network.model.response.BookmarkDto
 import com.baltroid.core.network.model.response.CommentDto
 import com.baltroid.core.network.model.response.FavoriteDto
@@ -20,6 +23,7 @@ import com.baltroid.core.network.model.response.TagWithOriginalsDto
 import com.baltroid.core.network.model.response.WelcomeDto
 import com.baltroid.core.network.model.user.IndexUserData
 import com.hitreads.core.domain.model.AllCommentsModel
+import com.hitreads.core.domain.model.AuthorModel
 import com.hitreads.core.domain.model.BookmarkModel
 import com.hitreads.core.domain.model.CommentModel
 import com.hitreads.core.domain.model.EpisodeModel
@@ -32,6 +36,7 @@ import com.hitreads.core.domain.model.IndexPackageModel
 import com.hitreads.core.domain.model.IndexTagModel
 import com.hitreads.core.domain.model.IndexUserDataModel
 import com.hitreads.core.domain.model.InteractiveBundleAssetModel
+import com.hitreads.core.domain.model.NetworkAuthorCommentModel
 import com.hitreads.core.domain.model.ShowEpisodeModel
 import com.hitreads.core.domain.model.ShowOriginalModel
 import com.hitreads.core.domain.model.TagsWithOriginalsModel
@@ -66,6 +71,18 @@ internal fun InteractiveNetworkBundleAsset.asInteractiveBundleAssetsModel() =
     InteractiveBundleAssetModel(
         type = type, typeId = typeId, path = path, isActive = isActive
     )
+
+internal fun NetworkAuthorCommentItem.asNetworkAuthorCommentModel() = NetworkAuthorCommentModel(
+    id = id,
+    content = content,
+    author = author?.asAuthorModel(),
+    likesCount = likesCount,
+    repliesCount = repliesCount,
+    activeUserLike = activeUserLike,
+    isReply = isReply,
+    replyCommentId = replyCommentId,
+    createdAt = createdAt
+)
 
 internal fun NetworkCommentOriginal.asIndexOriginalModel() = IndexOriginalModel(
     type = "",
@@ -226,6 +243,22 @@ internal fun AllCommentsDto.asAllCommentsModel(): AllCommentsModel = AllComments
     replies = replies?.map { it.asAllCommentsModel() },
     replyCommentId = replyCommentId,
     createdAt = createdAt
+)
+
+internal fun AuthorDto.asAuthorModel(): AuthorModel = AuthorModel(
+    id = author?.id,
+    authorName = author?.authorName,
+    image = author?.image,
+    comments = author?.comments?.posts?.map { it.asNetworkAuthorCommentModel() },
+    originals = author?.originals?.posts?.map { it.asIndexOriginalModel() }
+)
+
+internal fun NetworkAuthor.asAuthorModel(): AuthorModel = AuthorModel(
+    id = id,
+    authorName = authorName,
+    image = image,
+    comments = emptyList(),
+    originals = emptyList(),
 )
 
 internal fun WelcomeDto.asWelcomeModel() = WelcomeModel(

@@ -14,6 +14,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptionsBuilder
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import com.baltroid.ui.screens.home.HomeScreen
 import com.baltroid.ui.screens.home.detail.HomeDetailScreen
 import com.baltroid.ui.screens.interactive.InteractiveScreen
@@ -84,7 +86,10 @@ fun HitReadsNavHost(
             }
             composable(route = HitReadsScreens.FavoritesScreen.route) {
                 FavoritesScreen(
-                    onBackClick = { navController.popBackStack() }
+                    onBackClick = { navController.popBackStack() },
+                    navigate = {
+                        navController.navigate(it)
+                    }
                 )
             }
             composable(route = HitReadsScreens.SettingsScreen.route) {
@@ -97,9 +102,17 @@ fun HitReadsNavHost(
                     onBackClick = { navController.popBackStack() }
                 )
             }
-            composable(route = HitReadsScreens.AuthorScreen.route) {
+            composable(
+                route = HitReadsScreens.AuthorScreen.route + "/{authorId}",
+                arguments = listOf(navArgument("authorId") { type = NavType.IntType })
+            ) { backStackEntry ->
                 AuthorScreen(
-                    onBackClick = { navController.popBackStack() }
+                    id = backStackEntry.arguments?.getInt("authorId") ?: -1,
+                    onBackClick = { navController.popBackStack() },
+                    navigate = { route, id ->
+                        originalViewModel.selectedOriginalId = id
+                        navController.navigate(route)
+                    }
                 )
             }
             composable(route = HitReadsScreens.ShopScreen.route) {
@@ -171,7 +184,9 @@ fun HitReadsNavHost(
                     viewModel = originalViewModel,
                     openMenuScreen = openMenuScreen,
                 ) { route, episodeId ->
-                    originalViewModel.setSelectedEpisodeId(episodeId.orZero())
+                    if (!route.contains(HitReadsScreens.AuthorScreen.route)) {
+                        originalViewModel.setSelectedEpisodeId(episodeId.orZero())
+                    }
                     navController.navigate(route)
                 }
             }
