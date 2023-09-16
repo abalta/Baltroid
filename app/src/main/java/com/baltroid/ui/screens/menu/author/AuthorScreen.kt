@@ -16,10 +16,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -52,12 +52,13 @@ import com.baltroid.ui.components.IconlessMenuBar
 import com.baltroid.ui.navigation.HitReadsScreens
 import com.baltroid.ui.screens.menu.favorites.NamelessAuthorItem
 import com.baltroid.ui.screens.menu.favorites.YellowStarBox
+import com.baltroid.ui.screens.reading.CommentItem
 import com.baltroid.ui.screens.viewmodels.AuthorScreenUiState
 import com.baltroid.ui.screens.viewmodels.AuthorViewModel
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
-import com.hitreads.core.domain.model.IndexOriginalModel
+import com.hitreads.core.model.IndexOriginal
 
 @Composable
 fun AuthorScreen(
@@ -98,7 +99,6 @@ fun AuthorScreenContent(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.localColors.black)
-            .verticalScroll(scrollState)
             .systemBarsPadding()
     ) {
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp36))
@@ -122,19 +122,44 @@ fun AuthorScreenContent(
             selectedTab = tabToSelect
         }
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp34))
-        if (selectedTab == AuthorScreenTabs.Stories) {
-            LazyRow(
-                modifier = Modifier.padding(start = dimensionResource(id = R.dimen.dp55)),
-                horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp30))
-            ) {
-                items(state.author?.originals.orEmpty()) {
-                    OriginalsItem(
-                        original = it,
-                        onClick = {
-                            navigate.invoke(HitReadsScreens.HomeDetailScreen.route, it.id)
-                        },
-                        removeFavoriteOriginal = {}
-                    )
+        when (selectedTab) {
+            AuthorScreenTabs.Stories -> {
+                LazyRow(
+                    modifier = Modifier.padding(start = dimensionResource(id = R.dimen.dp55)),
+                    horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp30))
+                ) {
+                    items(state.author?.originals.orEmpty()) {
+                        OriginalsItem(
+                            original = it,
+                            onClick = {
+                                navigate.invoke(HitReadsScreens.HomeDetailScreen.route, it.id)
+                            },
+                            removeFavoriteOriginal = {}
+                        )
+                    }
+                }
+            }
+
+            AuthorScreenTabs.Comments -> {
+                LazyColumn(
+                    modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.dp50))
+                ) {
+                    items(state.author?.comments.orEmpty()) { comment ->
+                        CommentItem(
+                            model = comment,
+                            replySize = comment.repliesCount,
+                            isChatSelected = false,
+                            isSeeAllEnabled = false,
+                            onExpanseClicked = { /* no-op */
+                            },
+                            onLikeClick = { isLiked, id ->
+
+                            },
+                            onReplyClick = { /* no-op */
+
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -143,7 +168,7 @@ fun AuthorScreenContent(
 
 @Composable
 private fun OriginalsItem(
-    original: IndexOriginalModel,
+    original: IndexOriginal,
     onClick: () -> Unit,
     removeFavoriteOriginal: () -> Unit
 ) {

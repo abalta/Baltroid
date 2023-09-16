@@ -45,7 +45,9 @@ fun HitReadsTopBar(
     isGemEnabled: Boolean = false,
     onIconClick: () -> Unit = {},
     onMenuClick: () -> Unit,
-    onNotificationClick: () -> Unit
+    onNotificationClick: () -> Unit,
+    gemClick: () -> Unit,
+    signInClick: () -> Unit
 ) {
 
     Box(
@@ -71,7 +73,9 @@ fun HitReadsTopBar(
             numberOfNotification = 0,
             gemCount = gemCount,
             isGemEnabled = isGemEnabled,
-            onNotificationClick = onNotificationClick
+            onNotificationClick = onNotificationClick,
+            gemClick = gemClick,
+            signInClick = signInClick
         )
     }
 }
@@ -86,7 +90,9 @@ fun MenuAndNotification(
     isGemEnabled: Boolean = false,
     isUserLoggedIn: Boolean = false,
     onMenuClick: () -> Unit,
-    onNotificationClick: () -> Unit
+    onNotificationClick: () -> Unit,
+    signInClick: () -> Unit,
+    gemClick: () -> Unit
 ) {
     val maxNotificationNumber = 99
     Row(
@@ -107,6 +113,10 @@ fun MenuAndNotification(
                         vertical = 5.dp,
                         horizontal = dimensionResource(id = R.dimen.dp15)
                     )
+                    .clickable {
+                        if (!isUserLoggedIn) signInClick.invoke()
+                        else gemClick.invoke()
+                    }
             ) {
                 if (!isUserLoggedIn) {
                     Text(
@@ -253,6 +263,8 @@ fun HitReadsTopBarPreview() {
         isGemEnabled = true,
         isUserLoggedIn = true,
         onIconClick = {},
-        onMenuClick = {}
+        onMenuClick = {},
+        gemClick = {},
+        signInClick = {}
     )
 }

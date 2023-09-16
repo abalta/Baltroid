@@ -1,5 +1,6 @@
 package com.baltroid.ui.screens.menu.login
 
+import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
@@ -17,10 +18,12 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -44,9 +47,11 @@ fun LoginScreen(
     navigate: (String) -> Unit,
     onLoggedIn: () -> Unit
 ) {
-    val loginState = viewModel.uiState.collectAsStateWithLifecycle().value.loginUiModel
-    LaunchedEffect(loginState) {
-        if (loginState != null) {
+    val loginState by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+
+    LaunchedEffect(loginState.loginUiModel) {
+        if (loginState.loginUiModel != null) {
             onLoggedIn.invoke()
         }
     }
@@ -56,6 +61,13 @@ fun LoginScreen(
         forgotPassword = {},
         navigate = navigate
     )
+
+    LaunchedEffect(loginState.error) {
+        loginState.error?.let {
+            Toast.makeText(context, context.getString(it), Toast.LENGTH_LONG).show()
+            viewModel.clearLoginError()
+        }
+    }
 }
 
 @Composable
@@ -110,17 +122,30 @@ fun LoginScreenContent(
         )
         Column(
             verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.weight(1f)
         ) {
+            Divider(
+                thickness = dimensionResource(id = R.dimen.dp0_5),
+                color = MaterialTheme.localColors.white_alpha06
+            )
             TextBetweenDividers(
                 text = stringResource(id = R.string.sign_in),
                 textStyle = MaterialTheme.localTextStyles.spaceGrotesk18Medium,
                 onClick = { loginViewModel.login() }
             )
+            Divider(
+                thickness = dimensionResource(id = R.dimen.dp0_5),
+                color = MaterialTheme.localColors.white_alpha06
+            )
             TextBetweenDividers(
                 text = stringResource(id = R.string.sign_up),
                 textStyle = MaterialTheme.localTextStyles.spaceGrotesk18Medium,
                 onClick = { navigate.invoke(HitReadsScreens.RegisterScreen.route) }
+            )
+            Divider(
+                thickness = dimensionResource(id = R.dimen.dp0_5),
+                color = MaterialTheme.localColors.white_alpha06
             )
         }
     }
@@ -147,7 +172,7 @@ fun UserInputArea(
         BasicTextField(
             value = value,
             onValueChange = onValueChange,
-            textStyle = MaterialTheme.localTextStyles.poppins18Regular,
+            textStyle = MaterialTheme.localTextStyles.poppins18Regular.copy(color = MaterialTheme.localColors.white),
             cursorBrush = SolidColor(MaterialTheme.localColors.white),
             maxLines = 1,
             visualTransformation = visualTransformation,

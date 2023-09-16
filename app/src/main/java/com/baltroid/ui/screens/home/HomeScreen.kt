@@ -112,10 +112,13 @@ fun HomeScreenContent(
             isUserLoggedIn = homeUiState.isUserLoggedIn,
             gemCount = homeUiState.profileModel.gem,
             onMenuClick = openMenuScreen,
-            onNotificationClick = {/* no-op */ }
+            onNotificationClick = {/* no-op */ },
+            signInClick = { navigate.invoke(HitReadsScreens.LoginScreen.route, null) },
+            gemClick = {}
         )
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp19))
         HomeScreenTabs(
+            isUserLoggedIn = homeUiState.isUserLoggedIn,
             selectedTab = tabState, modifier = Modifier
                 .fillMaxWidth()
                 .padding(
@@ -379,6 +382,7 @@ fun FavoriteOriginalItem(
 @Composable
 private fun HomeScreenTabs(
     selectedTab: HomeScreenTabs,
+    isUserLoggedIn: Boolean,
     modifier: Modifier = Modifier,
     onTabSelected: (HomeScreenTabs) -> Unit
 ) {
@@ -393,17 +397,19 @@ private fun HomeScreenTabs(
         ) {
             onTabSelected.invoke(HomeScreenTabs.AllStories)
         }
-        HomeScreenTabItem(
-            title = R.string.favorites_with_size,
-            isSelected = selectedTab == HomeScreenTabs.Favorites
-        ) {
-            onTabSelected.invoke(HomeScreenTabs.Favorites)
-        }
-        HomeScreenTabItem(
-            title = R.string.continue_reading,
-            isSelected = selectedTab == HomeScreenTabs.ContinueReading
-        ) {
-            onTabSelected.invoke(HomeScreenTabs.ContinueReading)
+        if (isUserLoggedIn) {
+            HomeScreenTabItem(
+                title = R.string.favorites_with_size,
+                isSelected = selectedTab == HomeScreenTabs.Favorites
+            ) {
+                onTabSelected.invoke(HomeScreenTabs.Favorites)
+            }
+            HomeScreenTabItem(
+                title = R.string.continue_reading,
+                isSelected = selectedTab == HomeScreenTabs.ContinueReading
+            ) {
+                onTabSelected.invoke(HomeScreenTabs.ContinueReading)
+            }
         }
     }
 }

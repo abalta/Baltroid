@@ -87,8 +87,13 @@ fun HitReadsNavHost(
             composable(route = HitReadsScreens.FavoritesScreen.route) {
                 FavoritesScreen(
                     onBackClick = { navController.popBackStack() },
-                    navigate = {
-                        navController.navigate(it)
+                    navigate = { route, id ->
+                        if (route == HitReadsScreens.HomeDetailScreen.route) {
+                            originalViewModel.apply {
+                                selectedOriginalId = id
+                            }
+                        }
+                        navController.navigate(route)
                     }
                 )
             }
@@ -171,8 +176,8 @@ fun HitReadsNavHost(
                     viewModel = originalViewModel,
                     openMenuScreen = openMenuScreen,
                 ) { route, originalId ->
-                    originalViewModel.apply {
-                        selectedOriginalId = originalId
+                    originalId?.let {
+                        originalViewModel.selectedOriginalId = it
                     }
                     navController.navigate(route)
                 }

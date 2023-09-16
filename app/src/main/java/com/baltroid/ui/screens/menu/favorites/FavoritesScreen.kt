@@ -57,7 +57,7 @@ import com.hitreads.core.model.FavoriteOriginal
 fun FavoritesScreen(
     viewModel: FavoritesViewModel = hiltViewModel(),
     onBackClick: () -> Unit,
-    navigate: (route: String) -> Unit
+    navigate: (route: String, id: Int?) -> Unit
 ) {
 
     LaunchedEffect(Unit) {
@@ -87,7 +87,7 @@ fun FavoritesScreenContent(
     removeFavoriteAuthor: (Int) -> Unit,
     removeFavoriteOriginal: (Int) -> Unit,
     onBackClick: () -> Unit,
-    navigate: (route: String) -> Unit
+    navigate: (route: String, id: Int?) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -118,6 +118,9 @@ fun FavoritesScreenContent(
                 VerticalSpacer(height = dimensionResource(id = R.dimen.dp22))
                 StoryItemFavoritesList(
                     originals = originals,
+                    onItemClick = {
+                        navigate.invoke(HitReadsScreens.HomeDetailScreen.route, it)
+                    },
                     removeFavoriteOriginal = removeFavoriteOriginal
                 )
                 VerticalSpacer(height = dimensionResource(id = R.dimen.dp25))
@@ -135,7 +138,7 @@ fun FavoritesScreenContent(
                 AuthorsFavoritesList(
                     authors = authors,
                     onItemClick = {
-                        navigate.invoke(HitReadsScreens.AuthorScreen.route + "/$it")
+                        navigate.invoke(HitReadsScreens.AuthorScreen.route + "/$it", null)
                     },
                     removeFavoriteAuthor = removeFavoriteAuthor
                 )
@@ -234,6 +237,7 @@ fun AuthorsFavoritesList(
 fun StoryItemFavoritesList(
     originals: List<FavoriteOriginal>,
     modifier: Modifier = Modifier,
+    onItemClick: (id: Int) -> Unit,
     removeFavoriteOriginal: (id: Int) -> Unit
 ) {
     LazyRow(
@@ -245,7 +249,10 @@ fun StoryItemFavoritesList(
             originals,
             key = { it.id.orZero() }
         ) { item ->
-            StoryItemFavorites(favoriteOriginal = item) {
+            StoryItemFavorites(
+                favoriteOriginal = item,
+                onClick = { onItemClick.invoke(item.id) }
+            ) {
                 removeFavoriteOriginal.invoke(item.id)
             }
         }
@@ -277,6 +284,7 @@ fun YellowStarBox(
 @Composable
 fun StoryItemFavorites(
     favoriteOriginal: FavoriteOriginal,
+    onClick: () -> Unit,
     removeFavoriteOriginal: () -> Unit
 ) {
     Column(
@@ -294,6 +302,7 @@ fun StoryItemFavorites(
                     dimensionResource(id = R.dimen.dp177)
                 )
                 .clip(MaterialTheme.localShapes.roundedDp18)
+                .clickable(onClick = onClick)
         )
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp13))
         Text(

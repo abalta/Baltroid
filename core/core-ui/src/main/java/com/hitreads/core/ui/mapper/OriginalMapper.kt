@@ -1,6 +1,7 @@
 package com.hitreads.core.ui.mapper
 
 import com.hitreads.core.domain.model.AllCommentsModel
+import com.hitreads.core.domain.model.AuthorModel
 import com.hitreads.core.domain.model.BookmarkModel
 import com.hitreads.core.domain.model.CommentModel
 import com.hitreads.core.domain.model.EpisodeModel
@@ -13,10 +14,12 @@ import com.hitreads.core.domain.model.IndexPackageModel
 import com.hitreads.core.domain.model.IndexTagModel
 import com.hitreads.core.domain.model.IndexUserDataModel
 import com.hitreads.core.domain.model.InteractiveBundleAssetModel
+import com.hitreads.core.domain.model.NetworkAuthorCommentModel
 import com.hitreads.core.domain.model.ShowEpisodeModel
 import com.hitreads.core.domain.model.ShowOriginalModel
 import com.hitreads.core.domain.model.TagsWithOriginalsModel
 import com.hitreads.core.domain.model.WelcomeModel
+import com.hitreads.core.model.Author
 import com.hitreads.core.model.Bookmark
 import com.hitreads.core.model.Comment
 import com.hitreads.core.model.Episode
@@ -234,6 +237,31 @@ fun FavoriteModel.asFavorite() = Favorite(
     price = price,
     priceType = priceType,
     sort = sort
+)
+
+fun NetworkAuthorCommentModel.asComment() = Comment(
+    id = id ?: -1,
+    imgUrl = author?.image.orEmpty(),
+    content = content.orEmpty(),
+    repliesCount = repliesCount ?: 0,
+    authorName = author?.authorName.orEmpty(),
+    hashtag = "",
+    createdAt = createdAt.orEmpty(),
+    isLiked = false,
+    isReply = isReply ?: false,
+    replies = emptyList(),
+    episode = "",
+    indexOriginal = null,
+    isExpanded = false
+
+)
+
+fun AuthorModel.asAuthor() = Author(
+    id = id,
+    authorName = authorName,
+    image = image,
+    comments = comments?.map { it.asComment() },
+    originals = originals?.map { it.asIndexOriginal() }
 )
 
 fun FavoriteOriginalModel.asFavoriteOriginal() = FavoriteOriginal(

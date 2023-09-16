@@ -2,6 +2,7 @@ package com.baltroid.ui.screens.menu.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.baltroid.apps.R
 import com.baltroid.core.common.result.handle
 import com.hitreads.core.domain.usecase.IsLoggedUseCase
 import com.hitreads.core.domain.usecase.LoginUseCase
@@ -56,7 +57,11 @@ class LoginViewModel @Inject constructor(
                 }
                 _uiStateIsLogged.update { true }
             }
-            onFailure(::handleFailure)
+            onFailure {
+                _uiState.update {
+                    it.copy(error = R.string.login_error)
+                }
+            }
         }
     }
 
@@ -75,7 +80,6 @@ class LoginViewModel @Inject constructor(
                     state.copy(loginUiModel = it.asLogin(), isLoading = false)
                 }
             }
-            onFailure(::handleFailure)
         }
     }
 
@@ -90,11 +94,7 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    private fun handleFailure(error: Throwable) = _uiState.update {
-        it.copy(
-            error = error,
-            isLoading = false
-        )
+    fun clearLoginError() {
+        _uiState.update { it.copy(error = null) }
     }
-
 }

@@ -83,4 +83,5 @@
     <string name="go_to_beginning">BAŞA DÖN</string>
     <string name="next_episode">SONRAKİ BÖLÜM</string>
     <string name="write_message">Bir mesaj yaz</string>
+    <string name="login_error">Kullanıcı adı ve/veya şifre yanlış.</string>
 </resources>

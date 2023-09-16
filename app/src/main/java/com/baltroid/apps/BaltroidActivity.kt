@@ -2,6 +2,7 @@ package com.baltroid.apps
 
 import android.os.Build
 import android.os.Bundle
+import android.view.WindowManager.LayoutParams
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
@@ -24,6 +25,7 @@ class BaltroidActivity : ComponentActivity() {
         installSplashScreen()
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
+        window.setFlags(LayoutParams.FLAG_SECURE, LayoutParams.FLAG_SECURE)
 
         setContent {
             val viewmodel: LoginViewModel = hiltViewModel()

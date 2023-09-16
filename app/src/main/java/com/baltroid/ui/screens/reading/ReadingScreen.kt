@@ -651,7 +651,9 @@ fun HitReadsPageHeader(
             iconResId = R.drawable.ic_bell,
             numberOfNotification = numberOfNotification,
             onMenuClick = onMenuClick,
-            onIconClick = onIconCLicked
+            onIconClick = onIconCLicked,
+            signInClick = {},
+            gemClick = {}
         )
     }
 }

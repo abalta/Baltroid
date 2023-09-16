@@ -149,6 +149,8 @@ private fun HomeDetailScreenContent(
                     onIconClick = {},
                     iconTint = MaterialTheme.localColors.white,
                     onNotificationClick = {},
+                    gemClick = {},
+                    signInClick = {},
                 )
                 VerticalSpacer(height = dimensionResource(id = R.dimen.dp18))
                 AsyncImage(
@@ -480,7 +482,6 @@ fun OriginalBarcode(
             .fillMaxSize()
             .clip(MaterialTheme.localShapes.roundedDp20)
             .background(MaterialTheme.localColors.white)
-            .verticalScroll(rememberScrollState())
     ) {
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp43))
         SimpleImage(
@@ -526,7 +527,8 @@ fun OriginalBarcode(
             Text(
                 text = stringResource(id = R.string.summary),
                 style = MaterialTheme.localTextStyles.poppins20ExtraBold,
-                color = MaterialTheme.localColors.black
+                color = MaterialTheme.localColors.black,
+                modifier = Modifier.verticalScroll(rememberScrollState())
             )
             VerticalSpacer(height = dimensionResource(id = R.dimen.dp3))
             Text(
