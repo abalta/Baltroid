@@ -9,8 +9,11 @@ data class Mall(
     val location: Pair<Double, Double>,
     val name: String,
     val phone: String,
-    val services: List<Int>,
+    val services: MutableMap<Int, Service>,
     val web: String,
     val logo: String,
-    val photos: List<String>
+    val photos: List<String>,
+    val rating: String,
+    val reviews: String,
+    val district: String
 )

@@ -2,4 +2,11 @@
 <resources>
     <string name="banner_title_no_mall">AVM Bulunamadı!</string>
     <string name="banner_body_no_mall">Bu şehir için alışveriş merkezi eklemek istiyorsanız,\nlütfen tıklayınız.</string>
+    <string name="floor">Katlı</string>
+    <string name="service">Hizmet</string>
+    <string name="shop">Mağaza</string>
+    <string name="semi">Yarı</string>
+    <string name="open">Açık</string>
+    <string name="comment">(%s)</string>
+    <string name="services">Hizmetler</string>
 </resources>

@@ -1,25 +1,43 @@
 package com.baltroid.apps.ui.main
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Layers
-import androidx.compose.material3.Icon
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
 import coil.compose.rememberAsyncImagePainter
-import com.baltroid.designsystem.component.Body
+import com.baltroid.core.designsystem.R
+import com.baltroid.designsystem.component.CardMedium
 import com.baltroid.designsystem.component.H3Title
+import com.baltroid.designsystem.component.MallFeature
 import com.baltroid.designsystem.component.MallPhoto
+import com.baltroid.designsystem.component.ServiceCard
+import com.baltroid.designsystem.component.Subhead
 import com.google.firebase.storage.FirebaseStorage
 
 @Composable
@@ -37,22 +55,80 @@ internal fun MallDetailScreen(
     imageLoader: ImageLoader,
     fireStorage: FirebaseStorage
 ) {
-        if (mallState.mall != null) {
+    when(mallState) {
+        is MallDetailUiState.Success -> {
             val mall = mallState.mall
+            val pageCount = mall.photos.size
             val pagerState = rememberPagerState(pageCount = {
-                mall.photos.size
+                pageCount
             })
             Column {
-                HorizontalPager(state = pagerState) {page ->
-                    MallPhoto(painter = rememberAsyncImagePainter(
-                        model = fireStorage.getReferenceFromUrl(mall.photos[page]),
-                        imageLoader = imageLoader,
-                        placeholder = painterResource(id = com.baltroid.core.designsystem.R.drawable.bg_banner)
+                Box {
+                    HorizontalPager(state = pagerState) {page ->
+                        MallPhoto(painter = rememberAsyncImagePainter(
+                            model = fireStorage.getReferenceFromUrl(mall.photos[page]),
+                            imageLoader = imageLoader,
+                            placeholder = painterResource(id = R.drawable.bg_banner)
+                        ))
+                    }
+                    Row(
+                        Modifier
+                            .padding(20.dp)
+                            .height(5.dp)
+                            .align(Alignment.BottomEnd),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        repeat(pageCount) { iteration ->
+                            val color = if (pagerState.currentPage == iteration) Color.White else Color(0x4DFFFFFF)
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .width(8.dp)
+                                    .clip(RoundedCornerShape(4.dp))
+                                    .background(color)
+
+                            )
+                        }
+                    }
+                }
+                H3Title(text = mall.name, Modifier.padding(top = 24.dp, start = 20.dp, end = 20.dp))
+                Row(Modifier.padding(top = 14.dp, start = 20.dp, end = 20.dp), horizontalArrangement = Arrangement.spacedBy(24.dp)) {
+                    if(mall.floors.size == 1) {
+                        MallFeature(featureCount = stringResource(
+                            id = R.string.semi
+                        ), featureIcon = R.drawable.icon_flat, featureName = stringResource(
+                            id = R.string.open
+                        ))
+                    } else {
+                        MallFeature(featureCount = mall.floors.size.toString(), featureIcon = R.drawable.icon_floors, featureName = stringResource(
+                            id = R.string.floor
+                        ))
+                    }
+
+                    MallFeature(featureCount = mall.services.size.toString(), featureIcon = R.drawable.icon_services, featureName = stringResource(
+                        id = R.string.service
+                    ))
+                    MallFeature(featureCount = mall.services.size.toString(), featureIcon = R.drawable.icon_shops, featureName = stringResource(
+                        id = R.string.shop
                     ))
                 }
-                H3Title(text = mall.id, Modifier.padding(top = 24.dp, start = 20.dp, end = 20.dp))
-                Icon(Icons.Rounded.Layers, contentDescription = "Floor")
-                Body(text = "${mall.phone} • ${mall.web}", Modifier.padding(top = 14.dp, start = 20.dp, end = 20.dp))
+                Subhead(text = stringResource(id = R.string.services), Modifier.padding(top = 34.dp, start = 20.dp, end = 20.dp))
+                Spacer(modifier = Modifier.height(18.dp))
+                LazyRow(
+                    contentPadding = PaddingValues(horizontal = 20.dp),
+                    horizontalArrangement = Arrangement.spacedBy(14.dp)
+                ) {
+                    items(items = mall.services.map {
+                                                    it.value
+                    } , itemContent = { service ->
+                        ServiceCard(serviceName = service.name, serviceIcon = service.icon)
+                    })
+                }
             }
+        }
+        is MallDetailUiState.Loading -> {
+
+        }
     }
+
 }

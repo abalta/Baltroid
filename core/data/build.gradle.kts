@@ -11,6 +11,7 @@ dependencies {
     implementation(project(":core:firestore"))
     implementation(project(":core:model"))
     implementation(project(":core:common"))
+    implementation(project(":core:designsystem"))
 
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.firestore)

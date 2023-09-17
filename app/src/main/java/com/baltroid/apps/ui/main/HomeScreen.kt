@@ -55,8 +55,7 @@ internal fun HomeScreen(
                         ) {
                             items(items = city.malls, itemContent = { mall ->
                                 CardMedium(
-                                    avmId = mall.id,
-                                    avmName = mall.name,
+                                    mall,
                                     painter = rememberAsyncImagePainter(
                                         model = viewModel.fireStorage.getReferenceFromUrl(mall.logo),
                                         imageLoader = viewModel.imageLoader,

@@ -12,5 +12,5 @@ fun MQIcon(
     modifier: Modifier = Modifier,
     tint: Color = Color.Unspecified
 ) {
-    Icon(painter = painterResource(id = resourceId), contentDescription = "MQIcon")
+    Icon(painter = painterResource(id = resourceId), contentDescription = "MQIcon", modifier = modifier, tint = tint)
 }
