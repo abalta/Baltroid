@@ -15,6 +15,7 @@ import com.baltroid.core.network.model.originals.NetworkCreateCommentResponse
 import com.baltroid.core.network.model.originals.ShowOriginalDto
 import com.baltroid.core.network.model.response.AllCommentsDto
 import com.baltroid.core.network.model.response.AuthorDto
+import com.baltroid.core.network.model.response.AvatarDto
 import com.baltroid.core.network.model.response.BookmarkDto
 import com.baltroid.core.network.model.response.CommentDto
 import com.baltroid.core.network.model.response.FavoriteDto
@@ -24,6 +25,7 @@ import com.baltroid.core.network.model.response.WelcomeDto
 import com.baltroid.core.network.model.user.IndexUserData
 import com.hitreads.core.domain.model.AllCommentsModel
 import com.hitreads.core.domain.model.AuthorModel
+import com.hitreads.core.domain.model.AvatarModel
 import com.hitreads.core.domain.model.BookmarkModel
 import com.hitreads.core.domain.model.CommentModel
 import com.hitreads.core.domain.model.EpisodeModel
@@ -320,6 +322,15 @@ internal fun FavoriteOriginalDto.asFavoriteOriginalModel() = FavoriteOriginalMod
     isNew = isNew,
     viewCount = viewCount,
     barcode = barcode
+)
+
+internal fun AvatarDto.asAvatarModel() = AvatarModel(
+    id = id,
+    name = name,
+    url = url,
+    price = price,
+    unit = unit,
+    status = status
 )
 
 internal fun TagWithOriginalsDto.asTagsWithOriginalsModel() =

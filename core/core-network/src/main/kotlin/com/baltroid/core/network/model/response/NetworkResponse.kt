@@ -269,3 +269,19 @@ data class FavoriteOriginalDto(
     @SerialName("barcode")
     val barcode: String?
 )
+
+@Serializable
+data class AvatarDto(
+    @SerialName("id")
+    val id: Int?,
+    @SerialName("name")
+    val name: String?,
+    @SerialName("url")
+    val url: String?,
+    @SerialName("price")
+    val price: String?,
+    @SerialName("unit")
+    val unit: String?,
+    @SerialName("status")
+    val status: Boolean?
+)

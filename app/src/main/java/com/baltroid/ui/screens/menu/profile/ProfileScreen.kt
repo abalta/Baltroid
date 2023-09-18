@@ -28,7 +28,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.baltroid.apps.R
@@ -37,6 +36,7 @@ import com.baltroid.ui.common.SetLoadingState
 import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.VerticalSpacer
 import com.baltroid.ui.components.IconlessMenuBar
+import com.baltroid.ui.navigation.HitReadsScreens
 import com.baltroid.ui.screens.menu.login.IconBetweenDividers
 import com.baltroid.ui.screens.menu.login.TextBetweenDividers
 import com.baltroid.ui.screens.viewmodels.AuthenticationViewModel
@@ -48,18 +48,24 @@ import com.hitreads.core.model.Profile
 
 @Composable
 fun ProfileScreen(
-    viewModel: AuthenticationViewModel = hiltViewModel(),
-    onBackClick: () -> Unit
+    viewModel: AuthenticationViewModel,
+    onBackClick: () -> Unit,
+    navigate: (route: String) -> Unit
 ) {
     val profileState by viewModel.profileState.collectAsStateWithLifecycle()
     SetLoadingState(isLoading = profileState.isLoading)
-    ProfileScreenContent(profile = profileState.profile, onBackClick = onBackClick)
+    ProfileScreenContent(
+        profile = profileState.profile,
+        onBackClick = onBackClick,
+        navigate = navigate
+    )
 }
 
 @Composable
 fun ProfileScreenContent(
     profile: Profile?,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    navigate: (route: String) -> Unit
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -87,7 +93,10 @@ fun ProfileScreenContent(
                 IconsAndProfileImage(
                     diamondValue = profile?.gem.orZero(),
                     imgUrl = profile?.imgUrl.orEmpty(),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    onCameraClick = {
+                        navigate.invoke(HitReadsScreens.AvatarsScreen.route)
+                    }
                 )
                 VerticalSpacer(height = dimensionResource(id = R.dimen.dp40))
                 ProfileItem(title = profile?.name.orEmpty())
@@ -184,6 +193,7 @@ fun ProfileItem(
 fun IconsAndProfileImage(
     diamondValue: Int,
     imgUrl: String,
+    onCameraClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -203,7 +213,10 @@ fun IconsAndProfileImage(
                 .size(dimensionResource(id = R.dimen.dp111))
                 .clip(MaterialTheme.localShapes.circleShape)
         )
-        RoundedIconCard(iconResId = R.drawable.ic_camera)
+        RoundedIconCard(
+            iconResId = R.drawable.ic_camera,
+            modifier = Modifier.clickable(onClick = onCameraClick)
+        )
     }
 }
 
@@ -270,9 +283,11 @@ fun ProfileScreenPreview() {
             is_beta = false,
             gem = 4820,
             imgUrl = "https://duckduckgo.com/?q=sed"
-        )
-    ) {
+        ),
+        navigate = {
 
-    }
+        },
+        onBackClick = {}
+    )
 }
 

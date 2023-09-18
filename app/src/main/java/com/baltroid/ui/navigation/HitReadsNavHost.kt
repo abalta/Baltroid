@@ -26,6 +26,7 @@ import com.baltroid.ui.screens.menu.favorites.FavoritesScreen
 import com.baltroid.ui.screens.menu.login.LoginScreen
 import com.baltroid.ui.screens.menu.login.LoginViewModel
 import com.baltroid.ui.screens.menu.place_marks.PlaceMarksScreen
+import com.baltroid.ui.screens.menu.profile.AvatarsScreen
 import com.baltroid.ui.screens.menu.profile.ProfileScreen
 import com.baltroid.ui.screens.menu.register.RegisterScreen
 import com.baltroid.ui.screens.menu.settings.SettingsScreen
@@ -35,6 +36,7 @@ import com.baltroid.ui.screens.onboarding.OnboardingScreen
 import com.baltroid.ui.screens.onboarding.OnboardingViewModel
 import com.baltroid.ui.screens.playground.PlaygroundScreen
 import com.baltroid.ui.screens.reading.ReadingScreen
+import com.baltroid.ui.screens.viewmodels.AuthenticationViewModel
 import com.baltroid.ui.screens.viewmodels.OriginalViewModel
 import com.baltroid.ui.theme.LocalLoadingState
 import com.baltroid.ui.theme.localColors
@@ -55,6 +57,7 @@ fun HitReadsNavHost(
 
     val loginViewModel: LoginViewModel = hiltViewModel()
     val originalViewModel: OriginalViewModel = hiltViewModel()
+    val authenticationViewModel: AuthenticationViewModel = hiltViewModel()
 
     Box {
         AnimatedNavHost(
@@ -104,8 +107,19 @@ fun HitReadsNavHost(
             }
             composable(route = HitReadsScreens.ProfileScreen.route) {
                 ProfileScreen(
-                    onBackClick = { navController.popBackStack() }
+                    viewModel = authenticationViewModel,
+                    onBackClick = { navController.popBackStack() },
+                    navigate = {
+                        navController.navigate(it)
+                    }
                 )
+            }
+            composable(route = HitReadsScreens.AvatarsScreen.route) {
+                AvatarsScreen(
+                    viewModel = authenticationViewModel
+                ) {
+                    navController.popBackStack()
+                }
             }
             composable(
                 route = HitReadsScreens.AuthorScreen.route + "/{authorId}",

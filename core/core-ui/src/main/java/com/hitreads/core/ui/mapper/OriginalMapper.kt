@@ -2,6 +2,7 @@ package com.hitreads.core.ui.mapper
 
 import com.hitreads.core.domain.model.AllCommentsModel
 import com.hitreads.core.domain.model.AuthorModel
+import com.hitreads.core.domain.model.AvatarModel
 import com.hitreads.core.domain.model.BookmarkModel
 import com.hitreads.core.domain.model.CommentModel
 import com.hitreads.core.domain.model.EpisodeModel
@@ -20,6 +21,7 @@ import com.hitreads.core.domain.model.ShowOriginalModel
 import com.hitreads.core.domain.model.TagsWithOriginalsModel
 import com.hitreads.core.domain.model.WelcomeModel
 import com.hitreads.core.model.Author
+import com.hitreads.core.model.Avatar
 import com.hitreads.core.model.Bookmark
 import com.hitreads.core.model.Comment
 import com.hitreads.core.model.Episode
@@ -283,4 +285,13 @@ fun FavoriteOriginalModel.asFavoriteOriginal() = FavoriteOriginal(
     isNew = isNew ?: false,
     viewCount = viewCount ?: 0,
     barcode = barcode.orEmpty()
+)
+
+fun AvatarModel.asAvatar() = Avatar(
+    id = id ?: -1,
+    name = name.orEmpty(),
+    url = url.orEmpty(),
+    price = price.orEmpty(),
+    unit = unit.orEmpty(),
+    status = status ?: false
 )

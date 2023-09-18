@@ -23,7 +23,8 @@ data class Shapes(
     val roundedDp18: RoundedCornerShape = RoundedCornerShape(18.dp),
     val roundedDp20: RoundedCornerShape = RoundedCornerShape(20.dp),
     val roundedDp24: RoundedCornerShape = RoundedCornerShape(24.dp),
-    val roundedDp30: RoundedCornerShape = RoundedCornerShape(30.dp)
+    val roundedDp30: RoundedCornerShape = RoundedCornerShape(30.dp),
+    val roundedDp45: RoundedCornerShape = RoundedCornerShape(45.dp)
 )
 
 val LocalShapes = staticCompositionLocalOf { Shapes() }

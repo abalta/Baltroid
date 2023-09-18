@@ -7,8 +7,10 @@ import com.baltroid.apps.R
 import com.baltroid.core.common.result.handle
 import com.baltroid.ui.screens.menu.profile.ProfileUIState
 import com.baltroid.ui.screens.menu.register.RegisterScreenUIState
+import com.hitreads.core.domain.usecase.GetAvatarsUseCase
 import com.hitreads.core.domain.usecase.ProfileUseCase
 import com.hitreads.core.domain.usecase.RegisterUseCase
+import com.hitreads.core.ui.mapper.asAvatar
 import com.hitreads.core.ui.mapper.asProfile
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +22,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthenticationViewModel @Inject constructor(
     private val profileUseCase: ProfileUseCase,
-    private val registerUseCase: RegisterUseCase
+    private val registerUseCase: RegisterUseCase,
+    private val getAvatarsUseCase: GetAvatarsUseCase
 ) : ViewModel() {
 
     private val _profileState = MutableStateFlow(ProfileUIState())
@@ -33,7 +36,7 @@ class AuthenticationViewModel @Inject constructor(
         getProfile()
     }
 
-    fun getProfile() = viewModelScope.launch {
+    private fun getProfile() = viewModelScope.launch {
         profileUseCase().handle {
             onSuccess { profileModel ->
                 onLoading {
@@ -44,6 +47,21 @@ class AuthenticationViewModel @Inject constructor(
                 }
                 onFailure {
                     _profileState.update { it.copy(isLoading = false) }
+                }
+            }
+        }
+    }
+
+    fun loadAvatars() = viewModelScope.launch {
+        getAvatarsUseCase().handle {
+            onLoading {
+                _profileState.update {
+                    it.copy(isLoading = true)
+                }
+            }
+            onSuccess { avatarModels ->
+                _profileState.update {
+                    it.copy(isLoading = false, avatars = avatarModels.map { it.asAvatar() })
                 }
             }
         }
