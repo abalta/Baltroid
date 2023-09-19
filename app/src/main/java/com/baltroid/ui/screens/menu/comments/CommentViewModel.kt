@@ -74,6 +74,14 @@ class CommentViewModel @Inject constructor(
         }
     }
 
+    fun hideComment(id: Int) {
+        _uiState.update {
+            it.copy(commentList = it.commentList.map {
+                if (it.id == id) it.copy(isExpanded = false) else it
+            })
+        }
+    }
+
     fun createComment(id: Int, content: String, responseId: Int?) = viewModelScope.launch {
         createCommentUseCase(
             type = ORIGINAL,

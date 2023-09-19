@@ -78,6 +78,7 @@
     <string name="summary">ÖZET</string>
     <string name="see_all">Tüm Cevapları Göster</string>
     <string name="see_all_size">Tüm Cevapları Göster (%1$d)</string>
+    <string name="hide_all_size">Tüm Cevapları Gizle (%1$d)</string>
     <string name="add_favorite">FAVORİLERE EKLE</string>
     <string name="share">PAYLAŞ</string>
     <string name="go_to_beginning">BAŞA DÖN</string>
@@ -86,4 +87,14 @@
     <string name="login_error">Kullanıcı adı ve/veya şifre yanlış.</string>
     <string name="pick">SEÇ</string>
     <string name="pick_avatar">AVATAR ŞEÇİMİ</string>
+    <string name="username">KULLANICI ADI</string>
+    <string name="birthdate">DOĞUM TARİHİ</string>
+    <string name="ok">Tamam</string>
+    <string name="cancel">İptal</string>
+    <string name="day">GÜN</string>
+    <string name="month">AY</string>
+    <string name="year">YIL</string>
+    <string name="delete_favorite">FAVORİLERDEN ÇIKAR</string>
+    <string name="end">SON</string>
+    <string name="hide_all">Tüm Cevapları Gizle</string>
 </resources>

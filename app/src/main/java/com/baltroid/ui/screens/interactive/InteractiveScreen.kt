@@ -118,6 +118,7 @@ fun InteractiveScreen(
         expanseComment = viewModel::expanseComment,
         replyComment = viewModel::replyComment,
         createComment = viewModel::createComment,
+        hideComment = viewModel::hideComment,
         likeComment = { isLiked, id, tabState ->
             if (isLiked) viewModel.unlikeComment(id, tabState)
             else viewModel.likeComment(id, tabState)
@@ -138,6 +139,7 @@ fun InteractiveScreenContent(
     createComment: (String, Int?) -> Unit,
     onEpisodeChange: (episodeId: Int) -> Unit,
     expanseComment: (Int, CommentsTabState) -> Unit,
+    hideComment: (Int, CommentsTabState) -> Unit,
 ) {
 
     val interactiveContent = readingUiState.episode?.xmlContents?.episode?.dialogue
@@ -426,6 +428,7 @@ fun InteractiveScreenContent(
                 createComment = true
                 isWriteCardShown = true
             },
+            hideComment = hideComment,
             selectedCommentTab = selectedCommentTab
         )
         AnimatedVisibility(visible = isWriteCardShown, enter = fadeIn(), exit = fadeOut()) {
@@ -1173,6 +1176,7 @@ fun InteractiveCommentsSection(
     selectedCommentTab: CommentsTabState,
     setSelectedCommentTab: (CommentsTabState) -> Unit,
     expanseComment: (Int, CommentsTabState) -> Unit,
+    hideComment: (Int, CommentsTabState) -> Unit,
     setReplyComment: (Comment) -> Unit,
     likeComment: (Boolean, Int, CommentsTabState) -> Unit,
     onBackClick: () -> Unit,
@@ -1206,9 +1210,8 @@ fun InteractiveCommentsSection(
                     setReplyComment.invoke(it)
                     showWriteCard.invoke()
                 },
-                onExpanseClicked = {
-                    expanseComment.invoke(it, selectedCommentTab)
-                },
+                onHideClicked = { hideComment.invoke(it, selectedCommentTab) },
+                onExpanseClicked = { expanseComment.invoke(it, selectedCommentTab) },
                 modifier = Modifier.padding(start = dimensionResource(id = R.dimen.dp30))
             )
         }

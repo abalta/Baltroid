@@ -160,6 +160,7 @@ interface HitReadsService {
     @GET(AVATAR)
     suspend fun getAvatars(): BaltroidResult<HitReadsResponse<List<AvatarDto>>>
 
+
     /*@GET(ORIGINALS_INDEX)
     suspend fun getOriginals(
         @Query(PAGE) page: Int = DEFAULT_PAGE,

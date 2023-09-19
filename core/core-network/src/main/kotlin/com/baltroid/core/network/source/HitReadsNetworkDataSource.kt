@@ -48,25 +48,23 @@ class HitReadsNetworkDataSource @Inject constructor(
 
     suspend fun register(
         name: String,
+        username: String,
         email: String,
         password: String,
         userAgreement: Boolean,
-        privacyPolicy: Boolean,
+        cookiePolicy: Boolean,
+        birthdate: String,
     ): BaltroidResult<HitReadsResponse<Unit>> = hitReadsService.register(
         RegisterRequestBody(
             name = name,
             email = email,
             password = password,
-            passwordConfirmation = password,
-            accountType = "user",
-            karma = "1",
             device = "1",
             identifier = "1",
-            user_agreement = userAgreement,
-            privacy_policy = privacyPolicy,
-            clarificationText = true,
-            acceptReceiveMarketingMail = true,
-            birthDate = "1993-01-01"
+            username = username,
+            userAgreement = userAgreement,
+            cookiePolicy = cookiePolicy,
+            birthDate = birthdate
         )
     )
 

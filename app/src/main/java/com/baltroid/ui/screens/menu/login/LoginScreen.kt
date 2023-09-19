@@ -36,6 +36,7 @@ import com.baltroid.apps.R
 import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.SimpleImage
 import com.baltroid.ui.common.VerticalSpacer
+import com.baltroid.ui.components.IconlessMenuBar
 import com.baltroid.ui.navigation.HitReadsScreens
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localShapes
@@ -45,21 +46,22 @@ import com.baltroid.ui.theme.localTextStyles
 fun LoginScreen(
     viewModel: LoginViewModel,
     navigate: (String) -> Unit,
-    onLoggedIn: () -> Unit
+    navigateBack: () -> Unit
 ) {
     val loginState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
     LaunchedEffect(loginState.loginUiModel) {
         if (loginState.loginUiModel != null) {
-            onLoggedIn.invoke()
+            navigateBack.invoke()
         }
     }
 
     LoginScreenContent(
         loginViewModel = viewModel,
         forgotPassword = {},
-        navigate = navigate
+        navigate = navigate,
+        navigateBack = navigateBack
     )
 
     LaunchedEffect(loginState.error) {
@@ -74,7 +76,8 @@ fun LoginScreen(
 fun LoginScreenContent(
     loginViewModel: LoginViewModel,
     forgotPassword: () -> Unit,
-    navigate: (String) -> Unit
+    navigate: (String) -> Unit,
+    navigateBack: () -> Unit
 ) {
     val loginData = loginViewModel.uiStateLoginFields.collectAsStateWithLifecycle().value
     Column(
@@ -85,12 +88,9 @@ fun LoginScreenContent(
             .systemBarsPadding()
     ) {
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp36))
-        Text(
-            text = stringResource(id = R.string.member_login),
-            style = MaterialTheme.localTextStyles.spaceGrotesk24Medium,
-            color = MaterialTheme.localColors.white_alpha09
-        )
-        VerticalSpacer(height = dimensionResource(id = R.dimen.dp20))
+        IconlessMenuBar(title = stringResource(id = R.string.member_login)) {
+            navigateBack.invoke()
+        }
         Divider(
             color = MaterialTheme.localColors.white_alpha06,
             thickness = dimensionResource(id = R.dimen.dp1),

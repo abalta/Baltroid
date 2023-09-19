@@ -19,6 +19,15 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+private const val NAME = "name"
+private const val USERNAME = "username"
+private const val EMAIL = "email"
+private const val BIRTHDATE = "birthdate"
+private const val PASSWORD = "password"
+private const val COOKIE_POLICY = "cookiePolicy"
+private const val USER_AGREEMENT = "userAgreement"
+//private const val PASSWORD_CONFIRM = "passwordConfirm"
+
 @HiltViewModel
 class AuthenticationViewModel @Inject constructor(
     private val profileUseCase: ProfileUseCase,
@@ -71,17 +80,27 @@ class AuthenticationViewModel @Inject constructor(
         _uiStateRegister.update { it.copy(name = it.name.copy(fieldValue = value)) }
     }
 
+    fun updateBirthDateField(value: String) {
+        _uiStateRegister.update { it.copy(birthdate = it.birthdate.copy(fieldValue = value)) }
+    }
+
+    fun updateUsernameField(value: String) {
+        _uiStateRegister.update { it.copy(username = it.username.copy(fieldValue = value)) }
+    }
+
     fun updateEmailField(value: String) {
         _uiStateRegister.update { it.copy(email = it.email.copy(fieldValue = value)) }
     }
 
     fun updatePasswordField(value: String) {
-        _uiStateRegister.update { it.copy(password = it.password.copy(fieldValue = value)) }
+        if (value.length <= 8) {
+            _uiStateRegister.update { it.copy(password = it.password.copy(fieldValue = value)) }
+        }
     }
 
-    fun updatePasswordConfirmField(value: String) {
-        _uiStateRegister.update { it.copy(passwordConfirm = it.passwordConfirm.copy(fieldValue = value)) }
-    }
+    /* fun updatePasswordConfirmField(value: String) {
+         _uiStateRegister.update { it.copy(passwordConfirm = it.passwordConfirm.copy(fieldValue = value)) }
+     }*/
 
     fun clearSuccess() {
         _uiStateRegister.update { it.copy(isSuccess = false) }
@@ -90,7 +109,7 @@ class AuthenticationViewModel @Inject constructor(
     fun updatePrivacyPolicy(isChecked: Boolean) {
         _uiStateRegister.update {
             it.copy(
-                isPrivacyPolicyChecked = it.isPrivacyPolicyChecked.copy(
+                userAgreement = it.userAgreement.copy(
                     isChecked = isChecked
                 )
             )
@@ -100,7 +119,7 @@ class AuthenticationViewModel @Inject constructor(
     fun updateCookiePolicy(isChecked: Boolean) {
         _uiStateRegister.update {
             it.copy(
-                isCookiePolicyChecked = it.isCookiePolicyChecked.copy(
+                cookiePolicy = it.cookiePolicy.copy(
                     isChecked = isChecked
                 )
             )
@@ -112,11 +131,13 @@ class AuthenticationViewModel @Inject constructor(
             if (inputsAreValid()) {
                 val fields = _uiStateRegister.value
                 registerUseCase.invoke(
-                    fields.name.fieldValue,
-                    fields.email.fieldValue,
-                    fields.password.fieldValue,
-                    privacyPolicy = fields.isPrivacyPolicyChecked.isChecked,
-                    userAgreement = fields.isCookiePolicyChecked.isChecked,
+                    name = fields.name.fieldValue,
+                    username = fields.username.fieldValue,
+                    password = fields.password.fieldValue,
+                    email = fields.email.fieldValue,
+                    cookiePolicy = fields.cookiePolicy.isChecked,
+                    userAgreement = fields.userAgreement.isChecked,
+                    birthdate = fields.birthdate.fieldValue
                 ).handle {
                     onSuccess {
                         _uiStateRegister.update { it.copy(isSuccess = true) }
@@ -137,29 +158,38 @@ class AuthenticationViewModel @Inject constructor(
         val isNameFieldValid = name.fieldValue.isNotEmpty().also { isValid ->
             updateFieldError(NAME, isValid, R.string.no_empty_field)
         }
+        val isUsernameFieldValid = username.fieldValue.isNotEmpty().also { isValid ->
+            updateFieldError(USERNAME, isValid, R.string.no_empty_field)
+        }
         val isEmailValid = email.fieldValue.isValidEmail().also { isValid ->
             updateFieldError(EMAIL, isValid, R.string.invalid_email)
         }
         val isPasswordValid = password.fieldValue.isPasswordValid().also { isValid ->
             updateFieldError(PASSWORD, isValid, R.string.invalid_password)
         }
-        val isPasswordConfirmValid =
+        /*val isPasswordConfirmValid =
             (password.fieldValue == passwordConfirm.fieldValue).also { isValid ->
                 updateFieldError(PASSWORD_CONFIRM, isValid, R.string.invalid_confirm_password)
-            }
+            }*/
 
-        val isPrivacyPolicyValid = isPrivacyPolicyChecked.isChecked.also { isValid ->
-            updateFieldError(PRIVACY_POLICY, isValid, R.string.privacy_policy_error)
+        val isUserAgreementValid = userAgreement.isChecked.also { isValid ->
+            updateFieldError(USER_AGREEMENT, isValid, R.string.privacy_policy_error)
         }
-        val isCookiePolicyValid = isCookiePolicyChecked.isChecked.also { isValid ->
+        val isCookiePolicyValid = cookiePolicy.isChecked.also { isValid ->
             updateFieldError(COOKIE_POLICY, isValid, R.string.cookie_policy_error)
+        }
+        val isBirthdateValid = birthdate.fieldValue.isNotEmpty().also { isValid ->
+            updateFieldError(BIRTHDATE, isValid, R.string.no_empty_field)
         }
 
         return@with listOf(
             isNameFieldValid,
+            isUsernameFieldValid,
             isEmailValid,
+            isBirthdateValid,
             isPasswordValid,
-            isPasswordConfirmValid,
+            isUserAgreementValid,
+            isCookiePolicyValid,
         ).any { isValid ->
             isValid.not()
         }.not()
@@ -170,21 +200,22 @@ class AuthenticationViewModel @Inject constructor(
         _uiStateRegister.update {
             when (field) {
                 NAME -> it.copy(name = it.name.copy(errorMsg = errorMsg))
+                USERNAME -> it.copy(name = it.username.copy(errorMsg = errorMsg))
                 EMAIL -> it.copy(email = it.email.copy(errorMsg = errorMsg))
                 PASSWORD -> it.copy(password = it.password.copy(errorMsg = errorMsg))
-                PASSWORD_CONFIRM -> it.copy(passwordConfirm = it.passwordConfirm.copy(errorMsg = errorMsg))
-                PRIVACY_POLICY -> it.copy(
-                    isPrivacyPolicyChecked = it.isPrivacyPolicyChecked.copy(
+                BIRTHDATE -> it.copy(birthdate = it.birthdate.copy(errorMsg = errorMsg))
+                USER_AGREEMENT -> it.copy(
+                    userAgreement = it.userAgreement.copy(
                         errorMsg = errorMsg
                     )
                 )
 
                 COOKIE_POLICY -> it.copy(
-                    isCookiePolicyChecked = it.isCookiePolicyChecked.copy(
+                    cookiePolicy = it.cookiePolicy.copy(
                         errorMsg = errorMsg
                     )
                 )
-
+                //PASSWORD_CONFIRM -> it.copy(passwordConfirm = it.passwordConfirm.copy(errorMsg = errorMsg))
                 else -> it
             }
         }
@@ -201,10 +232,3 @@ class AuthenticationViewModel @Inject constructor(
     private fun CharSequence?.isValidEmail() =
         !isNullOrEmpty() && Patterns.EMAIL_ADDRESS.matcher(this).matches()
 }
-
-private const val NAME = "name"
-private const val EMAIL = "email"
-private const val PASSWORD = "password"
-private const val PASSWORD_CONFIRM = "passwordConfirm"
-private const val PRIVACY_POLICY = "privacyPolicy"
-private const val COOKIE_POLICY = "cookiePolicy"

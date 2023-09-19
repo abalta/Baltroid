@@ -1,6 +1,5 @@
 package com.baltroid.ui.screens.menu.author
 
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,7 +18,6 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -78,7 +76,6 @@ fun AuthorScreen(
 
     AuthorScreenContent(
         state = state,
-        scrollState = rememberScrollState(),
         onBackClick = onBackClick,
         navigate = navigate
     )
@@ -87,7 +84,6 @@ fun AuthorScreen(
 @Composable
 fun AuthorScreenContent(
     state: AuthorScreenUiState,
-    scrollState: ScrollState,
     navigate: (String, Int?) -> Unit,
     onBackClick: () -> Unit,
 ) {
@@ -150,6 +146,8 @@ fun AuthorScreenContent(
                             replySize = comment.repliesCount,
                             isChatSelected = false,
                             isSeeAllEnabled = false,
+                            hideAllEnabled = false,
+                            onHideClicked = {/* no-op */ },
                             onExpanseClicked = { /* no-op */
                             },
                             onLikeClick = { isLiked, id ->

@@ -147,10 +147,11 @@ fun HitReadsNavHost(
             composable(route = HitReadsScreens.LoginScreen.route) {
                 LoginScreen(
                     loginViewModel,
-                    navigate = { navController.navigate(it) }
-                ) {
-                    navController.popBackStack()
-                }
+                    navigate = { navController.navigate(it) },
+                    navigateBack = {
+                        navController.popBackStack()
+                    }
+                )
             }
             composable(route = HitReadsScreens.RegisterScreen.route) {
                 RegisterScreen(

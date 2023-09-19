@@ -125,9 +125,13 @@ fun ReadingScreen(
         },
         goToFirstEpisode = viewModel::setSelectedEpisodeId,
         expanseComment = viewModel::expanseComment,
+        onHideComment = viewModel::hideComment,
         setReplyComment = viewModel::setReplyComment,
         replyComment = viewModel::replyComment,
-        onCreateFavorite = { viewModel.createFavorite() },
+        onCreateFavorite = { isFavorite ->
+            if (isFavorite) viewModel.deleteFavorite()
+            else viewModel.createFavorite()
+        },
         navigate = navigate,
         likeComment = { isLiked, id, tabState ->
             if (isLiked) viewModel.unlikeComment(id, tabState)
@@ -148,9 +152,10 @@ fun ReadingScreenContent(
     navigate: (String) -> Unit,
     onEpisodeChange: (Int) -> Unit,
     onLikeClick: (Boolean) -> Unit,
-    onCreateFavorite: () -> Unit,
+    onCreateFavorite: (Boolean) -> Unit,
     likeComment: (Boolean, Int, CommentsTabState) -> Unit,
     expanseComment: (Int, CommentsTabState) -> Unit,
+    onHideComment: (Int, CommentsTabState) -> Unit,
     goToFirstEpisode: (id: Int) -> Unit,
 ) {
     val scrollState = rememberScrollState()
@@ -187,7 +192,7 @@ fun ReadingScreenContent(
         Column(
             Modifier
                 .navigationBarsPadding()
-                .conditional(isReadingSection) {
+                .conditional(isReadingSection && !isSideEpisodesSheetVisible) {
                     verticalScroll(scrollState)
                 }
         ) {
@@ -237,6 +242,7 @@ fun ReadingScreenContent(
                                         original?.episodes?.firstOrNull()?.id ?: -1
                                     )
                                 },
+                                isFavorite = original?.indexUserData?.isFav == true,
                                 onNextClicked = onNextClicked
                             )
                         } else {
@@ -261,6 +267,9 @@ fun ReadingScreenContent(
                                 },
                                 onExpanseClicked = {
                                     expanseComment.invoke(it, selectedCommentTab)
+                                },
+                                onHideClicked = {
+                                    onHideComment.invoke(it, selectedCommentTab)
                                 },
                                 modifier = Modifier.padding(start = dimensionResource(id = R.dimen.dp30))
                             )
@@ -388,9 +397,10 @@ fun SideEpisodesSheet(
 @Composable
 fun ReadingSection(
     body: String,
+    isFavorite: Boolean,
     isLastEpisode: Boolean,
     onNextClicked: () -> Unit,
-    onCreateFavorite: () -> Unit,
+    onCreateFavorite: (Boolean) -> Unit,
     onShare: () -> Unit,
     goToFirstEpisode: () -> Unit
 ) {
@@ -416,6 +426,7 @@ fun ReadingSection(
         } else if (isLastEpisode) {
             VerticalSpacer(height = R.dimen.dp24)
             LastEpisodeSection(
+                isFavorite = isFavorite,
                 onCreateFavorite = onCreateFavorite,
                 onShare = onShare,
                 goToFirstEpisode = goToFirstEpisode,
@@ -430,7 +441,8 @@ fun ReadingSection(
 
 @Composable
 fun LastEpisodeSection(
-    onCreateFavorite: () -> Unit,
+    isFavorite: Boolean,
+    onCreateFavorite: (Boolean) -> Unit,
     onShare: () -> Unit,
     goToFirstEpisode: () -> Unit,
     modifier: Modifier = Modifier
@@ -448,7 +460,7 @@ fun LastEpisodeSection(
             )
             HorizontalSpacer(width = R.dimen.dp24)
             Text(
-                text = "SON",
+                text = stringResource(id = R.string.end),
                 style = MaterialTheme.localTextStyles.spaceGrotesk22Medium,
                 color = MaterialTheme.localColors.yellow
             )
@@ -461,13 +473,14 @@ fun LastEpisodeSection(
         }
         VerticalSpacer(height = R.dimen.dp36)
         Text(
-            text = stringResource(id = R.string.add_favorite),
+            text = if (!isFavorite) stringResource(id = R.string.add_favorite) else
+                stringResource(id = R.string.delete_favorite),
             style = MaterialTheme.localTextStyles.spaceGrotesk22Medium,
             color = MaterialTheme.localColors.white,
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .clickable {
-                    onCreateFavorite.invoke()
+                    onCreateFavorite.invoke(isFavorite)
                 }
                 .fillMaxWidth()
                 .border(
@@ -772,7 +785,8 @@ fun CommentSection(
     modifier: Modifier = Modifier,
     onLikeClick: (Boolean, Int) -> Unit,
     onReplyClick: (Comment) -> Unit,
-    onExpanseClicked: (Int) -> Unit
+    onExpanseClicked: (Int) -> Unit,
+    onHideClicked: (Int) -> Unit,
 ) {
 
     Column(
@@ -789,7 +803,9 @@ fun CommentSection(
                     isChatSelected = false,
                     onLikeClick = onLikeClick,
                     isSeeAllEnabled = false,
+                    hideAllEnabled = false,
                     onExpanseClicked = { /* no-op */ },
+                    onHideClicked = {},
                     replySize = upperComment.repliesCount - 1,
                     onReplyClick = { onReplyClick.invoke(upperComment) })
                 VerticalSpacer(height = dimensionResource(id = R.dimen.dp12))
@@ -801,6 +817,8 @@ fun CommentSection(
                     onExpanseClicked = {
                         onExpanseClicked.invoke(upperComment.id)
                     },
+                    onHideClicked = {},
+                    hideAllEnabled = false,
                     replySize = upperComment.repliesCount - 1,
                     onReplyClick = {
                         onReplyClick.invoke(upperComment)
@@ -809,12 +827,17 @@ fun CommentSection(
                 if (upperComment.isExpanded) {
                     upperComment.replies.forEachIndexed { index, comment ->
                         if (index != 0) {
-                            CommentItem(model = comment,
+                            CommentItem(
+                                model = comment,
                                 isChatSelected = false,
                                 onLikeClick = onLikeClick,
-                                isSeeAllEnabled = false,
+                                isSeeAllEnabled = index == upperComment.replies.lastIndex,
                                 replySize = upperComment.repliesCount - 1,
-                                onExpanseClicked = { /* no-op */ },
+                                onExpanseClicked = { onExpanseClicked.invoke(upperComment.id) },
+                                hideAllEnabled = index == upperComment.replies.lastIndex,
+                                onHideClicked = {
+                                    onHideClicked.invoke(upperComment.id)
+                                },
                                 onReplyClick = {
                                     onReplyClick.invoke(upperComment)
                                 }
@@ -890,9 +913,11 @@ fun CommentItem(
     replySize: Int,
     isChatSelected: Boolean,
     isSeeAllEnabled: Boolean,
+    hideAllEnabled: Boolean,
     onExpanseClicked: () -> Unit,
     onLikeClick: (Boolean, Int) -> Unit,
-    onReplyClick: () -> Unit
+    onReplyClick: () -> Unit,
+    onHideClicked: () -> Unit
 ) {
     ConstraintLayout(
         modifier = Modifier.fillMaxWidth()
@@ -981,16 +1006,29 @@ fun CommentItem(
             }
         )
         if (isSeeAllEnabled) {
-            SeeAll(
-                modifier = Modifier.constrainAs(seeAll) {
-                    start.linkTo(comment.start)
-                    end.linkTo(commentHeader.end)
-                    top.linkTo(comment.bottom)
-                    width = Dimension.fillToConstraints
-                },
-                replySize = replySize,
-                onClick = onExpanseClicked
-            )
+            if (!hideAllEnabled) {
+                SeeAll(
+                    modifier = Modifier.constrainAs(seeAll) {
+                        start.linkTo(comment.start)
+                        end.linkTo(commentHeader.end)
+                        top.linkTo(comment.bottom)
+                        width = Dimension.fillToConstraints
+                    },
+                    replySize = replySize,
+                    onClick = onExpanseClicked
+                )
+            } else {
+                HideAll(
+                    modifier = Modifier.constrainAs(seeAll) {
+                        start.linkTo(comment.start)
+                        end.linkTo(commentHeader.end)
+                        top.linkTo(comment.bottom)
+                        width = Dimension.fillToConstraints
+                    },
+                    replySize = replySize,
+                    onClick = onHideClicked
+                )
+            }
         }
     }
 }
@@ -1103,10 +1141,47 @@ fun SeeAll(
     }
 }
 
+@Composable
+fun HideAll(
+    replySize: Int,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center,
+        modifier = modifier.clickable { onClick.invoke() }) {
+        Box(
+            modifier = Modifier
+                .height(dimensionResource(id = R.dimen.dp1))
+                .background(MaterialTheme.localColors.white_alpha07)
+                .weight(1f)
+        )
+        HorizontalSpacer(width = dimensionResource(id = R.dimen.dp12))
+        Text(
+            text = if (replySize <= 1) stringResource(id = R.string.hide_all)
+            else stringResource(id = R.string.hide_all_size, replySize),
+            color = MaterialTheme.localColors.white_alpha07,
+            fontFamily = Poppins,
+            fontSize = 10.sp,
+            minLines = 1,
+            maxLines = 1,
+            modifier = Modifier.width(IntrinsicSize.Max)
+        )
+        HorizontalSpacer(width = dimensionResource(id = R.dimen.dp12))
+        Box(
+            modifier = Modifier
+                .height(dimensionResource(id = R.dimen.dp1))
+                .background(MaterialTheme.localColors.white_alpha07)
+                .weight(1f)
+        )
+    }
+}
+
 @Preview
 @Composable
 fun ReadingScreenPreview() {
-    LastEpisodeSection(onCreateFavorite = {}, onShare = { /*TODO*/ }, {})
+
 }
 
 /*@Composable

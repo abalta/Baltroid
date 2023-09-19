@@ -374,6 +374,30 @@ class OriginalViewModel @Inject constructor(
         }
     }
 
+    fun hideComment(id: Int, tabState: CommentsTabState) {
+        when (tabState) {
+            CommentsTabState.AllComments -> {
+                _uiStateReading.update {
+                    it.copy(allComments = it.allComments.map {
+                        if (it.id == id) it.copy(isExpanded = false) else it
+                    })
+                }
+            }
+
+            CommentsTabState.MyFavorites -> {
+                _uiStateReading.update {
+                    it.copy(commentsLikedByMe = it.commentsLikedByMe.map {
+                        if (it.id == id) it.copy(isExpanded = false) else it
+                    })
+                }
+            }
+
+            CommentsTabState.MyComments -> {/* no-op */
+
+            }
+        }
+    }
+
     fun setSelectedEpisodeId(id: Int) {
         _selectedEpisodeId.value = id
     }

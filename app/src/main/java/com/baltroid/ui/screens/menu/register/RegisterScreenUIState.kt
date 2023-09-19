@@ -4,13 +4,15 @@ import androidx.annotation.StringRes
 
 data class RegisterScreenUIState(
     val name: InputFieldState = InputFieldState(),
+    val username: InputFieldState = InputFieldState(),
     val email: InputFieldState = InputFieldState(),
     val password: InputFieldState = InputFieldState(),
-    val passwordConfirm: InputFieldState = InputFieldState(),
-    val isPrivacyPolicyChecked: CheckBoxState = CheckBoxState(),
-    val isCookiePolicyChecked: CheckBoxState = CheckBoxState(),
+    val birthdate: InputFieldState = InputFieldState(),
+    //val passwordConfirm: InputFieldState = InputFieldState(),
+    val userAgreement: CheckBoxState = CheckBoxState(),
+    val cookiePolicy: CheckBoxState = CheckBoxState(),
     @StringRes val errorMsg: Int? = null,
-    val isSuccess: Boolean = false
+    val isSuccess: Boolean? = null
 )
 
 data class InputFieldState(

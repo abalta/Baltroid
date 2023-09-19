@@ -43,6 +43,7 @@ dependencies {
 
     implementation(libs.androidx.compose.material)
     implementation(libs.androidx.paging.compose)
+    implementation(libs.material.dialogs.datetime)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.coil.compose)
     implementation(libs.androidx.constraintlayout.compose)

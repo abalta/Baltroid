@@ -5,14 +5,16 @@ import javax.inject.Inject
 
 class RegisterUseCase @Inject constructor(private val repository: AuthRepository) {
     operator fun invoke(
-        name: String, email: String, password: String, userAgreement: Boolean,
-        privacyPolicy: Boolean
+        name: String, username: String, email: String, password: String, userAgreement: Boolean,
+        cookiePolicy: Boolean, birthdate: String
     ) =
         repository.register(
-            name,
-            email,
-            password,
+            name = name,
+            username = username,
+            email = email,
+            password = password,
             userAgreement = userAgreement,
-            privacyPolicy = privacyPolicy
+            cookiePolicy = cookiePolicy,
+            birthdate = birthdate
         )
 }

@@ -113,6 +113,9 @@ fun AllCommentsScreen(
                             modifier = Modifier.padding(end = 8.dp),
                             onLikeClick = { _, _ -> },
                             onReplyClick = {},
+                            onHideClicked = {
+                                viewModel.hideComment(it)
+                            },
                             onExpanseClicked = {
                                 viewModel.expanseComment(it)
                             }

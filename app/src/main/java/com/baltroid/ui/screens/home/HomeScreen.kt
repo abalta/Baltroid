@@ -65,6 +65,7 @@ import com.hitreads.core.model.FavoriteOriginal
 import com.hitreads.core.model.IndexOriginal
 import com.hitreads.core.model.IndexTag
 import com.hitreads.core.model.TagsWithOriginals
+import java.util.Locale
 
 @Composable
 fun HomeScreen(
@@ -176,7 +177,8 @@ private fun IndexOriginals(
     ) {
         itemsIndexed(originals) { index, item ->
             GenreItem(
-                text = item.tagName.orEmpty(), if (index % 2 == 0) MaterialTheme.localColors.purple
+                text = item.tagName.orEmpty().uppercase(Locale("tr", "TR")),
+                if (index % 2 == 0) MaterialTheme.localColors.purple
                 else MaterialTheme.localColors.pink,
                 modifier = Modifier.padding(start = dimensionResource(id = R.dimen.dp24))
             )

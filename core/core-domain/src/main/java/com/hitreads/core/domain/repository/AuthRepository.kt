@@ -11,10 +11,12 @@ interface AuthRepository {
     fun isLogged(): Flow<BaltroidResult<Boolean>>
     fun register(
         name: String,
+        username: String,
         email: String,
         password: String,
         userAgreement: Boolean,
-        privacyPolicy: Boolean
+        cookiePolicy: Boolean,
+        birthdate: String
     ): Flow<BaltroidResult<Unit?>>
 
     fun getProfile(): Flow<BaltroidResult<ProfileModel>>
