@@ -20,8 +20,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -311,7 +311,6 @@ fun StoryItemFavorites(
             color = MaterialTheme.localColors.white_alpha05,
             textAlign = TextAlign.Center,
             maxLines = 2,
-            minLines = 2,
             overflow = TextOverflow.Ellipsis
         )
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp11))

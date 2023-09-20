@@ -10,6 +10,7 @@ import com.baltroid.ui.screens.menu.register.RegisterScreenUIState
 import com.hitreads.core.domain.usecase.GetAvatarsUseCase
 import com.hitreads.core.domain.usecase.ProfileUseCase
 import com.hitreads.core.domain.usecase.RegisterUseCase
+import com.hitreads.core.domain.usecase.UpdateUserProfileUseCase
 import com.hitreads.core.ui.mapper.asAvatar
 import com.hitreads.core.ui.mapper.asProfile
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -32,7 +33,8 @@ private const val USER_AGREEMENT = "userAgreement"
 class AuthenticationViewModel @Inject constructor(
     private val profileUseCase: ProfileUseCase,
     private val registerUseCase: RegisterUseCase,
-    private val getAvatarsUseCase: GetAvatarsUseCase
+    private val getAvatarsUseCase: GetAvatarsUseCase,
+    private val updateUserProfileUseCase: UpdateUserProfileUseCase
 ) : ViewModel() {
 
     private val _profileState = MutableStateFlow(ProfileUIState())
@@ -40,6 +42,9 @@ class AuthenticationViewModel @Inject constructor(
 
     private val _uiStateRegister = MutableStateFlow(RegisterScreenUIState())
     val uiStateRegister = _uiStateRegister.asStateFlow()
+
+    private val _uiStateUpdateAvatar: MutableStateFlow<Boolean?> = MutableStateFlow(null)
+    val uiStateUpdateAvatar = _uiStateUpdateAvatar.asStateFlow()
 
     init {
         getProfile()
@@ -231,4 +236,17 @@ class AuthenticationViewModel @Inject constructor(
 
     private fun CharSequence?.isValidEmail() =
         !isNullOrEmpty() && Patterns.EMAIL_ADDRESS.matcher(this).matches()
+
+    fun updateUserAvatar(selectedId: Int) {
+        viewModelScope.launch {
+            updateUserProfileUseCase.invoke(selectedId).handle {
+                onSuccess {
+                    _uiStateUpdateAvatar.update { true }
+                }
+                onFailure {
+                    _uiStateUpdateAvatar.update { false }
+                }
+            }
+        }
+    }
 }

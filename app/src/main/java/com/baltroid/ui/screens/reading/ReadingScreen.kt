@@ -35,9 +35,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Divider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -1127,7 +1127,6 @@ fun SeeAll(
             color = MaterialTheme.localColors.white_alpha07,
             fontFamily = Poppins,
             fontSize = 10.sp,
-            minLines = 1,
             maxLines = 1,
             modifier = Modifier.width(IntrinsicSize.Max)
         )
@@ -1164,7 +1163,6 @@ fun HideAll(
             color = MaterialTheme.localColors.white_alpha07,
             fontFamily = Poppins,
             fontSize = 10.sp,
-            minLines = 1,
             maxLines = 1,
             modifier = Modifier.width(IntrinsicSize.Max)
         )

@@ -17,6 +17,7 @@ import com.baltroid.core.network.model.response.ProfileDto
 import com.baltroid.core.network.model.response.TagWithOriginalsDto
 import com.baltroid.core.network.model.response.WelcomeDto
 import com.baltroid.core.network.util.Constants.Fields.AVATAR
+import com.baltroid.core.network.util.Constants.Fields.AVATAR_ID
 import com.baltroid.core.network.util.Constants.Fields.CONTENT
 import com.baltroid.core.network.util.Constants.Fields.CONTINUE_READING
 import com.baltroid.core.network.util.Constants.Fields.EMAIL
@@ -26,6 +27,7 @@ import com.baltroid.core.network.util.Constants.Fields.ORIGINALS
 import com.baltroid.core.network.util.Constants.Fields.PASSWORD
 import com.baltroid.core.network.util.Constants.Fields.RESPONSE_ID
 import com.baltroid.core.network.util.Constants.Fields.TYPE
+import com.baltroid.core.network.util.Constants.Fields.USER
 import com.baltroid.core.network.util.Constants.Path.AUTHOR
 import com.baltroid.core.network.util.Constants.Path.BY_ME
 import com.baltroid.core.network.util.Constants.Path.COMMENT
@@ -159,6 +161,12 @@ interface HitReadsService {
 
     @GET(AVATAR)
     suspend fun getAvatars(): BaltroidResult<HitReadsResponse<List<AvatarDto>>>
+
+    @POST(USER)
+    @FormUrlEncoded
+    suspend fun updateUserProfile(
+        @Field(AVATAR_ID) avatarId: Int
+    ): BaltroidResult<HitReadsResponse<Unit?>>
 
 
     /*@GET(ORIGINALS_INDEX)

@@ -23,4 +23,5 @@ interface AuthRepository {
     fun getProfile(): Flow<BaltroidResult<ProfileModel>>
     fun getAvatars(): Flow<BaltroidResult<List<AvatarModel>>>
     fun getAllNotifications(): Flow<BaltroidResult<List<NotificationModel>>>
+    fun updateUserProfile(avatarId: Int): Flow<BaltroidResult<Unit?>>
 }

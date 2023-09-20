@@ -18,8 +18,8 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -194,7 +194,6 @@ private fun OriginalsItem(
             color = MaterialTheme.localColors.white_alpha05,
             textAlign = TextAlign.Center,
             maxLines = 2,
-            minLines = 2,
             overflow = TextOverflow.Ellipsis
         )
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp11))

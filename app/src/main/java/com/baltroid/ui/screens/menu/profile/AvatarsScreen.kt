@@ -13,8 +13,8 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -51,14 +51,19 @@ fun AvatarsScreen(
 ) {
 
     val state by viewModel.profileState.collectAsStateWithLifecycle()
+    val updateAvatar by viewModel.uiStateUpdateAvatar.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         viewModel.loadAvatars()
     }
+    LaunchedEffect(updateAvatar) {
+        if (updateAvatar == true) {
+            onBackPressed.invoke()
+        }
+    }
     AvatarScreenContent(
         state.avatars,
-        onAvatarSelected = { _ ->
-        },
+        onAvatarSelected = viewModel::updateUserAvatar,
         onBackPressed = onBackPressed
     )
 }
@@ -124,7 +129,7 @@ fun AvatarScreenContent(
             modifier = Modifier
                 .padding(bottom = dimensionResource(id = R.dimen.dp50))
                 .padding(horizontal = dimensionResource(id = R.dimen.dp50))
-                .clickable {}
+                .clickable { onAvatarSelected.invoke(selectedId) }
                 .fillMaxWidth()
                 .clip(MaterialTheme.localShapes.roundedDp24)
                 .background(MaterialTheme.localColors.black)

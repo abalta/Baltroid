@@ -1,6 +1,6 @@
 package com.baltroid.ui.theme
 
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.staticCompositionLocalOf
@@ -32,6 +32,7 @@ val Yellow_200 = Color(0xFFEFCD19)
 val Gold = Color(0xFFB39912)
 val White_bb = Color(0xFFBBBBBB)
 val Transparent = Color.Transparent
+val Green = Color(0xFF34C759)
 
 data class Colors(
     val black: Color = Black,
@@ -59,7 +60,8 @@ data class Colors(
     val gold: Color = Gold,
     val transparent: Color = Transparent,
     val white_black: Color = White_black,
-    val white_bb: Color = White_bb
+    val white_bb: Color = White_bb,
+    val green: Color = Green
 )
 
 val LocalColors = staticCompositionLocalOf { Colors() }

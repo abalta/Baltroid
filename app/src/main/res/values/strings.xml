@@ -97,4 +97,8 @@
     <string name="delete_favorite">FAVORİLERDEN ÇIKAR</string>
     <string name="end">SON</string>
     <string name="hide_all">Tüm Cevapları Gizle</string>
+    <string name="sound_effect">SES EFEKTİ</string>
+    <string name="privacy_policy">GİZLİLİK POLİTİKASI</string>
+    <string name="user_agreement">KULLANIM ŞARTLARI</string>
+    <string name="support">DESTEK</string>
 </resources>

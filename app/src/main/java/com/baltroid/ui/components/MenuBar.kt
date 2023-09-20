@@ -5,9 +5,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Divider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,11 +27,12 @@ fun MenuBar(
     title: String,
     @DrawableRes iconResId: Int,
     modifier: Modifier = Modifier,
+    widthFraction: Float = 0.85f,
     closeBottomDivider: Boolean = false,
     onBackClick: () -> Unit
 ) {
 
-    ConstraintLayout(modifier = modifier.fillMaxWidth(.85f)) {
+    ConstraintLayout(modifier = modifier.fillMaxWidth(widthFraction)) {
 
         val (banner, text, close, divider) = createRefs()
         createHorizontalChain(banner, text, close, chainStyle = ChainStyle.SpreadInside)

@@ -41,7 +41,7 @@ dependencies {
     kapt(libs.dagger.hilt.compiler)
     implementation(libs.androidx.room.runtime)
 
-    implementation(libs.androidx.compose.material)
+    implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.paging.compose)
     implementation(libs.material.dialogs.datetime)
     implementation(libs.androidx.compose.ui.tooling.preview)

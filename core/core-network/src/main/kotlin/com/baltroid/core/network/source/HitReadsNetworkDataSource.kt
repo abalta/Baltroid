@@ -169,6 +169,9 @@ class HitReadsNetworkDataSource @Inject constructor(
     suspend fun getAvatars(): BaltroidResult<HitReadsResponse<List<AvatarDto>>> =
         hitReadsService.getAvatars()
 
+    suspend fun updateUserProfile(avatarId: Int): BaltroidResult<HitReadsResponse<Unit?>> =
+        hitReadsService.updateUserProfile(avatarId)
+
     suspend fun getAllNotifications(): BaltroidResult<HitReadsResponse<List<NotificationDto>>> =
         hitReadsService.getAllNotifications()
 

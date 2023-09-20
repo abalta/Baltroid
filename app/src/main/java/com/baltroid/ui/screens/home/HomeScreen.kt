@@ -23,9 +23,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -270,13 +271,11 @@ fun ContinueReadingItem(
                 .clickable { onClick.invoke() }
         )
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp13))
-        Text(
+        BasicText(
             text = indexOriginal.title,
-            style = MaterialTheme.localTextStyles.poppins12Bold,
-            color = MaterialTheme.localColors.white,
+            style = MaterialTheme.localTextStyles.poppins12Bold.copy(color = MaterialTheme.localColors.white),
             maxLines = 2,
             minLines = 2,
-            textAlign = TextAlign.Center,
         )
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp12))
         Text(
@@ -334,11 +333,11 @@ private fun IndexOriginalItem(
             }
         }
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp6))
-        Text(
+        BasicText(
             text = indexOriginal.title,
-            style = MaterialTheme.localTextStyles.poppins12Bold,
-            color = MaterialTheme.localColors.white,
+            style = MaterialTheme.localTextStyles.poppins12Bold.copy(color = MaterialTheme.localColors.white),
             maxLines = 2,
+            minLines = 2,
             overflow = TextOverflow.Ellipsis
         )
         Text(
@@ -371,13 +370,11 @@ fun FavoriteOriginalItem(
                 .clickable { onClick.invoke() }
         )
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp13))
-        Text(
+        BasicText(
             text = original.title.orEmpty(),
-            style = MaterialTheme.localTextStyles.poppins12Bold,
-            color = MaterialTheme.localColors.white,
+            style = MaterialTheme.localTextStyles.poppins12Bold.copy(color = MaterialTheme.localColors.white),
             maxLines = 2,
             minLines = 2,
-            textAlign = TextAlign.Center,
         )
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp28))
         YellowStarBox {

@@ -152,4 +152,22 @@ class AuthRepositoryImpl @Inject constructor(
             else -> error("$MESSAGE_UNHANDLED_STATE $response")
         }
     }
+
+    override fun updateUserProfile(avatarId: Int): Flow<BaltroidResult<Unit?>> = flow {
+        emit(BaltroidResult.loading())
+        val response = networkDataSource.updateUserProfile(avatarId)
+
+        when {
+            response.isSuccess() -> {
+                emit(BaltroidResult.success(response.value.data))
+            }
+
+            response.isFailure() -> {
+                val throwable = response.error
+                emit(BaltroidResult.failure(throwable))
+            }
+
+            else -> error("$MESSAGE_UNHANDLED_STATE $response")
+        }
+    }
 }
