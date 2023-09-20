@@ -74,6 +74,7 @@ fun HomeScreen(
     navigate: (route: String, originalId: Int?) -> Unit
 ) {
     val homeUiState by viewModel.uiStateHome.collectAsStateWithLifecycle()
+    val notificationsSize = viewModel.uiStateNotifications.collectAsStateWithLifecycle().value.size
 
     SetLoadingState(isLoading = homeUiState.isLoading)
 
@@ -88,6 +89,7 @@ fun HomeScreen(
         homeUiState = homeUiState,
         openMenuScreen = openMenuScreen,
         deleteFavorite = viewModel::deleteFavoriteHome,
+        notificationsSize = notificationsSize,
         navigate = navigate
     )
 }
@@ -95,6 +97,7 @@ fun HomeScreen(
 @Composable
 fun HomeScreenContent(
     homeUiState: HomeUiState,
+    notificationsSize: Int,
     openMenuScreen: () -> Unit,
     deleteFavorite: (id: Int) -> Unit,
     navigate: (route: String, originalId: Int?) -> Unit
@@ -108,12 +111,14 @@ fun HomeScreenContent(
     ) {
         HitReadsTopBar(
             iconResId = R.drawable.ic_bell_outlined,
-            numberOfNotification = 0,
+            numberOfNotification = notificationsSize,
             isGemEnabled = true,
             isUserLoggedIn = homeUiState.isUserLoggedIn,
             gemCount = homeUiState.profileModel.gem,
             onMenuClick = openMenuScreen,
-            onNotificationClick = {/* no-op */ },
+            onNotificationClick = {
+                navigate.invoke(HitReadsScreens.NotificationsScreen.route, null)
+            },
             signInClick = { navigate.invoke(HitReadsScreens.LoginScreen.route, null) },
             gemClick = {}
         )
@@ -822,6 +827,7 @@ fun HomeScreenPreview() {
         ),
         openMenuScreen = {},
         deleteFavorite = {},
+        notificationsSize = 0,
         navigate = { _: String, _: Int? -> }
     )
 }

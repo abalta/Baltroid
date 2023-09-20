@@ -6,6 +6,7 @@ import com.baltroid.core.network.model.author.NetworkAuthor
 import com.baltroid.core.network.model.author.NetworkAuthorCommentItem
 import com.baltroid.core.network.model.episode.InteractiveNetworkBundleAsset
 import com.baltroid.core.network.model.episode.NetworkShowEpisode
+import com.baltroid.core.network.model.notification.NetworkView
 import com.baltroid.core.network.model.originals.IndexNetworkContinueReadingEpisode
 import com.baltroid.core.network.model.originals.IndexNetworkOriginal
 import com.baltroid.core.network.model.originals.IndexNetworkPackage
@@ -20,6 +21,7 @@ import com.baltroid.core.network.model.response.BookmarkDto
 import com.baltroid.core.network.model.response.CommentDto
 import com.baltroid.core.network.model.response.FavoriteDto
 import com.baltroid.core.network.model.response.FavoriteOriginalDto
+import com.baltroid.core.network.model.response.NotificationDto
 import com.baltroid.core.network.model.response.TagWithOriginalsDto
 import com.baltroid.core.network.model.response.WelcomeDto
 import com.baltroid.core.network.model.user.IndexUserData
@@ -39,6 +41,8 @@ import com.hitreads.core.domain.model.IndexTagModel
 import com.hitreads.core.domain.model.IndexUserDataModel
 import com.hitreads.core.domain.model.InteractiveBundleAssetModel
 import com.hitreads.core.domain.model.NetworkAuthorCommentModel
+import com.hitreads.core.domain.model.NetworkViewModel
+import com.hitreads.core.domain.model.NotificationModel
 import com.hitreads.core.domain.model.ShowEpisodeModel
 import com.hitreads.core.domain.model.ShowOriginalModel
 import com.hitreads.core.domain.model.TagsWithOriginalsModel
@@ -245,6 +249,20 @@ internal fun AllCommentsDto.asAllCommentsModel(): AllCommentsModel = AllComments
     replies = replies?.map { it.asAllCommentsModel() },
     replyCommentId = replyCommentId,
     createdAt = createdAt
+)
+
+internal fun NetworkView.asNetworkViewModel() = NetworkViewModel(
+    status = status, viewedAt = viewedAt
+)
+
+internal fun NotificationDto.asNotificationModel(): NotificationModel = NotificationModel(
+    id = id,
+    type = type,
+    message = message,
+    view = view?.asNetworkViewModel(),
+    detail = detail,
+    created_at = created_at
+
 )
 
 internal fun AuthorDto.asAuthorModel(): AuthorModel = AuthorModel(

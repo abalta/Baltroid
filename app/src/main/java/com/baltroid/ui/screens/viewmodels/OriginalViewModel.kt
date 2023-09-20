@@ -14,11 +14,13 @@ import com.baltroid.ui.screens.reading.comments.CommentsTabState
 import com.baltroid.util.ORIGINAL
 import com.baltroid.util.ORIGINALS
 import com.baltroid.util.orZero
+import com.hitreads.core.domain.model.NotificationModel
 import com.hitreads.core.domain.model.OriginalType
 import com.hitreads.core.domain.usecase.CreateCommentUseCase
 import com.hitreads.core.domain.usecase.CreateFavoriteUseCase
 import com.hitreads.core.domain.usecase.DeleteFavoriteUseCase
 import com.hitreads.core.domain.usecase.EndReadingEpisodeUseCase
+import com.hitreads.core.domain.usecase.GetAllNotificationsUseCase
 import com.hitreads.core.domain.usecase.GetCommentsLikedByMeByIdUseCase
 import com.hitreads.core.domain.usecase.GetCommentsUseCase
 import com.hitreads.core.domain.usecase.GetFavoriteOriginalsUseCase
@@ -39,6 +41,7 @@ import com.hitreads.core.ui.mapper.asShowEpisode
 import com.hitreads.core.ui.mapper.asTagsWithOriginals
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -61,6 +64,7 @@ class OriginalViewModel @Inject constructor(
     private val getFavoriteOriginalsUseCase: GetFavoriteOriginalsUseCase,
     private val getCommentsUseCase: GetCommentsUseCase,
     private val getCommentsLikedByMeByIdUseCase: GetCommentsLikedByMeByIdUseCase,
+    private val getAllNotificationsUseCase: GetAllNotificationsUseCase
 ) : ViewModel() {
 
     private val _uiStateHome = MutableStateFlow(HomeUiState())
@@ -73,11 +77,24 @@ class OriginalViewModel @Inject constructor(
     private val _uiStateReading = MutableStateFlow(ReadingUiState())
     val uiStateReading = _uiStateReading.asStateFlow()
 
+    private val _uiStateNotifications: MutableStateFlow<List<NotificationModel>> =
+        MutableStateFlow(listOf())
+    val uiStateNotifications: StateFlow<List<NotificationModel>> =
+        _uiStateNotifications.asStateFlow()
+
     private val _selectedEpisodeId: MutableState<Int> = mutableStateOf(0)
     val selectedEpisodeId: State<Int> = _selectedEpisodeId
 
     var selectedOriginalId: Int? = null
     var selectedComment: Comment? = null
+
+    private fun loadNotifications() = viewModelScope.launch {
+        getAllNotificationsUseCase().handle {
+            onSuccess { notifications ->
+                _uiStateNotifications.update { notifications }
+            }
+        }
+    }
 
     fun loadOriginals() = viewModelScope.launch {
         getOriginalsUseCase(null, null).handle {
@@ -315,6 +332,7 @@ class OriginalViewModel @Inject constructor(
             onSuccess { isUserLoggedIn ->
                 _uiStateHome.update { it.copy(isUserLoggedIn = isUserLoggedIn, isLoading = false) }
                 getProfile()
+                loadNotifications()
                 getFavoriteOriginals()
                 loadContinueReading()
             }

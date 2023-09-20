@@ -70,7 +70,7 @@ fun HitReadsTopBar(
             iconResId = iconResId,
             onMenuClick = onMenuClick,
             isUserLoggedIn = isUserLoggedIn,
-            numberOfNotification = 0,
+            numberOfNotification = numberOfNotification,
             gemCount = gemCount,
             isGemEnabled = isGemEnabled,
             onNotificationClick = onNotificationClick,

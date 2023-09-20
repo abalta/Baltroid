@@ -6,12 +6,14 @@ import com.baltroid.core.common.result.isFailure
 import com.baltroid.core.common.result.isSuccess
 import com.baltroid.core.data.mapper.asAvatarModel
 import com.baltroid.core.data.mapper.asLoginModel
+import com.baltroid.core.data.mapper.asNotificationModel
 import com.baltroid.core.data.mapper.asProfileModel
 import com.baltroid.core.datastore.PreferencesDataStoreDataSource
 import com.baltroid.core.network.source.HitReadsNetworkDataSource
 import com.baltroid.core.network.util.MESSAGE_UNHANDLED_STATE
 import com.hitreads.core.domain.model.AvatarModel
 import com.hitreads.core.domain.model.LoginModel
+import com.hitreads.core.domain.model.NotificationModel
 import com.hitreads.core.domain.model.ProfileModel
 import com.hitreads.core.domain.repository.AuthRepository
 import kotlinx.coroutines.flow.Flow
@@ -119,6 +121,26 @@ class AuthRepositoryImpl @Inject constructor(
             response.isSuccess() -> {
                 response.value.data?.let {
                     emit(BaltroidResult.success(it.map { it.asAvatarModel() }))
+                }
+            }
+
+            response.isFailure() -> {
+                val throwable = response.error
+                emit(BaltroidResult.failure(throwable))
+            }
+
+            else -> error("$MESSAGE_UNHANDLED_STATE $response")
+        }
+    }
+
+    override fun getAllNotifications(): Flow<BaltroidResult<List<NotificationModel>>> = flow {
+        emit(BaltroidResult.loading())
+        val response = networkDataSource.getAllNotifications()
+
+        when {
+            response.isSuccess() -> {
+                response.value.data?.let {
+                    emit(BaltroidResult.success(it.map { it.asNotificationModel() }))
                 }
             }
 

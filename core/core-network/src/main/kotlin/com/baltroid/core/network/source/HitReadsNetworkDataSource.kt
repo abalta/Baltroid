@@ -14,6 +14,7 @@ import com.baltroid.core.network.model.response.EpisodeShowDto
 import com.baltroid.core.network.model.response.FavoriteDto
 import com.baltroid.core.network.model.response.FavoriteOriginalDto
 import com.baltroid.core.network.model.response.LoginDto
+import com.baltroid.core.network.model.response.NotificationDto
 import com.baltroid.core.network.model.response.ProfileDto
 import com.baltroid.core.network.model.response.TagWithOriginalsDto
 import com.baltroid.core.network.model.response.WelcomeDto
@@ -167,6 +168,9 @@ class HitReadsNetworkDataSource @Inject constructor(
 
     suspend fun getAvatars(): BaltroidResult<HitReadsResponse<List<AvatarDto>>> =
         hitReadsService.getAvatars()
+
+    suspend fun getAllNotifications(): BaltroidResult<HitReadsResponse<List<NotificationDto>>> =
+        hitReadsService.getAllNotifications()
 
     /*suspend fun getOriginals(
         page: Int = DEFAULT_PAGE,

@@ -227,7 +227,7 @@ data class NotificationDto(
     @SerialName("detail")
     val detail: String?,//todo needs object
     @SerialName("created_at")
-    val created_at: String?,
+    val created_at: String?
 )
 
 @Serializable

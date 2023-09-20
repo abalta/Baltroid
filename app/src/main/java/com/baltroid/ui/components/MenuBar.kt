@@ -27,6 +27,7 @@ fun MenuBar(
     title: String,
     @DrawableRes iconResId: Int,
     modifier: Modifier = Modifier,
+    closeBottomDivider: Boolean = false,
     onBackClick: () -> Unit
 ) {
 
@@ -59,16 +60,18 @@ fun MenuBar(
                 }
                 .clickable { onBackClick.invoke() }
         )
-        Divider(
-            thickness = dimensionResource(id = R.dimen.dp1),
-            color = MaterialTheme.localColors.white_alpha06,
-            modifier = Modifier.constrainAs(divider) {
-                start.linkTo(banner.start)
-                end.linkTo(close.end)
-                top.linkTo(text.bottom, margin = 20.dp)
-                width = Dimension.fillToConstraints
-            }
-        )
+        if (!closeBottomDivider) {
+            Divider(
+                thickness = dimensionResource(id = R.dimen.dp1),
+                color = MaterialTheme.localColors.white_alpha06,
+                modifier = Modifier.constrainAs(divider) {
+                    start.linkTo(banner.start)
+                    end.linkTo(close.end)
+                    top.linkTo(text.bottom, margin = 20.dp)
+                    width = Dimension.fillToConstraints
+                }
+            )
+        }
     }
 }
 
@@ -76,6 +79,7 @@ fun MenuBar(
 fun IconlessMenuBar(
     title: String,
     modifier: Modifier = Modifier,
+    closeBottomDivider: Boolean = false,
     onBackClick: () -> Unit
 ) {
     Column(

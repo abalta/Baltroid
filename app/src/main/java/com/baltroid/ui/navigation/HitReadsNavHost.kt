@@ -32,6 +32,7 @@ import com.baltroid.ui.screens.menu.register.RegisterScreen
 import com.baltroid.ui.screens.menu.settings.SettingsScreen
 import com.baltroid.ui.screens.menu.shop.ShopScreen
 import com.baltroid.ui.screens.menu.shop.ShopScreenState
+import com.baltroid.ui.screens.notification.NotificationsScreen
 import com.baltroid.ui.screens.onboarding.OnboardingScreen
 import com.baltroid.ui.screens.onboarding.OnboardingViewModel
 import com.baltroid.ui.screens.playground.PlaygroundScreen
@@ -204,7 +205,7 @@ fun HitReadsNavHost(
                     viewModel = originalViewModel,
                     openMenuScreen = openMenuScreen,
                 ) { route, episodeId ->
-                    if (!route.contains(HitReadsScreens.AuthorScreen.route)) {
+                    episodeId?.let {
                         originalViewModel.setSelectedEpisodeId(episodeId.orZero())
                     }
                     navController.navigate(route)
@@ -231,6 +232,16 @@ fun HitReadsNavHost(
                 route = HitReadsScreens.PlaygroundScreen.route
             ) {
                 PlaygroundScreen()
+            }
+            composable(
+                route = HitReadsScreens.NotificationsScreen.route
+            ) {
+                NotificationsScreen(
+                    viewModel = originalViewModel,
+                    onBackPressed = {
+                        navController.popBackStack()
+                    }
+                )
             }
             /*composable(
                 route = HitReadsScreens.FilterScreen.route

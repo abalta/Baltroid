@@ -155,7 +155,7 @@ interface HitReadsService {
     suspend fun getProfile(): BaltroidResult<HitReadsResponse<ProfileDto>>
 
     @GET(NOTIFICATION)
-    suspend fun getAllNotifications(): BaltroidResult<HitReadsResponse<NotificationDto>>
+    suspend fun getAllNotifications(): BaltroidResult<HitReadsResponse<List<NotificationDto>>>
 
     @GET(AVATAR)
     suspend fun getAvatars(): BaltroidResult<HitReadsResponse<List<AvatarDto>>>

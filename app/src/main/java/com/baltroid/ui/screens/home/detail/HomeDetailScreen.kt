@@ -70,6 +70,7 @@ fun HomeDetailScreen(
     navigate: (route: String, episodeId: Int?) -> Unit
 ) {
     val detailUIState by viewModel.uiStateDetail.collectAsStateWithLifecycle()
+    val notificationSize = viewModel.uiStateNotifications.collectAsStateWithLifecycle().value.size
     SetLoadingState(isLoading = detailUIState.isLoading)
 
     LaunchedEffect(Unit) {
@@ -78,6 +79,7 @@ fun HomeDetailScreen(
 
     HomeDetailScreenContent(
         navigate = navigate,
+        notificationSize = notificationSize,
         openMenuScreen = openMenuScreen,
         original = detailUIState.original,
     )
@@ -86,6 +88,7 @@ fun HomeDetailScreen(
 @Composable
 private fun HomeDetailScreenContent(
     original: IndexOriginal,
+    notificationSize: Int,
     openMenuScreen: () -> Unit,
     navigate: (route: String, episodeId: Int?) -> Unit
 ) {
@@ -144,11 +147,13 @@ private fun HomeDetailScreenContent(
             Column {
                 HitReadsTopBar(
                     iconResId = R.drawable.ic_bell,
-                    numberOfNotification = 0,
+                    numberOfNotification = notificationSize,
                     onMenuClick = openMenuScreen,
                     onIconClick = {},
                     iconTint = MaterialTheme.localColors.white,
-                    onNotificationClick = {},
+                    onNotificationClick = {
+                        navigate.invoke(HitReadsScreens.NotificationsScreen.route, null)
+                    },
                     gemClick = {},
                     signInClick = {},
                 )
