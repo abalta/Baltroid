@@ -285,3 +285,17 @@ data class AvatarDto(
     @SerialName("status")
     val status: Boolean?
 )
+
+@Serializable
+data class AnnouncementDto(
+    @SerialName("title")
+    val title: String?,
+    @SerialName("message")
+    val message: String?,
+    @SerialName("link")
+    val link: String?,
+    @SerialName("image")
+    val image: String?,
+    @SerialName("is_active")
+    val isActive: Boolean?
+)

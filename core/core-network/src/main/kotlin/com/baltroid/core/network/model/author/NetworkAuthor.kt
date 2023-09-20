@@ -15,7 +15,9 @@ data class NetworkAuthor(
     @SerialName("comments")
     val comments: NetworkAuthorComment?,
     @SerialName("originals")
-    val originals: NetworkAuthorOriginal?
+    val originals: NetworkAuthorOriginal?,
+    @SerialName("is_favorite")
+    val isFavorite: Boolean?
 )
 
 @Serializable

@@ -15,6 +15,7 @@ import com.baltroid.core.network.model.originals.NetworkCommentOriginal
 import com.baltroid.core.network.model.originals.NetworkCreateCommentResponse
 import com.baltroid.core.network.model.originals.ShowOriginalDto
 import com.baltroid.core.network.model.response.AllCommentsDto
+import com.baltroid.core.network.model.response.AnnouncementDto
 import com.baltroid.core.network.model.response.AuthorDto
 import com.baltroid.core.network.model.response.AvatarDto
 import com.baltroid.core.network.model.response.BookmarkDto
@@ -26,6 +27,7 @@ import com.baltroid.core.network.model.response.TagWithOriginalsDto
 import com.baltroid.core.network.model.response.WelcomeDto
 import com.baltroid.core.network.model.user.IndexUserData
 import com.hitreads.core.domain.model.AllCommentsModel
+import com.hitreads.core.domain.model.AnnouncementModel
 import com.hitreads.core.domain.model.AuthorModel
 import com.hitreads.core.domain.model.AvatarModel
 import com.hitreads.core.domain.model.BookmarkModel
@@ -270,7 +272,8 @@ internal fun AuthorDto.asAuthorModel(): AuthorModel = AuthorModel(
     authorName = author?.authorName,
     image = author?.image,
     comments = author?.comments?.posts?.map { it.asNetworkAuthorCommentModel() },
-    originals = author?.originals?.posts?.map { it.asIndexOriginalModel() }
+    originals = author?.originals?.posts?.map { it.asIndexOriginalModel() },
+    isFavorite = author?.isFavorite
 )
 
 internal fun NetworkAuthor.asAuthorModel(): AuthorModel = AuthorModel(
@@ -279,10 +282,19 @@ internal fun NetworkAuthor.asAuthorModel(): AuthorModel = AuthorModel(
     image = image,
     comments = emptyList(),
     originals = emptyList(),
+    isFavorite = isFavorite,
 )
 
 internal fun WelcomeDto.asWelcomeModel() = WelcomeModel(
     id = id ?: 0, message = message.orEmpty(), path = path.orEmpty()
+)
+
+internal fun AnnouncementDto.asAnnouncementModel() = AnnouncementModel(
+    title = title,
+    message = message,
+    link = link,
+    image = image,
+    isActive = isActive
 )
 
 internal fun BookmarkDto.asBookmarkModel() = BookmarkModel(

@@ -7,6 +7,7 @@ import com.baltroid.core.network.model.HitReadsResponse
 import com.baltroid.core.network.model.originals.IndexNetworkOriginal
 import com.baltroid.core.network.model.originals.NetworkCreateCommentResponse
 import com.baltroid.core.network.model.request.RegisterRequestBody
+import com.baltroid.core.network.model.response.AnnouncementDto
 import com.baltroid.core.network.model.response.AuthorDto
 import com.baltroid.core.network.model.response.AvatarDto
 import com.baltroid.core.network.model.response.CommentDto
@@ -174,6 +175,9 @@ class HitReadsNetworkDataSource @Inject constructor(
 
     suspend fun getAllNotifications(): BaltroidResult<HitReadsResponse<List<NotificationDto>>> =
         hitReadsService.getAllNotifications()
+
+    suspend fun getAnnouncement(): BaltroidResult<HitReadsResponse<AnnouncementDto>> =
+        hitReadsService.getAnnouncement()
 
     /*suspend fun getOriginals(
         page: Int = DEFAULT_PAGE,

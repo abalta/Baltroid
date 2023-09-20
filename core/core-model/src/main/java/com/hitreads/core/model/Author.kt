@@ -5,5 +5,6 @@ data class Author(
     val authorName: String?,
     val image: String?,
     val comments: List<Comment>?,
-    val originals: List<IndexOriginal>?
+    val originals: List<IndexOriginal>?,
+    val isFavorite: Boolean?
 )

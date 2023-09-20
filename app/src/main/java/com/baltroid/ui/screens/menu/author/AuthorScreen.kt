@@ -107,7 +107,7 @@ fun AuthorScreenContent(
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp22))
         NamelessAuthorItem(
             imgUrl = state.author?.image,
-            isFavorite = true,
+            isFavorite = state.author?.isFavorite == true,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp44))

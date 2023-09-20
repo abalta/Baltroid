@@ -5,5 +5,6 @@ data class AuthorModel(
     val authorName: String?,
     val image: String?,
     val comments: List<NetworkAuthorCommentModel>?,
-    val originals: List<IndexOriginalModel>?
+    val originals: List<IndexOriginalModel>?,
+    val isFavorite: Boolean?
 )

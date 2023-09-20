@@ -5,6 +5,7 @@ import com.baltroid.core.network.model.HitReadsResponse
 import com.baltroid.core.network.model.originals.IndexNetworkOriginal
 import com.baltroid.core.network.model.originals.NetworkCreateCommentResponse
 import com.baltroid.core.network.model.request.RegisterRequestBody
+import com.baltroid.core.network.model.response.AnnouncementDto
 import com.baltroid.core.network.model.response.AuthorDto
 import com.baltroid.core.network.model.response.AvatarDto
 import com.baltroid.core.network.model.response.CommentDto
@@ -16,6 +17,7 @@ import com.baltroid.core.network.model.response.NotificationDto
 import com.baltroid.core.network.model.response.ProfileDto
 import com.baltroid.core.network.model.response.TagWithOriginalsDto
 import com.baltroid.core.network.model.response.WelcomeDto
+import com.baltroid.core.network.util.Constants.Fields.ANNOUNCEMENT
 import com.baltroid.core.network.util.Constants.Fields.AVATAR
 import com.baltroid.core.network.util.Constants.Fields.AVATAR_ID
 import com.baltroid.core.network.util.Constants.Fields.CONTENT
@@ -167,6 +169,9 @@ interface HitReadsService {
     suspend fun updateUserProfile(
         @Field(AVATAR_ID) avatarId: Int
     ): BaltroidResult<HitReadsResponse<Unit?>>
+
+    @GET(ANNOUNCEMENT)
+    suspend fun getAnnouncement(): BaltroidResult<HitReadsResponse<AnnouncementDto>>
 
 
     /*@GET(ORIGINALS_INDEX)

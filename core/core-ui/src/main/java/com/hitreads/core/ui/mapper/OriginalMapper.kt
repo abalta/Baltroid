@@ -263,7 +263,8 @@ fun AuthorModel.asAuthor() = Author(
     authorName = authorName,
     image = image,
     comments = comments?.map { it.asComment() },
-    originals = originals?.map { it.asIndexOriginal() }
+    originals = originals?.map { it.asIndexOriginal() },
+    isFavorite = isFavorite
 )
 
 fun FavoriteOriginalModel.asFavoriteOriginal() = FavoriteOriginal(

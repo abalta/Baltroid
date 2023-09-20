@@ -73,6 +73,7 @@ internal object Constants {
         internal const val AVATAR_ID = "avatar_id"
         internal const val WALLET = "wallet"
         internal const val USER = "user"
+        internal const val ANNOUNCEMENT = "announcement"
         internal const val GEM = "gem"
         internal const val FILTER_TAG = "filter_tag"
         internal const val EPISODE = "episode"

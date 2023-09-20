@@ -3,9 +3,11 @@ package com.baltroid.core.data.repository
 import com.baltroid.core.common.result.BaltroidResult
 import com.baltroid.core.common.result.isFailure
 import com.baltroid.core.common.result.isSuccess
+import com.baltroid.core.data.mapper.asAnnouncementModel
 import com.baltroid.core.data.mapper.asWelcomeModel
 import com.baltroid.core.network.source.HitReadsNetworkDataSource
 import com.baltroid.core.network.util.MESSAGE_UNHANDLED_STATE
+import com.hitreads.core.domain.model.AnnouncementModel
 import com.hitreads.core.domain.model.WelcomeModel
 import com.hitreads.core.domain.repository.WelcomeRepository
 import kotlinx.coroutines.flow.Flow
@@ -26,6 +28,26 @@ class WelcomeRepositoryImpl @Inject constructor(
                     emit(BaltroidResult.success(list.map {
                         it.asWelcomeModel()
                     }))
+                }
+            }
+
+            response.isFailure() -> {
+                val throwable = response.error
+                emit(BaltroidResult.failure(throwable))
+            }
+
+            else -> error("$MESSAGE_UNHANDLED_STATE $response")
+        }
+    }
+
+    override fun getAnnouncement(): Flow<BaltroidResult<AnnouncementModel>> = flow {
+        emit(BaltroidResult.loading())
+        val response = networkDataSource.getAnnouncement()
+
+        when {
+            response.isSuccess() -> {
+                response.value.data?.let { announcementDto ->
+                    emit(BaltroidResult.success(announcementDto.asAnnouncementModel()))
                 }
             }
 
