@@ -59,6 +59,8 @@ firebase-analytics-impl = "21.2.2"
 
 material-dialogs = "0.9.0"
 
+revenuecat = "6.0.0"
+
 chucker = "4.0.0"
 
 [libraries]
@@ -143,6 +145,8 @@ chucker-debug = { module = "com.github.chuckerteam.chucker:library", version.ref
 chucker-release = { module = "com.github.chuckerteam.chucker:library-no-op", version.ref = "chucker" }
 
 material-dialogs-datetime = { module = "io.github.vanpra.compose-material-dialogs:datetime", version.ref = "material-dialogs" }
+
+revenuecat = { module = "com.revenuecat.purchases:purchases", version.ref = "revenuecat" }
 
 # Dependencies of the included build-logic.
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "android-gradle-plugin-tools" }

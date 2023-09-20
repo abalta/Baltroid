@@ -55,4 +55,5 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.analytics)
+    implementation(libs.revenuecat)
 }
