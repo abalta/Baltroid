@@ -72,6 +72,7 @@ import java.util.Locale
 fun HomeScreen(
     viewModel: OriginalViewModel,
     openMenuScreen: () -> Unit,
+    navigateContinueReading: (originalId: Int, episodeId: Int, route: String) -> Unit,
     navigate: (route: String, originalId: Int?) -> Unit
 ) {
     val homeUiState by viewModel.uiStateHome.collectAsStateWithLifecycle()
@@ -91,6 +92,7 @@ fun HomeScreen(
         openMenuScreen = openMenuScreen,
         deleteFavorite = viewModel::deleteFavoriteHome,
         notificationsSize = notificationsSize,
+        navigateContinueReading = navigateContinueReading,
         navigate = navigate
     )
 }
@@ -101,6 +103,7 @@ fun HomeScreenContent(
     notificationsSize: Int,
     openMenuScreen: () -> Unit,
     deleteFavorite: (id: Int) -> Unit,
+    navigateContinueReading: (originalId: Int, episodeId: Int, route: String) -> Unit,
     navigate: (route: String, originalId: Int?) -> Unit
 ) {
     var tabState by rememberSaveable {
@@ -157,11 +160,21 @@ fun HomeScreenContent(
                 ContinueReading(
                     indexOriginals = homeUiState.continueReading,
                     state = rememberLazyListState()
-                ) {
-                    if (it?.type == INTERACTIVE) {
-                        navigate.invoke(HitReadsScreens.InteractiveScreen.route, it.id)
-                    } else {
-                        navigate.invoke(HitReadsScreens.ReadingScreen.route, it?.id)
+                ) { indexOriginal ->
+                    indexOriginal?.let {
+                        if (it.type == INTERACTIVE) {
+                            navigateContinueReading.invoke(
+                                it.id,
+                                it.continueReadingEpisode?.id ?: -1,
+                                HitReadsScreens.InteractiveScreen.route
+                            )
+                        } else {
+                            navigateContinueReading.invoke(
+                                it.id,
+                                it.continueReadingEpisode?.id ?: -1,
+                                HitReadsScreens.ReadingScreen.route
+                            )
+                        }
                     }
                 }
             }
@@ -825,6 +838,7 @@ fun HomeScreenPreview() {
         openMenuScreen = {},
         deleteFavorite = {},
         notificationsSize = 0,
+        navigateContinueReading = { _, _, _ -> Unit },
         navigate = { _: String, _: Int? -> }
     )
 }

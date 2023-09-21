@@ -33,6 +33,7 @@ import com.baltroid.ui.screens.menu.settings.SettingsScreen
 import com.baltroid.ui.screens.menu.shop.ShopScreen
 import com.baltroid.ui.screens.menu.shop.ShopScreenState
 import com.baltroid.ui.screens.notification.NotificationsScreen
+import com.baltroid.ui.screens.onboarding.AnnouncementScreen
 import com.baltroid.ui.screens.onboarding.OnboardingScreen
 import com.baltroid.ui.screens.onboarding.OnboardingViewModel
 import com.baltroid.ui.screens.playground.PlaygroundScreen
@@ -59,6 +60,7 @@ fun HitReadsNavHost(
     val loginViewModel: LoginViewModel = hiltViewModel()
     val originalViewModel: OriginalViewModel = hiltViewModel()
     val authenticationViewModel: AuthenticationViewModel = hiltViewModel()
+    val onboardingViewModel: OnboardingViewModel = hiltViewModel()
 
     Box {
         AnimatedNavHost(
@@ -173,12 +175,24 @@ fun HitReadsNavHost(
             composable(
                 route = HitReadsScreens.OnboardingScreen.route
             ) {
-                val viewModel: OnboardingViewModel = hiltViewModel()
-                val onboardingState = viewModel.uiStateOnboarding
+
+                val onboardingState = onboardingViewModel.uiStateOnboarding
                     .collectAsStateWithLifecycle()
                     .value
 
                 OnboardingScreen(screenState = onboardingState) {
+                    if (onboardingState.announcementModel == null && !onboardingState.isLoading) {
+                        navController.navigate(HitReadsScreens.HomeScreen.route) {
+                            popUpToInclusive(HitReadsScreens.OnboardingScreen.route)
+                            launchSingleTop = true
+                        }
+                    } else {
+                        navController.navigate(HitReadsScreens.AnnouncementScreen.route)
+                    }
+                }
+            }
+            composable(route = HitReadsScreens.AnnouncementScreen.route) {
+                AnnouncementScreen(viewModel = onboardingViewModel) {
                     navController.navigate(HitReadsScreens.HomeScreen.route) {
                         popUpToInclusive(HitReadsScreens.OnboardingScreen.route)
                         launchSingleTop = true
@@ -190,6 +204,11 @@ fun HitReadsNavHost(
             ) {
                 HomeScreen(
                     viewModel = originalViewModel,
+                    navigateContinueReading = { originalId, episodeId, route ->
+                        originalViewModel.setSelectedOriginalId(originalId)
+                        originalViewModel.setSelectedEpisodeId(episodeId)
+                        navController.navigate(route)
+                    },
                     openMenuScreen = openMenuScreen,
                 ) { route, originalId ->
                     originalId?.let {

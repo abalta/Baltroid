@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import coil.compose.AsyncImage
 import com.baltroid.apps.R
+import com.baltroid.ui.common.SetLoadingState
 import com.baltroid.ui.common.SimpleImage
 import com.baltroid.ui.common.VerticalSpacer
 import com.baltroid.ui.theme.localColors
@@ -30,10 +31,11 @@ import com.hitreads.core.domain.model.WelcomeModel
 
 @Composable
 fun OnboardingScreen(
-    screenState: WelcomeModel?,
+    screenState: OnboardingState?,
     onClick: () -> Unit
 ) {
-    OnboardingScreenContent(screenState = screenState, onClick)
+    SetLoadingState(isLoading = screenState?.isLoading == true)
+    OnboardingScreenContent(screenState = screenState?.welcomeModel, onClick)
 }
 
 @Composable

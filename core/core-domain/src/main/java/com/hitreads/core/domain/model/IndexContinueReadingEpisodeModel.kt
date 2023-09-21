@@ -12,5 +12,6 @@ data class IndexContinueReadingEpisodeModel(
     val createdAt: String?,
     val updatedAt: String?,
     val isLocked: Boolean?,
-    val nextEpisodeId: Int?
+    val nextEpisodeId: Int?,
+    val episodeSort: Int?
 )

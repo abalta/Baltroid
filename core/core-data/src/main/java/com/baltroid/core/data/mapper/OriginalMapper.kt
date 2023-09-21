@@ -146,7 +146,8 @@ internal fun IndexNetworkContinueReadingEpisode.asIndexContinueReadingEpisodeMod
         createdAt = createdAt,
         updatedAt = updatedAt,
         nextEpisodeId = nextEpisodeId,
-        isLocked = isLocked
+        isLocked = isLocked,
+        episodeSort = episodeSort
     )
 
 internal fun IndexNetworkAuthor.asIndexAuthorModel() = IndexAuthorModel(

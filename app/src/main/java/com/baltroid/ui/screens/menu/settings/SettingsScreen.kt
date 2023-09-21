@@ -29,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import com.baltroid.apps.BuildConfig
 import com.baltroid.apps.R
 import com.baltroid.ui.common.VerticalSpacer
 import com.baltroid.ui.components.MenuBar
@@ -157,7 +158,7 @@ fun SettingsScreenContent(
                 color = MaterialTheme.localColors.white_alpha09
             )
             Text(
-                text = "1.9.2",
+                text = BuildConfig.VERSION_NAME,
                 style = MaterialTheme.localTextStyles.spaceGrotesk18Medium,
                 color = MaterialTheme.localColors.white_alpha05
             )

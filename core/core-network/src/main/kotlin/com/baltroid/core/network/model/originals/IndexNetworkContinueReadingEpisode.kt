@@ -27,6 +27,8 @@ data class IndexNetworkContinueReadingEpisode(
     val updatedAt: String?,
     @SerialName("is_locked")
     val isLocked: Boolean?,
+    @SerialName("episode_sort")
+    val episodeSort: Int?,
     @SerialName("next_episode")
     val nextEpisodeId: Int?
 )

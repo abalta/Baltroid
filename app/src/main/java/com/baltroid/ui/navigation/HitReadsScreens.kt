@@ -2,6 +2,7 @@ package com.baltroid.ui.navigation
 
 sealed class HitReadsScreens(val route: String) {
     object OnboardingScreen : HitReadsScreens("onboarding")
+    object AnnouncementScreen : HitReadsScreens("announcement")
     object HomeScreen : HitReadsScreens("home")
     object HomeDetailScreen : HitReadsScreens("home_detail")
     object ReadingScreen : HitReadsScreens("reading")

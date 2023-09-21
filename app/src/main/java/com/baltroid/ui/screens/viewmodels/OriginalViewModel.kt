@@ -96,6 +96,11 @@ class OriginalViewModel @Inject constructor(
         }
     }
 
+    fun setSelectedOriginalId(originalId: Int) {
+        selectedOriginalId = originalId
+        showOriginal()
+    }
+
     fun loadOriginals() = viewModelScope.launch {
         getOriginalsUseCase(null, null).handle {
             onLoading {
