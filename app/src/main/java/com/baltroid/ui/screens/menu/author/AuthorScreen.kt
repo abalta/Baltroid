@@ -77,7 +77,11 @@ fun AuthorScreen(
     AuthorScreenContent(
         state = state,
         onBackClick = onBackClick,
-        navigate = navigate
+        navigate = navigate,
+        onLikeClick = { isLiked, id ->
+            if (isLiked) viewModel.unlikeComment(id)
+            else viewModel.likeComment(id)
+        }
     )
 }
 
@@ -86,6 +90,7 @@ fun AuthorScreenContent(
     state: AuthorScreenUiState,
     navigate: (String, Int?) -> Unit,
     onBackClick: () -> Unit,
+    onLikeClick: (Boolean, Int) -> Unit
 ) {
     var selectedTab: AuthorScreenTabs by rememberSaveable {
         mutableStateOf(AuthorScreenTabs.Stories)
@@ -150,9 +155,7 @@ fun AuthorScreenContent(
                             onHideClicked = {/* no-op */ },
                             onExpanseClicked = { /* no-op */
                             },
-                            onLikeClick = { isLiked, id ->
-
-                            },
+                            onLikeClick = onLikeClick,
                             onReplyClick = { /* no-op */
 
                             }

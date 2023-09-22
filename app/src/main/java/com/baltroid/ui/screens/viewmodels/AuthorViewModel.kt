@@ -18,8 +18,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthorViewModel @Inject constructor(
     private val showAuthorUseCase: ShowAuthorUseCase,
-    private val likeCommentUseCase: LikeCommentUseCase,
-    private val unlikeCommentUseCase: UnlikeCommentUseCase
+    private val commentUnlikeCommentUseCase: UnlikeCommentUseCase,
+    private val commentLikeCommentUseCase: LikeCommentUseCase
 ) : ViewModel() {
 
     private val _author = MutableStateFlow(AuthorScreenUiState())
@@ -37,6 +37,64 @@ class AuthorViewModel @Inject constructor(
                 onFailure {
                     _author.update { it.copy(isLoading = false) }
                 }
+            }
+        }
+    }
+
+    fun likeComment(id: Int) = viewModelScope.launch {
+        commentLikeCommentUseCase(id).handle {
+            onLoading {
+                _author.update { it.copy(isLoading = true) }
+            }
+            onSuccess {
+                _author.update { state ->
+                    val updatedList =
+                        if (state.author?.comments?.firstOrNull { it.id == id } != null) {
+                            state.author.comments?.map { if (it.id == id) it.copy(isLiked = true) else it }
+                        } else {
+                            state.author?.comments?.map {
+                                it.copy(replies = it.replies.map {
+                                    if (it.id == id) it.copy(isLiked = true) else it
+                                })
+                            }
+                        }
+                    state.copy(
+                        author = state.author?.copy(comments = updatedList),
+                        isLoading = false
+                    )
+                }
+            }
+            onFailure {
+                _author.update { it.copy(isLoading = false) }
+            }
+        }
+    }
+
+    fun unlikeComment(id: Int) = viewModelScope.launch {
+        commentUnlikeCommentUseCase(id).handle {
+            onLoading {
+                _author.update { it.copy(isLoading = true) }
+            }
+            onSuccess {
+                _author.update { state ->
+                    val updatedList =
+                        if (state.author?.comments?.firstOrNull { it.id == id } != null) {
+                            state.author.comments?.map { if (it.id == id) it.copy(isLiked = false) else it }
+                        } else {
+                            state.author?.comments?.map {
+                                it.copy(replies = it.replies.map {
+                                    if (it.id == id) it.copy(isLiked = false) else it
+                                })
+                            }
+                        }
+                    state.copy(
+                        author = state.author?.copy(comments = updatedList),
+                        isLoading = false
+                    )
+                }
+            }
+            onFailure {
+                _author.update { it.copy(isLoading = false) }
             }
         }
     }
