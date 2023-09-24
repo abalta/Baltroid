@@ -171,7 +171,12 @@ fun HitReadsNavHost(
                 CommentsScreen(
                     viewModel = hiltViewModel(),
                     onBackClick = { navController.popBackStack() }
-                )
+                ) { route, originalId ->
+                    originalId?.let {
+                        originalViewModel.selectedOriginalId = it
+                    }
+                    navController.navigate(route)
+                }
             }
 
             composable(
@@ -247,7 +252,9 @@ fun HitReadsNavHost(
             ) {
                 InteractiveScreen(
                     viewModel = originalViewModel
-                )
+                ) {
+                    navController.navigate(it)
+                }
             }
             composable(
                 route = HitReadsScreens.PlaygroundScreen.route

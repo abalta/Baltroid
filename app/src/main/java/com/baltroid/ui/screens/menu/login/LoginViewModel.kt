@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.baltroid.apps.R
 import com.baltroid.core.common.result.handle
+import com.hitreads.core.domain.usecase.ForgotPasswordUseCase
 import com.hitreads.core.domain.usecase.IsLoggedUseCase
 import com.hitreads.core.domain.usecase.LoginUseCase
 import com.hitreads.core.ui.mapper.asLogin
@@ -17,7 +18,8 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
-    private val loggedUseCase: IsLoggedUseCase
+    private val loggedUseCase: IsLoggedUseCase,
+    private val forgotPasswordUseCase: ForgotPasswordUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LoginUiState())
@@ -96,5 +98,35 @@ class LoginViewModel @Inject constructor(
 
     fun clearLoginError() {
         _uiState.update { it.copy(error = null) }
+    }
+
+    fun sendResetPassword(email: String) {
+        viewModelScope.launch {
+            forgotPasswordUseCase.invoke(email).handle {
+                onLoading {
+                    _uiState.update { it.copy(isLoading = true) }
+                }
+                onSuccess {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            sendResetPasswordMessage = R.string.send_password_reset
+                        )
+                    }
+                }
+                onFailure {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            sendResetPasswordMessage = R.string.invalid_email
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    fun resetInfoMessage() {
+        _uiState.update { it.copy(sendResetPasswordMessage = null) }
     }
 }

@@ -6,6 +6,7 @@ import com.baltroid.core.network.api.service.HitReadsService
 import com.baltroid.core.network.model.HitReadsResponse
 import com.baltroid.core.network.model.originals.IndexNetworkOriginal
 import com.baltroid.core.network.model.originals.NetworkCreateCommentResponse
+import com.baltroid.core.network.model.request.ForgotPasswordRequestBody
 import com.baltroid.core.network.model.request.RegisterRequestBody
 import com.baltroid.core.network.model.response.AnnouncementDto
 import com.baltroid.core.network.model.response.AuthorDto
@@ -178,6 +179,11 @@ class HitReadsNetworkDataSource @Inject constructor(
 
     suspend fun getAnnouncement(): BaltroidResult<HitReadsResponse<AnnouncementDto>> =
         hitReadsService.getAnnouncement()
+
+    suspend fun forgotPassword(email: String): BaltroidResult<HitReadsResponse<Unit>> =
+        hitReadsService.forgotPassword(
+            ForgotPasswordRequestBody(email)
+        )
 
     /*suspend fun getOriginals(
         page: Int = DEFAULT_PAGE,

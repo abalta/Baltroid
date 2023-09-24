@@ -91,7 +91,9 @@ fun RegisterScreen(
     ) {
         datepicker(
             title = stringResource(id = R.string.birthdate),
-            colors = DatePickerDefaults.colors(headerBackgroundColor = MaterialTheme.localColors.orange)
+            colors = DatePickerDefaults.colors(
+                headerBackgroundColor = MaterialTheme.localColors.orange
+            )
         ) {
             selectedDate = selectedDate.copy(
                 day = it.dayOfMonth.toString(),

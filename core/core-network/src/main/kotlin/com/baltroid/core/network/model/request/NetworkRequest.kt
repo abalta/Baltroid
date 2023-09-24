@@ -34,3 +34,9 @@ data class RegisterRequestBody(
     @SerialName("birth_date")
     val birthDate: String,
 )
+
+@Serializable
+data class ForgotPasswordRequestBody(
+    @SerialName("email")
+    val email: String
+)

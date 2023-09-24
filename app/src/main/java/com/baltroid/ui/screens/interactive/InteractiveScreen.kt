@@ -75,6 +75,7 @@ import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.SimpleImage
 import com.baltroid.ui.common.VerticalSpacer
 import com.baltroid.ui.components.CommentWritingCard
+import com.baltroid.ui.navigation.HitReadsScreens
 import com.baltroid.ui.screens.home.detail.EpisodeSheet
 import com.baltroid.ui.screens.home.detail.OriginalBarcode
 import com.baltroid.ui.screens.reading.CommentSection
@@ -94,7 +95,8 @@ import com.hitreads.core.model.ShowEpisode
 
 @Composable
 fun InteractiveScreen(
-    viewModel: OriginalViewModel
+    viewModel: OriginalViewModel,
+    navigate: (String) -> Unit
 ) {
 
     val readingUiState by viewModel.uiStateReading.collectAsStateWithLifecycle()
@@ -119,6 +121,7 @@ fun InteractiveScreen(
         replyComment = viewModel::replyComment,
         createComment = viewModel::createComment,
         hideComment = viewModel::hideComment,
+        navigate = navigate,
         likeComment = { isLiked, id, tabState ->
             if (isLiked) viewModel.unlikeComment(id, tabState)
             else viewModel.likeComment(id, tabState)
@@ -140,6 +143,7 @@ fun InteractiveScreenContent(
     onEpisodeChange: (episodeId: Int) -> Unit,
     expanseComment: (Int, CommentsTabState) -> Unit,
     hideComment: (Int, CommentsTabState) -> Unit,
+    navigate: (String) -> Unit,
 ) {
 
     val interactiveContent = readingUiState.episode?.xmlContents?.episode?.dialogue
@@ -377,7 +381,7 @@ fun InteractiveScreenContent(
                     top.linkTo(parent.top)
                 }
         ) {
-
+            navigate.invoke(HitReadsScreens.ShopScreen.route)
         }
         EpisodeSheet(
             episodes = original.episodes,

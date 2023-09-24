@@ -7,4 +7,5 @@ data class LoginUiState(
     val loginUiModel: Login? = null,
     val isLoading: Boolean = false,
     @StringRes val error: Int? = null,
+    val sendResetPasswordMessage: Int? = null,
 )

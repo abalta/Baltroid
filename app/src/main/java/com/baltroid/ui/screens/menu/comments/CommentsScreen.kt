@@ -48,6 +48,7 @@ import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.VerticalSpacer
 import com.baltroid.ui.components.CommentWritingCard
 import com.baltroid.ui.components.MenuBar
+import com.baltroid.ui.navigation.HitReadsScreens
 import com.baltroid.ui.screens.reading.CommentSection
 import com.baltroid.ui.screens.reading.CommentSectionTabs
 import com.baltroid.ui.screens.reading.comments.CommentsTabState
@@ -63,7 +64,8 @@ import kotlin.random.Random
 @Composable
 fun CommentsScreen(
     viewModel: CommentViewModel,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    navigate: (route: String, episodeId: Int?) -> Unit
 ) {
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -92,6 +94,7 @@ fun CommentsScreen(
         onHideClicked = {
             viewModel.hideComment(it)
         },
+        navigate = navigate,
         onExpanseClicked = {
             viewModel.expanseComment(it)
         }
@@ -106,6 +109,7 @@ private fun CommentsScreenContent(
     onLikeClick: (Boolean, Int) -> Unit,
     onExpanseClicked: (Int) -> Unit,
     onHideClicked: (Int) -> Unit,
+    navigate: (route: String, episodeId: Int?) -> Unit
 ) {
 
     var selectedTab by remember {
@@ -162,13 +166,19 @@ private fun CommentsScreenContent(
 
                 CommentsTabState.MyFavorites -> {
                     Comments(uiState.commentsLikedByMe) {
-
+                        navigate.invoke(
+                            HitReadsScreens.HomeDetailScreen.route,
+                            it.indexOriginal?.id
+                        )
                     }
                 }
 
                 CommentsTabState.MyComments -> {
                     Comments(uiState.commentsByMe) {
-
+                        navigate.invoke(
+                            HitReadsScreens.HomeDetailScreen.route,
+                            it.indexOriginal?.id
+                        )
                     }
                 }
             }
@@ -191,7 +201,7 @@ private fun CommentsScreenContent(
 @Composable
 private fun Comments(
     comments: List<Comment>,
-    onReplyClick: (Int) -> Unit
+    navigate: (Comment) -> Unit
 ) {
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp29)),
@@ -200,9 +210,10 @@ private fun Comments(
     ) {
         items(comments) { comment ->
             CommentItem(
-                comment = comment,
-                onReplyClick = onReplyClick
-            )
+                comment = comment
+            ) {
+                navigate.invoke(comment)
+            }
         }
     }
 }
@@ -210,11 +221,13 @@ private fun Comments(
 @Composable
 private fun CommentItem(
     comment: Comment,
-    onReplyClick: (Int) -> Unit
+    onItemClick: () -> Unit
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.width(IntrinsicSize.Min)
+        modifier = Modifier
+            .width(IntrinsicSize.Min)
+            .clickable { onItemClick.invoke() }
     ) {
         AsyncImage(
             model = comment.indexOriginal?.cover.orEmpty(),
@@ -250,8 +263,7 @@ private fun CommentItem(
         ) {
             SimpleIcon(
                 iconResId = R.drawable.ic_comment,
-                tint = MaterialTheme.localColors.white_alpha04,
-                modifier = Modifier.clickable { onReplyClick.invoke(comment.id) }
+                tint = MaterialTheme.localColors.white_alpha04
             )
             if (!comment.isReply) {
                 Text(

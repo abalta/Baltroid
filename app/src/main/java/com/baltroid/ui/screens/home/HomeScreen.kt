@@ -124,7 +124,9 @@ fun HomeScreenContent(
                 navigate.invoke(HitReadsScreens.NotificationsScreen.route, null)
             },
             signInClick = { navigate.invoke(HitReadsScreens.LoginScreen.route, null) },
-            gemClick = {}
+            gemClick = {
+                navigate.invoke(HitReadsScreens.ShopScreen.route, null)
+            }
         )
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp19))
         HomeScreenTabs(

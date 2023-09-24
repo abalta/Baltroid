@@ -96,6 +96,9 @@ fun ProfileScreenContent(
                     modifier = Modifier.fillMaxWidth(),
                     onCameraClick = {
                         navigate.invoke(HitReadsScreens.AvatarsScreen.route)
+                    },
+                    onPurchaseClick = {
+                        navigate.invoke(HitReadsScreens.ShopScreen.route)
                     }
                 )
                 VerticalSpacer(height = dimensionResource(id = R.dimen.dp40))
@@ -194,6 +197,7 @@ fun IconsAndProfileImage(
     diamondValue: Int,
     imgUrl: String,
     onCameraClick: () -> Unit,
+    onPurchaseClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -204,7 +208,10 @@ fun IconsAndProfileImage(
         ),
         modifier = modifier,
     ) {
-        RoundedIconCard(text = diamondValue.toString(), iconResId = R.drawable.ic_diamond)
+        RoundedIconCard(
+            text = diamondValue.toString(),
+            iconResId = R.drawable.ic_diamond,
+            Modifier.clickable { onPurchaseClick.invoke() })
         AsyncImage(
             model = imgUrl,
             error = painterResource(id = R.drawable.ic_profile),

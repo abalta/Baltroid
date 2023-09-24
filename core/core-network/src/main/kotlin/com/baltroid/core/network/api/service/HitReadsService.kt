@@ -4,6 +4,7 @@ import com.baltroid.core.common.result.BaltroidResult
 import com.baltroid.core.network.model.HitReadsResponse
 import com.baltroid.core.network.model.originals.IndexNetworkOriginal
 import com.baltroid.core.network.model.originals.NetworkCreateCommentResponse
+import com.baltroid.core.network.model.request.ForgotPasswordRequestBody
 import com.baltroid.core.network.model.request.RegisterRequestBody
 import com.baltroid.core.network.model.response.AnnouncementDto
 import com.baltroid.core.network.model.response.AuthorDto
@@ -23,6 +24,7 @@ import com.baltroid.core.network.util.Constants.Fields.AVATAR_ID
 import com.baltroid.core.network.util.Constants.Fields.CONTENT
 import com.baltroid.core.network.util.Constants.Fields.CONTINUE_READING
 import com.baltroid.core.network.util.Constants.Fields.EMAIL
+import com.baltroid.core.network.util.Constants.Fields.FORGOT_PASSWORD
 import com.baltroid.core.network.util.Constants.Fields.GET_BY_FAV
 import com.baltroid.core.network.util.Constants.Fields.ID
 import com.baltroid.core.network.util.Constants.Fields.ORIGINALS
@@ -173,6 +175,8 @@ interface HitReadsService {
     @GET(ANNOUNCEMENT)
     suspend fun getAnnouncement(): BaltroidResult<HitReadsResponse<AnnouncementDto>>
 
+    @POST(FORGOT_PASSWORD)
+    suspend fun forgotPassword(@Body requestBody: ForgotPasswordRequestBody): BaltroidResult<HitReadsResponse<Unit>>
 
     /*@GET(ORIGINALS_INDEX)
     suspend fun getOriginals(

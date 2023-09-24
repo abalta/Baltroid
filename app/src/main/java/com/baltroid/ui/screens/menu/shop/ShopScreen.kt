@@ -83,16 +83,18 @@ fun ShopScreen(
             isLoading = false
         })
     }
-    ShopScreenContent(
-        profile = viewModel.profileState.collectAsStateWithLifecycle().value.profile,
-        currentBalance = screenState.currentBalance,
-        currentPoint = screenState.currentPoint,
-        onBackClick = onBackClick,
-        offerings = offerings,
-        onBuyClicked = {
-            purchase(context.findActivity(), it)
-        }
-    )
+    if (!isLoading) {
+        ShopScreenContent(
+            profile = viewModel.profileState.collectAsStateWithLifecycle().value.profile,
+            currentBalance = screenState.currentBalance,
+            currentPoint = screenState.currentPoint,
+            onBackClick = onBackClick,
+            offerings = offerings,
+            onBuyClicked = {
+                purchase(context.findActivity(), it)
+            }
+        )
+    }
 }
 
 fun purchase(activity: Activity, product: StoreProduct) {
