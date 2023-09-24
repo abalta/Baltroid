@@ -92,7 +92,7 @@ fun ProfileScreenContent(
                 VerticalSpacer(height = dimensionResource(id = R.dimen.dp29))
                 IconsAndProfileImage(
                     diamondValue = profile?.gem.orZero(),
-                    imgUrl = profile?.imgUrl.orEmpty(),
+                    imgUrl = profile?.avatar.orEmpty(),
                     modifier = Modifier.fillMaxWidth(),
                     onCameraClick = {
                         navigate.invoke(HitReadsScreens.AvatarsScreen.route)

@@ -98,19 +98,6 @@ fun SettingsScreenContent(
                 .verticalScroll(scrollState)
         ) {
             SwitchWithText(
-                title = stringResource(id = R.string.sound_effect),
-                modifier = Modifier.fillMaxWidth(),
-                isChecked = soundEffect,
-            ) {
-                soundEffect = !soundEffect
-            }
-            VerticalSpacer(height = R.dimen.dp17)
-            Divider(
-                thickness = dimensionResource(id = R.dimen.dp0_5),
-                color = MaterialTheme.localColors.white
-            )
-            VerticalSpacer(height = R.dimen.dp12)
-            SwitchWithText(
                 title = stringResource(id = R.string.notifications),
                 isChecked = notifications,
                 modifier = Modifier.fillMaxWidth(),
@@ -141,7 +128,7 @@ fun SettingsScreenContent(
                 uriHandler.openUri("http://3.73.140.195/agreements/hitreads-terms-of-use")
             }
             VerticalSpacer(height = R.dimen.dp43)
-            Text(
+            /*Text(
                 text = "KULLANICI ID",
                 style = MaterialTheme.localTextStyles.spaceGrotesk18Medium,
                 color = MaterialTheme.localColors.white_alpha09
@@ -151,9 +138,9 @@ fun SettingsScreenContent(
                 style = MaterialTheme.localTextStyles.spaceGrotesk18Medium,
                 color = MaterialTheme.localColors.white_alpha05
             )
-            VerticalSpacer(height = R.dimen.dp11)
+            VerticalSpacer(height = R.dimen.dp11)*/
             Text(
-                text = "VERSİYON",
+                text = stringResource(id = R.string.version),
                 style = MaterialTheme.localTextStyles.spaceGrotesk18Medium,
                 color = MaterialTheme.localColors.white_alpha09
             )

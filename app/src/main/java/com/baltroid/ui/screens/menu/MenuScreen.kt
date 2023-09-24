@@ -22,6 +22,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,7 +36,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.baltroid.apps.R
@@ -56,11 +56,14 @@ import com.baltroid.util.conditional
 fun MenuScreen(
     onBackClick: () -> Unit,
     isLoggedIn: Boolean,
-    viewModel: AuthenticationViewModel = hiltViewModel(),
+    viewModel: AuthenticationViewModel,
     navigate: (route: String) -> Unit,
 ) {
     val uiState by viewModel.profileState.collectAsStateWithLifecycle()
     SetLoadingState(isLoading = uiState.isLoading)
+    LaunchedEffect(Unit) {
+        viewModel.getProfile()
+    }
     if (isLoggedIn) {
         MenuScreenLoggedInContent(
             balance = uiState.profile?.gem ?: 0,
@@ -106,19 +109,6 @@ fun MenuScreenGuestContent(
                 scrollSection
             ) = createRefs()
 
-            RoundedIconCard(
-                text = balance.toString(),
-                iconResId = R.drawable.ic_diamond,
-                modifier = Modifier
-                    .constrainAs(diamond) {
-                        end.linkTo(image.start, margin = 23.dp)
-                        top.linkTo(image.top)
-                        bottom.linkTo(image.bottom)
-                    }
-                    .clickable {
-                        navigate.invoke(HitReadsScreens.ShopScreen.route)
-                    }
-            )
             SimpleImage(
                 imgResId = R.drawable.ic_member,
                 modifier = Modifier
@@ -480,8 +470,4 @@ fun MenuItem(
 @Preview(widthDp = 360, heightDp = 540)
 @Composable
 fun MenuScreenPreview() {
-    MenuScreen(
-        isLoggedIn = false,
-        onBackClick = {}
-    ) {}
 }

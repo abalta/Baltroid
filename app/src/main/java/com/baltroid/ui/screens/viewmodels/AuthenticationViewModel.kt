@@ -50,7 +50,7 @@ class AuthenticationViewModel @Inject constructor(
         getProfile()
     }
 
-    private fun getProfile() = viewModelScope.launch {
+    fun getProfile() = viewModelScope.launch {
         profileUseCase().handle {
             onSuccess { profileModel ->
                 onLoading {

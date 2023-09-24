@@ -914,6 +914,7 @@ fun CommentItem(
     isChatSelected: Boolean,
     isSeeAllEnabled: Boolean,
     hideAllEnabled: Boolean,
+    disableCommentButtons: Boolean = false,
     onExpanseClicked: () -> Unit,
     onLikeClick: (Boolean, Int) -> Unit,
     onReplyClick: () -> Unit,
@@ -981,15 +982,17 @@ fun CommentItem(
                                     model.isLiked, model.id
                                 )
                             })
-                        IconWithTextNextTo(
-                            iconResId = if (isChatSelected) R.drawable.ic_chat_filled else R.drawable.ic_chat_outlined,
-                            text = model.repliesCount.toString(),
-                            spacedBy = dimensionResource(id = R.dimen.dp6),
-                            textStyle = MaterialTheme.localTextStyles.poppins10Regular,
-                            isTextVisible = !model.isReply,
-                            onIconClick = { onReplyClick.invoke() },
-                        )
-                        SimpleIcon(iconResId = R.drawable.ic_menu_horizontal)
+                        if (!disableCommentButtons) {
+                            IconWithTextNextTo(
+                                iconResId = if (isChatSelected) R.drawable.ic_chat_filled else R.drawable.ic_chat_outlined,
+                                text = model.repliesCount.toString(),
+                                spacedBy = dimensionResource(id = R.dimen.dp6),
+                                textStyle = MaterialTheme.localTextStyles.poppins10Regular,
+                                isTextVisible = !model.isReply,
+                                onIconClick = { onReplyClick.invoke() },
+                            )
+                            SimpleIcon(iconResId = R.drawable.ic_menu_horizontal)
+                        }
                     }
                 }
             }

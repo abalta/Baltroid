@@ -7,6 +7,25 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:552029269378:android:f38eebd94668aa1d45f39b",
+        "android_client_info": {
+          "package_name": "com.TwentyThreeGames.KitaplikProto"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCK8vD2xZlumITqVTlX1NluOrmZ0aeY-H0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:552029269378:android:53a0724f376e153745f39b",
         "android_client_info": {
           "package_name": "com.baltroid.apps"

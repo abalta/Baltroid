@@ -14,7 +14,7 @@ android {
     namespace = "com.baltroid.apps"
 
     defaultConfig {
-        applicationId = "com.baltroid.apps"
+        applicationId = "com.TwentyThreeGames.KitaplikProto"
         versionCode = 3
         versionName = "1.0.4"
     }

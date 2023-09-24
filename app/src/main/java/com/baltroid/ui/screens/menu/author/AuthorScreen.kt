@@ -153,6 +153,7 @@ fun AuthorScreenContent(
                             isSeeAllEnabled = false,
                             hideAllEnabled = false,
                             onHideClicked = {/* no-op */ },
+                            disableCommentButtons = true,
                             onExpanseClicked = { /* no-op */
                             },
                             onLikeClick = onLikeClick,

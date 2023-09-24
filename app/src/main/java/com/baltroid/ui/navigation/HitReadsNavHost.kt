@@ -76,6 +76,7 @@ fun HitReadsNavHost(
             ) {
                 MenuScreen(
                     isLoggedIn = loginViewModel.uiStateIsLogged.collectAsStateWithLifecycle().value,
+                    viewModel = authenticationViewModel,
                     onBackClick = { navController.popBackStack() }
                 ) { route ->
                     navController.navigate(route) {
@@ -143,6 +144,7 @@ fun HitReadsNavHost(
                     currentBalance = 15f
                 )
                 ShopScreen(
+                    viewModel = authenticationViewModel,
                     screenState = screenState,
                     onBackClick = { navController.popBackStack() }
                 )
