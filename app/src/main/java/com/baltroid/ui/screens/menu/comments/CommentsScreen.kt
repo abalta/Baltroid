@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.text.BasicText
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,7 +37,6 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
@@ -153,7 +153,7 @@ private fun CommentsScreenContent(
                     CommentSection(
                         lazyListState = rememberLazyListState(),
                         comments = uiState.commentList,
-                        modifier = Modifier.padding(start = dimensionResource(id = R.dimen.dp30)),
+                        modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.dp24)),
                         onLikeClick = onLikeClick,
                         onReplyClick = {
                             isCommentWriteActive = true
@@ -241,10 +241,11 @@ private fun CommentItem(
                 .clip(MaterialTheme.localShapes.roundedDp18)
         )
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp13))
-        Text(
+        BasicText(
             text = comment.indexOriginal?.title.orEmpty(),
-            style = MaterialTheme.localTextStyles.poppins12Medium,
-            color = MaterialTheme.localColors.white_alpha05, textAlign = TextAlign.Center
+            style = MaterialTheme.localTextStyles.poppins12Medium.copy(color = MaterialTheme.localColors.white_alpha05),
+            minLines = 2,
+            maxLines = 2,
         )
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp10))
         Row(

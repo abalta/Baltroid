@@ -3,7 +3,9 @@ package com.baltroid.ui.screens.onboarding
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -17,6 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
@@ -56,7 +59,8 @@ fun AnnouncementScreenContent(
         AsyncImage(
             model = screenState.welcomeModel?.path,
             contentDescription = null,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
         )
 
         SimpleImage(
@@ -89,13 +93,13 @@ fun AnnouncementScreenContent(
                 .clip(MaterialTheme.localShapes.roundedDp20)
                 .background(MaterialTheme.localColors.white)
         ) {
-            VerticalSpacer(height = R.dimen.dp43)
+            VerticalSpacer(height = R.dimen.dp18)
             Text(
                 text = screenState.announcementModel?.title.toString(),
                 style = MaterialTheme.localTextStyles.poppins20ExtraBold,
                 color = MaterialTheme.localColors.black
             )
-            VerticalSpacer(height = R.dimen.dp24)
+            VerticalSpacer(height = R.dimen.dp18)
             AsyncImage(
                 model = screenState.announcementModel?.image,
                 contentDescription = null,
@@ -104,26 +108,28 @@ fun AnnouncementScreenContent(
                     id = R.drawable.hitreads_placeholder
                 ),
                 modifier = Modifier
-                    .size(
-                        dimensionResource(id = R.dimen.dp145),
-                        dimensionResource(id = R.dimen.dp204)
-                    )
                     .clip(MaterialTheme.localShapes.roundedDp9)
+                    .weight(1f)
+                    .aspectRatio(1f, matchHeightConstraintsFirst = true)
+                    .heightIn(max = dimensionResource(id = R.dimen.dp80))
             )
-            VerticalSpacer(height = R.dimen.dp22)
+            VerticalSpacer(height = R.dimen.dp18)
             Text(
                 text = screenState.announcementModel?.message.toString(),
                 style = MaterialTheme.localTextStyles.spaceGrotesk13Medium,
                 color = MaterialTheme.localColors.black,
-                modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.dp35))
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .padding(horizontal = dimensionResource(id = R.dimen.dp35))
+                    .weight(1f)
             )
-            VerticalSpacer(height = R.dimen.dp33)
             SimpleIcon(
                 iconResId = R.drawable.ic_arrow_right,
                 tint = MaterialTheme.localColors.black,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .navigationBarsPadding()
+                    .padding(bottom = dimensionResource(id = R.dimen.dp24))
                     .clickable { onClick.invoke() }
             )
         }

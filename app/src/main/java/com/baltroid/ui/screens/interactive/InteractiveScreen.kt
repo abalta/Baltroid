@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -702,7 +703,7 @@ fun InteractiveSmsBox(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Bir mesaj yaz",
+                        text = stringResource(id = R.string.write_message),
                         style = MaterialTheme.localTextStyles.poppins14Regular,
                         color = MaterialTheme.localColors.black_alpha05,
                         modifier = Modifier
@@ -878,7 +879,6 @@ fun InteractiveScreenBottomSection(
 }
 
 
-
 @Composable
 fun ImageWithNameCard(
     modifier: Modifier = Modifier
@@ -1004,12 +1004,15 @@ fun InteractiveText(
             text = model?.text.orEmpty(),
             style = MaterialTheme.localTextStyles.poppins14Regular,
             color = MaterialTheme.localColors.white_alpha08,
-            modifier = Modifier.constrainAs(content) {
-                start.linkTo(title.start)
-                bottom.linkTo(icon.bottom, goneMargin = 18.dp)
-                end.linkTo(icon.start, goneMargin = 22.dp)
-                width = Dimension.fillToConstraints
-            }
+            modifier = Modifier
+                .heightIn(max = dimensionResource(id = R.dimen.dp180))
+                .verticalScroll(rememberScrollState())
+                .constrainAs(content) {
+                    start.linkTo(title.start)
+                    bottom.linkTo(icon.bottom, goneMargin = 18.dp)
+                    end.linkTo(icon.start, goneMargin = 22.dp)
+                    width = Dimension.fillToConstraints
+                }
         )
 
         SimpleIcon(

@@ -117,6 +117,7 @@ fun ProfileScreenContent(
                 )
                 VerticalSpacer(height = dimensionResource(id = R.dimen.dp22))
                 ProfileItem(title = profile?.email.orEmpty())
+                VerticalSpacer(height = R.dimen.dp36)
             }
         }
         Divider(

@@ -14,7 +14,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -111,42 +113,37 @@ fun LoginScreenContent(
             IconlessMenuBar(title = stringResource(id = R.string.member_login)) {
                 navigateBack.invoke()
             }
-            Divider(
-                color = MaterialTheme.localColors.white_alpha06,
-                thickness = dimensionResource(id = R.dimen.dp1),
-                modifier = Modifier.fillMaxWidth(0.8f)
-            )
-            VerticalSpacer(height = dimensionResource(id = R.dimen.dp38))
-            SimpleImage(imgResId = R.drawable.ic_profile)
-            VerticalSpacer(height = dimensionResource(id = R.dimen.dp16))
-            UserInputArea(
-                title = R.string.email,
-                value = loginData.email ?: "",
-                onValueChange = loginViewModel::updateEmail,
-                modifier = Modifier.fillMaxWidth(0.7f)
-            )
-            VerticalSpacer(height = dimensionResource(id = R.dimen.dp20))
-            UserInputArea(
-                title = R.string.password,
-                value = loginData.password ?: "",
-                visualTransformation = PasswordVisualTransformation(),
-                onValueChange = loginViewModel::updatePassword,
-                modifier = Modifier.fillMaxWidth(0.7f)
-            )
-            VerticalSpacer(height = dimensionResource(id = R.dimen.dp36))
-            Text(
-                text = stringResource(id = R.string.forgot_password),
-                style = MaterialTheme.localTextStyles.poppins14Medium,
-                color = MaterialTheme.localColors.orange,
-                modifier = Modifier.clickable {
-                    showForgotPasswordPopup = true
-                }
-            )
             Column(
-                verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.verticalScroll(rememberScrollState())
             ) {
+                VerticalSpacer(height = dimensionResource(id = R.dimen.dp38))
+                SimpleImage(imgResId = R.drawable.ic_profile)
+                VerticalSpacer(height = dimensionResource(id = R.dimen.dp16))
+                UserInputArea(
+                    title = R.string.email,
+                    value = loginData.email ?: "",
+                    onValueChange = loginViewModel::updateEmail,
+                    modifier = Modifier.fillMaxWidth(0.7f)
+                )
+                VerticalSpacer(height = dimensionResource(id = R.dimen.dp20))
+                UserInputArea(
+                    title = R.string.password,
+                    value = loginData.password ?: "",
+                    visualTransformation = PasswordVisualTransformation(),
+                    onValueChange = loginViewModel::updatePassword,
+                    modifier = Modifier.fillMaxWidth(0.7f)
+                )
+                VerticalSpacer(height = dimensionResource(id = R.dimen.dp36))
+                Text(
+                    text = stringResource(id = R.string.forgot_password),
+                    style = MaterialTheme.localTextStyles.poppins14Medium,
+                    color = MaterialTheme.localColors.orange,
+                    modifier = Modifier.clickable {
+                        showForgotPasswordPopup = true
+                    }
+                )
+                VerticalSpacer(height = R.dimen.dp24)
                 Divider(
                     thickness = dimensionResource(id = R.dimen.dp0_5),
                     color = MaterialTheme.localColors.white_alpha06
