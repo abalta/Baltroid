@@ -52,6 +52,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.layoutId
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -75,6 +76,7 @@ import com.baltroid.ui.common.SetLoadingState
 import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.SimpleImage
 import com.baltroid.ui.common.VerticalSpacer
+import com.baltroid.ui.common.showLoginToast
 import com.baltroid.ui.components.CommentWritingCard
 import com.baltroid.ui.navigation.HitReadsScreens
 import com.baltroid.ui.screens.home.detail.EpisodeSheet
@@ -115,6 +117,7 @@ fun InteractiveScreen(
         readingUiState = readingUiState,
         action = viewModel::handleUiEvent,
         gem = homeState.profileModel.gem,
+        isLoggedIn = homeState.isUserLoggedIn,
         loadComments = viewModel::getOriginalComments,
         setReplyComment = viewModel::setReplyComment,
         onEpisodeChange = viewModel::setSelectedEpisodeId,
@@ -134,6 +137,7 @@ fun InteractiveScreen(
 fun InteractiveScreenContent(
     original: IndexOriginal,
     readingUiState: ReadingUiState,
+    isLoggedIn: Boolean,
     gem: Int,
     setReplyComment: (Comment) -> Unit,
     loadComments: () -> Unit,
@@ -146,7 +150,7 @@ fun InteractiveScreenContent(
     hideComment: (Int, CommentsTabState) -> Unit,
     navigate: (String) -> Unit,
 ) {
-
+    val context = LocalContext.current
     val interactiveContent = readingUiState.episode?.xmlContents?.episode?.dialogue
     var currentDialogue by remember(interactiveContent) {
         mutableStateOf(interactiveContent?.firstOrNull())
@@ -173,7 +177,11 @@ fun InteractiveScreenContent(
 
     val isEndOfEpisode by remember(currentDialogue) {
         derivedStateOf {
-            currentDialogue?.nextLineId == currentDialogue?.lineId
+            (currentDialogue?.nextLineId == currentDialogue?.lineId).also {
+                if (it) {
+                    currentDialogue = currentDialogue?.copy(lineType = "NOT")
+                }
+            }
         }
     }
 
@@ -312,7 +320,11 @@ fun InteractiveScreenContent(
                 if (it == InteractiveScreenAction.SHARE) {
                     isBarcodeEnabled = true
                 } else {
-                    action.invoke(it)
+                    if (isLoggedIn) {
+                        action.invoke(it)
+                    } else {
+                        context.showLoginToast()
+                    }
                 }
             },
             modifier = Modifier
@@ -345,10 +357,20 @@ fun InteractiveScreenContent(
             indexOriginal = original,
             episode = readingUiState.episode,
             createComment = {
-                loadComments.invoke()
-                isCommentsEnabled = true
+                if (isLoggedIn) {
+                    loadComments.invoke()
+                    isCommentsEnabled = true
+                } else {
+                    context.showLoginToast()
+                }
             },
-            createFavorite = { action.invoke(InteractiveScreenAction.CREATE_FAVORITE) },
+            createFavorite = {
+                if (isLoggedIn) {
+                    action.invoke(InteractiveScreenAction.CREATE_FAVORITE)
+                } else {
+                    context.showLoginToast()
+                }
+            },
             onEpisodesClicked = { isEpisodesEnabled = true },
             modifier = Modifier
                 .fillMaxWidth()
@@ -382,7 +404,11 @@ fun InteractiveScreenContent(
                     top.linkTo(parent.top)
                 }
         ) {
-            navigate.invoke(HitReadsScreens.ShopScreen.route)
+            if (isLoggedIn) {
+                navigate.invoke(HitReadsScreens.ShopScreen.route)
+            } else {
+                context.showLoginToast()
+            }
         }
         EpisodeSheet(
             episodes = original.episodes,
@@ -416,24 +442,45 @@ fun InteractiveScreenContent(
                 height = Dimension.percent(0.7f)
                 visibility = if (isCommentsEnabled) Visible else Gone
             },
-            likeComment = likeComment,
+            likeComment = { isLiked, id, tabState ->
+                if (isLoggedIn) {
+                    likeComment.invoke(isLiked, id, tabState)
+                } else {
+                    context.showLoginToast()
+                }
+            },
             expanseComment = expanseComment,
             uiState = readingUiState,
-            setReplyComment = setReplyComment,
+            setReplyComment = {
+                if (isLoggedIn) {
+                    setReplyComment.invoke(it)
+                } else {
+                    context.showLoginToast()
+                }
+            },
             onBackClick = {
                 isCommentsEnabled = false
             },
             showWriteCard = {
-                isWriteCardShown = true
+                if (isLoggedIn) {
+                    isWriteCardShown = true
+                } else {
+                    context.showLoginToast()
+                }
             },
             setSelectedCommentTab = {
                 selectedCommentTab = it
             },
             createComment = {
-                createComment = true
-                isWriteCardShown = true
+                if (isLoggedIn) {
+                    createComment = true
+                    isWriteCardShown = true
+                } else {
+                    context.showLoginToast()
+                }
             },
             hideComment = hideComment,
+            isLoggedIn = isLoggedIn,
             selectedCommentTab = selectedCommentTab
         )
         AnimatedVisibility(visible = isWriteCardShown, enter = fadeIn(), exit = fadeOut()) {
@@ -1031,7 +1078,7 @@ fun InteractiveText(
             imgRes = talker,
             modifier = Modifier.constrainAs(image) {
                 bottom.linkTo(content.top, 9.dp)
-                end.linkTo(parent.end)
+                end.linkTo(parent.end, 24.dp)
                 visibility = if (model?.talker != null) Visible else Gone
             }
         )
@@ -1180,6 +1227,7 @@ fun InteractiveScreenToolbar(
 fun InteractiveCommentsSection(
     uiState: ReadingUiState,
     modifier: Modifier = Modifier,
+    isLoggedIn: Boolean,
     selectedCommentTab: CommentsTabState,
     setSelectedCommentTab: (CommentsTabState) -> Unit,
     expanseComment: (Int, CommentsTabState) -> Unit,
@@ -1201,6 +1249,7 @@ fun InteractiveCommentsSection(
             VerticalSpacer(height = dimensionResource(id = R.dimen.dp37))
             CommentSectionTabs(
                 tabState = selectedCommentTab,
+                isLoggedIn = isLoggedIn,
                 onTabSelect = setSelectedCommentTab
             )
             CommentSection(

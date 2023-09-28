@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -46,6 +47,7 @@ import com.baltroid.ui.common.HorizontalSpacer
 import com.baltroid.ui.common.SetLoadingState
 import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.VerticalSpacer
+import com.baltroid.ui.common.showLoginToast
 import com.baltroid.ui.components.IconlessMenuBar
 import com.baltroid.ui.navigation.HitReadsScreens
 import com.baltroid.ui.screens.menu.favorites.NamelessAuthorItem
@@ -61,6 +63,7 @@ import com.hitreads.core.model.IndexOriginal
 @Composable
 fun AuthorScreen(
     id: Int,
+    isLoggedIn: Boolean,
     viewModel: AuthorViewModel = hiltViewModel(),
     navigate: (String, Int?) -> Unit,
     onBackClick: () -> Unit
@@ -78,6 +81,7 @@ fun AuthorScreen(
         state = state,
         onBackClick = onBackClick,
         navigate = navigate,
+        isLoggedIn = isLoggedIn,
         onLikeClick = { isLiked, id ->
             if (isLiked) viewModel.unlikeComment(id)
             else viewModel.likeComment(id)
@@ -88,6 +92,7 @@ fun AuthorScreen(
 @Composable
 fun AuthorScreenContent(
     state: AuthorScreenUiState,
+    isLoggedIn: Boolean,
     navigate: (String, Int?) -> Unit,
     onBackClick: () -> Unit,
     onLikeClick: (Boolean, Int) -> Unit
@@ -95,7 +100,7 @@ fun AuthorScreenContent(
     var selectedTab: AuthorScreenTabs by rememberSaveable {
         mutableStateOf(AuthorScreenTabs.Stories)
     }
-
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -156,7 +161,13 @@ fun AuthorScreenContent(
                             disableCommentButtons = true,
                             onExpanseClicked = { /* no-op */
                             },
-                            onLikeClick = onLikeClick,
+                            onLikeClick = { isLiked, id ->
+                                if (isLoggedIn) {
+                                    onLikeClick.invoke(isLiked, id)
+                                } else {
+                                    context.showLoginToast()
+                                }
+                            },
                             onReplyClick = { /* no-op */
 
                             }

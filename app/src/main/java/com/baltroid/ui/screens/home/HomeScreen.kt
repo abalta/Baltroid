@@ -38,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -52,6 +53,7 @@ import com.baltroid.ui.common.HorizontalSpacer
 import com.baltroid.ui.common.SetLoadingState
 import com.baltroid.ui.common.SimpleImage
 import com.baltroid.ui.common.VerticalSpacer
+import com.baltroid.ui.common.showLoginToast
 import com.baltroid.ui.components.HitReadsTopBar
 import com.baltroid.ui.navigation.HitReadsScreens
 import com.baltroid.ui.screens.menu.favorites.YellowStarBox
@@ -109,6 +111,7 @@ fun HomeScreenContent(
     var tabState by rememberSaveable {
         mutableStateOf(HomeScreenTabs.AllStories)
     }
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier.navigationBarsPadding()
@@ -121,7 +124,11 @@ fun HomeScreenContent(
             gemCount = homeUiState.profileModel.gem,
             onMenuClick = openMenuScreen,
             onNotificationClick = {
-                navigate.invoke(HitReadsScreens.NotificationsScreen.route, null)
+                if (homeUiState.isUserLoggedIn) {
+                    navigate.invoke(HitReadsScreens.NotificationsScreen.route, null)
+                } else {
+                    context.showLoginToast()
+                }
             },
             signInClick = { navigate.invoke(HitReadsScreens.LoginScreen.route, null) },
             gemClick = {

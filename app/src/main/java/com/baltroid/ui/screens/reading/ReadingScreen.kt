@@ -57,6 +57,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -75,6 +76,7 @@ import com.baltroid.ui.common.SetLoadingState
 import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.SimpleImage
 import com.baltroid.ui.common.VerticalSpacer
+import com.baltroid.ui.common.showLoginToast
 import com.baltroid.ui.components.CommentWritingCard
 import com.baltroid.ui.components.HitReadsSideBar
 import com.baltroid.ui.components.HitReadsTopBar
@@ -101,6 +103,7 @@ fun ReadingScreen(
 ) {
     val uiState by viewModel.uiStateReading.collectAsStateWithLifecycle()
     val uiStateDetail by viewModel.uiStateDetail.collectAsStateWithLifecycle()
+    val uiStateHome by viewModel.uiStateHome.collectAsStateWithLifecycle()
     SetLoadingState(isLoading = uiState.isLoading)
 
     LaunchedEffect(Unit) {
@@ -118,6 +121,7 @@ fun ReadingScreen(
         onEpisodeChange = viewModel::setSelectedEpisodeId,
         loadComments = viewModel::getOriginalComments,
         onNextClicked = viewModel::nextEpisode,
+        isLoggedIn = uiStateHome.isUserLoggedIn,
         onCreateComment = { comment -> viewModel.createComment(comment, null) },
         onLikeClick = { isLiked ->
             if (isLiked) viewModel.deleteFavorite()
@@ -144,6 +148,7 @@ fun ReadingScreen(
 fun ReadingScreenContent(
     uiState: ReadingUiState,
     original: IndexOriginal?,
+    isLoggedIn: Boolean,
     onNextClicked: () -> Unit,
     onCreateComment: (String) -> Unit,
     setReplyComment: (Comment) -> Unit,
@@ -159,6 +164,7 @@ fun ReadingScreenContent(
     goToFirstEpisode: (id: Int) -> Unit,
 ) {
     val scrollState = rememberScrollState()
+    val context = LocalContext.current
     var isSidebarVisible by rememberSaveable {
         mutableStateOf(true)
     }
@@ -223,7 +229,13 @@ fun ReadingScreenContent(
                             onAuthorClick = {
                                 navigate.invoke(HitReadsScreens.AuthorScreen.route + "/${original?.indexAuthor?.id}")
                             },
-                            onLikeClick = { onLikeClick.invoke(it) },
+                            onLikeClick = {
+                                if (isLoggedIn) {
+                                    onLikeClick.invoke(it)
+                                } else {
+                                    context.showLoginToast()
+                                }
+                            },
                             modifier = Modifier.padding(
                                 top = dimensionResource(id = R.dimen.dp12),
                                 start = dimensionResource(id = R.dimen.dp31),
@@ -233,7 +245,13 @@ fun ReadingScreenContent(
                             ReadingSection(
                                 body = uiState.episode?.episodeContent.orEmpty(),
                                 isLastEpisode = uiState.episode?.isLastEpisode == true,
-                                onCreateFavorite = onCreateFavorite,
+                                onCreateFavorite = {
+                                    if (isLoggedIn) {
+                                        onCreateFavorite.invoke(it)
+                                    } else {
+                                        context.showLoginToast()
+                                    }
+                                },
                                 onShare = {
                                     isBarcodeEnabled = true
                                 },
@@ -249,6 +267,7 @@ fun ReadingScreenContent(
                             VerticalSpacer(height = R.dimen.dp8)
                             CommentSectionTabs(
                                 tabState = selectedCommentTab,
+                                isLoggedIn = isLoggedIn,
                                 onTabSelect = { selectedCommentTab = it }
                             )
                             CommentSection(
@@ -259,11 +278,19 @@ fun ReadingScreenContent(
                                     else -> emptyList()
                                 },
                                 onLikeClick = { isLiked, id ->
-                                    likeComment.invoke(isLiked, id, selectedCommentTab)
+                                    if (isLoggedIn) {
+                                        likeComment.invoke(isLiked, id, selectedCommentTab)
+                                    } else {
+                                        context.showLoginToast()
+                                    }
                                 },
                                 onReplyClick = {
-                                    setReplyComment.invoke(it)
-                                    isWriteCardShown = true
+                                    if (isLoggedIn) {
+                                        setReplyComment.invoke(it)
+                                        isWriteCardShown = true
+                                    } else {
+                                        context.showLoginToast()
+                                    }
                                 },
                                 onExpanseClicked = {
                                     expanseComment.invoke(it, selectedCommentTab)
@@ -289,7 +316,13 @@ fun ReadingScreenContent(
                             }
                         },
                         isCommentsSelected = !isReadingSection,
-                        onCreateComment = { isWriteCardShown = true },
+                        onCreateComment = {
+                            if (isLoggedIn) {
+                                isWriteCardShown = true
+                            } else {
+                                context.showLoginToast()
+                            }
+                        },
                         onShowEpisodes = { isSideEpisodesSheetVisible = true },
                         modifier = Modifier
                             .width(IntrinsicSize.Min)
@@ -854,6 +887,7 @@ fun CommentSection(
 fun CommentSectionTabs(
     tabState: CommentsTabState,
     scrollState: ScrollState = rememberScrollState(),
+    isLoggedIn: Boolean = false,
     onTabSelect: (CommentsTabState) -> Unit
 ) {
     Row(
@@ -868,17 +902,19 @@ fun CommentSectionTabs(
         ) {
             onTabSelect.invoke(CommentsTabState.AllComments)
         }
-        TabItem(
-            title = stringResource(id = R.string.my_favorite_comments),
-            isSelected = tabState == CommentsTabState.MyFavorites
-        ) {
-            onTabSelect.invoke(CommentsTabState.MyFavorites)
-        }
-        TabItem(
-            title = stringResource(id = R.string.my_comments),
-            isSelected = tabState == CommentsTabState.MyComments
-        ) {
-            onTabSelect.invoke(CommentsTabState.MyComments)
+        if (isLoggedIn) {
+            TabItem(
+                title = stringResource(id = R.string.my_favorite_comments),
+                isSelected = tabState == CommentsTabState.MyFavorites
+            ) {
+                onTabSelect.invoke(CommentsTabState.MyFavorites)
+            }
+            TabItem(
+                title = stringResource(id = R.string.my_comments),
+                isSelected = tabState == CommentsTabState.MyComments
+            ) {
+                onTabSelect.invoke(CommentsTabState.MyComments)
+            }
         }
     }
 }

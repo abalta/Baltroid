@@ -132,6 +132,7 @@ fun HitReadsNavHost(
                 AuthorScreen(
                     id = backStackEntry.arguments?.getInt("authorId") ?: -1,
                     onBackClick = { navController.popBackStack() },
+                    isLoggedIn = originalViewModel.uiStateHome.collectAsStateWithLifecycle().value.isUserLoggedIn,
                     navigate = { route, id ->
                         originalViewModel.selectedOriginalId = id
                         navController.navigate(route)

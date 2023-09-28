@@ -36,6 +36,7 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -49,6 +50,7 @@ import com.baltroid.ui.common.SetLoadingState
 import com.baltroid.ui.common.SimpleIcon
 import com.baltroid.ui.common.SimpleImage
 import com.baltroid.ui.common.VerticalSpacer
+import com.baltroid.ui.common.showLoginToast
 import com.baltroid.ui.components.HitReadsTopBar
 import com.baltroid.ui.navigation.HitReadsScreens
 import com.baltroid.ui.screens.home.GenreSection
@@ -71,6 +73,7 @@ fun HomeDetailScreen(
     navigate: (route: String, episodeId: Int?) -> Unit
 ) {
     val detailUIState by viewModel.uiStateDetail.collectAsStateWithLifecycle()
+    val homeState by viewModel.uiStateHome.collectAsStateWithLifecycle()
     val notificationSize = viewModel.uiStateNotifications.collectAsStateWithLifecycle().value.size
     SetLoadingState(isLoading = detailUIState.isLoading)
 
@@ -82,6 +85,7 @@ fun HomeDetailScreen(
         navigate = navigate,
         notificationSize = notificationSize,
         openMenuScreen = openMenuScreen,
+        isLoggedIn = homeState.isUserLoggedIn,
         original = detailUIState.original,
     )
 }
@@ -90,6 +94,7 @@ fun HomeDetailScreen(
 private fun HomeDetailScreenContent(
     original: IndexOriginal,
     notificationSize: Int,
+    isLoggedIn: Boolean,
     openMenuScreen: () -> Unit,
     navigate: (route: String, episodeId: Int?) -> Unit
 ) {
@@ -100,6 +105,7 @@ private fun HomeDetailScreenContent(
     var isBarcodeEnabled by rememberSaveable {
         mutableStateOf(false)
     }
+    val context = LocalContext.current
 
     BackHandler(
         enabled = isEpisodesEnabled
@@ -153,7 +159,11 @@ private fun HomeDetailScreenContent(
                     onIconClick = {},
                     iconTint = MaterialTheme.localColors.white,
                     onNotificationClick = {
-                        navigate.invoke(HitReadsScreens.NotificationsScreen.route, null)
+                        if (isLoggedIn) {
+                            navigate.invoke(HitReadsScreens.NotificationsScreen.route, null)
+                        } else {
+                            context.showLoginToast()
+                        }
                     },
                     gemClick = {},
                     signInClick = {},

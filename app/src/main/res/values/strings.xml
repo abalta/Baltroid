@@ -103,4 +103,5 @@
     <string name="support">DESTEK</string>
     <string name="version">VERSİYON</string>
     <string name="send_password_reset">Şifre sıfırlama bağlantısı gönderildi. Lütfen e-posta adresinizi kontrol edin.</string>
+    <string name="login_needed">Bu işlemi yapabilmek için giriş yapmalısınız.</string>
 </resources>

@@ -143,7 +143,7 @@ private fun CommentsScreenContent(
             }
             VerticalSpacer(height = dimensionResource(id = R.dimen.dp24))
 
-            CommentSectionTabs(tabState = selectedTab) {
+            CommentSectionTabs(tabState = selectedTab, isLoggedIn = true) {
                 selectedTab = it
             }
 
