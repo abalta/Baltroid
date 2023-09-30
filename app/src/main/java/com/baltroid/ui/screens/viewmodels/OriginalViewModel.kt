@@ -322,14 +322,16 @@ class OriginalViewModel @Inject constructor(
     }
 
     fun startReadingEpisode() {
-        viewModelScope.launch {
-            startReadingEpisodeUseCase(_selectedEpisodeId.value).handle { /* no-op */
+        if (_uiStateHome.value.isUserLoggedIn) {
+            viewModelScope.launch {
+                startReadingEpisodeUseCase(_selectedEpisodeId.value).handle { /* no-op */
+                }
+                endReadingEpisode()
             }
-            endReadingEpisode()
         }
     }
 
-    fun endReadingEpisode() {
+    private fun endReadingEpisode() {
         viewModelScope.launch {
             endReadingEpisodeUseCase(_selectedEpisodeId.value).handle { /* no-op */
             }
