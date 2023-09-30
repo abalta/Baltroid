@@ -76,6 +76,7 @@ internal object Constants {
         internal const val ANNOUNCEMENT = "announcement"
         internal const val FORGOT_PASSWORD = "forgot-password"
         internal const val GEM = "gem"
+        internal const val PURCHASE = "purchase"
         internal const val FILTER_TAG = "filter_tag"
         internal const val EPISODE = "episode"
         internal const val DIALOGUE = "dialogue"

@@ -290,7 +290,8 @@ fun ProfileScreenPreview() {
             avatar = "et",
             is_beta = false,
             gem = 4820,
-            imgUrl = "https://duckduckgo.com/?q=sed"
+            imgUrl = "https://duckduckgo.com/?q=sed",
+            id = 0
         ),
         navigate = {
 

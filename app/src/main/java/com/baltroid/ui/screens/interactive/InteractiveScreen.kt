@@ -110,6 +110,7 @@ fun InteractiveScreen(
 
     LaunchedEffect(viewModel.selectedEpisodeId.value) {
         viewModel.showEpisode(OriginalType.INTERACTIVE)
+        viewModel.startReadingEpisode()
     }
 
     InteractiveScreenContent(

@@ -1,5 +1,6 @@
 package com.baltroid.ui.screens.home.detail
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -75,10 +76,29 @@ fun HomeDetailScreen(
     val detailUIState by viewModel.uiStateDetail.collectAsStateWithLifecycle()
     val homeState by viewModel.uiStateHome.collectAsStateWithLifecycle()
     val notificationSize = viewModel.uiStateNotifications.collectAsStateWithLifecycle().value.size
+    val context = LocalContext.current
     SetLoadingState(isLoading = detailUIState.isLoading)
 
     LaunchedEffect(Unit) {
         viewModel.showOriginal()
+    }
+
+    LaunchedEffect(detailUIState.originalPurchased) {
+        if (detailUIState.originalPurchased == true) {
+            Toast.makeText(
+                context,
+                context.getString(R.string.original_purchased),
+                Toast.LENGTH_LONG
+            ).show()
+        }
+        if (detailUIState.originalPurchased == false) {
+            Toast.makeText(
+                context,
+                context.getString(R.string.something_went_wrong),
+                Toast.LENGTH_LONG
+            ).show()
+        }
+        viewModel.clearPurchaseState()
     }
 
     HomeDetailScreenContent(
@@ -86,6 +106,7 @@ fun HomeDetailScreen(
         notificationSize = notificationSize,
         openMenuScreen = openMenuScreen,
         isLoggedIn = homeState.isUserLoggedIn,
+        bulkPurchase = viewModel::bulkPurchase,
         original = detailUIState.original,
     )
 }
@@ -94,6 +115,7 @@ fun HomeDetailScreen(
 private fun HomeDetailScreenContent(
     original: IndexOriginal,
     notificationSize: Int,
+    bulkPurchase: () -> Unit,
     isLoggedIn: Boolean,
     openMenuScreen: () -> Unit,
     navigate: (route: String, episodeId: Int?) -> Unit
@@ -241,33 +263,43 @@ private fun HomeDetailScreenContent(
                                 end = dimensionResource(id = R.dimen.dp47)
                             )
                     ) {
-                        Row(
-                            modifier = Modifier
-                                .align(Alignment.Bottom)
-                        ) {
-                            if (original.isLocked) {
+                        if (original.isBulkPurchasable) {
+                            Row(
+                                modifier = Modifier
+                                    .align(Alignment.Bottom)
+                            ) {
+
                                 SimpleIcon(iconResId = R.drawable.ic_lock)
                                 HorizontalSpacer(width = dimensionResource(id = R.dimen.dp8))
+
+                                Text(
+                                    text = stringResource(id = R.string.purchase_all_book),
+                                    style = MaterialTheme.localTextStyles.poppins12Regular,
+                                    color = MaterialTheme.localColors.white,
+                                    modifier = Modifier.clickable {
+                                        bulkPurchase.invoke()
+                                    }
+                                )
                             }
-                            Text(
-                                text = original.hashtag.orEmpty(),
-                                style = MaterialTheme.localTextStyles.poppins12Regular,
-                                color = MaterialTheme.localColors.white
-                            )
                         }
-                        SimpleImage(imgResId = R.drawable.ic_read, modifier = Modifier.clickable {
-                            if (original.type == INTERACTIVE) {
-                                navigate.invoke(
-                                    HitReadsScreens.InteractiveScreen.route,
-                                    original.episodes.firstOrNull()?.id
-                                )
-                            } else {
-                                navigate.invoke(
-                                    HitReadsScreens.ReadingScreen.route,
-                                    original.episodes.firstOrNull()?.id
-                                )
-                            }
-                        })
+                        SimpleImage(
+                            imgResId = R.drawable.ic_read,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentWidth(Alignment.End)
+                                .clickable {
+                                    if (original.type == INTERACTIVE) {
+                                        navigate.invoke(
+                                            HitReadsScreens.InteractiveScreen.route,
+                                            original.episodes.firstOrNull()?.id
+                                        )
+                                    } else {
+                                        navigate.invoke(
+                                            HitReadsScreens.ReadingScreen.route,
+                                            original.episodes.firstOrNull()?.id
+                                        )
+                                    }
+                                })
                     }
                     VerticalSpacer(height = dimensionResource(id = R.dimen.dp30))
                 }

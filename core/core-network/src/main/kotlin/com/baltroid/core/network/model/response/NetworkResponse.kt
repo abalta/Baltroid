@@ -56,6 +56,8 @@ data class LoginDto(
 data class ProfileDto(
     @SerialName("name")
     val name: String?,
+    @SerialName("id")
+    val id: Int?,
     @SerialName("username")
     val userName: String?,
     @SerialName("email")

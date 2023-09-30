@@ -19,6 +19,7 @@ interface OriginalRepository {
 
     fun likeOriginal(originalId: Int): Flow<BaltroidResult<Unit?>>
     fun unlikeOriginal(originalId: Int): Flow<BaltroidResult<Unit?>>
+    fun bulkPurchase(originalId: Int): Flow<BaltroidResult<Unit?>>
     fun showOriginal(originalId: Int): Flow<BaltroidResult<IndexOriginalModel>>
     fun showEpisode(episodeId: Int, originalType: String): Flow<BaltroidResult<ShowEpisodeModel>>
     suspend fun fetchEpisodeFromUrl(url: String): String

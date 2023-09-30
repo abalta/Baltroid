@@ -64,6 +64,10 @@ class OriginalRepositoryImpl @Inject constructor(
         networkDataSource.likeOriginal(originalId)
     }
 
+    override fun bulkPurchase(originalId: Int): Flow<BaltroidResult<Unit?>> = networkBoundResource {
+        networkDataSource.bulkPurchase(originalId)
+    }
+
     override fun unlikeOriginal(originalId: Int): Flow<BaltroidResult<Unit?>> =
         networkBoundResource {
             networkDataSource.unlikeOriginal(originalId)

@@ -28,7 +28,9 @@ import com.baltroid.core.network.util.Constants.Fields.FORGOT_PASSWORD
 import com.baltroid.core.network.util.Constants.Fields.GET_BY_FAV
 import com.baltroid.core.network.util.Constants.Fields.ID
 import com.baltroid.core.network.util.Constants.Fields.ORIGINALS
+import com.baltroid.core.network.util.Constants.Fields.ORIGINAL_ID
 import com.baltroid.core.network.util.Constants.Fields.PASSWORD
+import com.baltroid.core.network.util.Constants.Fields.PURCHASE
 import com.baltroid.core.network.util.Constants.Fields.RESPONSE_ID
 import com.baltroid.core.network.util.Constants.Fields.TYPE
 import com.baltroid.core.network.util.Constants.Fields.USER
@@ -92,7 +94,9 @@ interface HitReadsService {
     ): BaltroidResult<HitReadsResponse<List<CommentDto>>>
 
     @GET("$COMMENT/$BY_ME")
-    suspend fun getCommentsByMe(): BaltroidResult<HitReadsResponse<List<CommentDto>>>
+    suspend fun getCommentsByMe(
+        @Query(ORIGINALS_INDEX) originalId: Int? = null
+    ): BaltroidResult<HitReadsResponse<List<CommentDto>>>
 
     @GET("$COMMENT/$LIKE/$BY_ME")
     suspend fun getCommentsLikedByMe(): BaltroidResult<HitReadsResponse<List<CommentDto>>>
@@ -177,6 +181,12 @@ interface HitReadsService {
 
     @POST(FORGOT_PASSWORD)
     suspend fun forgotPassword(@Body requestBody: ForgotPasswordRequestBody): BaltroidResult<HitReadsResponse<Unit>>
+
+    @POST("$ORIGINALS_INDEX/$PURCHASE")
+    @FormUrlEncoded
+    suspend fun bulkPurchase(
+        @Field(ORIGINAL_ID) originalId: Int
+    ): BaltroidResult<HitReadsResponse<Unit?>>
 
     /*@GET(ORIGINALS_INDEX)
     suspend fun getOriginals(

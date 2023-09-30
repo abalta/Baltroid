@@ -8,6 +8,7 @@ data class IndexOriginalModel(
     val author: IndexAuthorModel?,
     val banner: String?,
     val cover: String?,
+    val isBulkPurchasable: Boolean?,
     val description: String?,
     val id: Int?,
     val isActual: Boolean?,

@@ -8,5 +8,6 @@ data class Profile(
     val avatar: String,
     val is_beta: Boolean,
     val gem: Int,
-    val imgUrl: String
+    val imgUrl: String,
+    val id: Int
 )

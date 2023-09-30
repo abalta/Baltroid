@@ -29,27 +29,34 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.baltroid.apps.BuildConfig
 import com.baltroid.apps.R
 import com.baltroid.ui.common.VerticalSpacer
 import com.baltroid.ui.components.MenuBar
 import com.baltroid.ui.screens.interactive.EpisodeButton
+import com.baltroid.ui.screens.viewmodels.AuthenticationViewModel
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localTextStyles
+import com.hitreads.core.model.Profile
 
 @Composable
 fun SettingsScreen(
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    viewModel: AuthenticationViewModel,
 ) {
+    val state by viewModel.profileState.collectAsStateWithLifecycle()
     SettingsScreenContent(
         scrollState = rememberScrollState(),
-        onBackClick = onBackClick
+        onBackClick = onBackClick,
+        profile = state.profile
     )
 }
 
 @Composable
 fun SettingsScreenContent(
     scrollState: ScrollState,
+    profile: Profile?,
     onBackClick: () -> Unit
 ) {
 
@@ -128,17 +135,17 @@ fun SettingsScreenContent(
                 uriHandler.openUri("http://3.73.140.195/agreements/hitreads-terms-of-use")
             }
             VerticalSpacer(height = R.dimen.dp43)
-            /*Text(
+            Text(
                 text = "KULLANICI ID",
                 style = MaterialTheme.localTextStyles.spaceGrotesk18Medium,
                 color = MaterialTheme.localColors.white_alpha09
             )
             Text(
-                text = "ATYR748390304004R44F04",
+                text = profile?.id.toString(),
                 style = MaterialTheme.localTextStyles.spaceGrotesk18Medium,
                 color = MaterialTheme.localColors.white_alpha05
             )
-            VerticalSpacer(height = R.dimen.dp11)*/
+            VerticalSpacer(height = R.dimen.dp11)
             Text(
                 text = stringResource(id = R.string.version),
                 style = MaterialTheme.localTextStyles.spaceGrotesk18Medium,
@@ -219,5 +226,4 @@ fun SettingsItem(
 @Preview(widthDp = 360, heightDp = 540)
 @Composable
 fun SettingsScreenPreview() {
-    SettingsScreen {}
 }

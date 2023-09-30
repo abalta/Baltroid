@@ -5,6 +5,7 @@ data class IndexOriginal(
     val banner: String = "",
     val cover: String = "",
     val description: String = "",
+    val isBulkPurchasable: Boolean = false,
     val id: Int = -1,
     val isActual: Boolean = false,
     val isLocked: Boolean = false,

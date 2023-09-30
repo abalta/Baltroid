@@ -16,11 +16,13 @@ import com.baltroid.util.ORIGINALS
 import com.baltroid.util.orZero
 import com.hitreads.core.domain.model.NotificationModel
 import com.hitreads.core.domain.model.OriginalType
+import com.hitreads.core.domain.usecase.BulkPurchaseUseCase
 import com.hitreads.core.domain.usecase.CreateCommentUseCase
 import com.hitreads.core.domain.usecase.CreateFavoriteUseCase
 import com.hitreads.core.domain.usecase.DeleteFavoriteUseCase
 import com.hitreads.core.domain.usecase.EndReadingEpisodeUseCase
 import com.hitreads.core.domain.usecase.GetAllNotificationsUseCase
+import com.hitreads.core.domain.usecase.GetCommentsByMeByIdUseCase
 import com.hitreads.core.domain.usecase.GetCommentsLikedByMeByIdUseCase
 import com.hitreads.core.domain.usecase.GetCommentsUseCase
 import com.hitreads.core.domain.usecase.GetFavoriteOriginalsUseCase
@@ -64,7 +66,9 @@ class OriginalViewModel @Inject constructor(
     private val getFavoriteOriginalsUseCase: GetFavoriteOriginalsUseCase,
     private val getCommentsUseCase: GetCommentsUseCase,
     private val getCommentsLikedByMeByIdUseCase: GetCommentsLikedByMeByIdUseCase,
-    private val getAllNotificationsUseCase: GetAllNotificationsUseCase
+    private val getAllNotificationsUseCase: GetAllNotificationsUseCase,
+    private val getCommentsByMeByIdUseCase: GetCommentsByMeByIdUseCase,
+    private val bulkPurchaseUseCase: BulkPurchaseUseCase
 ) : ViewModel() {
 
     private val _uiStateHome = MutableStateFlow(HomeUiState())
@@ -247,6 +251,7 @@ class OriginalViewModel @Inject constructor(
     fun getOriginalComments() {
         getAllOriginalComments()
         getCommentsLikedByMeById()
+        getCommentsByMeById()
     }
 
     private fun getAllOriginalComments() {
@@ -289,6 +294,26 @@ class OriginalViewModel @Inject constructor(
         }
     }
 
+    private fun getCommentsByMeById() {
+        viewModelScope.launch {
+            getCommentsByMeByIdUseCase(selectedOriginalId ?: -1).handle {
+                onLoading {
+                    _uiStateReading.update { it.copy(isLoading = true) }
+                }
+                onSuccess { myComments ->
+                    _uiStateReading.update {
+                        it.copy(
+                            isLoading = false,
+                            commentsByMe = myComments.map { it.asComment() })
+                    }
+                }
+                onFailure {
+                    _uiStateReading.update { it.copy(isLoading = false) }
+                }
+            }
+        }
+    }
+
     fun nextEpisode() {
         _uiStateReading.value.episode?.nextEpisodeId?.let {
             _selectedEpisodeId.value = it
@@ -298,32 +323,15 @@ class OriginalViewModel @Inject constructor(
 
     fun startReadingEpisode() {
         viewModelScope.launch {
-            startReadingEpisodeUseCase(_selectedEpisodeId.value).handle {
-                onLoading {
-
-                }
-                onSuccess {
-
-                }
-                onFailure {
-
-                }
+            startReadingEpisodeUseCase(_selectedEpisodeId.value).handle { /* no-op */
             }
+            endReadingEpisode()
         }
     }
 
-    fun endReadingEpisode(episodeId: Int) {
+    fun endReadingEpisode() {
         viewModelScope.launch {
-            endReadingEpisodeUseCase(episodeId).handle {
-                onLoading {
-
-                }
-                onSuccess {
-
-                }
-                onFailure {
-
-                }
+            endReadingEpisodeUseCase(_selectedEpisodeId.value).handle { /* no-op */
             }
         }
     }
@@ -712,6 +720,28 @@ class OriginalViewModel @Inject constructor(
             onFailure {
                 _uiStateReading.update { it.copy(isLoading = false) }
             }
+        }
+    }
+
+    fun bulkPurchase() {
+        viewModelScope.launch {
+            bulkPurchaseUseCase(selectedOriginalId ?: -1).handle {
+                onLoading {
+                    _uiStateDetail.update { it.copy(isLoading = true) }
+                }
+                onSuccess {
+                    _uiStateDetail.update { it.copy(isLoading = false, originalPurchased = true) }
+                }
+                onFailure {
+                    _uiStateDetail.update { it.copy(isLoading = false, originalPurchased = false) }
+                }
+            }
+        }
+    }
+
+    fun clearPurchaseState() {
+        viewModelScope.launch {
+            _uiStateDetail.update { it.copy(originalPurchased = null) }
         }
     }
 

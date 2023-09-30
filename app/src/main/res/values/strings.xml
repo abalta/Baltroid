@@ -104,4 +104,6 @@
     <string name="version">VERSİYON</string>
     <string name="send_password_reset">Şifre sıfırlama bağlantısı gönderildi. Lütfen e-posta adresinizi kontrol edin.</string>
     <string name="login_needed">Bu işlemi yapabilmek için giriş yapmalısınız.</string>
+    <string name="purchase_all_book">TÜM KİTABI SATIN AL</string>
+    <string name="original_purchased">Kitap başarıyla satın alındı.</string>
 </resources>

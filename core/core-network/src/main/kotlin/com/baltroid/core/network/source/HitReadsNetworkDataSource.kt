@@ -133,6 +133,9 @@ class HitReadsNetworkDataSource @Inject constructor(
     suspend fun getCommentsByMe(): BaltroidResult<HitReadsResponse<List<CommentDto>>> =
         hitReadsService.getCommentsByMe()
 
+    suspend fun getCommentsByMeById(originalId: Int): BaltroidResult<HitReadsResponse<List<CommentDto>>> =
+        hitReadsService.getCommentsByMe(originalId)
+
     suspend fun getCommentsLikedByMe(): BaltroidResult<HitReadsResponse<List<CommentDto>>> =
         hitReadsService.getCommentsLikedByMe()
 
@@ -184,6 +187,9 @@ class HitReadsNetworkDataSource @Inject constructor(
         hitReadsService.forgotPassword(
             ForgotPasswordRequestBody(email)
         )
+
+    suspend fun bulkPurchase(originalId: Int): BaltroidResult<HitReadsResponse<Unit?>> =
+        hitReadsService.bulkPurchase(originalId)
 
     /*suspend fun getOriginals(
         page: Int = DEFAULT_PAGE,

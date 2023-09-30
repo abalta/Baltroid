@@ -21,5 +21,6 @@ internal fun ProfileDto.asProfileModel() = ProfileModel(
     karma = karma ?: 0,
     avatar = avatar.orEmpty(),
     is_beta = is_beta ?: false,
-    gem = gem ?: 0
+    gem = gem ?: 0,
+    id = id ?: 0
 )

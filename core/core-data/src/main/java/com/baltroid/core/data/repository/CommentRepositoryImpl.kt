@@ -113,6 +113,29 @@ class CommentRepositoryImpl @Inject constructor(
             }
         }
 
+    override fun getCommentsByMeById(originalId: Int): Flow<BaltroidResult<List<CommentModel>>> =
+        flow {
+            emit(BaltroidResult.loading())
+            val response = networkDataSource.getCommentsByMeById(originalId)
+
+            when {
+                response.isSuccess() -> {
+                    response.value.data?.let {
+                        emit(BaltroidResult.success(it.map { dto ->
+                            dto.asCommentModel()
+                        }))
+                    }
+                }
+
+                response.isFailure() -> {
+                    val throwable = response.error
+                    emit(BaltroidResult.failure(throwable))
+                }
+
+                else -> error("$MESSAGE_UNHANDLED_STATE $response")
+            }
+        }
+
     override fun getCommentsLikedByMeById(
         type: String,
         id: Int

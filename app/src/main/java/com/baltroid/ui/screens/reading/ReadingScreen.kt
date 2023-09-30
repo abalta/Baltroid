@@ -108,7 +108,6 @@ fun ReadingScreen(
 
     LaunchedEffect(Unit) {
         viewModel.startReadingEpisode()
-        //todo end read
     }
 
     LaunchedEffect(viewModel.selectedEpisodeId.value) {
@@ -275,7 +274,7 @@ fun ReadingScreenContent(
                                 comments = when (selectedCommentTab) {
                                     CommentsTabState.AllComments -> uiState.allComments
                                     CommentsTabState.MyFavorites -> uiState.commentsLikedByMe
-                                    else -> emptyList()
+                                    CommentsTabState.MyComments -> uiState.commentsByMe
                                 },
                                 onLikeClick = { isLiked, id ->
                                     if (isLoggedIn) {

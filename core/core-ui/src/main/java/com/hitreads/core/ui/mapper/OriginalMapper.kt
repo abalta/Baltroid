@@ -63,6 +63,7 @@ fun IndexOriginalModel.asIndexOriginal() = IndexOriginal(
     subtitle = subtitle.orEmpty(),
     episodeCount = episodeCount ?: 0,
     isNew = isNew ?: false,
+    isBulkPurchasable = isBulkPurchasable ?: false,
     barcode = barcode.orEmpty(),
     continueReadingEpisode = continueReadingEpisode?.asShowEpisode(),
     episodes = episodes?.map { it.asShowEpisodeIndex() }.orEmpty()

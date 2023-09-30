@@ -72,6 +72,7 @@ internal fun IndexNetworkOriginal.asIndexOriginalModel() = IndexOriginalModel(ty
     hashtag = hashtag,
     isNew = isNew,
     barcode = barcode,
+    isBulkPurchasable = isBulkPurchasable,
     continueReadingEpisode = continueReadingEpisode?.asIndexContinueReadingEpisodeModel(),
     episodes = episodes?.map { it.asShowEpisodeModelIndex() })
 
@@ -116,6 +117,7 @@ internal fun NetworkCommentOriginal.asIndexOriginalModel() = IndexOriginalModel(
     isNew = false,
     barcode = "",
     continueReadingEpisode = null,
+    isBulkPurchasable = null,
     episodes = null
 )
 

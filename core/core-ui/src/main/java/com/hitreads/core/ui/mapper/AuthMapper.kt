@@ -17,5 +17,6 @@ fun ProfileModel.asProfile() = Profile(
     avatar = avatar,
     is_beta = is_beta,
     gem = gem,
-    imgUrl = ""
+    imgUrl = "",
+    id = id
 )

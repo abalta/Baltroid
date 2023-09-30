@@ -8,4 +8,5 @@ data class ProfileModel(
     val avatar: String = "",
     val is_beta: Boolean = false,
     val gem: Int = 0,
+    val id: Int = 0,
 )

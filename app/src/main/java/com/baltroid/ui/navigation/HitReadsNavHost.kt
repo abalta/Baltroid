@@ -106,6 +106,7 @@ fun HitReadsNavHost(
             }
             composable(route = HitReadsScreens.SettingsScreen.route) {
                 SettingsScreen(
+                    viewModel = authenticationViewModel,
                     onBackClick = { navController.popBackStack() }
                 )
             }

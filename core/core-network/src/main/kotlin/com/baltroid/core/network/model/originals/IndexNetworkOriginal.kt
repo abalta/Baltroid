@@ -22,6 +22,8 @@ data class IndexNetworkOriginal(
     val isActual: Boolean?,
     @SerialName("is_locked")
     val isLocked: Boolean?,
+    @SerialName("is_bulk_purchasable")
+    val isBulkPurchasable: Boolean?,
     @SerialName("like_count")
     val likeCount: Int?,
     @SerialName("comments_count")
