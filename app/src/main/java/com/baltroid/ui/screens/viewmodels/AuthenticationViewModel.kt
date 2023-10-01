@@ -66,6 +66,32 @@ class AuthenticationViewModel @Inject constructor(
         }
     }
 
+    fun updateUserProfile(username: String, nickname: String, email: String) {
+        viewModelScope.launch {
+            updateUserProfileUseCase.invoke(username = username, nickname = nickname, email = email)
+                .handle {
+                    onLoading {
+                        _profileState.update { it.copy(isLoading = true) }
+                    }
+                    onSuccess {
+                        _profileState.update { it.copy(isLoading = false, isProfileUpdated = true) }
+                    }
+                    onFailure {
+                        _profileState.update {
+                            it.copy(
+                                isLoading = false,
+                                isProfileUpdated = false
+                            )
+                        }
+                    }
+                }
+        }
+    }
+
+    fun clearProfileUpdatedState() {
+        _profileState.update { it.copy(isProfileUpdated = null) }
+    }
+
     fun loadAvatars() = viewModelScope.launch {
         getAvatarsUseCase().handle {
             onLoading {
@@ -239,7 +265,7 @@ class AuthenticationViewModel @Inject constructor(
 
     fun updateUserAvatar(selectedId: Int) {
         viewModelScope.launch {
-            updateUserProfileUseCase.invoke(selectedId).handle {
+            updateUserProfileUseCase.invoke(avatarId = selectedId).handle {
                 onSuccess {
                     _uiStateUpdateAvatar.update { true }
                 }

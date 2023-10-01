@@ -23,6 +23,12 @@ interface AuthRepository {
     fun getProfile(): Flow<BaltroidResult<ProfileModel>>
     fun getAvatars(): Flow<BaltroidResult<List<AvatarModel>>>
     fun getAllNotifications(): Flow<BaltroidResult<List<NotificationModel>>>
-    fun updateUserProfile(avatarId: Int): Flow<BaltroidResult<Unit?>>
+    fun updateUserProfile(
+        avatarId: Int?,
+        username: String?,
+        nickname: String?,
+        email: String?
+    ): Flow<BaltroidResult<Unit?>>
+
     fun forgotPassword(email: String): Flow<BaltroidResult<Unit?>>
 }

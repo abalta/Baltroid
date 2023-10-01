@@ -11,6 +11,8 @@ data class IndexNetworkContinueReadingEpisode(
     val originalId: Int?,
     @SerialName("season_id")
     val seasonId: Int?,
+    @SerialName("is_readable")
+    val isReadable: Boolean?,
     @SerialName("episode_name")
     val episodeName: String?,
     @SerialName("asset_contents")

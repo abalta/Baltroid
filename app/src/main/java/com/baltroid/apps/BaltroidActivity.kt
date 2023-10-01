@@ -27,7 +27,6 @@ class BaltroidActivity : ComponentActivity() {
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
         window.setFlags(LayoutParams.FLAG_SECURE, LayoutParams.FLAG_SECURE)
-
         setContent {
             val viewmodel: LoginViewModel = hiltViewModel()
             LaunchedEffect(Unit) {

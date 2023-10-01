@@ -277,6 +277,7 @@ fun ForgotPasswordPopup(
                     MaterialTheme.localShapes.roundedDp24
                 )
         ) {
+            VerticalSpacer(height = R.dimen.dp24)
             UserInputArea(
                 title = R.string.email,
                 value = email,
@@ -293,9 +294,9 @@ fun ForgotPasswordPopup(
             ) {
                 onClick.invoke(email)
             }
+            VerticalSpacer(height = R.dimen.dp24)
         }
     }
-
 }
 
 @Preview(device = Devices.DEFAULT)

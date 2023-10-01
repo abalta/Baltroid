@@ -153,9 +153,14 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun updateUserProfile(avatarId: Int): Flow<BaltroidResult<Unit?>> = flow {
+    override fun updateUserProfile(
+        avatarId: Int?,
+        username: String?,
+        nickname: String?,
+        email: String?
+    ): Flow<BaltroidResult<Unit?>> = flow {
         emit(BaltroidResult.loading())
-        val response = networkDataSource.updateUserProfile(avatarId)
+        val response = networkDataSource.updateUserProfile(avatarId, username, nickname, email)
 
         when {
             response.isSuccess() -> {

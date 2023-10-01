@@ -1,5 +1,6 @@
 package com.baltroid.ui.screens.reading
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
@@ -386,6 +387,7 @@ fun SideEpisodesSheet(
     onEpisodeChange: (Int) -> Unit,
     onCloseClicked: () -> Unit,
 ) {
+    val context = LocalContext.current
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
@@ -414,7 +416,15 @@ fun SideEpisodesSheet(
         ) {
             items(indexOriginal?.episodes.orEmpty()) { episode ->
                 EpisodeItem(episode = episode, showEpisodeName = false) {
-                    onEpisodeChange.invoke(it.id)
+                    if (it.isReadable) {
+                        onEpisodeChange.invoke(it.id)
+                    } else {
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.isnot_readable),
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
                 }
                 Divider(
                     color = MaterialTheme.localColors.white,

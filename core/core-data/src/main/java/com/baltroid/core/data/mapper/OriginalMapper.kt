@@ -149,6 +149,7 @@ internal fun IndexNetworkContinueReadingEpisode.asIndexContinueReadingEpisodeMod
         updatedAt = updatedAt,
         nextEpisodeId = nextEpisodeId,
         isLocked = isLocked,
+        isReadable = isReadable,
         episodeSort = episodeSort
     )
 
@@ -182,6 +183,7 @@ internal fun NetworkShowEpisode.asShowEpisodeModelIndex() = ShowEpisodeModel(
     assetContents = assetContents,
     xmlContents = null,
     nextEpisodeId = nextEpisodeId,
+    isReadable = isReadable,
     episodeContent = null
 )
 
@@ -194,6 +196,7 @@ internal fun NetworkShowEpisode.asShowEpisodeModel(
     episodeSort = episodeSort ?: 0,
     priceType = priceType.orEmpty(),
     sort = sort ?: 0,
+    isReadable = isReadable ?: false,
     createdAt = createdAt.orEmpty(),
     updatedAt = updatedAt.orEmpty(),
     originalId = originalId ?: -1,

@@ -6,5 +6,6 @@ import com.hitreads.core.model.Profile
 data class ProfileUIState(
     val isLoading: Boolean = false,
     val profile: Profile? = null,
+    val isProfileUpdated: Boolean? = null,
     val avatars: List<Avatar> = emptyList()
 )

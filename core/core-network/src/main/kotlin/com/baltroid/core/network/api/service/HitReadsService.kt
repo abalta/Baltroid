@@ -27,6 +27,7 @@ import com.baltroid.core.network.util.Constants.Fields.EMAIL
 import com.baltroid.core.network.util.Constants.Fields.FORGOT_PASSWORD
 import com.baltroid.core.network.util.Constants.Fields.GET_BY_FAV
 import com.baltroid.core.network.util.Constants.Fields.ID
+import com.baltroid.core.network.util.Constants.Fields.NAME
 import com.baltroid.core.network.util.Constants.Fields.ORIGINALS
 import com.baltroid.core.network.util.Constants.Fields.ORIGINAL_ID
 import com.baltroid.core.network.util.Constants.Fields.PASSWORD
@@ -34,6 +35,7 @@ import com.baltroid.core.network.util.Constants.Fields.PURCHASE
 import com.baltroid.core.network.util.Constants.Fields.RESPONSE_ID
 import com.baltroid.core.network.util.Constants.Fields.TYPE
 import com.baltroid.core.network.util.Constants.Fields.USER
+import com.baltroid.core.network.util.Constants.Fields.USERNAME
 import com.baltroid.core.network.util.Constants.Path.AUTHOR
 import com.baltroid.core.network.util.Constants.Path.BY_ME
 import com.baltroid.core.network.util.Constants.Path.COMMENT
@@ -173,7 +175,10 @@ interface HitReadsService {
     @POST(USER)
     @FormUrlEncoded
     suspend fun updateUserProfile(
-        @Field(AVATAR_ID) avatarId: Int
+        @Field(AVATAR_ID) avatarId: Int?,
+        @Field(NAME) username: String?,
+        @Field(USERNAME) nickname: String?,
+        @Field(EMAIL) email: String?
     ): BaltroidResult<HitReadsResponse<Unit?>>
 
     @GET(ANNOUNCEMENT)

@@ -55,7 +55,7 @@
     <string name="funn">EĞLENCE</string>
     <string name="send">GÖNDER</string>
     <string name="new_user">YENİ ÜYELİK</string>
-    <string name="name_surname">ADI-SOYADI</string>
+    <string name="name_surname">ADI SOYADI</string>
     <string name="password_confirm">ŞİFRE TEKRAR</string>
     <string name="save">KAYDET</string>
     <string name="already_member">ZATEN ÜYEYİM</string>
@@ -106,4 +106,6 @@
     <string name="login_needed">Bu işlemi yapabilmek için giriş yapmalısınız.</string>
     <string name="purchase_all_book">TÜM KİTABI SATIN AL</string>
     <string name="original_purchased">Kitap başarıyla satın alındı.</string>
+    <string name="profile_updated">Profil başarıyla güncellendi.</string>
+    <string name="isnot_readable">Bölüm okunabilir değil.</string>
 </resources>

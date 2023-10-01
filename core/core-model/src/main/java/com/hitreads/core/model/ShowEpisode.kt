@@ -20,5 +20,6 @@ data class ShowEpisode(
     val assetContents: String?,
     val xmlContents: XmlContent?,
     val episodeContent: String?,
-    val nextEpisodeId: Int
+    val nextEpisodeId: Int,
+    val isReadable: Boolean
 )

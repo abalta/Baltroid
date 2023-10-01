@@ -83,7 +83,7 @@ data class EpisodeShowDto(
 @Serializable
 data class Author(
     @SerialName("avatar")
-    val avatar: List<Avatar>?,
+    val avatar: Avatar?,
     @SerialName("username")
     val username: String?
 )

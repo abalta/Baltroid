@@ -294,10 +294,20 @@ private fun HomeDetailScreenContent(
                                             original.episodes.firstOrNull()?.id
                                         )
                                     } else {
-                                        navigate.invoke(
-                                            HitReadsScreens.ReadingScreen.route,
-                                            original.episodes.firstOrNull()?.id
-                                        )
+                                        if (original.episodes.firstOrNull()?.isReadable == true) {
+                                            navigate.invoke(
+                                                HitReadsScreens.ReadingScreen.route,
+                                                original.episodes.firstOrNull()?.id
+                                            )
+                                        } else {
+                                            Toast
+                                                .makeText(
+                                                    context,
+                                                    context.getString(R.string.isnot_readable),
+                                                    Toast.LENGTH_LONG
+                                                )
+                                                .show()
+                                        }
                                     }
                                 })
                     }
@@ -326,7 +336,15 @@ private fun HomeDetailScreenContent(
                                 it.id
                             )
                         } else {
-                            navigate.invoke(HitReadsScreens.ReadingScreen.route, it.id)
+                            if (it.isReadable) {
+                                navigate.invoke(HitReadsScreens.ReadingScreen.route, it.id)
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    context.getString(R.string.isnot_readable),
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
                         }
                     }
                 )
