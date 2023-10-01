@@ -58,6 +58,7 @@ import com.baltroid.ui.screens.viewmodels.AuthorViewModel
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
+import com.hitreads.core.model.Author
 import com.hitreads.core.model.IndexOriginal
 
 @Composable
@@ -82,6 +83,7 @@ fun AuthorScreen(
         onBackClick = onBackClick,
         navigate = navigate,
         isLoggedIn = isLoggedIn,
+        createFavorite = viewModel::createFavorite,
         onLikeClick = { isLiked, id ->
             if (isLiked) viewModel.unlikeComment(id)
             else viewModel.likeComment(id)
@@ -93,6 +95,7 @@ fun AuthorScreen(
 fun AuthorScreenContent(
     state: AuthorScreenUiState,
     isLoggedIn: Boolean,
+    createFavorite: (Author?) -> Unit,
     navigate: (String, Int?) -> Unit,
     onBackClick: () -> Unit,
     onLikeClick: (Boolean, Int) -> Unit
@@ -119,7 +122,9 @@ fun AuthorScreenContent(
             imgUrl = state.author?.image,
             isFavorite = state.author?.isFavorite == true,
             modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
+        ) {
+            createFavorite(state.author)
+        }
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp44))
         StoryAndCommentTabs(
             selectedTab = selectedTab,

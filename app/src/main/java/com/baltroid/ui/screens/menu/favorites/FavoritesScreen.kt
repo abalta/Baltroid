@@ -182,7 +182,8 @@ fun AuthorsItem(
 fun NamelessAuthorItem(
     imgUrl: String?,
     isFavorite: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    createFavorite: () -> Unit
 ) {
     Column(
         modifier = modifier,
@@ -198,9 +199,9 @@ fun NamelessAuthorItem(
                 .clip(MaterialTheme.localShapes.circleShape)
         )
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp20))
-        if (isFavorite) {
+        if (!isFavorite) {
             YellowStarBox {
-
+                createFavorite.invoke()
             }
         }
     }

@@ -3,6 +3,9 @@ package com.baltroid.ui.screens.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.baltroid.core.common.result.handle
+import com.baltroid.util.AUTHOR
+import com.baltroid.util.orZero
+import com.hitreads.core.domain.usecase.CreateFavoriteUseCase
 import com.hitreads.core.domain.usecase.LikeCommentUseCase
 import com.hitreads.core.domain.usecase.ShowAuthorUseCase
 import com.hitreads.core.domain.usecase.UnlikeCommentUseCase
@@ -19,7 +22,8 @@ import javax.inject.Inject
 class AuthorViewModel @Inject constructor(
     private val showAuthorUseCase: ShowAuthorUseCase,
     private val commentUnlikeCommentUseCase: UnlikeCommentUseCase,
-    private val commentLikeCommentUseCase: LikeCommentUseCase
+    private val commentLikeCommentUseCase: LikeCommentUseCase,
+    private val createFavoriteUseCase: CreateFavoriteUseCase
 ) : ViewModel() {
 
     private val _author = MutableStateFlow(AuthorScreenUiState())
@@ -33,6 +37,27 @@ class AuthorViewModel @Inject constructor(
                 }
                 onSuccess { model ->
                     _author.update { it.copy(isLoading = false, author = model.asAuthor()) }
+                }
+                onFailure {
+                    _author.update { it.copy(isLoading = false) }
+                }
+            }
+        }
+    }
+
+    fun createFavorite(author: Author?) {
+        viewModelScope.launch {
+            createFavoriteUseCase.invoke(AUTHOR, author?.id.orZero()).handle {
+                onLoading {
+                    _author.update { it.copy(isLoading = true) }
+                }
+                onSuccess {
+                    _author.update {
+                        it.copy(
+                            author = author?.copy(isFavorite = true),
+                            isLoading = false
+                        )
+                    }
                 }
                 onFailure {
                     _author.update { it.copy(isLoading = false) }

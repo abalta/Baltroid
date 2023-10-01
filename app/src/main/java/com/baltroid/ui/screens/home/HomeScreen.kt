@@ -355,11 +355,11 @@ private fun IndexOriginalItem(
             }
         }
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp6))
-        BasicText(
+        Text(
             text = indexOriginal.title,
-            style = MaterialTheme.localTextStyles.poppins12Bold.copy(color = MaterialTheme.localColors.white),
+            style = MaterialTheme.localTextStyles.poppins12Bold,
             maxLines = 2,
-            minLines = 2,
+            color = MaterialTheme.localColors.white,
             overflow = TextOverflow.Ellipsis
         )
         Text(
