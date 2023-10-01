@@ -1,5 +1,6 @@
 package com.baltroid.ui.screens.interactive
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -424,7 +425,15 @@ fun InteractiveScreenContent(
                 },
             closeSheet = { isEpisodesEnabled = false },
             onEpisodeClick = {
-                onEpisodeChange.invoke(it.id)
+                if (it.isReadable) {
+                    onEpisodeChange.invoke(it.id)
+                } else {
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.isnot_readable),
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
             }
         )
         if (isBarcodeEnabled) {
