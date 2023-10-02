@@ -10,6 +10,7 @@ import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
+import java.util.concurrent.TimeUnit
 
 internal fun retrofit(
     preferencesDataStoreDataSource: PreferencesDataStoreDataSource,
@@ -29,6 +30,8 @@ private fun loggingOkHttpClient(
     val logging = HttpLoggingInterceptor()
     logging.setLevel(HttpLoggingInterceptor.Level.BODY)
     return OkHttpClient.Builder()
+        .readTimeout(60, TimeUnit.SECONDS)
+        .connectTimeout(60, TimeUnit.SECONDS)
         .addInterceptor(logging)
         .addInterceptor(ChuckerInterceptor(context))
         .addInterceptor(BaltroidAuthInterceptor(dataStore))

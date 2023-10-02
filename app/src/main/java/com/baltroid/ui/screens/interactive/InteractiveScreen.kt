@@ -142,7 +142,7 @@ fun InteractiveScreenContent(
     isLoggedIn: Boolean,
     gem: Int,
     setReplyComment: (Comment) -> Unit,
-    loadComments: () -> Unit,
+    loadComments: (CommentsTabState) -> Unit,
     likeComment: (Boolean, Int, CommentsTabState) -> Unit,
     action: (InteractiveScreenAction) -> Unit,
     replyComment: (String, CommentsTabState) -> Unit,
@@ -360,7 +360,7 @@ fun InteractiveScreenContent(
             episode = readingUiState.episode,
             createComment = {
                 if (isLoggedIn) {
-                    loadComments.invoke()
+                    loadComments.invoke(CommentsTabState.AllComments)
                     isCommentsEnabled = true
                 } else {
                     context.showLoginToast()
@@ -480,6 +480,7 @@ fun InteractiveScreenContent(
             },
             setSelectedCommentTab = {
                 selectedCommentTab = it
+                loadComments.invoke(it)
             },
             createComment = {
                 if (isLoggedIn) {
@@ -1267,7 +1268,7 @@ fun InteractiveCommentsSection(
                 comments = when (selectedCommentTab) {
                     CommentsTabState.AllComments -> uiState.allComments
                     CommentsTabState.MyFavorites -> uiState.commentsLikedByMe
-                    else -> emptyList()
+                    CommentsTabState.MyComments -> uiState.commentsByMe
                 },
                 onLikeClick = { isLiked, id ->
                     likeComment.invoke(isLiked, id, selectedCommentTab)

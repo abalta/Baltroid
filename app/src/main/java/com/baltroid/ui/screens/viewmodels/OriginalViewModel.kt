@@ -248,10 +248,20 @@ class OriginalViewModel @Inject constructor(
         }
     }
 
-    fun getOriginalComments() {
-        getAllOriginalComments()
-        getCommentsLikedByMeById()
-        getCommentsByMeById()
+    fun getOriginalComments(tabState: CommentsTabState) {
+        when (tabState) {
+            CommentsTabState.AllComments -> {
+                getAllOriginalComments()
+            }
+
+            CommentsTabState.MyFavorites -> {
+                getCommentsLikedByMeById()
+            }
+
+            CommentsTabState.MyComments -> {
+                getCommentsByMeById()
+            }
+        }
     }
 
     private fun getAllOriginalComments() {
@@ -715,7 +725,44 @@ class OriginalViewModel @Inject constructor(
                         }
                     }
 
-                    CommentsTabState.MyComments -> {/* no-op */
+                    CommentsTabState.MyComments -> {
+                        _uiStateReading.update {
+                            val oldList = it.commentsByMe.toMutableList()
+                            val oldComment =
+                                it.commentsByMe.firstOrNull { it.id == selectedComment?.id }
+                            val oldReplies =
+                                it.commentsByMe.firstOrNull { it.id == selectedComment?.id }?.replies
+                            val newReplies = oldReplies?.toMutableList()
+                            newReplies?.add(
+                                Comment(
+                                    id = newComment.id,
+                                    imgUrl = "",
+                                    content = newComment.content,
+                                    repliesCount = newComment.repliesCount,
+                                    authorName = newComment.author.name.orEmpty(),
+                                    hashtag = "",
+                                    createdAt = newComment.createdAt,
+                                    isLiked = false,
+                                    isReply = true,
+                                    replies = listOf(),
+                                    episode = "",
+                                    indexOriginal = null
+                                )
+                            )
+                            val index =
+                                it.commentsByMe.indexOfFirst { it.id == selectedComment?.id }
+                            oldList.removeAt(index)
+                            oldComment?.copy(
+                                repliesCount = newReplies?.toList().orEmpty().size,
+                                replies = newReplies?.toList().orEmpty()
+                            )?.let { it1 ->
+                                oldList.add(
+                                    index,
+                                    it1
+                                )
+                            }
+                            it.copy(isLoading = false, commentsByMe = oldList)
+                        }
                     }
                 }
             }

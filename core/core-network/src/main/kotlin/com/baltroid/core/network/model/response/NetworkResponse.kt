@@ -100,8 +100,8 @@ data class Avatar(
     val status: Boolean?,
     @SerialName("unit")
     val unit: String?,
-    @SerialName("url")
-    val url: String?
+    @SerialName("path")
+    val path: String?
 )
 
 @Serializable

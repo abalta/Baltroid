@@ -230,7 +230,7 @@ private fun CommentItem(
             .clickable { onItemClick.invoke() }
     ) {
         AsyncImage(
-            model = comment.indexOriginal?.cover.orEmpty(),
+            model = comment.imgUrl,
             contentDescription = null,
             error = painterResource(id = R.drawable.hitreads_placeholder),
             modifier = Modifier

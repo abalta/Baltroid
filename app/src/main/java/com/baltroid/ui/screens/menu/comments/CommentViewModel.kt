@@ -98,7 +98,7 @@ class CommentViewModel @Inject constructor(
                     newReplies?.add(
                         Comment(
                             id = newComment.id,
-                            imgUrl = "",
+                            imgUrl = newComment.author.img.toString(),
                             content = newComment.content,
                             repliesCount = newComment.repliesCount,
                             authorName = newComment.author.name.orEmpty(),

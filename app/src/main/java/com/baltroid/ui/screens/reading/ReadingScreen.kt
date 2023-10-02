@@ -153,7 +153,7 @@ fun ReadingScreenContent(
     onCreateComment: (String) -> Unit,
     setReplyComment: (Comment) -> Unit,
     replyComment: (String, CommentsTabState) -> Unit,
-    loadComments: () -> Unit,
+    loadComments: (CommentsTabState) -> Unit,
     navigate: (String) -> Unit,
     onEpisodeChange: (Int) -> Unit,
     onLikeClick: (Boolean) -> Unit,
@@ -268,7 +268,10 @@ fun ReadingScreenContent(
                             CommentSectionTabs(
                                 tabState = selectedCommentTab,
                                 isLoggedIn = isLoggedIn,
-                                onTabSelect = { selectedCommentTab = it }
+                                onTabSelect = {
+                                    selectedCommentTab = it
+                                    loadComments(selectedCommentTab)
+                                }
                             )
                             CommentSection(
                                 lazyListState = rememberLazyListState(),
@@ -312,7 +315,7 @@ fun ReadingScreenContent(
                         onShowComments = {
                             isReadingSection = !isReadingSection
                             if (!isReadingSection) {
-                                loadComments.invoke()
+                                loadComments.invoke(CommentsTabState.AllComments)
                             }
                         },
                         isCommentsSelected = !isReadingSection,

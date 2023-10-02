@@ -100,7 +100,7 @@ internal fun NetworkCommentOriginal.asIndexOriginalModel() = IndexOriginalModel(
     description = description.orEmpty(),
     cover = cover.orEmpty(),
     banner = banner.orEmpty(),
-    author = IndexAuthorModel(authorId ?: 0, ""),
+    author = IndexAuthorModel(authorId ?: 0, "", img = null),
     isLocked = isLocked ?: false,
     isActual = false,
     status = false,
@@ -154,7 +154,7 @@ internal fun IndexNetworkContinueReadingEpisode.asIndexContinueReadingEpisodeMod
     )
 
 internal fun IndexNetworkAuthor.asIndexAuthorModel() = IndexAuthorModel(
-    id = id, name = name
+    id = id, name = name, img = null
 )
 
 internal fun IndexUserData.asIndexUserDataModel() = IndexUserDataModel(
@@ -217,7 +217,7 @@ internal fun IndexNetworkPackage.asIndexPackageModel() = IndexPackageModel(
 
 internal fun CommentDto.asCommentModel() = CommentModel(
     activeUserLike = activeUserLike ?: false,
-    author = IndexAuthorModel(id = 0, name = ""),
+    author = IndexAuthorModel(id = 0, name = "", img = author?.avatar?.path),
     content = content.orEmpty(),
     createdAt = createdAt.orEmpty(),
     id = id ?: 0,
@@ -231,7 +231,11 @@ internal fun CommentDto.asCommentModel() = CommentModel(
 
 internal fun NetworkCreateCommentResponse.asCommentModel() = CommentModel(
     activeUserLike = false,
-    author = IndexAuthorModel(id = 0, name = comment?.user?.username.orEmpty()),
+    author = IndexAuthorModel(
+        id = 0,
+        name = comment?.user?.username.orEmpty(),
+        img = comment?.user?.avatar?.path
+    ),
     content = comment?.content.orEmpty(),
     createdAt = comment?.createdAt.orEmpty(),
     id = comment?.id ?: 0,
@@ -248,7 +252,7 @@ internal fun AllCommentsDto.asAllCommentsModel(): AllCommentsModel = AllComments
     content = content,
     original = original?.asIndexOriginalModel(),
     author = IndexAuthorModel(
-        0, author?.username.orEmpty()
+        0, author?.username.orEmpty(), img = author?.avatar?.path
     ),
     isReply = isReply,
     likesCount = likesCount,
