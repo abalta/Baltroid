@@ -93,6 +93,27 @@ class OriginalRepositoryImpl @Inject constructor(
         }
     }
 
+    override fun episodePurchase(episodeId: Int): Flow<BaltroidResult<Unit?>> = flow {
+        emit(BaltroidResult.loading())
+        val response = networkDataSource.episodePurchase(episodeId)
+
+        when {
+            response.isSuccess() -> {
+                response.value.data?.let {
+                    //may need purchase detail
+                    emit(BaltroidResult.success(null))
+                }
+            }
+
+            response.isFailure() -> {
+                val throwable = response.error
+                emit(BaltroidResult.failure(throwable))
+            }
+
+            else -> error("$MESSAGE_UNHANDLED_STATE $response")
+        }
+    }
+
     override fun showEpisode(episodeId: Int, type: String): Flow<BaltroidResult<ShowEpisodeModel>> =
         flow {
             emit(BaltroidResult.loading())

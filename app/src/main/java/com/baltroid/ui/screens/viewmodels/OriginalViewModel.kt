@@ -21,6 +21,7 @@ import com.hitreads.core.domain.usecase.CreateCommentUseCase
 import com.hitreads.core.domain.usecase.CreateFavoriteUseCase
 import com.hitreads.core.domain.usecase.DeleteFavoriteUseCase
 import com.hitreads.core.domain.usecase.EndReadingEpisodeUseCase
+import com.hitreads.core.domain.usecase.EpisodePurchaseUseCase
 import com.hitreads.core.domain.usecase.GetAllNotificationsUseCase
 import com.hitreads.core.domain.usecase.GetCommentsByMeByIdUseCase
 import com.hitreads.core.domain.usecase.GetCommentsLikedByMeByIdUseCase
@@ -36,6 +37,7 @@ import com.hitreads.core.domain.usecase.StartReadingEpisodeUseCase
 import com.hitreads.core.domain.usecase.UnlikeCommentUseCase
 import com.hitreads.core.model.Comment
 import com.hitreads.core.model.IndexOriginal
+import com.hitreads.core.model.ShowEpisode
 import com.hitreads.core.ui.mapper.asComment
 import com.hitreads.core.ui.mapper.asFavoriteOriginal
 import com.hitreads.core.ui.mapper.asIndexOriginal
@@ -68,7 +70,8 @@ class OriginalViewModel @Inject constructor(
     private val getCommentsLikedByMeByIdUseCase: GetCommentsLikedByMeByIdUseCase,
     private val getAllNotificationsUseCase: GetAllNotificationsUseCase,
     private val getCommentsByMeByIdUseCase: GetCommentsByMeByIdUseCase,
-    private val bulkPurchaseUseCase: BulkPurchaseUseCase
+    private val bulkPurchaseUseCase: BulkPurchaseUseCase,
+    private val purchaseUseCase: EpisodePurchaseUseCase
 ) : ViewModel() {
 
     private val _uiStateHome = MutableStateFlow(HomeUiState())
@@ -445,6 +448,10 @@ class OriginalViewModel @Inject constructor(
         _selectedEpisodeId.value = id
     }
 
+    fun getNextEpisode(): ShowEpisode? {
+        return _uiStateDetail.value.original.episodes.firstOrNull { it.id == _uiStateReading.value.episode?.nextEpisodeId }
+    }
+
     // 761 OriginalType.INTERACTIVE
     fun showEpisode(type: String) = viewModelScope.launch {
         showEpisodeUseCase(_selectedEpisodeId.value, type).handle {
@@ -789,9 +796,38 @@ class OriginalViewModel @Inject constructor(
     }
 
     fun clearPurchaseState() {
+        _uiStateDetail.update { it.copy(originalPurchased = null) }
+    }
+
+    fun purchaseEpisode(showEpisode: ShowEpisode) {
         viewModelScope.launch {
-            _uiStateDetail.update { it.copy(originalPurchased = null) }
+            purchaseUseCase.invoke(showEpisode.id).handle {
+                onLoading {
+                    _uiStateDetail.update { it.copy(isLoading = true) }
+                }
+                onSuccess {
+                    _uiStateDetail.update { uiState ->
+                        val newList = uiState.original.episodes.map { episode ->
+                            if (episode.id == showEpisode.id) episode.copy(isReadable = true)
+                            else episode
+                        }
+                        val newOriginal = uiState.original.copy(episodes = newList)
+                        uiState.copy(
+                            isLoading = false,
+                            episodePurchased = true,
+                            original = newOriginal
+                        )
+                    }
+                }
+                onFailure {
+                    _uiStateDetail.update { it.copy(isLoading = false, episodePurchased = false) }
+                }
+            }
         }
+    }
+
+    fun clearEpisodePurchaseState() {
+        _uiStateDetail.update { it.copy(episodePurchased = null) }
     }
 
     /* fun deleteFavorite(original: Original?) = viewModelScope.launch {

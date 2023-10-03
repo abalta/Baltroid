@@ -13,6 +13,7 @@ data class ShowEpisodeModel(
     val updatedAt: String?,
     val originalId: Int?,
     val seasonId: Int?,
+    val isPurchase: Boolean?,
     val isReadable: Boolean?,
     val isLocked: Boolean?,
     val isLastEpisode: Boolean?,

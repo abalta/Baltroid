@@ -88,6 +88,7 @@ fun IndexContinueReadingEpisodeModel.asShowEpisode() = ShowEpisode(
     xmlContents = null,
     episodeContent = null,
     isReadable = isReadable ?: false,
+    isPurchase = false,
     nextEpisodeId = nextEpisodeId ?: -1
 )
 
@@ -137,6 +138,7 @@ fun ShowEpisodeModel.asShowEpisode() = ShowEpisode(
     xmlContents = xmlContents,
     nextEpisodeId = nextEpisodeId ?: -1,
     isReadable = isReadable ?: false,
+    isPurchase = isPurchase ?: false,
     episodeContent = episodeContent?.replace("\n", "")?.replace("\\", "")
 )
 
@@ -159,6 +161,7 @@ fun ShowEpisodeModel.asShowEpisodeIndex() = ShowEpisode(
     xmlContents = xmlContents,
     nextEpisodeId = nextEpisodeId ?: -1,
     isReadable = isReadable ?: false,
+    isPurchase = isPurchase ?: false,
     episodeContent = episodeContent?.replace("\\", "")
 )
 

@@ -289,6 +289,34 @@ data class AvatarDto(
 )
 
 @Serializable
+data class PurchaseDetailDto(
+    @SerialName("purchase_detail")
+    val purchaseDetailDto: NetworkPurchaseDetail
+)
+
+@Serializable
+data class NetworkPurchaseDetail(
+    @SerialName("id")
+    val id: Int?,
+    @SerialName("user_id")
+    val userId: Int?,
+    @SerialName("original_id")
+    val originalId: Int?,
+    @SerialName("episode_id")
+    val episodeId: Int?,
+    @SerialName("is_started")
+    val isStarted: Boolean?,
+    @SerialName("is_completed")
+    val isCompleted: Boolean?,
+    @SerialName("last_check_point")
+    val lastCheckpoint: String?,
+    @SerialName("created_at")
+    val createdAt: String?,
+    @SerialName("updated_at")
+    val updatedAt: String?
+)
+
+@Serializable
 data class AnnouncementDto(
     @SerialName("title")
     val title: String?,

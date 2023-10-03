@@ -14,6 +14,8 @@ data class NetworkShowEpisode(
     val price: Int?,
     @SerialName("is_readable")
     val isReadable: Boolean?,
+    @SerialName("is_purchase")
+    val isPurchase: Boolean?,
     @SerialName("episode_sort")
     val episodeSort: Int?,
     @SerialName("price_type")

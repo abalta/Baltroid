@@ -184,6 +184,7 @@ internal fun NetworkShowEpisode.asShowEpisodeModelIndex() = ShowEpisodeModel(
     xmlContents = null,
     nextEpisodeId = nextEpisodeId,
     isReadable = isReadable,
+    isPurchase = isPurchase,
     episodeContent = null
 )
 
@@ -208,6 +209,7 @@ internal fun NetworkShowEpisode.asShowEpisodeModel(
     assetContents = assetContents,
     xmlContents = xmlContent,
     nextEpisodeId = nextEpisodeId,
+    isPurchase = isPurchase,
     episodeContent = episodeContent
 )
 

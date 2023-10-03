@@ -108,4 +108,7 @@
     <string name="original_purchased">Kitap başarıyla satın alındı.</string>
     <string name="profile_updated">Profil başarıyla güncellendi.</string>
     <string name="isnot_readable">Bölüm okunabilir değil.</string>
+    <string name="decline">VAZGEÇ</string>
+    <string name="buy_episode">"%1s" bölümünü okuyabilmek için satın almanız gerekli. Satın almak ister misiniz?</string>
+    <string name="episode_purchased">Bölüm başarıyla satın alındı.</string>
 </resources>

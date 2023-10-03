@@ -83,6 +83,7 @@ import com.baltroid.ui.components.HitReadsSideBar
 import com.baltroid.ui.components.HitReadsTopBar
 import com.baltroid.ui.navigation.HitReadsScreens
 import com.baltroid.ui.screens.home.detail.EpisodeItem
+import com.baltroid.ui.screens.home.detail.EpisodePurchasePopup
 import com.baltroid.ui.screens.home.detail.OriginalBarcode
 import com.baltroid.ui.screens.reading.comments.CommentsTabState
 import com.baltroid.ui.screens.viewmodels.OriginalViewModel
@@ -96,15 +97,16 @@ import com.baltroid.util.orZero
 import com.hitreads.core.domain.model.OriginalType
 import com.hitreads.core.model.Comment
 import com.hitreads.core.model.IndexOriginal
+import com.hitreads.core.model.ShowEpisode
 
 @Composable
 fun ReadingScreen(
-    viewModel: OriginalViewModel,
-    navigate: (String) -> Unit
+    viewModel: OriginalViewModel, navigate: (String) -> Unit
 ) {
     val uiState by viewModel.uiStateReading.collectAsStateWithLifecycle()
     val uiStateDetail by viewModel.uiStateDetail.collectAsStateWithLifecycle()
     val uiStateHome by viewModel.uiStateHome.collectAsStateWithLifecycle()
+
     SetLoadingState(isLoading = uiState.isLoading)
 
     LaunchedEffect(Unit) {
@@ -137,6 +139,8 @@ fun ReadingScreen(
             else viewModel.createFavorite()
         },
         navigate = navigate,
+        purchaseEpisode = viewModel::purchaseEpisode,
+        nextEpisode = viewModel.getNextEpisode(),
         likeComment = { isLiked, id, tabState ->
             if (isLiked) viewModel.unlikeComment(id, tabState)
             else viewModel.likeComment(id, tabState)
@@ -148,6 +152,7 @@ fun ReadingScreen(
 fun ReadingScreenContent(
     uiState: ReadingUiState,
     original: IndexOriginal?,
+    nextEpisode: ShowEpisode?,
     isLoggedIn: Boolean,
     onNextClicked: () -> Unit,
     onCreateComment: (String) -> Unit,
@@ -156,6 +161,7 @@ fun ReadingScreenContent(
     loadComments: (CommentsTabState) -> Unit,
     navigate: (String) -> Unit,
     onEpisodeChange: (Int) -> Unit,
+    purchaseEpisode: (ShowEpisode) -> Unit,
     onLikeClick: (Boolean) -> Unit,
     onCreateFavorite: (Boolean) -> Unit,
     likeComment: (Boolean, Int, CommentsTabState) -> Unit,
@@ -190,6 +196,13 @@ fun ReadingScreenContent(
         mutableStateOf(false)
     }
 
+    var isEpisodePurchaseDialogVisible by rememberSaveable {
+        mutableStateOf(false)
+    }
+    var selectedEpisode by remember {
+        mutableStateOf<ShowEpisode?>(null)
+    }
+
     BackHandler(
         enabled = isBarcodeEnabled
     ) { isBarcodeEnabled = false }
@@ -200,8 +213,7 @@ fun ReadingScreenContent(
                 .navigationBarsPadding()
                 .conditional(isReadingSection && !isSideEpisodesSheetVisible) {
                     verticalScroll(scrollState)
-                }
-        ) {
+                }) {
             AsyncImage(
                 model = original?.cover,
                 contentDescription = null,
@@ -243,6 +255,7 @@ fun ReadingScreenContent(
                         )
                         if (isReadingSection) {
                             ReadingSection(
+                                episode = uiState.episode,
                                 body = uiState.episode?.episodeContent.orEmpty(),
                                 isLastEpisode = uiState.episode?.isLastEpisode == true,
                                 onCreateFavorite = {
@@ -260,19 +273,22 @@ fun ReadingScreenContent(
                                         original?.episodes?.firstOrNull()?.id ?: -1
                                     )
                                 },
+                                purchaseEpisode = {
+                                    selectedEpisode = it
+                                    isEpisodePurchaseDialogVisible = true
+                                },
                                 isFavorite = original?.indexUserData?.isFav == true,
+                                nextEpisode = nextEpisode,
                                 onNextClicked = onNextClicked
                             )
                         } else {
                             VerticalSpacer(height = R.dimen.dp8)
-                            CommentSectionTabs(
-                                tabState = selectedCommentTab,
+                            CommentSectionTabs(tabState = selectedCommentTab,
                                 isLoggedIn = isLoggedIn,
                                 onTabSelect = {
                                     selectedCommentTab = it
                                     loadComments(selectedCommentTab)
-                                }
-                            )
+                                })
                             CommentSection(
                                 lazyListState = rememberLazyListState(),
                                 comments = when (selectedCommentTab) {
@@ -335,38 +351,37 @@ fun ReadingScreenContent(
                             )
                     )
                 }
-                this@Column.AnimatedVisibility(
-                    visible = isSideEpisodesSheetVisible,
+                this@Column.AnimatedVisibility(visible = isSideEpisodesSheetVisible,
                     enter = slideInHorizontally(
                         animationSpec = tween(100, easing = LinearEasing)
                     ) { it / 2 },
                     exit = slideOutHorizontally(
                         animationSpec = tween(100, easing = LinearEasing)
-                    ) { it / 2 }
-                ) {
+                    ) { it / 2 }) {
                     SideEpisodesSheet(
                         indexOriginal = original,
                         onEpisodeChange = onEpisodeChange,
+                        purchaseEpisode = {
+                            isEpisodePurchaseDialogVisible = true
+                            selectedEpisode = it
+                        },
+                        onCloseClicked = { isSideEpisodesSheetVisible = false },
                         modifier = Modifier
                             .fillMaxWidth()
                             .wrapContentWidth(Alignment.End)
                             .width(dimensionResource(id = R.dimen.dp200))
                             .padding(top = dimensionResource(id = R.dimen.dp50))
                             .background(Color.Black)
-                    ) {
-                        isSideEpisodesSheetVisible = false
-                    }
+                    )
                 }
             }
         }
 
         AnimatedVisibility(visible = isWriteCardShown, enter = fadeIn(), exit = fadeOut()) {
-            CommentWritingCard(
-                author = original?.indexAuthor?.name.orEmpty(),
+            CommentWritingCard(author = original?.indexAuthor?.name.orEmpty(),
                 original?.hashtag.orEmpty(),
                 imgUrl = "",
-                onBackClick = { isWriteCardShown = !isWriteCardShown }
-            ) { comment ->
+                onBackClick = { isWriteCardShown = !isWriteCardShown }) { comment ->
                 if (isReadingSection) {
                     onCreateComment(comment)
                 } else {
@@ -380,6 +395,18 @@ fun ReadingScreenContent(
                 isBarcodeEnabled = false
             }
         }
+
+        if (isEpisodePurchaseDialogVisible) {
+            EpisodePurchasePopup(episodeName = selectedEpisode?.episodeName.toString(),
+                onDialogDismissed = { isEpisodePurchaseDialogVisible = false },
+                onAccept = {
+                    selectedEpisode?.let { purchaseEpisode(it) }
+                    isEpisodePurchaseDialogVisible = false
+                },
+                onDecline = {
+                    isEpisodePurchaseDialogVisible = false
+                })
+        }
     }
 }
 
@@ -389,26 +416,27 @@ fun SideEpisodesSheet(
     modifier: Modifier = Modifier,
     onEpisodeChange: (Int) -> Unit,
     onCloseClicked: () -> Unit,
+    purchaseEpisode: (ShowEpisode) -> Unit,
 ) {
     val context = LocalContext.current
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier
+        horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier
     ) {
         VerticalSpacer(height = R.dimen.dp15)
-        SimpleIcon(
-            iconResId = R.drawable.ic_close,
+        SimpleIcon(iconResId = R.drawable.ic_close,
             modifier = Modifier
                 .align(Alignment.Start)
                 .padding(start = dimensionResource(id = R.dimen.dp17))
-                .clickable { onCloseClicked.invoke() }
-        )
+                .clickable { onCloseClicked.invoke() })
         VerticalSpacer(height = R.dimen.dp10)
         AsyncImage(
             model = indexOriginal?.cover,
             placeholder = painterResource(id = R.drawable.hitreads_placeholder),
-            contentDescription = null, modifier = Modifier
-                .size(dimensionResource(id = R.dimen.dp127), dimensionResource(id = R.dimen.dp177))
+            contentDescription = null,
+            modifier = Modifier
+                .size(
+                    dimensionResource(id = R.dimen.dp127), dimensionResource(id = R.dimen.dp177)
+                )
                 .clip(MaterialTheme.localShapes.roundedDp18)
         )
         VerticalSpacer(height = R.dimen.dp38)
@@ -420,12 +448,14 @@ fun SideEpisodesSheet(
             items(indexOriginal?.episodes.orEmpty()) { episode ->
                 EpisodeItem(episode = episode, showEpisodeName = false) {
                     if (it.isReadable) {
-                        onEpisodeChange.invoke(it.id)
+                        if (!it.isPurchase) {
+                            purchaseEpisode.invoke(it)
+                        } else {
+                            onEpisodeChange.invoke(it.id)
+                        }
                     } else {
                         Toast.makeText(
-                            context,
-                            context.getString(R.string.isnot_readable),
-                            Toast.LENGTH_LONG
+                            context, context.getString(R.string.isnot_readable), Toast.LENGTH_LONG
                         ).show()
                     }
                 }
@@ -442,13 +472,17 @@ fun SideEpisodesSheet(
 @Composable
 fun ReadingSection(
     body: String,
+    nextEpisode: ShowEpisode?,
+    episode: ShowEpisode?,
     isFavorite: Boolean,
     isLastEpisode: Boolean,
     onNextClicked: () -> Unit,
     onCreateFavorite: (Boolean) -> Unit,
     onShare: () -> Unit,
-    goToFirstEpisode: () -> Unit
+    goToFirstEpisode: () -> Unit,
+    purchaseEpisode: (ShowEpisode) -> Unit,
 ) {
+    val context = LocalContext.current
     Column {
         Text(
             text = body,
@@ -459,15 +493,29 @@ fun ReadingSection(
             )
         )
         if (!isLastEpisode && body.isNotEmpty()) {
-            SimpleImage(
-                imgResId = R.drawable.ic_arrow_right,
+            SimpleImage(imgResId = R.drawable.ic_arrow_right,
                 modifier = Modifier
                     .padding(end = dimensionResource(id = R.dimen.dp25))
                     .size(dimensionResource(id = R.dimen.dp46))
-                    .clickable { onNextClicked.invoke() }
+                    .clickable {
+                        if (nextEpisode?.isReadable == true) {
+                            if (!nextEpisode.isPurchase) {
+                                purchaseEpisode.invoke(nextEpisode)
+                            } else {
+                                onNextClicked.invoke()
+                            }
+                        } else {
+                            Toast
+                                .makeText(
+                                    context,
+                                    context.getString(R.string.isnot_readable),
+                                    Toast.LENGTH_LONG
+                                )
+                                .show()
+                        }
+                    }
                     .align(Alignment.End)
-                    .alpha(0.5f)
-            )
+                    .alpha(0.5f))
         } else if (isLastEpisode) {
             VerticalSpacer(height = R.dimen.dp24)
             LastEpisodeSection(
@@ -517,9 +565,9 @@ fun LastEpisodeSection(
             )
         }
         VerticalSpacer(height = R.dimen.dp36)
-        Text(
-            text = if (!isFavorite) stringResource(id = R.string.add_favorite) else
-                stringResource(id = R.string.delete_favorite),
+        Text(text = if (!isFavorite) stringResource(id = R.string.add_favorite) else stringResource(
+            id = R.string.delete_favorite
+        ),
             style = MaterialTheme.localTextStyles.spaceGrotesk22Medium,
             color = MaterialTheme.localColors.white,
             textAlign = TextAlign.Center,
@@ -533,11 +581,9 @@ fun LastEpisodeSection(
                     color = MaterialTheme.localColors.white_alpha05,
                     shape = MaterialTheme.localShapes.roundedDp24
                 )
-                .padding(vertical = dimensionResource(id = R.dimen.dp15))
-        )
+                .padding(vertical = dimensionResource(id = R.dimen.dp15)))
         VerticalSpacer(height = R.dimen.dp18)
-        Text(
-            text = stringResource(id = R.string.share),
+        Text(text = stringResource(id = R.string.share),
             style = MaterialTheme.localTextStyles.spaceGrotesk22Medium,
             color = MaterialTheme.localColors.white,
             textAlign = TextAlign.Center,
@@ -551,11 +597,9 @@ fun LastEpisodeSection(
                     color = MaterialTheme.localColors.white_alpha05,
                     shape = MaterialTheme.localShapes.roundedDp24
                 )
-                .padding(vertical = dimensionResource(id = R.dimen.dp15))
-        )
+                .padding(vertical = dimensionResource(id = R.dimen.dp15)))
         VerticalSpacer(height = R.dimen.dp18)
-        Text(
-            text = stringResource(id = R.string.go_to_beginning),
+        Text(text = stringResource(id = R.string.go_to_beginning),
             style = MaterialTheme.localTextStyles.spaceGrotesk22Medium,
             color = MaterialTheme.localColors.white,
             textAlign = TextAlign.Center,
@@ -569,8 +613,7 @@ fun LastEpisodeSection(
                     color = MaterialTheme.localColors.white_alpha05,
                     shape = MaterialTheme.localShapes.roundedDp24
                 )
-                .padding(vertical = dimensionResource(id = R.dimen.dp15))
-        )
+                .padding(vertical = dimensionResource(id = R.dimen.dp15)))
     }
 }
 
@@ -584,8 +627,7 @@ fun LastEpisodeButtons(
     Column(
         modifier
     ) {
-        Text(
-            text = stringResource(id = R.string.add_favorite),
+        Text(text = stringResource(id = R.string.add_favorite),
             style = MaterialTheme.localTextStyles.spaceGrotesk22Medium,
             color = MaterialTheme.localColors.white,
             textAlign = TextAlign.Center,
@@ -601,11 +643,9 @@ fun LastEpisodeButtons(
                     color = MaterialTheme.localColors.white_alpha05,
                     shape = MaterialTheme.localShapes.roundedDp24
                 )
-                .padding(vertical = dimensionResource(id = R.dimen.dp15))
-        )
+                .padding(vertical = dimensionResource(id = R.dimen.dp15)))
         VerticalSpacer(height = R.dimen.dp18)
-        Text(
-            text = stringResource(id = R.string.share),
+        Text(text = stringResource(id = R.string.share),
             style = MaterialTheme.localTextStyles.spaceGrotesk22Medium,
             color = MaterialTheme.localColors.white,
             textAlign = TextAlign.Center,
@@ -621,11 +661,9 @@ fun LastEpisodeButtons(
                     color = MaterialTheme.localColors.white_alpha05,
                     shape = MaterialTheme.localShapes.roundedDp24
                 )
-                .padding(vertical = dimensionResource(id = R.dimen.dp15))
-        )
+                .padding(vertical = dimensionResource(id = R.dimen.dp15)))
         VerticalSpacer(height = R.dimen.dp18)
-        Text(
-            text = stringResource(id = R.string.go_to_beginning),
+        Text(text = stringResource(id = R.string.go_to_beginning),
             style = MaterialTheme.localTextStyles.spaceGrotesk22Medium,
             color = MaterialTheme.localColors.white,
             textAlign = TextAlign.Center,
@@ -641,8 +679,7 @@ fun LastEpisodeButtons(
                     color = MaterialTheme.localColors.white_alpha05,
                     shape = MaterialTheme.localShapes.roundedDp24
                 )
-                .padding(vertical = dimensionResource(id = R.dimen.dp15))
-        )
+                .padding(vertical = dimensionResource(id = R.dimen.dp15)))
     }
 }
 
@@ -653,26 +690,25 @@ fun ScrollBar(
 ) {
     val localColors = MaterialTheme.localColors
 
-    Box(
-        modifier = modifier
-            .width(dimensionResource(id = R.dimen.dp6))
-            .fillMaxHeight()
-            .drawWithContent {
-                val maxScrollValue = scrollState.maxValue
-                val currentScrollValue = scrollState.value
-                val scrollPercent = currentScrollValue.toFloat() / maxScrollValue.toFloat()
-                val scrollOffsetY = (size.height - 50.dp.toPx()) * scrollPercent
+    Box(modifier = modifier
+        .width(dimensionResource(id = R.dimen.dp6))
+        .fillMaxHeight()
+        .drawWithContent {
+            val maxScrollValue = scrollState.maxValue
+            val currentScrollValue = scrollState.value
+            val scrollPercent = currentScrollValue.toFloat() / maxScrollValue.toFloat()
+            val scrollOffsetY = (size.height - 50.dp.toPx()) * scrollPercent
 
-                drawRoundRect(
-                    color = localColors.white_alpha05, topLeft = Offset(
-                        x = 0f, y = scrollOffsetY
-                    ), style = Stroke(1.dp.toPx()), cornerRadius = CornerRadius(
-                        6.dp.toPx(), 6.dp.toPx()
-                    ), size = Size(
-                        width = 6.dp.toPx(), height = 50.dp.toPx()
-                    )
+            drawRoundRect(
+                color = localColors.white_alpha05, topLeft = Offset(
+                    x = 0f, y = scrollOffsetY
+                ), style = Stroke(1.dp.toPx()), cornerRadius = CornerRadius(
+                    6.dp.toPx(), 6.dp.toPx()
+                ), size = Size(
+                    width = 6.dp.toPx(), height = 50.dp.toPx()
                 )
-            })
+            )
+        })
 }
 
 @Composable
@@ -699,20 +735,18 @@ fun HitReadsPageHeader(
                 width = Dimension.fillToConstraints
                 height = Dimension.fillToConstraints
             })
-        HitReadsTopBar(
-            modifier = Modifier.constrainAs(topBar) {
-                top.linkTo(parent.top)
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-            },
+        HitReadsTopBar(modifier = Modifier.constrainAs(topBar) {
+            top.linkTo(parent.top)
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+        },
             onNotificationClick = {},
             iconResId = R.drawable.ic_bell,
             numberOfNotification = numberOfNotification,
             onMenuClick = onMenuClick,
             onIconClick = onIconCLicked,
             signInClick = {},
-            gemClick = {}
-        )
+            gemClick = {})
     }
 }
 
@@ -744,8 +778,7 @@ fun TitleSection(
                     episodeName = episodeName,
                     onAuthorClick = onAuthorClick,
                     isEpisodeNameVisible = isEpisodeNameVisible,
-                    modifier = Modifier
-                        .weight(1f)
+                    modifier = Modifier.weight(1f)
                 )
                 SimpleIcon(iconResId = if (isLiked) R.drawable.ic_star else R.drawable.ic_star_outlined,
                     tint = if (isLiked) MaterialTheme.localColors.yellow else Color.Unspecified,
@@ -843,8 +876,7 @@ fun CommentSection(
             contentPadding = PaddingValues(top = dimensionResource(id = R.dimen.dp14)),
         ) {
             items(comments) { upperComment ->
-                CommentItem(
-                    model = upperComment,
+                CommentItem(model = upperComment,
                     isChatSelected = false,
                     onLikeClick = onLikeClick,
                     isSeeAllEnabled = false,
@@ -872,8 +904,7 @@ fun CommentSection(
                 if (upperComment.isExpanded) {
                     upperComment.replies.forEachIndexed { index, comment ->
                         if (index != 0) {
-                            CommentItem(
-                                model = comment,
+                            CommentItem(model = comment,
                                 isChatSelected = false,
                                 onLikeClick = onLikeClick,
                                 isSeeAllEnabled = index == upperComment.replies.lastIndex,
@@ -885,8 +916,7 @@ fun CommentSection(
                                 },
                                 onReplyClick = {
                                     onReplyClick.invoke(upperComment)
-                                }
-                            )
+                                })
                         }
                     }
                 }
@@ -1054,8 +1084,7 @@ fun CommentItem(
                 top.linkTo(commentHeader.bottom)
                 end.linkTo(parent.end)
                 width = Dimension.fillToConstraints
-            }
-        )
+            })
         if (isSeeAllEnabled) {
             if (!hideAllEnabled) {
                 SeeAll(
@@ -1064,9 +1093,7 @@ fun CommentItem(
                         end.linkTo(commentHeader.end)
                         top.linkTo(comment.bottom)
                         width = Dimension.fillToConstraints
-                    },
-                    replySize = replySize,
-                    onClick = onExpanseClicked
+                    }, replySize = replySize, onClick = onExpanseClicked
                 )
             } else {
                 HideAll(
@@ -1075,9 +1102,7 @@ fun CommentItem(
                         end.linkTo(commentHeader.end)
                         top.linkTo(comment.bottom)
                         width = Dimension.fillToConstraints
-                    },
-                    replySize = replySize,
-                    onClick = onHideClicked
+                    }, replySize = replySize, onClick = onHideClicked
                 )
             }
         }
@@ -1157,12 +1182,9 @@ private fun ScrollState.isSidebarVisible(): Boolean {
 
 @Composable
 fun SeeAll(
-    replySize: Int,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit
+    replySize: Int, modifier: Modifier = Modifier, onClick: () -> Unit
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
+    Row(verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
         modifier = modifier.clickable { onClick.invoke() }) {
         Box(
@@ -1193,12 +1215,9 @@ fun SeeAll(
 
 @Composable
 fun HideAll(
-    replySize: Int,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit
+    replySize: Int, modifier: Modifier = Modifier, onClick: () -> Unit
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
+    Row(verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
         modifier = modifier.clickable { onClick.invoke() }) {
         Box(

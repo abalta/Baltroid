@@ -16,6 +16,7 @@ internal object Constants {
         internal const val UNLIKE = "unlike"
         internal const val TAG = "tag"
         internal const val EPISODE = "episode"
+        internal const val EPISODE_ID = "episodeId"
         internal const val SHOW = "show"
         internal const val COMMENT = "comment"
         internal const val BY_ME = "byme"

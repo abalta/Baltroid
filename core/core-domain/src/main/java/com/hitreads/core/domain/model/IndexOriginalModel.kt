@@ -36,7 +36,7 @@ data class IndexOriginalModel(
 @StringDef(INTERACTIVE, TEXT)
 annotation class OriginalType {
     companion object {
-        const val INTERACTIVE = "INTERACTIVE"
-        const val TEXT = "TEXT"
+        const val INTERACTIVE = "interactive"
+        const val TEXT = "text"
     }
 }

@@ -1,5 +1,7 @@
 package com.baltroid.ui.screens.menu.settings
 
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -21,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -39,6 +42,7 @@ import com.baltroid.ui.screens.viewmodels.AuthenticationViewModel
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localTextStyles
 import com.hitreads.core.model.Profile
+
 
 @Composable
 fun SettingsScreen(
@@ -59,6 +63,7 @@ fun SettingsScreenContent(
     profile: Profile?,
     onBackClick: () -> Unit
 ) {
+    val context = LocalContext.current
 
     var soundEffect by remember {
         mutableStateOf(true)
@@ -163,6 +168,12 @@ fun SettingsScreenContent(
                     .align(Alignment.CenterHorizontally),
                 buttonTitle = stringResource(id = R.string.share)
             ) {
+                composeEmail(
+                    context,
+                    arrayOf(""),
+                    "Hitreads share",
+                    "This message come from Hitreads App"
+                )
             }
             VerticalSpacer(height = R.dimen.dp16)
             EpisodeButton(
@@ -171,6 +182,12 @@ fun SettingsScreenContent(
                     .align(Alignment.CenterHorizontally),
                 buttonTitle = stringResource(id = R.string.support)
             ) {
+                composeEmail(
+                    context,
+                    arrayOf("test@hitreads.com"),
+                    "Hitreads email support",
+                    "This message come from Hitreads App"
+                )
             }
             VerticalSpacer(height = R.dimen.dp50)
         }
@@ -217,6 +234,26 @@ fun SettingsItem(
         Divider(
             thickness = dimensionResource(id = R.dimen.dp1),
             color = MaterialTheme.localColors.white
+        )
+    }
+}
+
+fun composeEmail(
+    context: Context,
+    emailIds: Array<String>,
+    subject: String,
+    textMessage: String
+) {
+    Intent(Intent.ACTION_SEND).apply {
+        putExtra(Intent.EXTRA_EMAIL, emailIds)
+        putExtra(Intent.EXTRA_SUBJECT, subject)
+        putExtra(Intent.EXTRA_TEXT, textMessage)
+        type = "message/rfc822"
+        context.startActivity(
+            Intent.createChooser(
+                this,
+                "Send email using..."
+            )
         )
     }
 }

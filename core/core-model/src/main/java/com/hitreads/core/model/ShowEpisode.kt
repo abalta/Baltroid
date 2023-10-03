@@ -10,6 +10,7 @@ data class ShowEpisode(
     val priceType: String,
     val sort: Int,
     val createdAt: String,
+    val isPurchase: Boolean,
     val updatedAt: String,
     val originalId: Int,
     val seasonId: Int,

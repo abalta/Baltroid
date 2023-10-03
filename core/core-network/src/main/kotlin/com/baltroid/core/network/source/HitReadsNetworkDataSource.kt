@@ -18,6 +18,7 @@ import com.baltroid.core.network.model.response.FavoriteOriginalDto
 import com.baltroid.core.network.model.response.LoginDto
 import com.baltroid.core.network.model.response.NotificationDto
 import com.baltroid.core.network.model.response.ProfileDto
+import com.baltroid.core.network.model.response.PurchaseDetailDto
 import com.baltroid.core.network.model.response.TagWithOriginalsDto
 import com.baltroid.core.network.model.response.WelcomeDto
 import kotlinx.coroutines.Dispatchers
@@ -195,6 +196,9 @@ class HitReadsNetworkDataSource @Inject constructor(
 
     suspend fun bulkPurchase(originalId: Int): BaltroidResult<HitReadsResponse<Unit?>> =
         hitReadsService.bulkPurchase(originalId)
+
+    suspend fun episodePurchase(episodeId: Int): BaltroidResult<HitReadsResponse<PurchaseDetailDto?>> =
+        hitReadsService.episodePurchase(episodeId)
 
     /*suspend fun getOriginals(
         page: Int = DEFAULT_PAGE,

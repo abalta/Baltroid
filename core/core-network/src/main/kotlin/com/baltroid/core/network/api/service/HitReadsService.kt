@@ -16,6 +16,7 @@ import com.baltroid.core.network.model.response.FavoriteOriginalDto
 import com.baltroid.core.network.model.response.LoginDto
 import com.baltroid.core.network.model.response.NotificationDto
 import com.baltroid.core.network.model.response.ProfileDto
+import com.baltroid.core.network.model.response.PurchaseDetailDto
 import com.baltroid.core.network.model.response.TagWithOriginalsDto
 import com.baltroid.core.network.model.response.WelcomeDto
 import com.baltroid.core.network.util.Constants.Fields.ANNOUNCEMENT
@@ -24,6 +25,7 @@ import com.baltroid.core.network.util.Constants.Fields.AVATAR_ID
 import com.baltroid.core.network.util.Constants.Fields.CONTENT
 import com.baltroid.core.network.util.Constants.Fields.CONTINUE_READING
 import com.baltroid.core.network.util.Constants.Fields.EMAIL
+import com.baltroid.core.network.util.Constants.Fields.EPISODE_ID
 import com.baltroid.core.network.util.Constants.Fields.FORGOT_PASSWORD
 import com.baltroid.core.network.util.Constants.Fields.GET_BY_FAV
 import com.baltroid.core.network.util.Constants.Fields.ID
@@ -192,6 +194,11 @@ interface HitReadsService {
     suspend fun bulkPurchase(
         @Field(ORIGINAL_ID) originalId: Int
     ): BaltroidResult<HitReadsResponse<Unit?>>
+
+    @POST("$ORIGINALS_INDEX/$EPISODE/{$EPISODE_ID}/$PURCHASE")
+    suspend fun episodePurchase(
+        @Path(EPISODE_ID) episodeId: Int
+    ): BaltroidResult<HitReadsResponse<PurchaseDetailDto?>>
 
     /*@GET(ORIGINALS_INDEX)
     suspend fun getOriginals(

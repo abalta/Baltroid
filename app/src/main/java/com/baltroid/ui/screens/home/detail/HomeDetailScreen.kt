@@ -3,6 +3,7 @@ package com.baltroid.ui.screens.home.detail
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -43,6 +45,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.baltroid.apps.R
@@ -56,13 +59,14 @@ import com.baltroid.ui.components.HitReadsTopBar
 import com.baltroid.ui.navigation.HitReadsScreens
 import com.baltroid.ui.screens.home.GenreSection
 import com.baltroid.ui.screens.home.TitleSection
+import com.baltroid.ui.screens.interactive.EpisodeButton
 import com.baltroid.ui.screens.viewmodels.OriginalViewModel
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localShapes
 import com.baltroid.ui.theme.localTextStyles
-import com.baltroid.util.INTERACTIVE
 import com.baltroid.util.orEmpty
 import com.baltroid.util.orZero
+import com.hitreads.core.domain.model.OriginalType
 import com.hitreads.core.model.IndexOriginal
 import com.hitreads.core.model.IndexTag
 import com.hitreads.core.model.ShowEpisode
@@ -101,6 +105,24 @@ fun HomeDetailScreen(
         viewModel.clearPurchaseState()
     }
 
+    LaunchedEffect(detailUIState.episodePurchased) {
+        if (detailUIState.episodePurchased == true) {
+            Toast.makeText(
+                context,
+                context.getString(R.string.episode_purchased),
+                Toast.LENGTH_LONG
+            ).show()
+        }
+        if (detailUIState.episodePurchased == false) {
+            Toast.makeText(
+                context,
+                context.getString(R.string.something_went_wrong),
+                Toast.LENGTH_LONG
+            ).show()
+        }
+        viewModel.clearEpisodePurchaseState()
+    }
+
     HomeDetailScreenContent(
         navigate = navigate,
         notificationSize = notificationSize,
@@ -108,6 +130,7 @@ fun HomeDetailScreen(
         isLoggedIn = homeState.isUserLoggedIn,
         bulkPurchase = viewModel::bulkPurchase,
         original = detailUIState.original,
+        purchaseEpisode = viewModel::purchaseEpisode,
     )
 }
 
@@ -118,6 +141,7 @@ private fun HomeDetailScreenContent(
     bulkPurchase: () -> Unit,
     isLoggedIn: Boolean,
     openMenuScreen: () -> Unit,
+    purchaseEpisode: (ShowEpisode) -> Unit,
     navigate: (route: String, episodeId: Int?) -> Unit
 ) {
 
@@ -126,6 +150,12 @@ private fun HomeDetailScreenContent(
     }
     var isBarcodeEnabled by rememberSaveable {
         mutableStateOf(false)
+    }
+    var isEpisodePurchaseDialogVisible by rememberSaveable {
+        mutableStateOf(false)
+    }
+    var selectedEpisode by remember {
+        mutableStateOf<ShowEpisode?>(null)
     }
     val context = LocalContext.current
 
@@ -288,26 +318,26 @@ private fun HomeDetailScreenContent(
                                 .fillMaxWidth()
                                 .wrapContentWidth(Alignment.End)
                                 .clickable {
-                                    if (original.type == INTERACTIVE) {
-                                        navigate.invoke(
-                                            HitReadsScreens.InteractiveScreen.route,
-                                            original.episodes.firstOrNull()?.id
-                                        )
-                                    } else {
-                                        if (original.episodes.firstOrNull()?.isReadable == true) {
+                                    val episode = original.episodes.firstOrNull()
+                                    if (episode?.isReadable == true) {
+                                        if (!episode.isPurchase) {
+                                            isEpisodePurchaseDialogVisible = true
+                                            selectedEpisode = episode
+                                        } else {
                                             navigate.invoke(
-                                                HitReadsScreens.ReadingScreen.route,
+                                                if (original.type == OriginalType.INTERACTIVE) HitReadsScreens.InteractiveScreen.route
+                                                else HitReadsScreens.ReadingScreen.route,
                                                 original.episodes.firstOrNull()?.id
                                             )
-                                        } else {
-                                            Toast
-                                                .makeText(
-                                                    context,
-                                                    context.getString(R.string.isnot_readable),
-                                                    Toast.LENGTH_LONG
-                                                )
-                                                .show()
                                         }
+                                    } else {
+                                        Toast
+                                            .makeText(
+                                                context,
+                                                context.getString(R.string.isnot_readable),
+                                                Toast.LENGTH_LONG
+                                            )
+                                            .show()
                                     }
                                 })
                     }
@@ -330,27 +360,42 @@ private fun HomeDetailScreenContent(
                         isEpisodesEnabled = false
                     },
                     onEpisodeClick = {
-                        if (original.type == INTERACTIVE) {
-                            navigate.invoke(
-                                HitReadsScreens.InteractiveScreen.route,
-                                it.id
-                            )
-                        } else {
-                            if (it.isReadable) {
-                                navigate.invoke(HitReadsScreens.ReadingScreen.route, it.id)
+                        if (it.isReadable) {
+                            if (!it.isPurchase) {
+                                isEpisodePurchaseDialogVisible = true
+                                selectedEpisode = it
                             } else {
-                                Toast.makeText(
-                                    context,
-                                    context.getString(R.string.isnot_readable),
-                                    Toast.LENGTH_LONG
-                                ).show()
+                                navigate.invoke(
+                                    if (original.type == OriginalType.INTERACTIVE) HitReadsScreens.InteractiveScreen.route
+                                    else HitReadsScreens.ReadingScreen.route,
+                                    it.id
+                                )
                             }
+                        } else {
+                            Toast.makeText(
+                                context,
+                                context.getString(R.string.isnot_readable),
+                                Toast.LENGTH_LONG
+                            ).show()
                         }
+
                     }
                 )
             }
         }
-
+        if (isEpisodePurchaseDialogVisible) {
+            EpisodePurchasePopup(
+                episodeName = selectedEpisode?.episodeName.toString(),
+                onDialogDismissed = { isEpisodePurchaseDialogVisible = false },
+                onAccept = {
+                    selectedEpisode?.let { purchaseEpisode(it) }
+                    isEpisodePurchaseDialogVisible = false
+                },
+                onDecline = {
+                    isEpisodePurchaseDialogVisible = false
+                }
+            )
+        }
     }
 }
 
@@ -524,12 +569,10 @@ fun EpisodeItem(
                 modifier = Modifier.weight(1f)
             )
         }
-        if (episode.isLocked) {
+        if (!episode.isReadable) {
             SimpleIcon(
                 iconResId = R.drawable.ic_lock,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentWidth(Alignment.End)
                     .padding(end = dimensionResource(id = R.dimen.dp22))
             )
         }
@@ -603,6 +646,63 @@ fun OriginalBarcode(
                 color = MaterialTheme.localColors.black,
                 modifier = Modifier.verticalScroll(rememberScrollState())
             )
+        }
+    }
+}
+
+@Composable
+fun EpisodePurchasePopup(
+    episodeName: String,
+    onDialogDismissed: () -> Unit,
+    onAccept: () -> Unit,
+    onDecline: () -> Unit
+) {
+    Dialog(onDismissRequest = { onDialogDismissed.invoke() }) {
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(MaterialTheme.localShapes.roundedDp24)
+                .background(MaterialTheme.localColors.black)
+                .border(
+                    dimensionResource(id = R.dimen.dp1),
+                    MaterialTheme.localColors.white,
+                    MaterialTheme.localShapes.roundedDp24
+                )
+        ) {
+            VerticalSpacer(height = R.dimen.dp24)
+            Text(
+                text = stringResource(id = R.string.buy_episode, episodeName),
+                style = MaterialTheme.localTextStyles.poppins18Regular,
+                color = MaterialTheme.localColors.white,
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.dp24))
+            )
+            VerticalSpacer(height = R.dimen.dp24)
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(
+                    dimensionResource(id = R.dimen.dp12),
+                    Alignment.CenterHorizontally
+                )
+            ) {
+                EpisodeButton(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = dimensionResource(id = R.dimen.dp24)),
+                    buttonTitle = stringResource(id = R.string.decline)
+                ) {
+                    onDecline.invoke()
+                }
+                EpisodeButton(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = dimensionResource(id = R.dimen.dp24)),
+                    buttonTitle = stringResource(id = R.string.buy)
+                ) {
+                    onAccept.invoke()
+                }
+            }
+            VerticalSpacer(height = R.dimen.dp24)
         }
     }
 }

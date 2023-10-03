@@ -80,6 +80,7 @@ import com.baltroid.ui.common.VerticalSpacer
 import com.baltroid.ui.common.showLoginToast
 import com.baltroid.ui.components.CommentWritingCard
 import com.baltroid.ui.navigation.HitReadsScreens
+import com.baltroid.ui.screens.home.detail.EpisodePurchasePopup
 import com.baltroid.ui.screens.home.detail.EpisodeSheet
 import com.baltroid.ui.screens.home.detail.OriginalBarcode
 import com.baltroid.ui.screens.reading.CommentSection
@@ -127,6 +128,7 @@ fun InteractiveScreen(
         replyComment = viewModel::replyComment,
         createComment = viewModel::createComment,
         hideComment = viewModel::hideComment,
+        purchaseEpisode = viewModel::purchaseEpisode,
         navigate = navigate,
         likeComment = { isLiked, id, tabState ->
             if (isLiked) viewModel.unlikeComment(id, tabState)
@@ -150,7 +152,8 @@ fun InteractiveScreenContent(
     onEpisodeChange: (episodeId: Int) -> Unit,
     expanseComment: (Int, CommentsTabState) -> Unit,
     hideComment: (Int, CommentsTabState) -> Unit,
-    navigate: (String) -> Unit,
+    purchaseEpisode: (ShowEpisode) -> Unit,
+    navigate: (String) -> Unit
 ) {
     val context = LocalContext.current
     val interactiveContent = readingUiState.episode?.xmlContents?.episode?.dialogue
@@ -209,6 +212,13 @@ fun InteractiveScreenContent(
 
     var createComment by rememberSaveable {
         mutableStateOf(false)
+    }
+
+    var isEpisodePurchaseDialogVisible by rememberSaveable {
+        mutableStateOf(false)
+    }
+    var selectedEpisode by remember {
+        mutableStateOf<ShowEpisode?>(null)
     }
 
     BackHandler(isEpisodesEnabled) {
@@ -426,7 +436,12 @@ fun InteractiveScreenContent(
             closeSheet = { isEpisodesEnabled = false },
             onEpisodeClick = {
                 if (it.isReadable) {
-                    onEpisodeChange.invoke(it.id)
+                    if (!it.isPurchase) {
+                        isEpisodePurchaseDialogVisible = true
+                        selectedEpisode = it
+                    } else {
+                        onEpisodeChange.invoke(it.id)
+                    }
                 } else {
                     Toast.makeText(
                         context,
@@ -509,6 +524,19 @@ fun InteractiveScreenContent(
                 }
                 isWriteCardShown = false
             }
+        }
+        if (isEpisodePurchaseDialogVisible) {
+            EpisodePurchasePopup(
+                episodeName = selectedEpisode?.episodeName.toString(),
+                onDialogDismissed = { isEpisodePurchaseDialogVisible = false },
+                onAccept = {
+                    selectedEpisode?.let { purchaseEpisode(it) }
+                    isEpisodePurchaseDialogVisible = false
+                },
+                onDecline = {
+                    isEpisodePurchaseDialogVisible = false
+                }
+            )
         }
     }
 }
