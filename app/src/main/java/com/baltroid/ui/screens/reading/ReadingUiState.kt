@@ -8,6 +8,7 @@ data class ReadingUiState(
     val allComments: List<Comment> = emptyList(),
     val commentsByMe: List<Comment> = emptyList(),
     val commentsLikedByMe: List<Comment> = emptyList(),
+    val optionPurchased: Boolean? = null,
     val isLoading: Boolean = false,
     val error: Throwable? = null,
 )

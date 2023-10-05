@@ -89,6 +89,7 @@ internal object Constants {
         internal const val ORIGINAL_ID = "original_id"
         internal const val CONTENT = "content"
         internal const val RESPONSE_ID = "response_id"
+        internal const val SET_CHOICE = "set-choice"
 
         private fun buildAppendToResponse(vararg fields: String) =
             fields.joinToString(separator = APPEND_TO_RESPONSE_SEPARATOR)

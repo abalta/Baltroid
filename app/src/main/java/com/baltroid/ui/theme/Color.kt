@@ -33,6 +33,7 @@ val Gold = Color(0xFFB39912)
 val White_bb = Color(0xFFBBBBBB)
 val Transparent = Color.Transparent
 val Green = Color(0xFF34C759)
+val Orange30 = Color(0xFFBB4930)
 
 data class Colors(
     val black: Color = Black,
@@ -61,7 +62,8 @@ data class Colors(
     val transparent: Color = Transparent,
     val white_black: Color = White_black,
     val white_bb: Color = White_bb,
-    val green: Color = Green
+    val green: Color = Green,
+    val orange30: Color = Orange30
 )
 
 val LocalColors = staticCompositionLocalOf { Colors() }

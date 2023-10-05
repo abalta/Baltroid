@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.baltroid.core.common.result.handle
 import com.baltroid.ui.screens.home.HomeUiState
 import com.baltroid.ui.screens.home.detail.HomeDetailUIState
+import com.baltroid.ui.screens.interactive.InteractiveOptions
 import com.baltroid.ui.screens.interactive.InteractiveScreenAction
 import com.baltroid.ui.screens.reading.ReadingUiState
 import com.baltroid.ui.screens.reading.comments.CommentsTabState
@@ -30,6 +31,7 @@ import com.hitreads.core.domain.usecase.GetFavoriteOriginalsUseCase
 import com.hitreads.core.domain.usecase.GetOriginalsUseCase
 import com.hitreads.core.domain.usecase.IsLoggedUseCase
 import com.hitreads.core.domain.usecase.LikeCommentUseCase
+import com.hitreads.core.domain.usecase.OptionPurchaseUseCase
 import com.hitreads.core.domain.usecase.ProfileUseCase
 import com.hitreads.core.domain.usecase.ShowEpisodeUseCase
 import com.hitreads.core.domain.usecase.ShowOriginalUseCase
@@ -71,7 +73,8 @@ class OriginalViewModel @Inject constructor(
     private val getAllNotificationsUseCase: GetAllNotificationsUseCase,
     private val getCommentsByMeByIdUseCase: GetCommentsByMeByIdUseCase,
     private val bulkPurchaseUseCase: BulkPurchaseUseCase,
-    private val purchaseUseCase: EpisodePurchaseUseCase
+    private val purchaseUseCase: EpisodePurchaseUseCase,
+    private val optionPurchaseUseCase: OptionPurchaseUseCase
 ) : ViewModel() {
 
     private val _uiStateHome = MutableStateFlow(HomeUiState())
@@ -624,7 +627,7 @@ class OriginalViewModel @Inject constructor(
 
             InteractiveScreenAction.GO_TO_BEGINNING -> {
                 _selectedEpisodeId.value = _uiStateDetail.value.original.episodes
-                    .firstOrNull { it.sort == 1 }?.nextEpisodeId.orZero()
+                    .firstOrNull { it.episodeSort == 1 }?.nextEpisodeId.orZero()
             }
 
             InteractiveScreenAction.NEXT_EPISODE -> {
@@ -828,6 +831,31 @@ class OriginalViewModel @Inject constructor(
 
     fun clearEpisodePurchaseState() {
         _uiStateDetail.update { it.copy(episodePurchased = null) }
+    }
+
+    fun clearOptionPurchased() {
+        _uiStateReading.update { it.copy(optionPurchased = null) }
+    }
+
+    fun purchaseOption(currentLineId: String, interactiveOptions: InteractiveOptions?) {
+        viewModelScope.launch {
+            optionPurchaseUseCase.invoke(
+                episodeId = _selectedEpisodeId.value,
+                lineId = currentLineId,
+                optionIndex = interactiveOptions?.index.orEmpty(),
+                price = interactiveOptions?.cost?.filter { it.isDigit() }?.toInt() ?: 0
+            ).handle {
+                onLoading {
+                    _uiStateReading.update { it.copy(isLoading = true) }
+                }
+                onSuccess {
+                    _uiStateReading.update { it.copy(optionPurchased = true, isLoading = false) }
+                }
+                onFailure {
+                    _uiStateReading.update { it.copy(optionPurchased = false, isLoading = false) }
+                }
+            }
+        }
     }
 
     /* fun deleteFavorite(original: Original?) = viewModelScope.launch {

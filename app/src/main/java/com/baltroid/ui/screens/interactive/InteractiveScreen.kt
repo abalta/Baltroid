@@ -59,7 +59,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
@@ -129,6 +128,8 @@ fun InteractiveScreen(
         createComment = viewModel::createComment,
         hideComment = viewModel::hideComment,
         purchaseEpisode = viewModel::purchaseEpisode,
+        purchaseOption = viewModel::purchaseOption,
+        clearOptionPurchased = viewModel::clearOptionPurchased,
         navigate = navigate,
         likeComment = { isLiked, id, tabState ->
             if (isLiked) viewModel.unlikeComment(id, tabState)
@@ -153,6 +154,8 @@ fun InteractiveScreenContent(
     expanseComment: (Int, CommentsTabState) -> Unit,
     hideComment: (Int, CommentsTabState) -> Unit,
     purchaseEpisode: (ShowEpisode) -> Unit,
+    purchaseOption: (String, InteractiveOptions?) -> Unit,
+    clearOptionPurchased: () -> Unit,
     navigate: (String) -> Unit
 ) {
     val context = LocalContext.current
@@ -193,36 +196,48 @@ fun InteractiveScreenContent(
     var isEpisodesEnabled by remember {
         mutableStateOf(false)
     }
-
     var isBarcodeEnabled by remember {
         mutableStateOf(false)
     }
-
     var isCommentsEnabled by remember {
         mutableStateOf(false)
     }
-
     var isWriteCardShown by remember {
         mutableStateOf(false)
     }
-
     var selectedCommentTab by rememberSaveable {
         mutableStateOf(CommentsTabState.AllComments)
     }
-
     var createComment by rememberSaveable {
         mutableStateOf(false)
     }
-
     var isEpisodePurchaseDialogVisible by rememberSaveable {
         mutableStateOf(false)
     }
     var selectedEpisode by remember {
         mutableStateOf<ShowEpisode?>(null)
     }
+    var showPurchaseOption by remember {
+        mutableStateOf(false)
+    }
+    var selectedOption by remember {
+        mutableStateOf<InteractiveOptions?>(null)
+    }
 
     BackHandler(isEpisodesEnabled) {
         isEpisodesEnabled = false
+    }
+
+    LaunchedEffect(readingUiState.optionPurchased) {
+        if (readingUiState.optionPurchased == true) {
+            showPurchaseOption = false
+            currentDialogue =
+                interactiveContent?.firstOrNull { it?.lineId == currentDialogue?.nextLineId }
+        }
+        if (readingUiState.optionPurchased == false) {
+            showPurchaseOption = false
+        }
+        clearOptionPurchased()
     }
 
     ConstraintLayout(
@@ -233,7 +248,7 @@ fun InteractiveScreenContent(
         val (toolbar, bottombar, focusCharacter,
             textBox, options, comments,
             episodes, note, smsBar,
-            talkerCircle, episodeEndButtons) = createRefs()
+            talkerCircle, episodeEndButtons, optionPurchase) = createRefs()
 
         val guideLine = createGuidelineFromTop(0.3f)
 
@@ -299,16 +314,22 @@ fun InteractiveScreenContent(
         Options(
             items = listOf(
                 InteractiveOptions(
+                    "1",
                     currentDialogue?.optionOne.toString(),
-                    currentDialogue?.optionOneNextLineId.toString()
+                    currentDialogue?.optionOneNextLineId.toString(),
+                    currentDialogue?.optionOneCost
                 ),
                 InteractiveOptions(
+                    "2",
                     currentDialogue?.optionTwo.toString(),
-                    currentDialogue?.optionTwoNextLineId.toString()
+                    currentDialogue?.optionTwoNextLineId.toString(),
+                    currentDialogue?.optionTwoCost
                 ),
                 InteractiveOptions(
+                    "3",
                     currentDialogue?.optionThree.toString(),
-                    currentDialogue?.optionThreeNextLineId.toString()
+                    currentDialogue?.optionThreeNextLineId.toString(),
+                    currentDialogue?.optionThreeCost
                 ),
             ),
             modifier = Modifier.constrainAs(options) {
@@ -319,23 +340,51 @@ fun InteractiveScreenContent(
                 width = Dimension.fillToConstraints
                 height = Dimension.fillToConstraints
                 visibility =
-                    if (currentDialogue?.optionCount != null && isEndOfEpisode.not()) Visible else Gone
+                    if (currentDialogue?.optionCount != null && isEndOfEpisode.not() && !showPurchaseOption) Visible else Gone
             }
-        ) { nextLineId ->
-            currentDialogue =
-                interactiveContent?.firstOrNull { it?.lineId == nextLineId }
+        ) { nextLineId, option ->
+            if (option?.cost != null) {
+                showPurchaseOption = true
+                selectedOption = option
+            } else {
+                currentDialogue =
+                    interactiveContent?.firstOrNull { it?.lineId == nextLineId }
+            }
         }
+
+        PurchaseBox(
+            option = selectedOption,
+            modifier = Modifier.constrainAs(optionPurchase) {
+                top.linkTo(guideLine)
+                start.linkTo(parent.start, 20.dp)
+                end.linkTo(parent.end, 20.dp)
+                bottom.linkTo(textBox.top)
+                width = Dimension.fillToConstraints
+                height = Dimension.fillToConstraints
+                visibility = if (showPurchaseOption) Visible else Gone
+            },
+            onAccept = {
+                if (isLoggedIn) {
+                    purchaseOption.invoke(currentDialogue?.lineId.orEmpty(), it)
+                } else {
+                    context.showLoginToast()
+                }
+            },
+            onReject = {
+                showPurchaseOption = false
+            }
+        )
 
         EpisodeEndButtons(
             isLastEpisode = readingUiState.episode?.isLastEpisode == true,
             onClick = {
-                if (it == InteractiveScreenAction.SHARE) {
-                    isBarcodeEnabled = true
+                if (it == InteractiveScreenAction.CREATE_FAVORITE && !isLoggedIn) {
+                    context.showLoginToast()
                 } else {
-                    if (isLoggedIn) {
-                        action.invoke(it)
+                    if (it == InteractiveScreenAction.SHARE) {
+                        isBarcodeEnabled = true
                     } else {
-                        context.showLoginToast()
+                        action.invoke(it)
                     }
                 }
             },
@@ -590,6 +639,148 @@ fun EpisodeEndButtons(
 }
 
 @Composable
+fun PurchaseOption(
+    text: String,
+    cost: String,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(MaterialTheme.localShapes.roundedDp10)
+                .background(MaterialTheme.localColors.black)
+                .border(
+                    dimensionResource(id = R.dimen.dp4),
+                    MaterialTheme.localColors.orange30,
+                    MaterialTheme.localShapes.roundedDp10
+                )
+                .padding(
+                    vertical = dimensionResource(id = R.dimen.dp14),
+                    horizontal = dimensionResource(id = R.dimen.dp21)
+                )
+        ) {
+            Text(
+                text = text,
+                style = MaterialTheme.localTextStyles.poppins14Medium,
+                color = MaterialTheme.localColors.white,
+                modifier = Modifier.weight(1f)
+            )
+            Row {
+                Text(
+                    text = cost,
+                    style = MaterialTheme.localTextStyles.poppins14Medium,
+                    color = MaterialTheme.localColors.white
+                )
+                HorizontalSpacer(width = R.dimen.dp8)
+                SimpleIcon(iconResId = R.drawable.ic_diamond)
+            }
+        }
+        VerticalSpacer(height = R.dimen.dp11)
+    }
+}
+
+@Composable
+fun PurchaseBox(
+    option: InteractiveOptions?,
+    modifier: Modifier = Modifier,
+    onAccept: (InteractiveOptions?) -> Unit,
+    onReject: () -> Unit
+) {
+    Column(modifier) {
+        PurchaseOption(text = option?.option.orEmpty(), cost = option?.cost.orEmpty())
+        Column(
+            modifier = Modifier
+                .clip(MaterialTheme.localShapes.roundedDp10)
+                .background(MaterialTheme.localColors.black)
+                .border(
+                    dimensionResource(id = R.dimen.dp0_5),
+                    color = MaterialTheme.localColors.white,
+                    MaterialTheme.localShapes.roundedDp10
+                )
+
+        ) {
+
+        }
+        Text(
+            text = stringResource(R.string.option_cost, option?.cost.orEmpty()),
+            style = MaterialTheme.localTextStyles.poppins14Medium,
+            color = MaterialTheme.localColors.white,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .clip(
+                    RoundedCornerShape(
+                        topStart = dimensionResource(id = R.dimen.dp10),
+                        topEnd = dimensionResource(id = R.dimen.dp10)
+                    )
+                )
+                .background(MaterialTheme.localColors.black)
+                .border(
+                    dimensionResource(id = R.dimen.dp0_5),
+                    color = MaterialTheme.localColors.white,
+                    RoundedCornerShape(
+                        topStart = dimensionResource(id = R.dimen.dp10),
+                        topEnd = dimensionResource(id = R.dimen.dp10)
+                    )
+                )
+                .padding(dimensionResource(id = R.dimen.dp24))
+        )
+        Divider(
+            thickness = dimensionResource(id = R.dimen.dp0_5),
+            color = MaterialTheme.localColors.white
+        )
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(IntrinsicSize.Min)
+                .clip(
+                    RoundedCornerShape(
+                        bottomStart = dimensionResource(id = R.dimen.dp10),
+                        bottomEnd = dimensionResource(id = R.dimen.dp10)
+                    )
+                )
+                .border(
+                    dimensionResource(id = R.dimen.dp0_5),
+                    color = MaterialTheme.localColors.white,
+                    RoundedCornerShape(
+                        bottomStart = dimensionResource(id = R.dimen.dp10),
+                        bottomEnd = dimensionResource(id = R.dimen.dp10)
+                    )
+                )
+                .background(MaterialTheme.localColors.black)
+        ) {
+            Text(
+                text = stringResource(id = R.string.decline),
+                style = MaterialTheme.localTextStyles.poppins14Medium,
+                color = MaterialTheme.localColors.white,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(dimensionResource(id = R.dimen.dp24))
+                    .clickable { onReject.invoke() }
+            )
+            Divider(
+                color = MaterialTheme.localColors.white,
+                modifier = Modifier
+                    .width(dimensionResource(id = R.dimen.dp0_5))
+                    .fillMaxHeight()
+            )
+            Text(
+                text = stringResource(id = R.string.accept),
+                style = MaterialTheme.localTextStyles.poppins14Medium,
+                color = MaterialTheme.localColors.white,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(dimensionResource(id = R.dimen.dp24))
+                    .clickable { onAccept.invoke(option) }
+            )
+        }
+    }
+}
+
+@Composable
 fun EpisodeButton(
     buttonTitle: String,
     modifier: Modifier = Modifier,
@@ -835,7 +1026,7 @@ fun InteractiveSmsBox(
 fun Options(
     items: List<InteractiveOptions>,
     modifier: Modifier = Modifier,
-    onClick: (nextLineId: String) -> Unit
+    onClick: (nextLineId: String, option: InteractiveOptions?) -> Unit
 ) {
     Column(
         modifier = modifier
@@ -852,12 +1043,9 @@ fun Options(
         ) {
             items(items) { dialogue ->
                 if (dialogue.option != "null") {
-                    Text(
-                        text = dialogue.option,
-                        style = MaterialTheme.localTextStyles.poppins14Medium,
-                        color = MaterialTheme.localColors.white,
+                    Row(
                         modifier = Modifier
-                            .clickable { onClick.invoke(dialogue.nextLineId) }
+                            .clickable { onClick.invoke(dialogue.nextLineId, dialogue) }
                             .fillMaxWidth()
                             .clip(MaterialTheme.localShapes.roundedDp10)
                             .background(MaterialTheme.localColors.black)
@@ -865,7 +1053,25 @@ fun Options(
                                 vertical = dimensionResource(id = R.dimen.dp14),
                                 horizontal = dimensionResource(id = R.dimen.dp21)
                             )
-                    )
+                    ) {
+                        Text(
+                            text = dialogue.option,
+                            style = MaterialTheme.localTextStyles.poppins14Medium,
+                            color = MaterialTheme.localColors.white,
+                            modifier = Modifier.weight(1f)
+                        )
+                        if (dialogue.cost != null) {
+                            Row {
+                                Text(
+                                    text = dialogue.cost,
+                                    style = MaterialTheme.localTextStyles.poppins14Medium,
+                                    color = MaterialTheme.localColors.white
+                                )
+                                HorizontalSpacer(width = R.dimen.dp8)
+                                SimpleIcon(iconResId = R.drawable.ic_diamond)
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -1050,8 +1256,10 @@ fun ImageWithNameCard(
 }
 
 data class InteractiveOptions(
+    val index: String,
     val option: String,
-    val nextLineId: String
+    val nextLineId: String,
+    val cost: String?
 )
 
 @Composable
@@ -1345,12 +1553,6 @@ enum class InteractiveScreenAction {
     GO_TO_BEGINNING,
     NEXT_EPISODE,
     CREATE_COMMENT
-}
-
-@Preview
-@Composable
-fun InteractiveScreenPreview() {
-    InteractiveSmsBar(dialogue = null, modifier = Modifier, onClick = {})
 }
 
 

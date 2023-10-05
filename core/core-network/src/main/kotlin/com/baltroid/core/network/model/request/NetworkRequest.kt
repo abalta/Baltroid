@@ -36,6 +36,16 @@ data class RegisterRequestBody(
 )
 
 @Serializable
+data class PurchaseOptionRequestBody(
+    @SerialName("line_id")
+    val lineId: String,
+    @SerialName("option_index")
+    val optionIndex: String,
+    @SerialName("price")
+    val price: Int
+)
+
+@Serializable
 data class ForgotPasswordRequestBody(
     @SerialName("email")
     val email: String

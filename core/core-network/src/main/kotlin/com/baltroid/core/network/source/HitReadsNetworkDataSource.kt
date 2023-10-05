@@ -7,6 +7,7 @@ import com.baltroid.core.network.model.HitReadsResponse
 import com.baltroid.core.network.model.originals.IndexNetworkOriginal
 import com.baltroid.core.network.model.originals.NetworkCreateCommentResponse
 import com.baltroid.core.network.model.request.ForgotPasswordRequestBody
+import com.baltroid.core.network.model.request.PurchaseOptionRequestBody
 import com.baltroid.core.network.model.request.RegisterRequestBody
 import com.baltroid.core.network.model.response.AnnouncementDto
 import com.baltroid.core.network.model.response.AuthorDto
@@ -199,6 +200,12 @@ class HitReadsNetworkDataSource @Inject constructor(
 
     suspend fun episodePurchase(episodeId: Int): BaltroidResult<HitReadsResponse<PurchaseDetailDto?>> =
         hitReadsService.episodePurchase(episodeId)
+
+    suspend fun purchaseOption(episodeId: Int, lineId: String, optionIndex: String, price: Int) =
+        hitReadsService.purchaseOption(
+            episodeId,
+            PurchaseOptionRequestBody(lineId, optionIndex, price)
+        )
 
     /*suspend fun getOriginals(
         page: Int = DEFAULT_PAGE,

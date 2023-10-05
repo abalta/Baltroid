@@ -35,6 +35,12 @@ data class DialogueXml(
     val optionOne: String?,
     @SerializedName("op_1_next_line")
     val optionOneNextLineId: String?,
+    @SerializedName("op_1_cost")
+    val optionOneCost: String?,
+    @SerializedName("op_2_cost")
+    val optionTwoCost: String?,
+    @SerializedName("op_3_cost")
+    val optionThreeCost: String?,
     @SerializedName("op_2")
     val optionTwo: String?,
     @SerializedName("op_2_next_line")

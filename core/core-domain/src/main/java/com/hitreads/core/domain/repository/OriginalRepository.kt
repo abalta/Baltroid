@@ -16,6 +16,7 @@ interface OriginalRepository {
         getByFav: Boolean? = null,
         continueReading: Boolean? = null
     ): Flow<BaltroidResult<List<TagsWithOriginalsModel>>>
+
     fun likeOriginal(originalId: Int): Flow<BaltroidResult<Unit?>>
     fun unlikeOriginal(originalId: Int): Flow<BaltroidResult<Unit?>>
     fun bulkPurchase(originalId: Int): Flow<BaltroidResult<Unit?>>
@@ -25,4 +26,10 @@ interface OriginalRepository {
     fun startReadingEpisode(episodeId: Int): Flow<BaltroidResult<Unit>>
     fun endReadingEpisode(episodeId: Int): Flow<BaltroidResult<Unit>>
     fun episodePurchase(episodeId: Int): Flow<BaltroidResult<Unit?>>
+    fun optionPurchase(
+        episodeId: Int,
+        lineId: String,
+        optionIndex: String,
+        price: Int
+    ): Flow<BaltroidResult<Unit?>>
 }
