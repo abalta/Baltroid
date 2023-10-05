@@ -5,8 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.baltroid.apps.R
 import com.baltroid.core.common.result.handle
+import com.baltroid.ui.screens.menu.login.LoginUiState
 import com.baltroid.ui.screens.menu.profile.ProfileUIState
 import com.baltroid.ui.screens.menu.register.RegisterScreenUIState
+import com.hitreads.core.domain.usecase.ForgotPasswordUseCase
 import com.hitreads.core.domain.usecase.GetAvatarsUseCase
 import com.hitreads.core.domain.usecase.ProfileUseCase
 import com.hitreads.core.domain.usecase.RegisterUseCase
@@ -34,6 +36,7 @@ class AuthenticationViewModel @Inject constructor(
     private val profileUseCase: ProfileUseCase,
     private val registerUseCase: RegisterUseCase,
     private val getAvatarsUseCase: GetAvatarsUseCase,
+    private val forgotPasswordUseCase: ForgotPasswordUseCase,
     private val updateUserProfileUseCase: UpdateUserProfileUseCase
 ) : ViewModel() {
 
@@ -45,6 +48,9 @@ class AuthenticationViewModel @Inject constructor(
 
     private val _uiStateUpdateAvatar: MutableStateFlow<Boolean?> = MutableStateFlow(null)
     val uiStateUpdateAvatar = _uiStateUpdateAvatar.asStateFlow()
+
+    private val _uiState = MutableStateFlow(LoginUiState())
+    val uiState = _uiState.asStateFlow()
 
     init {
         getProfile()
@@ -126,6 +132,36 @@ class AuthenticationViewModel @Inject constructor(
     fun updatePasswordField(value: String) {
         if (value.length <= 8) {
             _uiStateRegister.update { it.copy(password = it.password.copy(fieldValue = value)) }
+        }
+    }
+
+    fun resetInfoMessage() {
+        _uiState.update { it.copy(sendResetPasswordMessage = null) }
+    }
+
+    fun sendResetPassword(email: String) {
+        viewModelScope.launch {
+            forgotPasswordUseCase.invoke(email).handle {
+                onLoading {
+                    _uiState.update { it.copy(isLoading = true) }
+                }
+                onSuccess {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            sendResetPasswordMessage = R.string.send_password_reset
+                        )
+                    }
+                }
+                onFailure {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            sendResetPasswordMessage = R.string.invalid_email
+                        )
+                    }
+                }
+            }
         }
     }
 

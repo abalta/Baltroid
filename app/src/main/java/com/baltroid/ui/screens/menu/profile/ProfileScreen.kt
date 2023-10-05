@@ -47,6 +47,7 @@ import com.baltroid.ui.common.VerticalSpacer
 import com.baltroid.ui.components.IconlessMenuBar
 import com.baltroid.ui.navigation.HitReadsScreens
 import com.baltroid.ui.screens.interactive.EpisodeButton
+import com.baltroid.ui.screens.menu.login.ForgotPasswordPopup
 import com.baltroid.ui.screens.menu.login.IconBetweenDividers
 import com.baltroid.ui.screens.menu.login.UserInputArea
 import com.baltroid.ui.screens.viewmodels.AuthenticationViewModel
@@ -63,6 +64,7 @@ fun ProfileScreen(
     navigate: (route: String) -> Unit
 ) {
     val profileState by viewModel.profileState.collectAsStateWithLifecycle()
+    val loginState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     SetLoadingState(isLoading = profileState.isLoading)
     LaunchedEffect(profileState.isProfileUpdated) {
@@ -79,11 +81,18 @@ fun ProfileScreen(
         }
         viewModel.clearProfileUpdatedState()
     }
+    LaunchedEffect(loginState.sendResetPasswordMessage) {
+        loginState.sendResetPasswordMessage?.let {
+            Toast.makeText(context, context.getString(it), Toast.LENGTH_LONG).show()
+            viewModel.resetInfoMessage()
+        }
+    }
     ProfileScreenContent(
         profile = profileState.profile,
         onBackClick = onBackClick,
         updateUserProfile = viewModel::updateUserProfile,
-        navigate = navigate
+        navigate = navigate,
+        sendResetPasswordEmail = viewModel::sendResetPassword
     )
 }
 
@@ -92,19 +101,24 @@ fun ProfileScreenContent(
     profile: Profile?,
     onBackClick: () -> Unit,
     updateUserProfile: (username: String, nickname: String, email: String) -> Unit,
-    navigate: (route: String) -> Unit
+    navigate: (route: String) -> Unit,
+    sendResetPasswordEmail: (email: String) -> Unit
 ) {
     var showForgotPasswordPopup by remember {
         mutableStateOf(false)
     }
-    if (showForgotPasswordPopup) {
+
+    var editProfilePopup by remember {
+        mutableStateOf(false)
+    }
+    if (editProfilePopup) {
         EditProfilePopup(
             onDialogDismissed = {
-                showForgotPasswordPopup = false
+                editProfilePopup = false
             },
             onClick = { username, nickname, email ->
                 updateUserProfile.invoke(username, nickname, email)
-                showForgotPasswordPopup = false
+                editProfilePopup = false
             }
         )
     }
@@ -168,21 +182,23 @@ fun ProfileScreenContent(
         IconBetweenDividers(
             R.drawable.ic_edit
         ) {
-            showForgotPasswordPopup = true
+            editProfilePopup = true
         }
         Divider(
             thickness = dimensionResource(id = R.dimen.dp1),
             color = MaterialTheme.localColors.white_alpha06
         )
         Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.clickable {
-
+                showForgotPasswordPopup = true
             }
         ) {
             Text(
                 text = stringResource(id = R.string.forgot_password),
                 style = MaterialTheme.localTextStyles.spaceGrotesk18Medium,
-                color = MaterialTheme.localColors.orange
+                color = MaterialTheme.localColors.orange,
+                modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.dp20))
             )
             Divider(
                 thickness = dimensionResource(id = R.dimen.dp1),
@@ -200,6 +216,18 @@ fun ProfileScreenContent(
               color = MaterialTheme.localColors.white_alpha06
           )*/
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp50))
+
+        if (showForgotPasswordPopup) {
+            ForgotPasswordPopup(
+                onDialogDismissed = {
+                    showForgotPasswordPopup = false
+                },
+                onClick = {
+                    sendResetPasswordEmail.invoke(it)
+                    showForgotPasswordPopup = false
+                }
+            )
+        }
     }
 }
 
