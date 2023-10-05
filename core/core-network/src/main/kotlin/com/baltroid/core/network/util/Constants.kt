@@ -53,6 +53,7 @@ internal object Constants {
         internal const val DATA = "data"
         internal const val DATA_COUNT = "data_count"
         internal const val ORIGINALS = "originals"
+        internal const val ORIGINAL = "original"
         internal const val TAGS = "tags"
         internal const val ACTIVE_PAGE = "active_page"
         internal const val EMAIL = "email"

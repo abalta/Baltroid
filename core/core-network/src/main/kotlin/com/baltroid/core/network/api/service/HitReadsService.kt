@@ -30,6 +30,7 @@ import com.baltroid.core.network.util.Constants.Fields.FORGOT_PASSWORD
 import com.baltroid.core.network.util.Constants.Fields.GET_BY_FAV
 import com.baltroid.core.network.util.Constants.Fields.ID
 import com.baltroid.core.network.util.Constants.Fields.NAME
+import com.baltroid.core.network.util.Constants.Fields.ORIGINAL
 import com.baltroid.core.network.util.Constants.Fields.ORIGINALS
 import com.baltroid.core.network.util.Constants.Fields.ORIGINAL_ID
 import com.baltroid.core.network.util.Constants.Fields.PASSWORD
@@ -111,10 +112,10 @@ interface HitReadsService {
     @PUT("$ORIGINALS_INDEX/{id}/$UNLIKE")
     suspend fun unlikeOriginal(@Path("id") id: Int): BaltroidResult<HitReadsResponse<Unit>>
 
-    @GET("$ORIGINALS_INDEX/{id}/$START")
+    @GET("$ORIGINAL/$EPISODE/{id}/$START")
     suspend fun startReadingEpisode(@Path("id") episodeId: Int): BaltroidResult<HitReadsResponse<Unit>>
 
-    @GET("$ORIGINALS_INDEX/{id}/$END")
+    @GET("$ORIGINAL/$EPISODE/{id}/$END")
     suspend fun endReadingEpisode(@Path("id") episodeId: Int): BaltroidResult<HitReadsResponse<Unit>>
 
     @FormUrlEncoded

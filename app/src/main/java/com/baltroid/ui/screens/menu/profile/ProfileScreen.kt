@@ -174,6 +174,21 @@ fun ProfileScreenContent(
             thickness = dimensionResource(id = R.dimen.dp1),
             color = MaterialTheme.localColors.white_alpha06
         )
+        Column(
+            modifier = Modifier.clickable {
+
+            }
+        ) {
+            Text(
+                text = stringResource(id = R.string.forgot_password),
+                style = MaterialTheme.localTextStyles.spaceGrotesk18Medium,
+                color = MaterialTheme.localColors.orange
+            )
+            Divider(
+                thickness = dimensionResource(id = R.dimen.dp1),
+                color = MaterialTheme.localColors.white_alpha06
+            )
+        }
         /*  TextBetweenDividers(
               text = stringResource(id = R.string.forgot_password),
               textStyle = MaterialTheme.localTextStyles.spaceGrotesk18Medium,
