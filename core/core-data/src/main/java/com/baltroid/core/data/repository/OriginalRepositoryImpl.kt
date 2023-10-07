@@ -125,10 +125,7 @@ class OriginalRepositoryImpl @Inject constructor(
 
         when {
             response.isSuccess() -> {
-                response.value.data?.let {
-                    //may need purchase detail
-                    emit(BaltroidResult.success(null))
-                }
+                emit(BaltroidResult.success(null))
             }
 
             response.isFailure() -> {

@@ -1,5 +1,6 @@
 package com.baltroid.ui.screens.menu.register
 
+import android.provider.Settings
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -230,7 +231,13 @@ fun RegisterScreen(
             TextBetweenDividers(
                 text = stringResource(id = R.string.save),
                 textStyle = MaterialTheme.localTextStyles.spaceGrotesk18Medium,
-                onClick = viewModel::register
+                onClick = {
+                    val udid = Settings.Secure.getString(
+                        context.contentResolver,
+                        Settings.Secure.ANDROID_ID
+                    ).toString()
+                    viewModel.register(udid)
+                }
             )
             Divider(
                 thickness = dimensionResource(id = R.dimen.dp0_5),

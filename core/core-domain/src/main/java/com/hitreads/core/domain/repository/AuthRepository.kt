@@ -17,7 +17,8 @@ interface AuthRepository {
         password: String,
         userAgreement: Boolean,
         cookiePolicy: Boolean,
-        birthdate: String
+        birthdate: String,
+        identifier: String
     ): Flow<BaltroidResult<Unit?>>
 
     fun getProfile(): Flow<BaltroidResult<ProfileModel>>
@@ -30,5 +31,6 @@ interface AuthRepository {
         email: String?
     ): Flow<BaltroidResult<Unit?>>
 
+    suspend fun logOut()
     fun forgotPassword(email: String): Flow<BaltroidResult<Unit?>>
 }

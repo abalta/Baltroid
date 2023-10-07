@@ -35,6 +35,11 @@ class LoginViewModel @Inject constructor(
         isLogged()
     }
 
+    fun clearAll() {
+        _uiState.update { LoginUiState() }
+        _uiStateIsLogged.update { false }
+    }
+
     fun updateEmail(email: String) {
         _uiStateLoginFields.update { it.copy(email = email) }
     }

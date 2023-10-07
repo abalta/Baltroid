@@ -59,6 +59,10 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun logOut() {
+        preferencesDataStoreDataSource.setToken("")
+    }
+
     override fun register(
         name: String,
         username: String,
@@ -66,7 +70,8 @@ class AuthRepositoryImpl @Inject constructor(
         password: String,
         userAgreement: Boolean,
         cookiePolicy: Boolean,
-        birthdate: String
+        birthdate: String,
+        identifier: String
     ): Flow<BaltroidResult<Unit?>> = flow {
         emit(BaltroidResult.loading())
         val response = networkDataSource.register(
@@ -76,7 +81,8 @@ class AuthRepositoryImpl @Inject constructor(
             password,
             userAgreement = userAgreement,
             cookiePolicy = cookiePolicy,
-            birthdate = birthdate
+            birthdate = birthdate,
+            identifier = identifier
         )
 
         when {

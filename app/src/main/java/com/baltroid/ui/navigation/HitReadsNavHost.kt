@@ -83,6 +83,10 @@ fun HitReadsNavHost(
                         if (route == HitReadsScreens.HomeScreen.route) {
                             popUpToInclusive(HitReadsScreens.HomeScreen.route)
                         }
+                        if (route == HitReadsScreens.LoginScreen.route) {
+                            popUpTo(HitReadsScreens.HomeScreen.route)
+                            loginViewModel.clearAll()
+                        }
                     }
                 }
             }

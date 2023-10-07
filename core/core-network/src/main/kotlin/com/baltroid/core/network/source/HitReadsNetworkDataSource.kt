@@ -59,13 +59,14 @@ class HitReadsNetworkDataSource @Inject constructor(
         userAgreement: Boolean,
         cookiePolicy: Boolean,
         birthdate: String,
+        identifier: String,
     ): BaltroidResult<HitReadsResponse<Unit>> = hitReadsService.register(
         RegisterRequestBody(
             name = name,
             email = email,
             password = password,
             device = "1",
-            identifier = "1",
+            identifier = identifier,
             username = username,
             userAgreement = userAgreement,
             cookiePolicy = cookiePolicy,

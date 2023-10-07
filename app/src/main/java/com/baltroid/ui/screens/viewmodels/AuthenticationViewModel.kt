@@ -10,6 +10,7 @@ import com.baltroid.ui.screens.menu.profile.ProfileUIState
 import com.baltroid.ui.screens.menu.register.RegisterScreenUIState
 import com.hitreads.core.domain.usecase.ForgotPasswordUseCase
 import com.hitreads.core.domain.usecase.GetAvatarsUseCase
+import com.hitreads.core.domain.usecase.LogOutUseCase
 import com.hitreads.core.domain.usecase.ProfileUseCase
 import com.hitreads.core.domain.usecase.RegisterUseCase
 import com.hitreads.core.domain.usecase.UpdateUserProfileUseCase
@@ -37,6 +38,7 @@ class AuthenticationViewModel @Inject constructor(
     private val registerUseCase: RegisterUseCase,
     private val getAvatarsUseCase: GetAvatarsUseCase,
     private val forgotPasswordUseCase: ForgotPasswordUseCase,
+    private val logOutUseCase: LogOutUseCase,
     private val updateUserProfileUseCase: UpdateUserProfileUseCase
 ) : ViewModel() {
 
@@ -56,6 +58,12 @@ class AuthenticationViewModel @Inject constructor(
         getProfile()
     }
 
+    fun clearAll() {
+        _profileState.update { ProfileUIState() }
+        _uiStateRegister.update { RegisterScreenUIState() }
+        _uiState.update { LoginUiState() }
+    }
+
     fun getProfile() = viewModelScope.launch {
         profileUseCase().handle {
             onSuccess { profileModel ->
@@ -69,6 +77,13 @@ class AuthenticationViewModel @Inject constructor(
                     _profileState.update { it.copy(isLoading = false) }
                 }
             }
+        }
+    }
+
+    fun logOut() {
+        viewModelScope.launch {
+            logOutUseCase.invoke()
+            _profileState.update { it.copy(loggedOut = true) }
         }
     }
 
@@ -193,7 +208,7 @@ class AuthenticationViewModel @Inject constructor(
         }
     }
 
-    fun register() {
+    fun register(identifier: String) {
         viewModelScope.launch {
             if (inputsAreValid()) {
                 val fields = _uiStateRegister.value
@@ -204,7 +219,8 @@ class AuthenticationViewModel @Inject constructor(
                     email = fields.email.fieldValue,
                     cookiePolicy = fields.cookiePolicy.isChecked,
                     userAgreement = fields.userAgreement.isChecked,
-                    birthdate = fields.birthdate.fieldValue
+                    birthdate = fields.birthdate.fieldValue,
+                    identifier = identifier
                 ).handle {
                     onSuccess {
                         _uiStateRegister.update { it.copy(isSuccess = true) }

@@ -65,10 +65,6 @@ fun SettingsScreenContent(
 ) {
     val context = LocalContext.current
 
-    var soundEffect by remember {
-        mutableStateOf(true)
-    }
-
     var notifications by remember {
         mutableStateOf(true)
     }

@@ -7,5 +7,6 @@ data class ProfileUIState(
     val isLoading: Boolean = false,
     val profile: Profile? = null,
     val isProfileUpdated: Boolean? = null,
+    val loggedOut: Boolean = false,
     val avatars: List<Avatar> = emptyList()
 )

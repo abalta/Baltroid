@@ -64,6 +64,12 @@ fun MenuScreen(
     LaunchedEffect(Unit) {
         viewModel.getProfile()
     }
+    LaunchedEffect(uiState.loggedOut) {
+        if (uiState.loggedOut) {
+            viewModel.clearAll()
+            navigate.invoke(HitReadsScreens.LoginScreen.route)
+        }
+    }
     if (isLoggedIn) {
         MenuScreenLoggedInContent(
             balance = uiState.profile?.gem ?: 0,
@@ -71,13 +77,11 @@ fun MenuScreen(
             imgUrl = uiState.profile?.avatar.orEmpty(),
             scrollState = rememberScrollState(),
             onBackClick = onBackClick,
+            logOut = viewModel::logOut,
             navigate = navigate
         )
     } else {
         MenuScreenGuestContent(
-            balance = uiState.profile?.gem ?: 0,
-            currentUserName = uiState.profile?.userName.orEmpty(),
-            imgUrl = uiState.profile?.avatar.orEmpty(),
             scrollState = rememberScrollState(),
             onBackClick = onBackClick,
             navigate = navigate
@@ -87,9 +91,6 @@ fun MenuScreen(
 
 @Composable
 fun MenuScreenGuestContent(
-    balance: Int,
-    currentUserName: String,
-    imgUrl: String,
     scrollState: ScrollState,
     onBackClick: () -> Unit,
     navigate: (route: String) -> Unit
@@ -219,6 +220,7 @@ private fun MenuScreenLoggedInContent(
     currentUserName: String,
     imgUrl: String,
     scrollState: ScrollState,
+    logOut: () -> Unit,
     onBackClick: () -> Unit,
     navigate: (route: String) -> Unit
 ) {
@@ -357,6 +359,14 @@ private fun MenuScreenLoggedInContent(
                 ) {
                     navigate.invoke(HitReadsScreens.SettingsScreen.route)
                 }
+                MenuItem(
+                    title = stringResource(id = R.string.logout),
+                    iconResId = R.drawable.ic_profile,
+                    isEnabled = true,
+                    modifier = Modifier
+                ) {
+                    logOut()
+                }
             }
         }
     }
@@ -449,6 +459,7 @@ fun MenuItem(
                 modifier = Modifier
                     .align(Alignment.CenterStart)
                     .padding(start = dimensionResource(id = R.dimen.dp11))
+                    .size(dimensionResource(id = R.dimen.dp22))
             )
             Text(
                 text = title,

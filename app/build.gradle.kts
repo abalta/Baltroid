@@ -56,4 +56,5 @@ dependencies {
     implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.analytics)
     implementation(libs.revenuecat)
+    implementation(libs.one.signal)
 }

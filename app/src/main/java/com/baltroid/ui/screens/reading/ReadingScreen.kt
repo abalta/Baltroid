@@ -35,6 +35,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
@@ -989,6 +990,8 @@ private fun TabItem(
 fun CommentItem(
     model: Comment,
     replySize: Int,
+    isAuthor: Boolean = false,
+    isAuthorFavorite: Boolean = false,
     isChatSelected: Boolean,
     isSeeAllEnabled: Boolean,
     hideAllEnabled: Boolean,
@@ -998,6 +1001,7 @@ fun CommentItem(
     onReplyClick: () -> Unit,
     onHideClicked: () -> Unit
 ) {
+    val yellow = MaterialTheme.localColors.yellow
     ConstraintLayout(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -1028,18 +1032,36 @@ fun CommentItem(
                 contentDescription = null,
                 modifier = Modifier
                     .size(dimensionResource(id = R.dimen.dp48))
-                    .clip(MaterialTheme.localShapes.circleShape),
+                    .clip(MaterialTheme.localShapes.circleShape)
+                    .conditional(isAuthor) {
+                        border(2.dp, shape = CircleShape, color = yellow)
+                    },
                 contentScale = ContentScale.Crop
             )
             HorizontalSpacer(width = dimensionResource(id = R.dimen.dp13))
             Column(
                 verticalArrangement = Arrangement.Bottom,
             ) {
-                Text(
-                    text = model.authorName,
-                    style = MaterialTheme.localTextStyles.poppins13Medium,
-                    color = MaterialTheme.localColors.white
-                )
+                Row {
+                    Text(
+                        text = model.authorName,
+                        style = MaterialTheme.localTextStyles.poppins13Medium,
+                        color = MaterialTheme.localColors.white
+                    )
+                    if (isAuthor) {
+                        HorizontalSpacer(width = dimensionResource(id = R.dimen.dp5))
+                        SimpleIcon(iconResId = if (isAuthorFavorite) R.drawable.ic_star else R.drawable.ic_star_outlined,
+                            tint = if (isAuthorFavorite) MaterialTheme.localColors.yellow else Color.Unspecified,
+                            modifier = Modifier
+                                .padding(
+                                    top = dimensionResource(id = R.dimen.dp8),
+                                    end = dimensionResource(id = R.dimen.dp15),
+                                )
+                                .clickable {
+                                    //onLikeClick()
+                                })
+                    }
+                }
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp24)),
                     verticalAlignment = Alignment.CenterVertically,
@@ -1069,7 +1091,7 @@ fun CommentItem(
                                 isTextVisible = !model.isReply,
                                 onIconClick = { onReplyClick.invoke() },
                             )
-                            SimpleIcon(iconResId = R.drawable.ic_menu_horizontal)
+                            //SimpleIcon(iconResId = R.drawable.ic_menu_horizontal)
                         }
                     }
                 }

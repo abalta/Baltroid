@@ -232,7 +232,7 @@ fun InteractiveScreenContent(
         if (readingUiState.optionPurchased == true) {
             showPurchaseOption = false
             currentDialogue =
-                interactiveContent?.firstOrNull { it?.lineId == currentDialogue?.nextLineId }
+                interactiveContent?.firstOrNull { it?.lineId == selectedOption?.nextLineId }
         }
         if (readingUiState.optionPurchased == false) {
             showPurchaseOption = false
