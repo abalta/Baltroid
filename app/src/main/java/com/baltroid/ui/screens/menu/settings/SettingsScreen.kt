@@ -136,17 +136,19 @@ fun SettingsScreenContent(
                 uriHandler.openUri("http://3.73.140.195/agreements/hitreads-terms-of-use")
             }
             VerticalSpacer(height = R.dimen.dp43)
-            Text(
-                text = "KULLANICI ID",
-                style = MaterialTheme.localTextStyles.spaceGrotesk18Medium,
-                color = MaterialTheme.localColors.white_alpha09
-            )
-            Text(
-                text = profile?.id.toString(),
-                style = MaterialTheme.localTextStyles.spaceGrotesk18Medium,
-                color = MaterialTheme.localColors.white_alpha05
-            )
-            VerticalSpacer(height = R.dimen.dp11)
+            if (profile?.id != null) {
+                Text(
+                    text = stringResource(R.string.user_id),
+                    style = MaterialTheme.localTextStyles.spaceGrotesk18Medium,
+                    color = MaterialTheme.localColors.white_alpha09
+                )
+                Text(
+                    text = profile.id.toString(),
+                    style = MaterialTheme.localTextStyles.spaceGrotesk18Medium,
+                    color = MaterialTheme.localColors.white_alpha05
+                )
+                VerticalSpacer(height = R.dimen.dp11)
+            }
             Text(
                 text = stringResource(id = R.string.version),
                 style = MaterialTheme.localTextStyles.spaceGrotesk18Medium,

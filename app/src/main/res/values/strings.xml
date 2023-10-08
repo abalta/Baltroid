@@ -114,4 +114,5 @@
     <string name="accept">KABUL ET</string>
     <string name="option_cost">SEÇİM YAPMAK İÇİN HESABINDAN %1$s HARCANACAK</string>
     <string name="logout">ÇIKIŞ YAP</string>
+    <string name="user_id">KULLANICI ID</string>
 </resources>

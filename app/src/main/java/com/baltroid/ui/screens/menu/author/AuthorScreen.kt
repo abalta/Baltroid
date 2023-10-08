@@ -71,6 +71,7 @@ fun AuthorScreen(
 ) {
 
     val state by viewModel.author.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
     SetLoadingState(isLoading = state.isLoading)
 
@@ -83,7 +84,13 @@ fun AuthorScreen(
         onBackClick = onBackClick,
         navigate = navigate,
         isLoggedIn = isLoggedIn,
-        createFavorite = viewModel::createFavorite,
+        createFavorite = {
+            if (isLoggedIn) {
+                viewModel::createFavorite
+            } else {
+                context.showLoginToast()
+            }
+        },
         onLikeClick = { isLiked, id ->
             if (isLiked) viewModel.unlikeComment(id)
             else viewModel.likeComment(id)

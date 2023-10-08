@@ -251,6 +251,7 @@ fun InteractiveScreenContent(
             talkerCircle, episodeEndButtons, optionPurchase) = createRefs()
 
         val guideLine = createGuidelineFromTop(0.3f)
+        val purchaseOptionGuideLine = createGuidelineFromTop(0.15f)
 
         CroppedImage(
             imgResId = R.drawable.woods_image,
@@ -307,8 +308,8 @@ fun InteractiveScreenContent(
                     if (currentDialogue?.lineType == "NOT" && isEpisodesEnabled.not()) Visible else Gone
             }
         ) { nextLineId ->
-            currentDialogue =
-                interactiveContent?.firstOrNull { it?.lineId == nextLineId }
+            println("here4 $nextLineId")
+            currentDialogue = interactiveContent?.firstOrNull { it?.lineId == nextLineId }
         }
 
         Options(
@@ -347,15 +348,15 @@ fun InteractiveScreenContent(
                 showPurchaseOption = true
                 selectedOption = option
             } else {
-                currentDialogue =
-                    interactiveContent?.firstOrNull { it?.lineId == nextLineId }
+                println("here3 $nextLineId")
+                currentDialogue = interactiveContent?.firstOrNull { it?.lineId == nextLineId }
             }
         }
 
         PurchaseBox(
             option = selectedOption,
             modifier = Modifier.constrainAs(optionPurchase) {
-                top.linkTo(guideLine)
+                top.linkTo(purchaseOptionGuideLine)
                 start.linkTo(parent.start, 20.dp)
                 end.linkTo(parent.end, 20.dp)
                 bottom.linkTo(textBox.top)
@@ -409,8 +410,8 @@ fun InteractiveScreenContent(
                         if (currentDialogue?.lineType == "SMS" && isEpisodesEnabled.not()) Visible else Gone
                 }
         ) { nextLineId ->
-            currentDialogue =
-                interactiveContent?.firstOrNull { it?.lineId == nextLineId }
+            println("here2 $nextLineId")
+            currentDialogue = interactiveContent?.firstOrNull { it?.lineId == nextLineId }
 
         }
 
@@ -453,9 +454,12 @@ fun InteractiveScreenContent(
                         if (currentDialogue?.lineType == null && currentDialogue != null && isEpisodesEnabled.not()) Visible else Gone
                 }
         ) { nextLineId ->
-            currentDialogue =
-                interactiveContent?.firstOrNull { it?.lineId == nextLineId }
+            if (nextLineId != null) {
+                currentDialogue = interactiveContent?.firstOrNull { it?.lineId == nextLineId }
+            }
         }
+
+
 
         InteractiveScreenToolbar(
             gemCount = gem,
@@ -1267,7 +1271,7 @@ fun InteractiveText(
     model: DialogueXml?,
     talker: String,
     modifier: Modifier = Modifier,
-    onClick: (nextLineId: String) -> Unit
+    onClick: (nextLineId: String?) -> Unit
 ) {
     ConstraintLayout(modifier = modifier) {
 
@@ -1318,7 +1322,7 @@ fun InteractiveText(
                     visibility = if (model?.optionCount == null) Visible else Gone
                 }
                 .size(dimensionResource(id = R.dimen.dp19))
-                .clickable { onClick.invoke(model?.nextLineId.orEmpty()) }
+                .clickable { onClick.invoke(model?.nextLineId) }
         )
 
         Talker(
