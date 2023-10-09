@@ -445,8 +445,12 @@ class OriginalViewModel @Inject constructor(
                 }
             }
 
-            CommentsTabState.MyComments -> {/* no-op */
-
+            CommentsTabState.MyComments -> {
+                _uiStateReading.update {
+                    it.copy(commentsByMe = it.commentsByMe.map {
+                        if (it.id == id) it.copy(isExpanded = false) else it
+                    })
+                }
             }
         }
     }
