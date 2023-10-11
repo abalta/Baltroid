@@ -73,7 +73,6 @@ class LoginViewModel @Inject constructor(
                 _uiStateIsLogged.update { true }
             }
             onFailure {
-                checkSession(it)
                 _uiState.update {
                     it.copy(error = R.string.login_error)
                 }

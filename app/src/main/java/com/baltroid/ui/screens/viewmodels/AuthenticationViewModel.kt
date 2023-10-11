@@ -249,7 +249,6 @@ class AuthenticationViewModel @Inject constructor(
                         _uiStateRegister.update { it.copy(isSuccess = true) }
                     }
                     onFailure {
-                        checkSession(it)
                         _uiStateRegister.update { it.copy(errorMsg = R.string.something_went_wrong) }
                     }
                 }
