@@ -48,12 +48,20 @@ import com.hitreads.core.model.Avatar
 
 @Composable
 fun AvatarsScreen(
+    onSessionExpired: () -> Unit,
     viewModel: AuthenticationViewModel,
     onBackPressed: () -> Unit
 ) {
 
     val state by viewModel.profileState.collectAsStateWithLifecycle()
     val updateAvatar by viewModel.uiStateUpdateAvatar.collectAsStateWithLifecycle()
+
+
+    LaunchedEffect(viewModel.isSessionExpired) {
+        if (viewModel.isSessionExpired) {
+            onSessionExpired.invoke()
+        }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.loadAvatars()

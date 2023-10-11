@@ -1,12 +1,17 @@
 package com.baltroid.ui.screens.viewmodels
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.baltroid.core.common.result.HttpException
 import com.baltroid.core.common.result.handle
 import com.baltroid.util.AUTHOR
 import com.baltroid.util.orZero
 import com.hitreads.core.domain.usecase.CreateFavoriteUseCase
 import com.hitreads.core.domain.usecase.LikeCommentUseCase
+import com.hitreads.core.domain.usecase.LogOutUseCase
 import com.hitreads.core.domain.usecase.ShowAuthorUseCase
 import com.hitreads.core.domain.usecase.UnlikeCommentUseCase
 import com.hitreads.core.model.Author
@@ -23,11 +28,14 @@ class AuthorViewModel @Inject constructor(
     private val showAuthorUseCase: ShowAuthorUseCase,
     private val commentUnlikeCommentUseCase: UnlikeCommentUseCase,
     private val commentLikeCommentUseCase: LikeCommentUseCase,
+    private val logOutUseCase: LogOutUseCase,
     private val createFavoriteUseCase: CreateFavoriteUseCase
 ) : ViewModel() {
 
     private val _author = MutableStateFlow(AuthorScreenUiState())
     val author = _author.asStateFlow()
+
+    var isSessionExpired by mutableStateOf(false)
 
     fun showAuthor(id: Int) {
         viewModelScope.launch {
@@ -39,6 +47,7 @@ class AuthorViewModel @Inject constructor(
                     _author.update { it.copy(isLoading = false, author = model.asAuthor()) }
                 }
                 onFailure {
+                    checkSession(it)
                     _author.update { it.copy(isLoading = false) }
                 }
             }
@@ -60,6 +69,7 @@ class AuthorViewModel @Inject constructor(
                     }
                 }
                 onFailure {
+                    checkSession(it)
                     _author.update { it.copy(isLoading = false) }
                 }
             }
@@ -90,6 +100,7 @@ class AuthorViewModel @Inject constructor(
                 }
             }
             onFailure {
+                checkSession(it)
                 _author.update { it.copy(isLoading = false) }
             }
         }
@@ -119,8 +130,21 @@ class AuthorViewModel @Inject constructor(
                 }
             }
             onFailure {
+                checkSession(it)
                 _author.update { it.copy(isLoading = false) }
             }
+        }
+    }
+
+    private fun checkSession(it: Throwable) {
+        try {
+            if ((it as HttpException).statusCode == 401) {
+                viewModelScope.launch {
+                    logOutUseCase.invoke()
+                    isSessionExpired = true
+                }
+            }
+        } catch (e: Exception) {/* no-op */
         }
     }
 }

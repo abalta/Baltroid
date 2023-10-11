@@ -54,6 +54,7 @@ import com.baltroid.util.conditional
 
 @Composable
 fun MenuScreen(
+    onSessionExpired: () -> Unit,
     onBackClick: () -> Unit,
     isLoggedIn: Boolean,
     viewModel: AuthenticationViewModel,
@@ -70,6 +71,12 @@ fun MenuScreen(
             navigate.invoke(HitReadsScreens.LoginScreen.route)
         }
     }
+    LaunchedEffect(viewModel.isSessionExpired) {
+        if (viewModel.isSessionExpired) {
+            onSessionExpired.invoke()
+        }
+    }
+
     if (isLoggedIn) {
         MenuScreenLoggedInContent(
             balance = uiState.profile?.gem ?: 0,

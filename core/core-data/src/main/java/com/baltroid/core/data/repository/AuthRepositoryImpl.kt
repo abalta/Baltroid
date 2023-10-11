@@ -50,7 +50,7 @@ class AuthRepositoryImpl @Inject constructor(
     override fun isLogged(): Flow<BaltroidResult<Boolean>> = flow {
         val token = preferencesDataStoreDataSource.getToken().first()
         if (token.isNullOrEmpty()) {
-            val throwable = HttpException(401)
+            val throwable = HttpException(400)
             emit(BaltroidResult.failure(throwable, false))
         } else if (token.isNotEmpty()) {
             emit(BaltroidResult.success(true))

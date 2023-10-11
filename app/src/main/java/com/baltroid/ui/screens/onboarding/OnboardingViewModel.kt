@@ -1,11 +1,16 @@
 package com.baltroid.ui.screens.onboarding
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.baltroid.core.common.result.HttpException
 import com.baltroid.core.common.result.handle
 import com.hitreads.core.domain.model.AnnouncementModel
 import com.hitreads.core.domain.model.WelcomeModel
 import com.hitreads.core.domain.usecase.GetAnnouncementUseCase
+import com.hitreads.core.domain.usecase.LogOutUseCase
 import com.hitreads.core.domain.usecase.WelcomeUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,11 +23,14 @@ import kotlin.random.Random
 @HiltViewModel
 class OnboardingViewModel @Inject constructor(
     private val welcomeUseCase: WelcomeUseCase,
-    private val getAnnouncementUseCase: GetAnnouncementUseCase
+    private val getAnnouncementUseCase: GetAnnouncementUseCase,
+    private val logOutUseCase: LogOutUseCase
 ) : ViewModel() {
 
     private val _uiStateOnboarding = MutableStateFlow(OnboardingState())
     val uiStateOnboarding = _uiStateOnboarding.asStateFlow()
+
+    var isSessionExpired by mutableStateOf(false)
 
     init {
         getOnboardingData()
@@ -40,6 +48,9 @@ class OnboardingViewModel @Inject constructor(
                         it.copy(announcementModel = announcement, isLoading = false)
                     }
                 }
+                onFailure {
+                    checkSession(it)
+                }
             }
         }
     }
@@ -53,8 +64,21 @@ class OnboardingViewModel @Inject constructor(
                 _uiStateOnboarding.update { it.copy(welcomeModel = result[Random.nextInt(result.size)]) }
             }
             onFailure {
+                checkSession(it)
                 _uiStateOnboarding.update { it.copy(isLoading = false) }
             }
+        }
+    }
+
+    private fun checkSession(it: Throwable) {
+        try {
+            if ((it as HttpException).statusCode == 401) {
+                viewModelScope.launch {
+                    logOutUseCase.invoke()
+                    isSessionExpired = true
+                }
+            }
+        } catch (e: Exception) {/* no-op */
         }
     }
 }

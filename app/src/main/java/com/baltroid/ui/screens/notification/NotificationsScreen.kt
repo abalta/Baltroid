@@ -16,6 +16,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,10 +35,17 @@ import com.hitreads.core.domain.model.NotificationModel
 
 @Composable
 fun NotificationsScreen(
+    onSessionExpired: () -> Unit,
     viewModel: OriginalViewModel,
     onBackPressed: () -> Unit
 ) {
     val notifications by viewModel.uiStateNotifications.collectAsStateWithLifecycle()
+
+    LaunchedEffect(viewModel.isSessionExpired) {
+        if (viewModel.isSessionExpired) {
+            onSessionExpired.invoke()
+        }
+    }
 
     NotificationsScreenContent(
         notifications = notifications,

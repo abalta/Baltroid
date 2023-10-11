@@ -59,6 +59,7 @@ import com.hitreads.core.model.Profile
 
 @Composable
 fun ProfileScreen(
+    onSessionExpired: () -> Unit,
     viewModel: AuthenticationViewModel,
     onBackClick: () -> Unit,
     navigate: (route: String) -> Unit
@@ -85,6 +86,12 @@ fun ProfileScreen(
         loginState.sendResetPasswordMessage?.let {
             Toast.makeText(context, context.getString(it), Toast.LENGTH_LONG).show()
             viewModel.resetInfoMessage()
+        }
+    }
+
+    LaunchedEffect(viewModel.isSessionExpired) {
+        if (viewModel.isSessionExpired) {
+            onSessionExpired.invoke()
         }
     }
     ProfileScreenContent(

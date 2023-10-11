@@ -72,6 +72,7 @@ import java.util.Locale
 
 @Composable
 fun HomeScreen(
+    onSessionExpired: () -> Unit,
     viewModel: OriginalViewModel,
     openMenuScreen: () -> Unit,
     navigateContinueReading: (originalId: Int, episodeId: Int, route: String) -> Unit,
@@ -86,6 +87,12 @@ fun HomeScreen(
         viewModel.apply {
             loadOriginals()
             isLogged()
+        }
+    }
+
+    LaunchedEffect(viewModel.isSessionExpired) {
+        if (viewModel.isSessionExpired) {
+            onSessionExpired.invoke()
         }
     }
 

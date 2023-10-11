@@ -25,7 +25,6 @@ import com.baltroid.ui.screens.menu.comments.CommentsScreen
 import com.baltroid.ui.screens.menu.favorites.FavoritesScreen
 import com.baltroid.ui.screens.menu.login.LoginScreen
 import com.baltroid.ui.screens.menu.login.LoginViewModel
-import com.baltroid.ui.screens.menu.place_marks.PlaceMarksScreen
 import com.baltroid.ui.screens.menu.profile.AvatarsScreen
 import com.baltroid.ui.screens.menu.profile.ProfileScreen
 import com.baltroid.ui.screens.menu.register.RegisterScreen
@@ -54,7 +53,8 @@ fun HitReadsNavHost(
     navController: NavHostController = rememberAnimatedNavController(),
     openMenuScreen: () -> Unit = {
         navController.navigate(HitReadsScreens.MenuScreen.route)
-    }
+    },
+    onSessionExpired: () -> Unit
 ) {
 
     val loginViewModel: LoginViewModel = hiltViewModel()
@@ -77,7 +77,8 @@ fun HitReadsNavHost(
                 MenuScreen(
                     isLoggedIn = loginViewModel.uiStateIsLogged.collectAsStateWithLifecycle().value,
                     viewModel = authenticationViewModel,
-                    onBackClick = { navController.popBackStack() }
+                    onBackClick = { navController.popBackStack() },
+                    onSessionExpired = onSessionExpired,
                 ) { route ->
                     navController.navigate(route) {
                         if (route == HitReadsScreens.HomeScreen.route) {
@@ -90,13 +91,9 @@ fun HitReadsNavHost(
                     }
                 }
             }
-            composable(route = HitReadsScreens.PlaceMarksScreen.route) {
-                PlaceMarksScreen(
-                    onBackClick = { navController.popBackStack() }
-                )
-            }
             composable(route = HitReadsScreens.FavoritesScreen.route) {
                 FavoritesScreen(
+                    onSessionExpired = onSessionExpired,
                     onBackClick = { navController.popBackStack() },
                     navigate = { route, id ->
                         if (route == HitReadsScreens.HomeDetailScreen.route) {
@@ -110,12 +107,14 @@ fun HitReadsNavHost(
             }
             composable(route = HitReadsScreens.SettingsScreen.route) {
                 SettingsScreen(
+                    onSessionExpired = onSessionExpired,
                     viewModel = authenticationViewModel,
                     onBackClick = { navController.popBackStack() }
                 )
             }
             composable(route = HitReadsScreens.ProfileScreen.route) {
                 ProfileScreen(
+                    onSessionExpired = onSessionExpired,
                     viewModel = authenticationViewModel,
                     onBackClick = { navController.popBackStack() },
                     navigate = {
@@ -125,6 +124,7 @@ fun HitReadsNavHost(
             }
             composable(route = HitReadsScreens.AvatarsScreen.route) {
                 AvatarsScreen(
+                    onSessionExpired = onSessionExpired,
                     viewModel = authenticationViewModel
                 ) {
                     navController.popBackStack()
@@ -135,6 +135,7 @@ fun HitReadsNavHost(
                 arguments = listOf(navArgument("authorId") { type = NavType.IntType })
             ) { backStackEntry ->
                 AuthorScreen(
+                    onSessionExpired = onSessionExpired,
                     id = backStackEntry.arguments?.getInt("authorId") ?: -1,
                     onBackClick = { navController.popBackStack() },
                     isLoggedIn = originalViewModel.uiStateHome.collectAsStateWithLifecycle().value.isUserLoggedIn,
@@ -150,6 +151,7 @@ fun HitReadsNavHost(
                     currentBalance = 15f
                 )
                 ShopScreen(
+                    onSessionExpired = onSessionExpired,
                     viewModel = authenticationViewModel,
                     screenState = screenState,
                     onBackClick = { navController.popBackStack() }
@@ -157,6 +159,7 @@ fun HitReadsNavHost(
             }
             composable(route = HitReadsScreens.LoginScreen.route) {
                 LoginScreen(
+                    onSessionExpired = onSessionExpired,
                     loginViewModel,
                     navigate = { navController.navigate(it) },
                     navigateBack = {
@@ -166,6 +169,7 @@ fun HitReadsNavHost(
             }
             composable(route = HitReadsScreens.RegisterScreen.route) {
                 RegisterScreen(
+                    onSessionExpired = onSessionExpired,
                     navigate = {
                         navController.navigate(it)
                     }
@@ -175,6 +179,7 @@ fun HitReadsNavHost(
             }
             composable(route = HitReadsScreens.CommentsScreen.route) {
                 CommentsScreen(
+                    onSessionExpired = onSessionExpired,
                     viewModel = hiltViewModel(),
                     onBackClick = { navController.popBackStack() }
                 ) { route, originalId ->
@@ -193,7 +198,9 @@ fun HitReadsNavHost(
                     .collectAsStateWithLifecycle()
                     .value
 
-                OnboardingScreen(screenState = onboardingState) {
+                OnboardingScreen(
+                    screenState = onboardingState
+                ) {
                     if (onboardingState.announcementModel == null && !onboardingState.isLoading) {
                         navController.navigate(HitReadsScreens.HomeScreen.route) {
                             popUpToInclusive(HitReadsScreens.OnboardingScreen.route)
@@ -205,7 +212,10 @@ fun HitReadsNavHost(
                 }
             }
             composable(route = HitReadsScreens.AnnouncementScreen.route) {
-                AnnouncementScreen(viewModel = onboardingViewModel) {
+                AnnouncementScreen(
+                    onSessionExpired = onSessionExpired,
+                    viewModel = onboardingViewModel
+                ) {
                     navController.navigate(HitReadsScreens.HomeScreen.route) {
                         popUpToInclusive(HitReadsScreens.OnboardingScreen.route)
                         launchSingleTop = true
@@ -216,6 +226,7 @@ fun HitReadsNavHost(
                 route = HitReadsScreens.HomeScreen.route
             ) {
                 HomeScreen(
+                    onSessionExpired = onSessionExpired,
                     viewModel = originalViewModel,
                     navigateContinueReading = { originalId, episodeId, route ->
                         originalViewModel.setSelectedOriginalId(originalId)
@@ -234,6 +245,7 @@ fun HitReadsNavHost(
                 route = HitReadsScreens.HomeDetailScreen.route
             ) {
                 HomeDetailScreen(
+                    onSessionExpired = onSessionExpired,
                     viewModel = originalViewModel,
                     openMenuScreen = openMenuScreen,
                 ) { route, episodeId ->
@@ -247,6 +259,7 @@ fun HitReadsNavHost(
                 route = HitReadsScreens.ReadingScreen.route
             ) {
                 ReadingScreen(
+                    onSessionExpired = onSessionExpired,
                     viewModel = originalViewModel,
                     navigate = {
                         navController.navigate(it)
@@ -257,6 +270,7 @@ fun HitReadsNavHost(
                 route = HitReadsScreens.InteractiveScreen.route
             ) {
                 InteractiveScreen(
+                    onSessionExpired = onSessionExpired,
                     viewModel = originalViewModel
                 ) {
                     navController.navigate(it)
@@ -271,6 +285,7 @@ fun HitReadsNavHost(
                 route = HitReadsScreens.NotificationsScreen.route
             ) {
                 NotificationsScreen(
+                    onSessionExpired = onSessionExpired,
                     viewModel = originalViewModel,
                     onBackPressed = {
                         navController.popBackStack()

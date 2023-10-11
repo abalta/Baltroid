@@ -1,7 +1,11 @@
 package com.baltroid.ui.screens.menu.comments
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.baltroid.core.common.result.HttpException
 import com.baltroid.core.common.result.handle
 import com.baltroid.util.ORIGINAL
 import com.hitreads.core.domain.usecase.CreateCommentUseCase
@@ -9,6 +13,7 @@ import com.hitreads.core.domain.usecase.GetAllCommentsUseCase
 import com.hitreads.core.domain.usecase.GetCommentsByMeUseCase
 import com.hitreads.core.domain.usecase.GetCommentsLikedByMeUseCase
 import com.hitreads.core.domain.usecase.LikeCommentUseCase
+import com.hitreads.core.domain.usecase.LogOutUseCase
 import com.hitreads.core.domain.usecase.UnlikeCommentUseCase
 import com.hitreads.core.model.Comment
 import com.hitreads.core.ui.mapper.asComment
@@ -26,11 +31,14 @@ class CommentViewModel @Inject constructor(
     private val commentUnlikeCommentUseCase: UnlikeCommentUseCase,
     private val createCommentUseCase: CreateCommentUseCase,
     private val getCommentsByMeUseCase: GetCommentsByMeUseCase,
-    private val getCommentsLikedByMeUseCase: GetCommentsLikedByMeUseCase
+    private val getCommentsLikedByMeUseCase: GetCommentsLikedByMeUseCase,
+    private val logOutUseCase: LogOutUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CommentsUiState())
     val uiState = _uiState.asStateFlow()
+
+    var isSessionExpired by mutableStateOf(false)
 
     fun getAllComments(type: String) = viewModelScope.launch {
         getAllCommentsUseCase(type).handle {
@@ -42,7 +50,7 @@ class CommentViewModel @Inject constructor(
                     it.copy(commentList = commentList.map { it.asComment() }, isLoading = false)
                 }
             }
-            onFailure(::handleFailure)
+            onFailure(::checkSession)
         }
     }
 
@@ -60,6 +68,7 @@ class CommentViewModel @Inject constructor(
                     }
                 }
                 onFailure {
+                    checkSession(it)
                     _uiState.update { it.copy(isLoading = false) }
                 }
             }
@@ -125,6 +134,9 @@ class CommentViewModel @Inject constructor(
                     it.copy(commentList = oldList)
                 }
             }
+            onFailure {
+                checkSession(it)
+            }
         }
     }
 
@@ -145,7 +157,7 @@ class CommentViewModel @Inject constructor(
                     commentsUiState.copy(commentList = updatedList)
                 }
             }
-            onFailure(::handleFailure)
+            onFailure(::checkSession)
         }
     }
 
@@ -166,15 +178,8 @@ class CommentViewModel @Inject constructor(
                     commentsUiState.copy(commentList = updatedList)
                 }
             }
-            onFailure(::handleFailure)
+            onFailure(::checkSession)
         }
-    }
-
-    private fun handleFailure(error: Throwable) = _uiState.update {
-        it.copy(
-            error = error,
-            isLoading = false
-        )
     }
 
     fun getCommentsLikedByMe() {
@@ -191,10 +196,22 @@ class CommentViewModel @Inject constructor(
                     }
                 }
                 onFailure {
+                    checkSession(it)
                     _uiState.update { it.copy(isLoading = false) }
                 }
             }
         }
     }
 
+    private fun checkSession(it: Throwable) {
+        try {
+            if ((it as HttpException).statusCode == 401) {
+                viewModelScope.launch {
+                    logOutUseCase.invoke()
+                    isSessionExpired = true
+                }
+            }
+        } catch (e: Exception) {/* no-op */
+        }
+    }
 }

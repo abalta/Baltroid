@@ -53,6 +53,7 @@ import com.baltroid.ui.theme.localTextStyles
 
 @Composable
 fun LoginScreen(
+    onSessionExpired: () -> Unit,
     viewModel: LoginViewModel,
     navigate: (String) -> Unit,
     navigateBack: () -> Unit
@@ -63,6 +64,12 @@ fun LoginScreen(
     LaunchedEffect(loginState.loginUiModel) {
         if (loginState.loginUiModel != null) {
             navigateBack.invoke()
+        }
+    }
+
+    LaunchedEffect(viewModel.isSessionExpired) {
+        if (viewModel.isSessionExpired) {
+            onSessionExpired.invoke()
         }
     }
 

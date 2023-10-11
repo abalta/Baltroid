@@ -58,6 +58,7 @@ import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 
 @Composable
 fun RegisterScreen(
+    onSessionExpired: () -> Unit,
     viewModel: AuthenticationViewModel = hiltViewModel(),
     navigate: (String) -> Unit,
     onBackClick: () -> Unit
@@ -69,6 +70,12 @@ fun RegisterScreen(
 
     var selectedDate by remember {
         mutableStateOf(SelectedDate())
+    }
+
+    LaunchedEffect(viewModel.isSessionExpired) {
+        if (viewModel.isSessionExpired) {
+            onSessionExpired.invoke()
+        }
     }
 
     LaunchedEffect(uiState.errorMsg) {

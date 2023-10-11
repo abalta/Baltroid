@@ -63,6 +63,7 @@ import kotlin.random.Random
 
 @Composable
 fun CommentsScreen(
+    onSessionExpired: () -> Unit,
     viewModel: CommentViewModel,
     onBackClick: () -> Unit,
     navigate: (route: String, episodeId: Int?) -> Unit
@@ -75,6 +76,12 @@ fun CommentsScreen(
         viewModel.getAllComments(ALL)
         viewModel.getCommentsByMe()
         viewModel.getCommentsLikedByMe()
+    }
+
+    LaunchedEffect(viewModel.isSessionExpired) {
+        if (viewModel.isSessionExpired) {
+            onSessionExpired.invoke()
+        }
     }
 
     CommentsScreenContent(

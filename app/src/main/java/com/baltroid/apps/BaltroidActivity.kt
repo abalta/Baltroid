@@ -1,8 +1,10 @@
 package com.baltroid.apps
 
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.WindowManager.LayoutParams
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
@@ -34,7 +36,13 @@ class BaltroidActivity : ComponentActivity() {
             }
             HitReadsTheme {
                 HitReadsNavHost(
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
+                    onSessionExpired = {
+                        Toast.makeText(this, getString(R.string.unauthorized), Toast.LENGTH_LONG)
+                            .show()
+                        startActivity(Intent(this, BaltroidActivity::class.java))
+                        finish()
+                    }
                 )
             }
         }

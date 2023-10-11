@@ -55,6 +55,7 @@ import com.hitreads.core.model.FavoriteOriginal
 
 @Composable
 fun FavoritesScreen(
+    onSessionExpired: () -> Unit,
     viewModel: FavoritesViewModel = hiltViewModel(),
     onBackClick: () -> Unit,
     navigate: (route: String, id: Int?) -> Unit
@@ -67,6 +68,12 @@ fun FavoritesScreen(
 
     val favorites by viewModel.uiStateFavorites.collectAsStateWithLifecycle()
     SetLoadingState(isLoading = favorites.isLoading)
+
+    LaunchedEffect(viewModel.isSessionExpired) {
+        if (viewModel.isSessionExpired) {
+            onSessionExpired.invoke()
+        }
+    }
 
     FavoritesScreenContent(
         scrollState = rememberScrollState(),

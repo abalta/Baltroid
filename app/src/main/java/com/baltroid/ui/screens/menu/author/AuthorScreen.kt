@@ -63,6 +63,7 @@ import com.hitreads.core.model.IndexOriginal
 
 @Composable
 fun AuthorScreen(
+    onSessionExpired: () -> Unit,
     id: Int,
     isLoggedIn: Boolean,
     viewModel: AuthorViewModel = hiltViewModel(),
@@ -77,6 +78,12 @@ fun AuthorScreen(
 
     LaunchedEffect(Unit) {
         viewModel.showAuthor(id)
+    }
+
+    LaunchedEffect(viewModel.isSessionExpired) {
+        if (viewModel.isSessionExpired) {
+            onSessionExpired.invoke()
+        }
     }
 
     AuthorScreenContent(

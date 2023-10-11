@@ -99,6 +99,7 @@ import com.hitreads.core.model.ShowEpisode
 
 @Composable
 fun InteractiveScreen(
+    onSessionExpired: () -> Unit,
     viewModel: OriginalViewModel,
     navigate: (String) -> Unit
 ) {
@@ -112,6 +113,12 @@ fun InteractiveScreen(
     LaunchedEffect(viewModel.selectedEpisodeId.value) {
         viewModel.showEpisode(OriginalType.INTERACTIVE)
         viewModel.startReadingEpisode()
+    }
+
+    LaunchedEffect(viewModel.isSessionExpired) {
+        if (viewModel.isSessionExpired) {
+            onSessionExpired.invoke()
+        }
     }
 
     InteractiveScreenContent(

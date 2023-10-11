@@ -1,15 +1,20 @@
 package com.baltroid.ui.screens.viewmodels
 
 import android.util.Patterns
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.baltroid.apps.R
+import com.baltroid.core.common.result.HttpException
 import com.baltroid.core.common.result.handle
 import com.baltroid.ui.screens.menu.login.LoginUiState
 import com.baltroid.ui.screens.menu.profile.ProfileUIState
 import com.baltroid.ui.screens.menu.register.RegisterScreenUIState
 import com.hitreads.core.domain.usecase.ForgotPasswordUseCase
 import com.hitreads.core.domain.usecase.GetAvatarsUseCase
+import com.hitreads.core.domain.usecase.IsLoggedUseCase
 import com.hitreads.core.domain.usecase.LogOutUseCase
 import com.hitreads.core.domain.usecase.ProfileUseCase
 import com.hitreads.core.domain.usecase.RegisterUseCase
@@ -38,6 +43,7 @@ class AuthenticationViewModel @Inject constructor(
     private val registerUseCase: RegisterUseCase,
     private val getAvatarsUseCase: GetAvatarsUseCase,
     private val forgotPasswordUseCase: ForgotPasswordUseCase,
+    private val isLogged: IsLoggedUseCase,
     private val logOutUseCase: LogOutUseCase,
     private val updateUserProfileUseCase: UpdateUserProfileUseCase
 ) : ViewModel() {
@@ -54,9 +60,7 @@ class AuthenticationViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState = _uiState.asStateFlow()
 
-    init {
-        getProfile()
-    }
+    var isSessionExpired by mutableStateOf(false)
 
     fun clearAll() {
         _profileState.update { ProfileUIState() }
@@ -65,6 +69,19 @@ class AuthenticationViewModel @Inject constructor(
     }
 
     fun getProfile() = viewModelScope.launch {
+        viewModelScope.launch {
+            isLogged.invoke().handle {
+                onSuccess {
+                    loadProfile()
+                }
+                onFailure {
+                    checkSession(it)
+                }
+            }
+        }
+    }
+
+    private fun loadProfile() = viewModelScope.launch {
         profileUseCase().handle {
             onSuccess { profileModel ->
                 onLoading {
@@ -74,6 +91,7 @@ class AuthenticationViewModel @Inject constructor(
                     it.copy(profile = profileModel.asProfile(), isLoading = false)
                 }
                 onFailure {
+                    checkSession(it)
                     _profileState.update { it.copy(isLoading = false) }
                 }
             }
@@ -98,6 +116,7 @@ class AuthenticationViewModel @Inject constructor(
                         _profileState.update { it.copy(isLoading = false, isProfileUpdated = true) }
                     }
                     onFailure {
+                        checkSession(it)
                         _profileState.update {
                             it.copy(
                                 isLoading = false,
@@ -124,6 +143,9 @@ class AuthenticationViewModel @Inject constructor(
                 _profileState.update {
                     it.copy(isLoading = false, avatars = avatarModels.map { it.asAvatar() })
                 }
+            }
+            onFailure {
+                checkSession(it)
             }
         }
     }
@@ -169,6 +191,7 @@ class AuthenticationViewModel @Inject constructor(
                     }
                 }
                 onFailure {
+                    checkSession(it)
                     _uiState.update {
                         it.copy(
                             isLoading = false,
@@ -226,6 +249,7 @@ class AuthenticationViewModel @Inject constructor(
                         _uiStateRegister.update { it.copy(isSuccess = true) }
                     }
                     onFailure {
+                        checkSession(it)
                         _uiStateRegister.update { it.copy(errorMsg = R.string.something_went_wrong) }
                     }
                 }
@@ -322,9 +346,22 @@ class AuthenticationViewModel @Inject constructor(
                     _uiStateUpdateAvatar.update { true }
                 }
                 onFailure {
+                    checkSession(it)
                     _uiStateUpdateAvatar.update { false }
                 }
             }
+        }
+    }
+
+    private fun checkSession(it: Throwable) {
+        try {
+            if ((it as HttpException).statusCode == 401) {
+                viewModelScope.launch {
+                    logOutUseCase.invoke()
+                    isSessionExpired = true
+                }
+            }
+        } catch (e: Exception) {/* no-op */
         }
     }
 }

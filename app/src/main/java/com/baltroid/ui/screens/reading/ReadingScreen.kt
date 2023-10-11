@@ -102,7 +102,9 @@ import com.hitreads.core.model.ShowEpisode
 
 @Composable
 fun ReadingScreen(
-    viewModel: OriginalViewModel, navigate: (String) -> Unit
+    viewModel: OriginalViewModel,
+    onSessionExpired: () -> Unit,
+    navigate: (String) -> Unit
 ) {
     val uiState by viewModel.uiStateReading.collectAsStateWithLifecycle()
     val uiStateDetail by viewModel.uiStateDetail.collectAsStateWithLifecycle()
@@ -112,6 +114,12 @@ fun ReadingScreen(
 
     LaunchedEffect(Unit) {
         viewModel.startReadingEpisode()
+    }
+
+    LaunchedEffect(viewModel.isSessionExpired) {
+        if (viewModel.isSessionExpired) {
+            onSessionExpired.invoke()
+        }
     }
 
     LaunchedEffect(viewModel.selectedEpisodeId.value) {

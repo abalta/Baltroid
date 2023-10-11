@@ -57,6 +57,7 @@ import com.revenuecat.purchases.purchaseWith
 
 @Composable
 fun ShopScreen(
+    onSessionExpired: () -> Unit,
     viewModel: AuthenticationViewModel,
     screenState: ShopScreenState, onBackClick: () -> Unit
 ) {
@@ -66,6 +67,12 @@ fun ShopScreen(
     }
     var isLoading by remember {
         mutableStateOf(false)
+    }
+
+    LaunchedEffect(viewModel.isSessionExpired) {
+        if (viewModel.isSessionExpired) {
+            onSessionExpired.invoke()
+        }
     }
     SetLoadingState(isLoading = isLoading)
     LaunchedEffect(Unit) {

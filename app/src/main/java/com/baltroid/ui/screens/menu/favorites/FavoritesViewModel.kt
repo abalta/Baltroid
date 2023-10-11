@@ -1,13 +1,18 @@
 package com.baltroid.ui.screens.menu.favorites
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.baltroid.core.common.result.HttpException
 import com.baltroid.core.common.result.handle
 import com.baltroid.util.AUTHOR
 import com.baltroid.util.ORIGINALS
 import com.hitreads.core.domain.usecase.DeleteFavoriteUseCase
 import com.hitreads.core.domain.usecase.GetFavoriteOriginalsUseCase
 import com.hitreads.core.domain.usecase.GetFavoritesUseCase
+import com.hitreads.core.domain.usecase.LogOutUseCase
 import com.hitreads.core.ui.mapper.asFavorite
 import com.hitreads.core.ui.mapper.asFavoriteOriginal
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,11 +26,14 @@ import javax.inject.Inject
 class FavoritesViewModel @Inject constructor(
     private val getFavoritesUseCase: GetFavoritesUseCase,
     private val getFavoritesOriginalsUseCase: GetFavoriteOriginalsUseCase,
-    private val deleteFavoriteUseCase: DeleteFavoriteUseCase
+    private val deleteFavoriteUseCase: DeleteFavoriteUseCase,
+    private val logOutUseCase: LogOutUseCase
 ) : ViewModel() {
 
     private val _uiStateFavorites = MutableStateFlow(FavoritesUIState())
     val uiStateFavorites = _uiStateFavorites.asStateFlow()
+
+    var isSessionExpired by mutableStateOf(false)
 
     fun getFavoriteAuthors() = viewModelScope.launch {
         getFavoritesUseCase(AUTHOR, null).handle {
@@ -34,6 +42,9 @@ class FavoritesViewModel @Inject constructor(
             }
             onSuccess { authors ->
                 _uiStateFavorites.update { it.copy(authors = authors.map { it.asFavorite() }) }
+            }
+            onFailure {
+                checkSession(it)
             }
         }
     }
@@ -51,6 +62,7 @@ class FavoritesViewModel @Inject constructor(
                 }
             }
             onFailure {
+                checkSession(it)
                 _uiStateFavorites.update { it.copy(isLoading = false) }
             }
         }
@@ -72,6 +84,7 @@ class FavoritesViewModel @Inject constructor(
                 }
             }
             onFailure {
+                checkSession(it)
                 _uiStateFavorites.update { it.copy(isLoading = false) }
             }
         }
@@ -93,8 +106,21 @@ class FavoritesViewModel @Inject constructor(
                 }
             }
             onFailure {
+                checkSession(it)
                 _uiStateFavorites.update { it.copy(isLoading = false) }
             }
+        }
+    }
+
+    private fun checkSession(it: Throwable) {
+        try {
+            if ((it as HttpException).statusCode == 401) {
+                viewModelScope.launch {
+                    logOutUseCase.invoke()
+                    isSessionExpired = true
+                }
+            }
+        } catch (e: Exception) {/* no-op */
         }
     }
 }

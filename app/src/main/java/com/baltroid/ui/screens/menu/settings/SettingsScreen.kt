@@ -17,6 +17,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,6 +47,7 @@ import com.hitreads.core.model.Profile
 
 @Composable
 fun SettingsScreen(
+    onSessionExpired: () -> Unit,
     onBackClick: () -> Unit,
     viewModel: AuthenticationViewModel,
 ) {
@@ -55,6 +57,12 @@ fun SettingsScreen(
         onBackClick = onBackClick,
         profile = state.profile
     )
+
+    LaunchedEffect(viewModel.isSessionExpired) {
+        if (viewModel.isSessionExpired) {
+            onSessionExpired.invoke()
+        }
+    }
 }
 
 @Composable

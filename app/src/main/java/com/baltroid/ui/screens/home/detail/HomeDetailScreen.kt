@@ -73,6 +73,7 @@ import com.hitreads.core.model.ShowEpisode
 
 @Composable
 fun HomeDetailScreen(
+    onSessionExpired: () -> Unit,
     viewModel: OriginalViewModel,
     openMenuScreen: () -> Unit,
     navigate: (route: String, episodeId: Int?) -> Unit
@@ -85,6 +86,12 @@ fun HomeDetailScreen(
 
     LaunchedEffect(Unit) {
         viewModel.showOriginal()
+    }
+
+    LaunchedEffect(viewModel.isSessionExpired) {
+        if (viewModel.isSessionExpired) {
+            onSessionExpired.invoke()
+        }
     }
 
     LaunchedEffect(detailUIState.originalPurchased) {

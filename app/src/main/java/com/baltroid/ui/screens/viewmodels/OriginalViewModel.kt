@@ -2,9 +2,12 @@ package com.baltroid.ui.screens.viewmodels
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.baltroid.core.common.result.HttpException
 import com.baltroid.core.common.result.handle
 import com.baltroid.ui.screens.home.HomeUiState
 import com.baltroid.ui.screens.home.detail.HomeDetailUIState
@@ -31,6 +34,7 @@ import com.hitreads.core.domain.usecase.GetFavoriteOriginalsUseCase
 import com.hitreads.core.domain.usecase.GetOriginalsUseCase
 import com.hitreads.core.domain.usecase.IsLoggedUseCase
 import com.hitreads.core.domain.usecase.LikeCommentUseCase
+import com.hitreads.core.domain.usecase.LogOutUseCase
 import com.hitreads.core.domain.usecase.OptionPurchaseUseCase
 import com.hitreads.core.domain.usecase.ProfileUseCase
 import com.hitreads.core.domain.usecase.ShowEpisodeUseCase
@@ -74,7 +78,8 @@ class OriginalViewModel @Inject constructor(
     private val getCommentsByMeByIdUseCase: GetCommentsByMeByIdUseCase,
     private val bulkPurchaseUseCase: BulkPurchaseUseCase,
     private val purchaseUseCase: EpisodePurchaseUseCase,
-    private val optionPurchaseUseCase: OptionPurchaseUseCase
+    private val optionPurchaseUseCase: OptionPurchaseUseCase,
+    private val logOutUseCase: LogOutUseCase
 ) : ViewModel() {
 
     private val _uiStateHome = MutableStateFlow(HomeUiState())
@@ -98,11 +103,14 @@ class OriginalViewModel @Inject constructor(
     var selectedOriginalId: Int? = null
     var selectedComment: Comment? = null
 
+    var isSessionExpired by mutableStateOf(false)
+
     private fun loadNotifications() = viewModelScope.launch {
         getAllNotificationsUseCase().handle {
             onSuccess { notifications ->
                 _uiStateNotifications.update { notifications }
             }
+            onFailure(::checkSession)
         }
     }
 
@@ -125,6 +133,7 @@ class OriginalViewModel @Inject constructor(
                 }
             }
             onFailure {
+                checkSession(it)
                 _uiStateHome.update { it.copy(isLoading = false) }
             }
         }
@@ -150,6 +159,7 @@ class OriginalViewModel @Inject constructor(
                 }
             }
             onFailure {
+                checkSession(it)
                 _uiStateHome.update { it.copy(isLoading = false) }
             }
         }
@@ -165,6 +175,7 @@ class OriginalViewModel @Inject constructor(
                     _uiStateHome.update { it.copy(profileModel = profile, isLoading = false) }
                 }
                 onFailure {
+                    checkSession(it)
                     _uiStateHome.update { it.copy(isLoading = false) }
                 }
             }
@@ -185,6 +196,7 @@ class OriginalViewModel @Inject constructor(
                 }
             }
             onFailure {
+                checkSession(it)
                 _uiStateHome.update { it.copy(isLoading = false) }
             }
         }
@@ -203,7 +215,10 @@ class OriginalViewModel @Inject constructor(
                         uiState.copy(favorites = newFavorites, isLoading = false)
                     }
                 }
-                onFailure { _uiStateHome.update { it.copy(isLoading = false) } }
+                onFailure {
+                    checkSession(it)
+                    _uiStateHome.update { it.copy(isLoading = false) }
+                }
             }
         }
     }
@@ -226,6 +241,7 @@ class OriginalViewModel @Inject constructor(
                 }
             }
             onFailure {
+                checkSession(it)
                 _uiStateReading.update { it.copy(isLoading = false) }
             }
         }
@@ -249,6 +265,7 @@ class OriginalViewModel @Inject constructor(
                 }
             }
             onFailure {
+                checkSession(it)
                 _uiStateReading.update { it.copy(isLoading = false) }
             }
         }
@@ -284,6 +301,7 @@ class OriginalViewModel @Inject constructor(
                     }
                 }
                 onFailure {
+                    checkSession(it)
                     _uiStateReading.update { it.copy(isLoading = false) }
                 }
             }
@@ -304,6 +322,7 @@ class OriginalViewModel @Inject constructor(
                     }
                 }
                 onFailure {
+                    checkSession(it)
                     _uiStateReading.update { it.copy(isLoading = false) }
                 }
             }
@@ -324,6 +343,7 @@ class OriginalViewModel @Inject constructor(
                     }
                 }
                 onFailure {
+                    checkSession(it)
                     _uiStateReading.update { it.copy(isLoading = false) }
                 }
             }
@@ -340,16 +360,30 @@ class OriginalViewModel @Inject constructor(
     fun startReadingEpisode() {
         if (_uiStateHome.value.isUserLoggedIn) {
             viewModelScope.launch {
-                startReadingEpisodeUseCase(_selectedEpisodeId.value).handle { /* no-op */
+                startReadingEpisodeUseCase(_selectedEpisodeId.value).handle {
+                    onFailure(::checkSession)
                 }
                 endReadingEpisode()
             }
         }
     }
 
+    private fun checkSession(it: Throwable) {
+        try {
+            if ((it as HttpException).statusCode == 401) {
+                viewModelScope.launch {
+                    logOutUseCase.invoke()
+                    isSessionExpired = true
+                }
+            }
+        } catch (e: Exception) {/* no-op */
+        }
+    }
+
     private fun endReadingEpisode() {
         viewModelScope.launch {
-            endReadingEpisodeUseCase(_selectedEpisodeId.value).handle { /* no-op */
+            endReadingEpisodeUseCase(_selectedEpisodeId.value).handle {
+                onFailure(::checkSession)
             }
         }
     }
@@ -368,6 +402,7 @@ class OriginalViewModel @Inject constructor(
                 loadContinueReading()
             }
             onFailure {
+                checkSession(it)
                 _uiStateHome.update { it.copy(isUserLoggedIn = false, isLoading = false) }
             }
         }
@@ -394,6 +429,7 @@ class OriginalViewModel @Inject constructor(
                 }
             }
             onFailure {
+                checkSession(it)
                 _uiStateDetail.update { it.copy(isLoading = false) }
             }
         }
@@ -483,6 +519,7 @@ class OriginalViewModel @Inject constructor(
                 }
             }
             onFailure {
+                checkSession(it)
                 _uiStateReading.update { it.copy(isLoading = false) }
             }
         }
@@ -522,6 +559,7 @@ class OriginalViewModel @Inject constructor(
                 _uiStateDetail.update { it.copy(original = it.original.copy(commentCount = it.original.commentCount + 1)) }
             }
             onFailure {
+                checkSession(it)
                 _uiStateReading.update { it.copy(isLoading = false) }
             }
         }
@@ -568,6 +606,7 @@ class OriginalViewModel @Inject constructor(
                 }
             }
             onFailure {
+                checkSession(it)
                 _uiStateReading.update { it.copy(isLoading = false) }
             }
         }
@@ -614,6 +653,7 @@ class OriginalViewModel @Inject constructor(
                 }
             }
             onFailure {
+                checkSession(it)
                 _uiStateReading.update { it.copy(isLoading = false) }
             }
         }
@@ -785,6 +825,7 @@ class OriginalViewModel @Inject constructor(
                 }
             }
             onFailure {
+                checkSession(it)
                 _uiStateReading.update { it.copy(isLoading = false) }
             }
         }
@@ -800,6 +841,7 @@ class OriginalViewModel @Inject constructor(
                     _uiStateDetail.update { it.copy(isLoading = false, originalPurchased = true) }
                 }
                 onFailure {
+                    checkSession(it)
                     _uiStateDetail.update { it.copy(isLoading = false, originalPurchased = false) }
                 }
             }
@@ -831,6 +873,7 @@ class OriginalViewModel @Inject constructor(
                     }
                 }
                 onFailure {
+                    checkSession(it)
                     _uiStateDetail.update { it.copy(isLoading = false, episodePurchased = false) }
                 }
             }
@@ -860,6 +903,7 @@ class OriginalViewModel @Inject constructor(
                     _uiStateReading.update { it.copy(optionPurchased = true, isLoading = false) }
                 }
                 onFailure {
+                    checkSession(it)
                     _uiStateReading.update { it.copy(optionPurchased = false, isLoading = false) }
                 }
             }
