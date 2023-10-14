@@ -94,6 +94,10 @@ fun ProfileScreen(
             onSessionExpired.invoke()
         }
     }
+
+    LaunchedEffect(Unit) {
+        viewModel.getProfile()
+    }
     ProfileScreenContent(
         profile = profileState.profile,
         onBackClick = onBackClick,

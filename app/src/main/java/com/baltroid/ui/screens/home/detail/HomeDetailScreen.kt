@@ -134,7 +134,7 @@ fun HomeDetailScreen(
         navigate = navigate,
         state = detailUIState,
         openMenuScreen = openMenuScreen,
-        notificationSize = notificationSize,
+        notificationSize = if (homeState.isUserLoggedIn) notificationSize else 0,
         isLoggedIn = homeState.isUserLoggedIn,
         bulkPurchase = viewModel::bulkPurchase,
         purchaseEpisode = viewModel::purchaseEpisode,

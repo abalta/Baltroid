@@ -100,7 +100,7 @@ fun HomeScreen(
         homeUiState = homeUiState,
         openMenuScreen = openMenuScreen,
         deleteFavorite = viewModel::deleteFavoriteHome,
-        notificationsSize = notificationsSize,
+        notificationsSize = if (homeUiState.isUserLoggedIn) notificationsSize else 0,
         navigateContinueReading = navigateContinueReading,
         navigate = navigate
     )

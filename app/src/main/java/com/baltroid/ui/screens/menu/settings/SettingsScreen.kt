@@ -43,6 +43,7 @@ import com.baltroid.ui.screens.viewmodels.AuthenticationViewModel
 import com.baltroid.ui.theme.localColors
 import com.baltroid.ui.theme.localTextStyles
 import com.hitreads.core.model.Profile
+import com.onesignal.OneSignal
 
 
 @Composable
@@ -74,7 +75,7 @@ fun SettingsScreenContent(
     val context = LocalContext.current
 
     var notifications by remember {
-        mutableStateOf(true)
+        mutableStateOf(OneSignal.User.pushSubscription.optedIn)
     }
 
     val uriHandler = LocalUriHandler.current
@@ -118,7 +119,13 @@ fun SettingsScreenContent(
                 isChecked = notifications,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                notifications = !notifications
+                if (notifications) {
+                    OneSignal.User.pushSubscription.optOut()
+                    notifications = false
+                } else {
+                    OneSignal.User.pushSubscription.optIn()
+                    notifications = true
+                }
             }
             VerticalSpacer(height = R.dimen.dp17)
             Divider(
