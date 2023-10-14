@@ -12,5 +12,13 @@ data class InteractiveNetworkBundleAsset(
     @SerialName("path")
     val path: String?,
     @SerialName("is_active")
-    val isActive: Boolean?
+    val isActive: Boolean?,
+    @SerialName("properties")
+    val properties: Properties?
+)
+
+@Serializable
+data class Properties(
+    @SerialName("name")
+    val name: String?
 )

@@ -96,7 +96,8 @@ fun InteractiveBundleAssetModel.asInteractiveBundleAssets() = InteractiveBundleA
     type = type.orEmpty(),
     typeId = typeId ?: -1,
     path = path.orEmpty(),
-    isActive = isActive ?: false
+    isActive = isActive ?: false,
+    talkerName = talkerName.orEmpty()
 
 )
 

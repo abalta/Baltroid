@@ -138,10 +138,7 @@ fun InteractiveScreen(
         purchaseOption = viewModel::purchaseOption,
         clearOptionPurchased = viewModel::clearOptionPurchased,
         navigate = navigate,
-        likeComment = { isLiked, id, tabState ->
-            if (isLiked) viewModel.unlikeComment(id, tabState)
-            else viewModel.likeComment(id, tabState)
-        },
+        likeComment = viewModel::commentLikeAction,
     )
 }
 
@@ -173,7 +170,6 @@ fun InteractiveScreenContent(
 
     val focusImg by remember(currentDialogue) {
         derivedStateOf {
-            // todo ?.firstOrNull { it.type == "focus" && it.typeId.toString() == currentDialogue?.focus }
             readingUiState.episode
                 ?.bundleAssets
                 ?.firstOrNull { it.type == "talker" && it.typeId.toString() == currentDialogue?.talker }
@@ -187,6 +183,15 @@ fun InteractiveScreenContent(
                 ?.bundleAssets
                 ?.firstOrNull { it.type == "talker" && it.typeId.toString() == currentDialogue?.talker }
                 ?.path.orEmpty()
+        }
+    }
+
+    val talkerName by remember(currentDialogue) {
+        derivedStateOf {
+            readingUiState.episode
+                ?.bundleAssets
+                ?.firstOrNull { it.type == "talker" && it.typeId.toString() == currentDialogue?.talker }
+                ?.talkerName
         }
     }
 
@@ -417,7 +422,6 @@ fun InteractiveScreenContent(
                         if (currentDialogue?.lineType == "SMS" && isEpisodesEnabled.not()) Visible else Gone
                 }
         ) { nextLineId ->
-            println("here2 $nextLineId")
             currentDialogue = interactiveContent?.firstOrNull { it?.lineId == nextLineId }
 
         }
@@ -453,6 +457,7 @@ fun InteractiveScreenContent(
         InteractiveText(
             model = currentDialogue,
             talker = talker,
+            talkerName = talkerName.orEmpty(),
             modifier = Modifier
                 .fillMaxWidth()
                 .constrainAs(textBox) {
@@ -1277,6 +1282,7 @@ data class InteractiveOptions(
 fun InteractiveText(
     model: DialogueXml?,
     talker: String,
+    talkerName: String,
     modifier: Modifier = Modifier,
     onClick: (nextLineId: String?) -> Unit
 ) {
@@ -1297,7 +1303,7 @@ fun InteractiveText(
         )
 
         Text(
-            text = "Talker: ${model?.talker}",
+            text = talkerName,
             style = MaterialTheme.localTextStyles.poppins14Medium,
             color = MaterialTheme.localColors.white,
             modifier = Modifier.constrainAs(title) {

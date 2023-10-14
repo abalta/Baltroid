@@ -78,7 +78,11 @@ internal fun IndexNetworkOriginal.asIndexOriginalModel() = IndexOriginalModel(ty
 
 internal fun InteractiveNetworkBundleAsset.asInteractiveBundleAssetsModel() =
     InteractiveBundleAssetModel(
-        type = type, typeId = typeId, path = path, isActive = isActive
+        type = type,
+        typeId = typeId,
+        path = path,
+        isActive = isActive,
+        talkerName = properties?.name
     )
 
 internal fun NetworkAuthorCommentItem.asNetworkAuthorCommentModel() = NetworkAuthorCommentModel(

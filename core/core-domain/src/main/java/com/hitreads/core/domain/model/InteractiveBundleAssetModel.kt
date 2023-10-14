@@ -4,5 +4,6 @@ data class InteractiveBundleAssetModel(
     val type: String?,
     val typeId: Int?,
     val path: String?,
-    val isActive: Boolean?
+    val isActive: Boolean?,
+    val talkerName: String?
 )

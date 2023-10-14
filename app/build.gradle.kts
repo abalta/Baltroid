@@ -15,8 +15,8 @@ android {
 
     defaultConfig {
         applicationId = "com.TwentyThreeGames.KitaplikProto"
-        versionCode = 4
-        versionName = "1.0.5"
+        versionCode = 1
+        versionName = "1.0.0"
     }
 }
 
