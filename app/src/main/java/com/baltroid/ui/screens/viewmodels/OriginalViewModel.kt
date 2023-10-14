@@ -100,6 +100,8 @@ class OriginalViewModel @Inject constructor(
     private val _selectedEpisodeId: MutableState<Int> = mutableStateOf(0)
     val selectedEpisodeId: State<Int> = _selectedEpisodeId
 
+    var selectedEpisodeToPurchase by mutableStateOf<ShowEpisode?>(null)
+
     var selectedOriginalId: Int? = null
     var selectedComment: Comment? = null
 
@@ -268,6 +270,14 @@ class OriginalViewModel @Inject constructor(
                 checkSession(it)
                 _uiStateReading.update { it.copy(isLoading = false) }
             }
+        }
+    }
+
+    fun favoriteAction(isLiked: Boolean) {
+        if (isLiked) {
+            deleteFavorite()
+        } else {
+            createFavorite()
         }
     }
 
@@ -497,6 +507,14 @@ class OriginalViewModel @Inject constructor(
 
     fun getNextEpisode(): ShowEpisode? {
         return _uiStateDetail.value.original.episodes.firstOrNull { it.id == _uiStateReading.value.episode?.nextEpisodeId }
+    }
+
+    fun commentLikeAction(isLiked: Boolean, id: Int, tabState: CommentsTabState) {
+        if (isLiked) {
+            unlikeComment(id, tabState)
+        } else {
+            likeComment(id, tabState)
+        }
     }
 
     // 761 OriginalType.INTERACTIVE
@@ -908,6 +926,10 @@ class OriginalViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun setSelectedEpisodeToPurchaseModel(showEpisode: ShowEpisode?) {
+        selectedEpisodeToPurchase = showEpisode
     }
 
     /* fun deleteFavorite(original: Original?) = viewModelScope.launch {

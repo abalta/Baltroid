@@ -72,9 +72,9 @@ import java.util.Locale
 
 @Composable
 fun HomeScreen(
-    onSessionExpired: () -> Unit,
     viewModel: OriginalViewModel,
     openMenuScreen: () -> Unit,
+    onSessionExpired: () -> Unit,
     navigateContinueReading: (originalId: Int, episodeId: Int, route: String) -> Unit,
     navigate: (route: String, originalId: Int?) -> Unit
 ) {

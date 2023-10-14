@@ -30,7 +30,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -82,6 +81,7 @@ fun HomeDetailScreen(
     val homeState by viewModel.uiStateHome.collectAsStateWithLifecycle()
     val notificationSize = viewModel.uiStateNotifications.collectAsStateWithLifecycle().value.size
     val context = LocalContext.current
+
     SetLoadingState(isLoading = detailUIState.isLoading)
 
     LaunchedEffect(Unit) {
@@ -132,24 +132,28 @@ fun HomeDetailScreen(
 
     HomeDetailScreenContent(
         navigate = navigate,
-        notificationSize = notificationSize,
+        state = detailUIState,
         openMenuScreen = openMenuScreen,
+        notificationSize = notificationSize,
         isLoggedIn = homeState.isUserLoggedIn,
         bulkPurchase = viewModel::bulkPurchase,
-        original = detailUIState.original,
         purchaseEpisode = viewModel::purchaseEpisode,
+        selectedEpisodeToPurchase = viewModel.selectedEpisodeToPurchase,
+        setSelectedEpisodeToPurchase = viewModel::setSelectedEpisodeToPurchaseModel,
     )
 }
 
 @Composable
 private fun HomeDetailScreenContent(
-    original: IndexOriginal,
-    notificationSize: Int,
-    bulkPurchase: () -> Unit,
     isLoggedIn: Boolean,
+    notificationSize: Int,
+    state: HomeDetailUIState,
+    bulkPurchase: () -> Unit,
     openMenuScreen: () -> Unit,
     purchaseEpisode: (ShowEpisode) -> Unit,
-    navigate: (route: String, episodeId: Int?) -> Unit
+    selectedEpisodeToPurchase: ShowEpisode?,
+    navigate: (route: String, episodeId: Int?) -> Unit,
+    setSelectedEpisodeToPurchase: (ShowEpisode?) -> Unit,
 ) {
 
     var isEpisodesEnabled by rememberSaveable {
@@ -160,9 +164,6 @@ private fun HomeDetailScreenContent(
     }
     var isEpisodePurchaseDialogVisible by rememberSaveable {
         mutableStateOf(false)
-    }
-    var selectedEpisode by remember {
-        mutableStateOf<ShowEpisode?>(null)
     }
     val context = LocalContext.current
 
@@ -179,7 +180,7 @@ private fun HomeDetailScreenContent(
             .navigationBarsPadding()
     ) {
         AsyncImage(
-            model = original.cover,
+            model = state.original.cover,
             contentDescription = null,
             fallback = painterResource(id = R.drawable.woods_image),
             placeholder = painterResource(id = R.drawable.woods_image),
@@ -205,159 +206,161 @@ private fun HomeDetailScreenContent(
             )
         }
         if (isBarcodeEnabled) {
-            OriginalBarcode(original = original) {
+            OriginalBarcode(original = state.original) {
                 isBarcodeEnabled = false
             }
         }
-        if (!isEpisodesEnabled && !isBarcodeEnabled) {
-            Column {
-                HitReadsTopBar(
-                    iconResId = R.drawable.ic_bell,
-                    numberOfNotification = notificationSize,
-                    onMenuClick = openMenuScreen,
-                    onIconClick = {},
-                    iconTint = MaterialTheme.localColors.white,
-                    onNotificationClick = {
-                        if (isLoggedIn) {
-                            navigate.invoke(HitReadsScreens.NotificationsScreen.route, null)
-                        } else {
-                            context.showLoginToast()
-                        }
-                    },
-                    gemClick = {},
-                    signInClick = {},
-                )
-                VerticalSpacer(height = dimensionResource(id = R.dimen.dp18))
-                AsyncImage(
-                    model = original.cover,
-                    contentDescription = null,
-                    fallback = painterResource(id = R.drawable.hitreads_placeholder),
-                    placeholder = painterResource(id = R.drawable.woods_image),
-                    error = painterResource(id = R.drawable.hitreads_placeholder),
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentWidth(Alignment.CenterHorizontally)
-                        .size(
-                            dimensionResource(id = R.dimen.dp219),
-                            dimensionResource(id = R.dimen.dp308)
-                        )
-                        .scale(0.9f)
-                        .clip(MaterialTheme.localShapes.roundedDp9)
-                )
-                VerticalSpacer(height = dimensionResource(id = R.dimen.dp16))
-                Column(
-                    Modifier
-                        .weight(1f)
-                        .verticalScroll(rememberScrollState())
-                ) {
-                    TitleSection(
-                        author = original.indexAuthor.name.orEmpty(),
-                        title = original.title.orEmpty(),
-                        subTitle = original.subtitle.orEmpty(),
-                        modifier = Modifier.padding(start = dimensionResource(id = R.dimen.dp23))
-                    ) {
-                        navigate.invoke(
-                            HitReadsScreens.AuthorScreen.route + "/${original.indexAuthor.id}",
-                            null
-                        )
-                    }
-                    VerticalSpacer(height = dimensionResource(id = R.dimen.dp11))
-                    Column(
-                        Modifier
-                            .padding(start = dimensionResource(id = R.dimen.dp24))
-                            .width(IntrinsicSize.Min)
-                    ) {
-                        GenreAndInteractions(
-                            episodeSize = original.episodes.size,
-                            genres = original.indexTags,
-                            numberOfViews = original.viewCount.orZero(),
-                            numberOfComments = original.commentCount.orZero(),
-                            onInfoClicked = { isBarcodeEnabled = !isBarcodeEnabled },
-                            modifier = Modifier.width(IntrinsicSize.Max)
-                        )
-                        VerticalSpacer(height = dimensionResource(id = R.dimen.dp21))
-                        Text(
-                            text = original.description.orEmpty(),
-                            style = MaterialTheme.localTextStyles.spaceGrotesk14Regular,
-                            color = MaterialTheme.localColors.white,
-                            modifier = Modifier.fillMaxWidth(),
-                        )
-                        VerticalSpacer(height = dimensionResource(id = R.dimen.dp8))
-                        Text(
-                            text = original.hashtag.orEmpty(),
-                            style = MaterialTheme.localTextStyles.spaceGrotesk14Regular,
-                            color = MaterialTheme.localColors.white
-                        )
-                    }
-                    VerticalSpacer(height = dimensionResource(id = R.dimen.dp7))
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
+        when {
+            !isEpisodesEnabled && !isBarcodeEnabled -> {
+                Column {
+                    HitReadsTopBar(
+                        iconResId = R.drawable.ic_bell,
+                        numberOfNotification = notificationSize,
+                        onMenuClick = openMenuScreen,
+                        onIconClick = {},
+                        iconTint = MaterialTheme.localColors.white,
+                        onNotificationClick = {
+                            if (isLoggedIn) {
+                                navigate.invoke(HitReadsScreens.NotificationsScreen.route, null)
+                            } else {
+                                context.showLoginToast()
+                            }
+                        },
+                        gemClick = {},
+                        signInClick = {},
+                    )
+                    VerticalSpacer(height = dimensionResource(id = R.dimen.dp18))
+                    AsyncImage(
+                        model = state.original.cover,
+                        contentDescription = null,
+                        fallback = painterResource(id = R.drawable.hitreads_placeholder),
+                        placeholder = painterResource(id = R.drawable.woods_image),
+                        error = painterResource(id = R.drawable.hitreads_placeholder),
+                        contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(
-                                start = dimensionResource(id = R.dimen.dp24),
-                                end = dimensionResource(id = R.dimen.dp47)
+                            .wrapContentWidth(Alignment.CenterHorizontally)
+                            .size(
+                                dimensionResource(id = R.dimen.dp219),
+                                dimensionResource(id = R.dimen.dp308)
                             )
+                            .scale(0.9f)
+                            .clip(MaterialTheme.localShapes.roundedDp9)
+                    )
+                    VerticalSpacer(height = dimensionResource(id = R.dimen.dp16))
+                    Column(
+                        Modifier
+                            .weight(1f)
+                            .verticalScroll(rememberScrollState())
                     ) {
-                        if (original.isBulkPurchasable) {
-                            Row(
-                                modifier = Modifier
-                                    .align(Alignment.Bottom)
-                            ) {
-
-                                SimpleIcon(iconResId = R.drawable.ic_lock)
-                                HorizontalSpacer(width = dimensionResource(id = R.dimen.dp8))
-
-                                Text(
-                                    text = stringResource(id = R.string.purchase_all_book),
-                                    style = MaterialTheme.localTextStyles.poppins12Regular,
-                                    color = MaterialTheme.localColors.white,
-                                    modifier = Modifier.clickable {
-                                        bulkPurchase.invoke()
-                                    }
-                                )
-                            }
+                        TitleSection(
+                            author = state.original.indexAuthor.name.orEmpty(),
+                            title = state.original.title.orEmpty(),
+                            subTitle = state.original.subtitle.orEmpty(),
+                            modifier = Modifier.padding(start = dimensionResource(id = R.dimen.dp23))
+                        ) {
+                            navigate.invoke(
+                                HitReadsScreens.AuthorScreen.route + "/${state.original.indexAuthor.id}",
+                                null
+                            )
                         }
-                        SimpleImage(
-                            imgResId = R.drawable.ic_read,
+                        VerticalSpacer(height = dimensionResource(id = R.dimen.dp11))
+                        Column(
+                            Modifier
+                                .padding(start = dimensionResource(id = R.dimen.dp24))
+                                .width(IntrinsicSize.Min)
+                        ) {
+                            GenreAndInteractions(
+                                episodeSize = state.original.episodes.size,
+                                genres = state.original.indexTags,
+                                numberOfViews = state.original.viewCount.orZero(),
+                                numberOfComments = state.original.commentCount.orZero(),
+                                onInfoClicked = { isBarcodeEnabled = !isBarcodeEnabled },
+                                modifier = Modifier.width(IntrinsicSize.Max)
+                            )
+                            VerticalSpacer(height = dimensionResource(id = R.dimen.dp21))
+                            Text(
+                                text = state.original.description.orEmpty(),
+                                style = MaterialTheme.localTextStyles.spaceGrotesk14Regular,
+                                color = MaterialTheme.localColors.white,
+                                modifier = Modifier.fillMaxWidth(),
+                            )
+                            VerticalSpacer(height = dimensionResource(id = R.dimen.dp8))
+                            Text(
+                                text = state.original.hashtag.orEmpty(),
+                                style = MaterialTheme.localTextStyles.spaceGrotesk14Regular,
+                                color = MaterialTheme.localColors.white
+                            )
+                        }
+                        VerticalSpacer(height = dimensionResource(id = R.dimen.dp7))
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .wrapContentWidth(Alignment.End)
-                                .clickable {
-                                    val episode = original.episodes.firstOrNull()
-                                    if (episode?.isReadable == true) {
-                                        if (!episode.isPurchase) {
-                                            isEpisodePurchaseDialogVisible = true
-                                            selectedEpisode = episode
-                                        } else {
-                                            navigate.invoke(
-                                                if (original.type == OriginalType.INTERACTIVE) HitReadsScreens.InteractiveScreen.route
-                                                else HitReadsScreens.ReadingScreen.route,
-                                                original.episodes.firstOrNull()?.id
-                                            )
+                                .padding(
+                                    start = dimensionResource(id = R.dimen.dp24),
+                                    end = dimensionResource(id = R.dimen.dp47)
+                                )
+                        ) {
+                            if (state.original.isBulkPurchasable) {
+                                Row(
+                                    modifier = Modifier
+                                        .align(Alignment.Bottom)
+                                ) {
+
+                                    SimpleIcon(iconResId = R.drawable.ic_lock)
+                                    HorizontalSpacer(width = dimensionResource(id = R.dimen.dp8))
+
+                                    Text(
+                                        text = stringResource(id = R.string.purchase_all_book),
+                                        style = MaterialTheme.localTextStyles.poppins12Regular,
+                                        color = MaterialTheme.localColors.white,
+                                        modifier = Modifier.clickable {
+                                            bulkPurchase.invoke()
                                         }
-                                    } else {
-                                        Toast
-                                            .makeText(
-                                                context,
-                                                context.getString(R.string.isnot_readable),
-                                                Toast.LENGTH_LONG
-                                            )
-                                            .show()
-                                    }
-                                })
+                                    )
+                                }
+                            }
+                            SimpleImage(
+                                imgResId = R.drawable.ic_read,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .wrapContentWidth(Alignment.End)
+                                    .clickable {
+                                        val episode = state.original.episodes.firstOrNull()
+                                        if (episode?.isReadable == true) {
+                                            if (!episode.isPurchase) {
+                                                isEpisodePurchaseDialogVisible = true
+                                                setSelectedEpisodeToPurchase.invoke(episode)
+                                            } else {
+                                                navigate.invoke(
+                                                    if (state.original.type == OriginalType.INTERACTIVE) HitReadsScreens.InteractiveScreen.route
+                                                    else HitReadsScreens.ReadingScreen.route,
+                                                    state.original.episodes.firstOrNull()?.id
+                                                )
+                                            }
+                                        } else {
+                                            Toast
+                                                .makeText(
+                                                    context,
+                                                    context.getString(R.string.isnot_readable),
+                                                    Toast.LENGTH_LONG
+                                                )
+                                                .show()
+                                        }
+                                    })
+                        }
+                        VerticalSpacer(height = dimensionResource(id = R.dimen.dp30))
                     }
-                    VerticalSpacer(height = dimensionResource(id = R.dimen.dp30))
-                }
-                DetailEpisodes {
-                    isEpisodesEnabled = true
+                    DetailEpisodes {
+                        isEpisodesEnabled = true
+                    }
                 }
             }
-        } else {
-            if (isEpisodesEnabled) {
+
+            isEpisodesEnabled -> {
                 EpisodeSheet(
-                    episodes = original.episodes,
+                    episodes = state.original.episodes,
                     modifier = Modifier
                         .fillMaxWidth()
                         .fillMaxHeight(0.7f)
@@ -370,11 +373,14 @@ private fun HomeDetailScreenContent(
                         if (it.isReadable) {
                             if (!it.isPurchase) {
                                 isEpisodePurchaseDialogVisible = true
-                                selectedEpisode = it
+                                setSelectedEpisodeToPurchase.invoke(it)
                             } else {
                                 navigate.invoke(
-                                    if (original.type == OriginalType.INTERACTIVE) HitReadsScreens.InteractiveScreen.route
-                                    else HitReadsScreens.ReadingScreen.route,
+                                    if (state.original.type == OriginalType.INTERACTIVE) {
+                                        HitReadsScreens.InteractiveScreen.route
+                                    } else {
+                                        HitReadsScreens.ReadingScreen.route
+                                    },
                                     it.id
                                 )
                             }
@@ -392,10 +398,10 @@ private fun HomeDetailScreenContent(
         }
         if (isEpisodePurchaseDialogVisible) {
             EpisodePurchasePopup(
-                episodeName = selectedEpisode?.episodeName.toString(),
+                episodeName = selectedEpisodeToPurchase?.episodeName.toString(),
                 onDialogDismissed = { isEpisodePurchaseDialogVisible = false },
                 onAccept = {
-                    selectedEpisode?.let { purchaseEpisode(it) }
+                    selectedEpisodeToPurchase?.let { purchaseEpisode(it) }
                     isEpisodePurchaseDialogVisible = false
                 },
                 onDecline = {

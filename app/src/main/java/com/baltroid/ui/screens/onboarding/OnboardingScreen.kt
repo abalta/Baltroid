@@ -13,14 +13,14 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.baltroid.apps.R
 import com.baltroid.ui.common.SetLoadingState
@@ -32,11 +32,18 @@ import com.hitreads.core.domain.model.WelcomeModel
 
 @Composable
 fun OnboardingScreen(
-    screenState: OnboardingState?,
-    onClick: () -> Unit
+    viewModel: OnboardingViewModel,
+    onClick: (passTheAnnouncement: Boolean) -> Unit
 ) {
-    SetLoadingState(isLoading = screenState?.isLoading == true)
-    OnboardingScreenContent(screenState = screenState?.welcomeModel, onClick)
+    val state by viewModel.uiStateOnboarding.collectAsStateWithLifecycle()
+    SetLoadingState(isLoading = state.isLoading)
+
+    OnboardingScreenContent(
+        screenState = state.welcomeModel,
+        onClick = {
+            onClick.invoke(!state.isLoading && state.announcementModel == null)
+        }
+    )
 }
 
 @Composable
@@ -116,12 +123,4 @@ fun OnboardingScreenBottomSection(
         )
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp29))
     }
-}
-
-@Preview(device = Devices.DEFAULT)
-@Preview(heightDp = 650)
-@Preview(widthDp = 360, heightDp = 540)
-@Composable
-fun OnboardingPreview() {
-
 }

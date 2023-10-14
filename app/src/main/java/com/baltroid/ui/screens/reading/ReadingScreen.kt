@@ -128,58 +128,50 @@ fun ReadingScreen(
 
     ReadingScreenContent(
         uiState = uiState,
-        original = uiStateDetail.original,
-        onEpisodeChange = viewModel::setSelectedEpisodeId,
-        loadComments = viewModel::getOriginalComments,
-        onNextClicked = viewModel::nextEpisode,
-        isLoggedIn = uiStateHome.isUserLoggedIn,
-        onCreateComment = { comment -> viewModel.createComment(comment, null) },
-        onLikeClick = { isLiked ->
-            if (isLiked) viewModel.deleteFavorite()
-            else viewModel.createFavorite()
-        },
-        goToFirstEpisode = viewModel::setSelectedEpisodeId,
-        expanseComment = viewModel::expanseComment,
-        onHideComment = viewModel::hideComment,
-        setReplyComment = viewModel::setReplyComment,
-        replyComment = viewModel::replyComment,
-        onCreateFavorite = { isFavorite ->
-            if (isFavorite) viewModel.deleteFavorite()
-            else viewModel.createFavorite()
-        },
         navigate = navigate,
-        purchaseEpisode = viewModel::purchaseEpisode,
+        original = uiStateDetail.original,
+        onNextClicked = viewModel::nextEpisode,
+        replyComment = viewModel::replyComment,
+        onHideComment = viewModel::hideComment,
+        isLoggedIn = uiStateHome.isUserLoggedIn,
         nextEpisode = viewModel.getNextEpisode(),
-        likeComment = { isLiked, id, tabState ->
-            if (isLiked) viewModel.unlikeComment(id, tabState)
-            else viewModel.likeComment(id, tabState)
-        },
+        expanseComment = viewModel::expanseComment,
+        onCreateComment = viewModel::createComment,
+        likeComment = viewModel::commentLikeAction,
+        setReplyComment = viewModel::setReplyComment,
+        purchaseEpisode = viewModel::purchaseEpisode,
+        onCreateFavorite = viewModel::favoriteAction,
+        loadComments = viewModel::getOriginalComments,
+        onEpisodeChange = viewModel::setSelectedEpisodeId,
+        selectedEpisodeToPurchase = viewModel.selectedEpisodeToPurchase,
+        setSelectedEpisodeToPurchase = viewModel::setSelectedEpisodeToPurchaseModel,
     )
 }
 
 @Composable
 fun ReadingScreenContent(
+    isLoggedIn: Boolean,
     uiState: ReadingUiState,
     original: IndexOriginal?,
-    nextEpisode: ShowEpisode?,
-    isLoggedIn: Boolean,
     onNextClicked: () -> Unit,
-    onCreateComment: (String) -> Unit,
-    setReplyComment: (Comment) -> Unit,
-    replyComment: (String, CommentsTabState) -> Unit,
-    loadComments: (CommentsTabState) -> Unit,
+    nextEpisode: ShowEpisode?,
     navigate: (String) -> Unit,
     onEpisodeChange: (Int) -> Unit,
-    purchaseEpisode: (ShowEpisode) -> Unit,
-    onLikeClick: (Boolean) -> Unit,
+    setReplyComment: (Comment) -> Unit,
     onCreateFavorite: (Boolean) -> Unit,
-    likeComment: (Boolean, Int, CommentsTabState) -> Unit,
-    expanseComment: (Int, CommentsTabState) -> Unit,
+    purchaseEpisode: (ShowEpisode) -> Unit,
+    selectedEpisodeToPurchase: ShowEpisode?,
+    onCreateComment: (String, Int?) -> Unit,
+    loadComments: (CommentsTabState) -> Unit,
     onHideComment: (Int, CommentsTabState) -> Unit,
-    goToFirstEpisode: (id: Int) -> Unit,
+    expanseComment: (Int, CommentsTabState) -> Unit,
+    replyComment: (String, CommentsTabState) -> Unit,
+    setSelectedEpisodeToPurchase: (ShowEpisode?) -> Unit,
+    likeComment: (Boolean, Int, CommentsTabState) -> Unit,
 ) {
-    val scrollState = rememberScrollState()
     val context = LocalContext.current
+    val scrollState = rememberScrollState()
+
     var isSidebarVisible by rememberSaveable {
         mutableStateOf(true)
     }
@@ -207,9 +199,6 @@ fun ReadingScreenContent(
 
     var isEpisodePurchaseDialogVisible by rememberSaveable {
         mutableStateOf(false)
-    }
-    var selectedEpisode by remember {
-        mutableStateOf<ShowEpisode?>(null)
     }
 
     BackHandler(
@@ -252,7 +241,7 @@ fun ReadingScreenContent(
                             },
                             onLikeClick = {
                                 if (isLoggedIn) {
-                                    onLikeClick.invoke(it)
+                                    onCreateFavorite.invoke(it)
                                 } else {
                                     context.showLoginToast()
                                 }
@@ -278,12 +267,12 @@ fun ReadingScreenContent(
                                     isBarcodeEnabled = true
                                 },
                                 goToFirstEpisode = {
-                                    goToFirstEpisode.invoke(
+                                    onEpisodeChange.invoke(
                                         original?.episodes?.firstOrNull()?.id ?: -1
                                     )
                                 },
                                 purchaseEpisode = {
-                                    selectedEpisode = it
+                                    setSelectedEpisodeToPurchase.invoke(it)
                                     isEpisodePurchaseDialogVisible = true
                                 },
                                 isFavorite = original?.indexUserData?.isFav == true,
@@ -372,7 +361,7 @@ fun ReadingScreenContent(
                         onEpisodeChange = onEpisodeChange,
                         purchaseEpisode = {
                             isEpisodePurchaseDialogVisible = true
-                            selectedEpisode = it
+                            setSelectedEpisodeToPurchase.invoke(it)
                         },
                         onCloseClicked = { isSideEpisodesSheetVisible = false },
                         modifier = Modifier
@@ -392,7 +381,7 @@ fun ReadingScreenContent(
                 imgUrl = "",
                 onBackClick = { isWriteCardShown = !isWriteCardShown }) { comment ->
                 if (isReadingSection) {
-                    onCreateComment(comment)
+                    onCreateComment(comment, null)
                 } else {
                     replyComment.invoke(comment, selectedCommentTab)
                 }
@@ -406,10 +395,10 @@ fun ReadingScreenContent(
         }
 
         if (isEpisodePurchaseDialogVisible) {
-            EpisodePurchasePopup(episodeName = selectedEpisode?.episodeName.toString(),
+            EpisodePurchasePopup(episodeName = selectedEpisodeToPurchase?.episodeName.toString(),
                 onDialogDismissed = { isEpisodePurchaseDialogVisible = false },
                 onAccept = {
-                    selectedEpisode?.let { purchaseEpisode(it) }
+                    selectedEpisodeToPurchase?.let { purchaseEpisode(it) }
                     isEpisodePurchaseDialogVisible = false
                 },
                 onDecline = {

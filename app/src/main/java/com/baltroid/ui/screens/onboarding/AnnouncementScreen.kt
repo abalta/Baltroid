@@ -37,8 +37,8 @@ import com.baltroid.ui.theme.localTextStyles
 
 @Composable
 fun AnnouncementScreen(
-    onSessionExpired: () -> Unit,
     viewModel: OnboardingViewModel,
+    onSessionExpired: () -> Unit,
     onClick: () -> Unit
 ) {
     val state by viewModel.uiStateOnboarding.collectAsStateWithLifecycle()

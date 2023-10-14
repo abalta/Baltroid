@@ -193,15 +193,10 @@ fun HitReadsNavHost(
             composable(
                 route = HitReadsScreens.OnboardingScreen.route
             ) {
-
-                val onboardingState = onboardingViewModel.uiStateOnboarding
-                    .collectAsStateWithLifecycle()
-                    .value
-
                 OnboardingScreen(
-                    screenState = onboardingState
-                ) {
-                    if (onboardingState.announcementModel == null && !onboardingState.isLoading) {
+                    viewModel = onboardingViewModel
+                ) { passTheAnnouncement ->
+                    if (passTheAnnouncement) {
                         navController.navigate(HitReadsScreens.HomeScreen.route) {
                             popUpToInclusive(HitReadsScreens.OnboardingScreen.route)
                             launchSingleTop = true
