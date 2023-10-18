@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -99,6 +100,7 @@ import com.hitreads.core.domain.model.OriginalType
 import com.hitreads.core.model.Comment
 import com.hitreads.core.model.IndexOriginal
 import com.hitreads.core.model.ShowEpisode
+import java.util.Locale
 
 @Composable
 fun ReadingScreen(
@@ -227,11 +229,13 @@ fun ReadingScreenContent(
                         modifier = Modifier.weight(1f)
                     ) {
                         TitleSection(
-                            title = original?.title.orEmpty(),
-                            subtitle = original?.indexAuthor?.name.orEmpty(),
+                            title = original?.title.orEmpty().uppercase(Locale.getDefault()),
+                            subtitle = original?.indexAuthor?.name.orEmpty()
+                                .uppercase(Locale.getDefault()),
                             isExpanded = !isSidebarVisible,
                             isLiked = original?.indexUserData?.isFav == true,
-                            episodeName = uiState.episode?.episodeName.orEmpty(),
+                            episodeName = uiState.episode?.episodeName.orEmpty()
+                                .uppercase(Locale.getDefault()),
                             isEpisodeNameVisible = isSidebarVisible && isReadingSection,
                             onDotsClick = {
                                 isSidebarVisible = true
@@ -277,6 +281,7 @@ fun ReadingScreenContent(
                                 },
                                 isFavorite = original?.indexUserData?.isFav == true,
                                 nextEpisode = nextEpisode,
+                                showShadow = isSideEpisodesSheetVisible,
                                 onNextClicked = onNextClicked
                             )
                         } else {
@@ -472,6 +477,7 @@ fun ReadingSection(
     body: String,
     nextEpisode: ShowEpisode?,
     episode: ShowEpisode?,
+    showShadow: Boolean,
     isFavorite: Boolean,
     isLastEpisode: Boolean,
     onNextClicked: () -> Unit,
@@ -481,51 +487,60 @@ fun ReadingSection(
     purchaseEpisode: (ShowEpisode) -> Unit,
 ) {
     val context = LocalContext.current
-    Column {
-        Text(
-            text = body,
-            style = MaterialTheme.localTextStyles.poppins14Regular,
-            color = MaterialTheme.localColors.white_alpha08,
-            modifier = Modifier.padding(
-                horizontal = dimensionResource(id = R.dimen.dp24)
+    Box {
+        Column {
+            Text(
+                text = body,
+                style = MaterialTheme.localTextStyles.poppins14Regular,
+                color = MaterialTheme.localColors.white_alpha08,
+                modifier = Modifier.padding(
+                    horizontal = dimensionResource(id = R.dimen.dp24)
+                )
             )
-        )
-        if (!isLastEpisode && body.isNotEmpty()) {
-            SimpleImage(imgResId = R.drawable.ic_arrow_right,
-                modifier = Modifier
-                    .padding(end = dimensionResource(id = R.dimen.dp25))
-                    .size(dimensionResource(id = R.dimen.dp46))
-                    .clickable {
-                        if (nextEpisode?.isReadable == true) {
-                            if (!nextEpisode.isPurchase) {
-                                purchaseEpisode.invoke(nextEpisode)
+            if (!isLastEpisode && body.isNotEmpty()) {
+                SimpleImage(imgResId = R.drawable.ic_arrow_right,
+                    modifier = Modifier
+                        .padding(end = dimensionResource(id = R.dimen.dp25))
+                        .size(dimensionResource(id = R.dimen.dp46))
+                        .clickable {
+                            if (nextEpisode?.isReadable == true) {
+                                if (!nextEpisode.isPurchase) {
+                                    purchaseEpisode.invoke(nextEpisode)
+                                } else {
+                                    onNextClicked.invoke()
+                                }
                             } else {
-                                onNextClicked.invoke()
+                                Toast
+                                    .makeText(
+                                        context,
+                                        context.getString(R.string.isnot_readable),
+                                        Toast.LENGTH_LONG
+                                    )
+                                    .show()
                             }
-                        } else {
-                            Toast
-                                .makeText(
-                                    context,
-                                    context.getString(R.string.isnot_readable),
-                                    Toast.LENGTH_LONG
-                                )
-                                .show()
                         }
-                    }
-                    .align(Alignment.End)
-                    .alpha(0.5f))
-        } else if (isLastEpisode) {
-            VerticalSpacer(height = R.dimen.dp24)
-            LastEpisodeSection(
-                isFavorite = isFavorite,
-                onCreateFavorite = onCreateFavorite,
-                onShare = onShare,
-                goToFirstEpisode = goToFirstEpisode,
+                        .align(Alignment.End)
+                        .alpha(0.5f))
+            } else if (isLastEpisode) {
+                VerticalSpacer(height = R.dimen.dp24)
+                LastEpisodeSection(
+                    isFavorite = isFavorite,
+                    onCreateFavorite = onCreateFavorite,
+                    onShare = onShare,
+                    goToFirstEpisode = goToFirstEpisode,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentWidth(Alignment.CenterHorizontally)
+                )
+                VerticalSpacer(height = R.dimen.dp50)
+            }
+        }
+        if (showShadow) {
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentWidth(Alignment.CenterHorizontally)
+                    .fillMaxSize()
+                    .background(MaterialTheme.localColors.black_alpha05)
             )
-            VerticalSpacer(height = R.dimen.dp50)
         }
     }
 }

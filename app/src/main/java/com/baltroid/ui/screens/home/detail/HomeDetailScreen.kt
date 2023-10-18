@@ -69,6 +69,7 @@ import com.hitreads.core.domain.model.OriginalType
 import com.hitreads.core.model.IndexOriginal
 import com.hitreads.core.model.IndexTag
 import com.hitreads.core.model.ShowEpisode
+import java.util.Locale
 
 @Composable
 fun HomeDetailScreen(
@@ -254,8 +255,9 @@ private fun HomeDetailScreenContent(
                             .verticalScroll(rememberScrollState())
                     ) {
                         TitleSection(
-                            author = state.original.indexAuthor.name.orEmpty(),
-                            title = state.original.title.orEmpty(),
+                            author = state.original.indexAuthor.name.orEmpty()
+                                .uppercase(Locale.getDefault()),
+                            title = state.original.title.orEmpty().uppercase(Locale.getDefault()),
                             subTitle = state.original.subtitle.orEmpty(),
                             modifier = Modifier.padding(start = dimensionResource(id = R.dimen.dp23))
                         ) {
@@ -288,7 +290,7 @@ private fun HomeDetailScreenContent(
                             VerticalSpacer(height = dimensionResource(id = R.dimen.dp8))
                             Text(
                                 text = state.original.hashtag.orEmpty(),
-                                style = MaterialTheme.localTextStyles.spaceGrotesk14Regular,
+                                style = MaterialTheme.localTextStyles.spaceGrotesk14Bold,
                                 color = MaterialTheme.localColors.white
                             )
                         }
@@ -570,7 +572,7 @@ fun EpisodeItem(
     ) {
         Text(
             text = stringResource(id = R.string.episode_number, episode.episodeSort.orZero()),
-            style = MaterialTheme.localTextStyles.poppins15Bold,
+            style = MaterialTheme.localTextStyles.poppins15Medium,
             color = MaterialTheme.localColors.white
         )
         HorizontalSpacer(width = dimensionResource(id = R.dimen.dp20))

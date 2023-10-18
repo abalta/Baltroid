@@ -145,6 +145,9 @@ fun HomeScreenContent(
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp19))
         HomeScreenTabs(
             isUserLoggedIn = homeUiState.isUserLoggedIn,
+            navigateToLogin = {
+                navigate.invoke(HitReadsScreens.LoginScreen.route, null)
+            },
             selectedTab = tabState, modifier = Modifier
                 .fillMaxWidth()
                 .padding(
@@ -212,7 +215,7 @@ private fun IndexOriginals(
     ) {
         itemsIndexed(originals) { index, item ->
             GenreItem(
-                text = item.tagName.orEmpty().uppercase(Locale("tr", "TR")),
+                text = item.tagName.orEmpty(),
                 if (index % 2 == 0) MaterialTheme.localColors.purple
                 else MaterialTheme.localColors.pink,
                 modifier = Modifier.padding(start = dimensionResource(id = R.dimen.dp24))
@@ -323,6 +326,7 @@ private fun IndexOriginalItem(
     indexOriginal: IndexOriginal,
     onClick: () -> Unit
 ) {
+
     Column(
         modifier = Modifier
             .width(IntrinsicSize.Min)
@@ -363,14 +367,14 @@ private fun IndexOriginalItem(
         }
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp6))
         Text(
-            text = indexOriginal.title,
+            text = indexOriginal.title.uppercase(Locale.getDefault()),
             style = MaterialTheme.localTextStyles.poppins12Bold,
             maxLines = 2,
             color = MaterialTheme.localColors.white,
             overflow = TextOverflow.Ellipsis
         )
         Text(
-            text = indexOriginal.indexAuthor.name,
+            text = indexOriginal.indexAuthor.name.uppercase(Locale.getDefault()),
             style = MaterialTheme.localTextStyles.poppins10SemiBold,
             color = MaterialTheme.localColors.white
         )
@@ -417,6 +421,7 @@ private fun HomeScreenTabs(
     selectedTab: HomeScreenTabs,
     isUserLoggedIn: Boolean,
     modifier: Modifier = Modifier,
+    navigateToLogin: () -> Unit,
     onTabSelected: (HomeScreenTabs) -> Unit
 ) {
     Row(
@@ -430,18 +435,24 @@ private fun HomeScreenTabs(
         ) {
             onTabSelected.invoke(HomeScreenTabs.AllStories)
         }
-        if (isUserLoggedIn) {
-            HomeScreenTabItem(
-                title = R.string.favorites_with_size,
-                isSelected = selectedTab == HomeScreenTabs.Favorites
-            ) {
+        HomeScreenTabItem(
+            title = R.string.favorites_with_size,
+            isSelected = selectedTab == HomeScreenTabs.Favorites
+        ) {
+            if (isUserLoggedIn) {
                 onTabSelected.invoke(HomeScreenTabs.Favorites)
+            } else {
+                navigateToLogin.invoke()
             }
-            HomeScreenTabItem(
-                title = R.string.continue_reading,
-                isSelected = selectedTab == HomeScreenTabs.ContinueReading
-            ) {
+        }
+        HomeScreenTabItem(
+            title = R.string.continue_reading,
+            isSelected = selectedTab == HomeScreenTabs.ContinueReading
+        ) {
+            if (isUserLoggedIn) {
                 onTabSelected.invoke(HomeScreenTabs.ContinueReading)
+            } else {
+                navigateToLogin.invoke()
             }
         }
     }
