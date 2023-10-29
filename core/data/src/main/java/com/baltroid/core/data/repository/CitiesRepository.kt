@@ -1,5 +1,6 @@
 package com.baltroid.core.data.repository
 
+import com.baltroid.model.Category
 import com.baltroid.model.City
 import com.baltroid.model.Mall
 import com.baltroid.model.Service
@@ -12,4 +13,5 @@ interface CitiesRepository {
     fun getMall(id: String): Flow<Mall>
     fun getServices(): Flow<List<Service>>
     fun getShops(): Flow<List<Shop>>
+    fun getCategories(): Flow<List<Category>>
 }

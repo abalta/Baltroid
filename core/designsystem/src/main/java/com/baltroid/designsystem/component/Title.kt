@@ -1,9 +1,11 @@
 package com.baltroid.designsystem.component
 
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import com.baltroid.designsystem.theme.bodyStyle
 import com.baltroid.designsystem.theme.captionStyle
@@ -16,10 +18,10 @@ import com.baltroid.designsystem.theme.headlineStyle
 import com.baltroid.designsystem.theme.subheadStyle
 
 @Composable
-fun H3Title(text: String, modifier: Modifier = Modifier) {
+fun H3Title(text: String, color: Color = MaterialTheme.colorScheme.hollyColor, modifier: Modifier = Modifier) {
     Text(
         text = text,
-        color = MaterialTheme.colorScheme.hollyColor,
+        color = color,
         modifier = modifier,
         style = MaterialTheme.typography.h3TitleStyle
     )

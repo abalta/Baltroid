@@ -2,11 +2,13 @@ package com.baltroid.core.data.repository
 
 import com.baltroid.core.common.dispatcher.BaltroidDispatchers
 import com.baltroid.core.common.dispatcher.Dispatcher
+import com.baltroid.core.data.model.asCategory
 import com.baltroid.core.data.model.asCity
 import com.baltroid.core.data.model.asMall
 import com.baltroid.core.data.model.asService
 import com.baltroid.core.data.model.asShop
 import com.baltroid.core.firestore.MallQuestFirestore
+import com.baltroid.model.Category
 import com.baltroid.model.City
 import com.baltroid.model.Mall
 import com.baltroid.model.Service
@@ -28,6 +30,7 @@ class CitiesRepositoryImpl @Inject constructor(
     private val mallList = mutableListOf<Mall>()
     private val serviceList = mutableListOf<Service>()
     private val shopList = mutableListOf<Shop>()
+    private val categoryList = mutableListOf<Category>()
 
     override fun getCities(): Flow<List<City>> = flow {
         if (cityList.isEmpty()) {
@@ -67,5 +70,14 @@ class CitiesRepositoryImpl @Inject constructor(
             })
         }
         emit(shopList)
+    }.flowOn(ioDispatcher)
+
+    override fun getCategories(): Flow<List<Category>> = flow {
+        if (categoryList.isEmpty()) {
+            categoryList.addAll(firestore.getCategories().map {
+                it.asCategory()
+            })
+        }
+        emit(categoryList)
     }.flowOn(ioDispatcher)
 }

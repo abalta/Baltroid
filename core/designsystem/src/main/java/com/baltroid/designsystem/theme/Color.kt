@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.Color
 
 internal val Eucalyptus = Color(0xFF22A45D)
 internal val Holly = Color(0xFF010F07)
+internal val Holly54 = Color(0x8A010F07)
 internal val Gray = Color(0xFF868686)
 internal val Alabaster = Color(0xFFFBFBFB)
 internal val White = Color(0xFFFFFFFF)
@@ -15,8 +16,11 @@ internal val Chambray = Color(0xFF395998)
 internal val ColorScheme.eucalyptusColor: Color
     get() = Eucalyptus
 
-internal val ColorScheme.hollyColor: Color
+val ColorScheme.hollyColor: Color
     get() = Holly
+
+val ColorScheme.hollyColor54: Color
+    get() = Holly54
 
 internal val ColorScheme.grayColor: Color
     get() = Gray

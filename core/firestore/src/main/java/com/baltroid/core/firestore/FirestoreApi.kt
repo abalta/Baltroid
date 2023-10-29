@@ -1,5 +1,6 @@
 package com.baltroid.core.firestore
 
+ import com.baltroid.core.firestore.model.NetworkCategory
  import com.baltroid.core.firestore.model.NetworkCity
 import com.baltroid.core.firestore.model.NetworkMall
  import com.baltroid.core.firestore.model.NetworkService
@@ -15,6 +16,7 @@ private interface FirestoreApi {
     suspend fun getMall(id: String): NetworkMall?
     suspend fun getServices(): List<NetworkService>
     suspend fun getShops(): List<NetworkShop>
+    suspend fun getCategories(): List<NetworkCategory>
 }
 
 @Singleton
@@ -45,6 +47,11 @@ class MallQuestFirestore @Inject constructor(
     override suspend fun getShops(): List<NetworkShop> {
         val shopsRef = firestore.collection("shops").get().await()
         return shopsRef.toObjects(NetworkShop::class.java)
+    }
+
+    override suspend fun getCategories(): List<NetworkCategory> {
+        val categoryRef = firestore.collection("categories").get().await()
+        return categoryRef.toObjects(NetworkCategory::class.java)
     }
 
 }

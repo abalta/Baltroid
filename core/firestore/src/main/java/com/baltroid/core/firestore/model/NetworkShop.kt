@@ -8,6 +8,7 @@ data class NetworkShop(
     val id: String? = null,
     val code: Int? = null,
     val name: String? = null,
-    @PropertyName("category_code")
-    val categoryCode: Int? = null
+    @get:PropertyName("category_code")
+    @set:PropertyName("category_code")
+    var categoryCode: Int? = null
 )

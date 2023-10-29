@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import coil.ImageLoader
 import com.baltroid.domain.GetMallUseCase
+import com.baltroid.model.Category
 import com.baltroid.model.Mall
 import com.google.firebase.storage.FirebaseStorage
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -39,5 +40,5 @@ class MallDetailViewModel @Inject constructor(
 
 sealed interface MallDetailUiState {
     object Loading : MallDetailUiState
-    data class Success(val mall: Mall) : MallDetailUiState
+    data class Success(val pairMallAndCategory: Pair<Mall, List<Category>>) : MallDetailUiState
 }
