@@ -12,11 +12,15 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -62,7 +66,11 @@ internal fun MallDetailScreen(
             val pagerState = rememberPagerState(pageCount = {
                 pageCount
             })
-            Column {
+            Column(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .verticalScroll(rememberScrollState())
+            ) {
                 Box {
                     HorizontalPager(state = pagerState) {page ->
                         MallPhoto(painter = rememberAsyncImagePainter(
@@ -123,6 +131,16 @@ internal fun MallDetailScreen(
                     } , itemContent = { service ->
                         ServiceCard(serviceName = service.name, serviceIcon = service.icon)
                     })
+                }
+                Subhead(text = stringResource(id = R.string.shops), Modifier.padding(top = 34.dp, start = 20.dp, end = 20.dp))
+                Spacer(modifier = Modifier.height(18.dp))
+                Column(
+                    modifier = Modifier.padding(horizontal = 20.dp),
+                    verticalArrangement = Arrangement.spacedBy(14.dp)
+                ) {
+                    mall.shops.forEach {
+                        Subhead(text = it.value.name)
+                    }
                 }
             }
         }

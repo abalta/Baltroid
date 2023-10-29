@@ -3,6 +3,7 @@ package com.baltroid.core.data.model
 import com.baltroid.core.firestore.model.NetworkMall
 import com.baltroid.model.Mall
 import com.baltroid.model.Service
+import com.baltroid.model.Shop
 
 fun NetworkMall.asMall() = Mall(
     id = id.orEmpty(),
@@ -21,5 +22,8 @@ fun NetworkMall.asMall() = Mall(
     photos = photos.orEmpty(),
     rating = rating.orEmpty(),
     reviews = reviews.orEmpty(),
-    district = district.orEmpty()
+    district = district.orEmpty(),
+    shops = shops?.associate {
+        it to Shop(code = 0, name = "", categoryCode = 0)
+    }?.toMutableMap() ?: mutableMapOf(),
 )

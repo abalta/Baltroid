@@ -19,5 +19,6 @@ data class NetworkMall(
     val photos: List<String>? = null,
     val rating: String? = null,
     val reviews: String? = null,
-    val district: String? = null
+    val district: String? = null,
+    val shops: List<Int>? = null
 )

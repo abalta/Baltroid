@@ -109,7 +109,9 @@ fun previewCardMedium() = CardMedium(
         photos = listOf(),
         rating = "4.3",
         reviews = "6.3k",
-        district = "Colarodo, San Francisco"),
+        district = "Colarodo, San Francisco",
+        shops = mutableMapOf()
+    ),
     painter = painterResource(id = R.drawable.bg_banner),
     onMallClick = { _ ->
 

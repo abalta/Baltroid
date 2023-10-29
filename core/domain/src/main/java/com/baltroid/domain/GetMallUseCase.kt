@@ -12,12 +12,20 @@ class GetMallUseCase @Inject constructor(
     operator fun invoke(param: String): Flow<Mall> {
         return combine(
             citiesRepository.getServices(),
+            citiesRepository.getShops(),
             citiesRepository.getMall(param)
-        ) { services, mall ->
+        ) { services, shops, mall ->
             mall.services.keys.forEach { key ->
                 services.forEach { service ->
                     if (key == service.code) {
                         mall.services[key] = service
+                    }
+                }
+            }
+            mall.shops.keys.forEach { key ->
+                shops.forEach { shop ->
+                    if (key == shop.code) {
+                        mall.shops[key] = shop
                     }
                 }
             }

@@ -15,5 +15,6 @@ data class Mall(
     val photos: List<String>,
     val rating: String,
     val reviews: String,
-    val district: String
+    val district: String,
+    val shops: MutableMap<Int, Shop>
 )
