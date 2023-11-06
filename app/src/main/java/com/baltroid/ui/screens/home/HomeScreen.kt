@@ -150,9 +150,7 @@ fun HomeScreenContent(
             },
             selectedTab = tabState, modifier = Modifier
                 .fillMaxWidth()
-                .padding(
-                    horizontal = dimensionResource(id = R.dimen.dp32)
-                )
+
         ) { tabState = it }
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp31))
         when (tabState) {
@@ -375,7 +373,7 @@ private fun IndexOriginalItem(
         )
         Text(
             text = indexOriginal.indexAuthor.name.uppercase(Locale.getDefault()),
-            style = MaterialTheme.localTextStyles.poppins10SemiBold,
+            style = MaterialTheme.localTextStyles.poppins10Regular,
             color = MaterialTheme.localColors.white
         )
     }
@@ -426,7 +424,10 @@ private fun HomeScreenTabs(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dp34)),
+        horizontalArrangement = Arrangement.spacedBy(
+            dimensionResource(id = R.dimen.dp18),
+            alignment = Alignment.CenterHorizontally
+        ),
         modifier = modifier.horizontalScroll(rememberScrollState())
     ) {
         HomeScreenTabItem(
@@ -478,7 +479,7 @@ private fun HomeScreenTabItem(
     ) {
         Text(
             text = stringResource(id = title),
-            style = MaterialTheme.localTextStyles.spaceGrotesk13Medium,
+            style = MaterialTheme.localTextStyles.spaceGrotesk11Medium,
             color = MaterialTheme.localColors.white_alpha07,
             modifier = Modifier
                 .width(IntrinsicSize.Max)
@@ -577,7 +578,7 @@ fun GenreItem(
     modifier: Modifier = Modifier
 ) {
     Text(
-        text = text,
+        text = text.uppercase(Locale("tr", "TR")),
         textAlign = TextAlign.Center,
         style = MaterialTheme.localTextStyles.spaceGrotesk11Medium,
         color = MaterialTheme.localColors.black,

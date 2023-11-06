@@ -984,7 +984,7 @@ private fun TabItem(
         modifier = Modifier.width(IntrinsicSize.Max),
     ) {
         Text(text = title,
-            style = MaterialTheme.localTextStyles.poppins13Medium,
+            style = MaterialTheme.localTextStyles.poppins11Medium,
             color = if (isSelected) MaterialTheme.localColors.white else MaterialTheme.localColors.white_alpha07,
             modifier = Modifier.clickable { onTabSelect.invoke(CommentsTabState.AllComments) })
         if (isSelected) {

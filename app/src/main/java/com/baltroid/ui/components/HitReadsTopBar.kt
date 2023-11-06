@@ -118,20 +118,13 @@ fun MenuAndNotification(
                         else gemClick.invoke()
                     }
             ) {
-                if (!isUserLoggedIn) {
-                    Text(
-                        text = stringResource(id = R.string.member_login),
-                        style = MaterialTheme.localTextStyles.poppins12Regular,
-                        color = MaterialTheme.localColors.white
-                    )
-                } else {
-                    Text(
-                        text = gemCount.toString(),
-                        style = MaterialTheme.localTextStyles.poppins12Regular,
-                        color = MaterialTheme.localColors.white
-                    )
-                    SimpleIcon(iconResId = R.drawable.ic_diamond)
-                }
+
+                Text(
+                    text = if (isUserLoggedIn) gemCount.toString() else "0",
+                    style = MaterialTheme.localTextStyles.poppins12Regular,
+                    color = MaterialTheme.localColors.white
+                )
+                SimpleIcon(iconResId = R.drawable.ic_diamond)
             }
             HorizontalSpacer(width = dimensionResource(id = R.dimen.dp26))
         }
@@ -200,7 +193,7 @@ fun IconWithBadge(
                     .size(dimensionResource(id = R.dimen.dp22))
                     .clip(CircleShape)
                     .background(Color.Black)
-                    .padding(dimensionResource(id = R.dimen.dp2))
+                    .padding(dimensionResource(id = R.dimen.dp1))
                     .clip(CircleShape)
                     .background(Color.White)
             ) {

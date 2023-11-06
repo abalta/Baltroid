@@ -247,6 +247,29 @@ private fun HomeDetailScreenContent(
                             )
                             .scale(0.9f)
                             .clip(MaterialTheme.localShapes.roundedDp9)
+                            .clickable {
+                                val episode = state.original.episodes.firstOrNull()
+                                if (episode?.isReadable == true) {
+                                    if (!episode.isPurchase) {
+                                        isEpisodePurchaseDialogVisible = true
+                                        setSelectedEpisodeToPurchase.invoke(episode)
+                                    } else {
+                                        navigate.invoke(
+                                            if (state.original.type == OriginalType.INTERACTIVE) HitReadsScreens.InteractiveScreen.route
+                                            else HitReadsScreens.ReadingScreen.route,
+                                            state.original.episodes.firstOrNull()?.id
+                                        )
+                                    }
+                                } else {
+                                    Toast
+                                        .makeText(
+                                            context,
+                                            context.getString(R.string.isnot_readable),
+                                            Toast.LENGTH_LONG
+                                        )
+                                        .show()
+                                }
+                            }
                     )
                     VerticalSpacer(height = dimensionResource(id = R.dimen.dp16))
                     Column(
@@ -270,7 +293,6 @@ private fun HomeDetailScreenContent(
                         Column(
                             Modifier
                                 .padding(start = dimensionResource(id = R.dimen.dp24))
-                                .width(IntrinsicSize.Min)
                         ) {
                             GenreAndInteractions(
                                 episodeSize = state.original.episodes.size,
@@ -281,12 +303,49 @@ private fun HomeDetailScreenContent(
                                 modifier = Modifier.width(IntrinsicSize.Max)
                             )
                             VerticalSpacer(height = dimensionResource(id = R.dimen.dp21))
-                            Text(
-                                text = state.original.description.orEmpty(),
-                                style = MaterialTheme.localTextStyles.spaceGrotesk14Regular,
-                                color = MaterialTheme.localColors.white,
-                                modifier = Modifier.fillMaxWidth(),
-                            )
+                            Row(
+                                Modifier.padding(end = dimensionResource(id = R.dimen.dp24))
+                            ) {
+                                Text(
+                                    text = state.original.description.orEmpty(),
+                                    style = MaterialTheme.localTextStyles.spaceGrotesk14Regular,
+                                    color = MaterialTheme.localColors.white,
+                                    modifier = Modifier.weight(1f),
+                                )
+                                SimpleImage(
+                                    imgResId = R.drawable.ic_read,
+                                    modifier = Modifier
+                                        .padding(
+                                            top = dimensionResource(id = R.dimen.dp24),
+                                            start = dimensionResource(
+                                                id = R.dimen.dp11
+                                            )
+                                        )
+                                        .wrapContentWidth(Alignment.End)
+                                        .clickable {
+                                            val episode = state.original.episodes.firstOrNull()
+                                            if (episode?.isReadable == true) {
+                                                if (!episode.isPurchase) {
+                                                    isEpisodePurchaseDialogVisible = true
+                                                    setSelectedEpisodeToPurchase.invoke(episode)
+                                                } else {
+                                                    navigate.invoke(
+                                                        if (state.original.type == OriginalType.INTERACTIVE) HitReadsScreens.InteractiveScreen.route
+                                                        else HitReadsScreens.ReadingScreen.route,
+                                                        state.original.episodes.firstOrNull()?.id
+                                                    )
+                                                }
+                                            } else {
+                                                Toast
+                                                    .makeText(
+                                                        context,
+                                                        context.getString(R.string.isnot_readable),
+                                                        Toast.LENGTH_LONG
+                                                    )
+                                                    .show()
+                                            }
+                                        })
+                            }
                             VerticalSpacer(height = dimensionResource(id = R.dimen.dp8))
                             Text(
                                 text = state.original.hashtag.orEmpty(),
@@ -323,34 +382,6 @@ private fun HomeDetailScreenContent(
                                     )
                                 }
                             }
-                            SimpleImage(
-                                imgResId = R.drawable.ic_read,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .wrapContentWidth(Alignment.End)
-                                    .clickable {
-                                        val episode = state.original.episodes.firstOrNull()
-                                        if (episode?.isReadable == true) {
-                                            if (!episode.isPurchase) {
-                                                isEpisodePurchaseDialogVisible = true
-                                                setSelectedEpisodeToPurchase.invoke(episode)
-                                            } else {
-                                                navigate.invoke(
-                                                    if (state.original.type == OriginalType.INTERACTIVE) HitReadsScreens.InteractiveScreen.route
-                                                    else HitReadsScreens.ReadingScreen.route,
-                                                    state.original.episodes.firstOrNull()?.id
-                                                )
-                                            }
-                                        } else {
-                                            Toast
-                                                .makeText(
-                                                    context,
-                                                    context.getString(R.string.isnot_readable),
-                                                    Toast.LENGTH_LONG
-                                                )
-                                                .show()
-                                        }
-                                    })
                         }
                         VerticalSpacer(height = dimensionResource(id = R.dimen.dp30))
                     }
@@ -521,7 +552,7 @@ fun EpisodeSheet(
                     onEpisodeClick.invoke(it)
                 }
                 Divider(
-                    color = MaterialTheme.localColors.white,
+                    color = MaterialTheme.localColors.white_alpha03,
                     thickness = dimensionResource(id = R.dimen.dp1)
                 )
             }
@@ -540,7 +571,7 @@ fun DetailEpisodes(
     ) {
         Divider(
             thickness = dimensionResource(id = R.dimen.dp1),
-            color = MaterialTheme.localColors.white
+            color = MaterialTheme.localColors.white_alpha03
         )
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp14))
         Text(

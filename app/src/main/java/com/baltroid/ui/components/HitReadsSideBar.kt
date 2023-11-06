@@ -18,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.dimensionResource
@@ -65,7 +66,7 @@ fun HitReadsSideBar(
                         height(screenHeight)
                     }
                     .width(dimensionResource(id = R.dimen.dp0_5)),
-                color = MaterialTheme.localColors.white
+                color = MaterialTheme.localColors.white_alpha05
             )
             Column(
                 verticalArrangement = Arrangement.Center
@@ -84,7 +85,7 @@ fun HitReadsSideBar(
                 )
                 Divider(
                     thickness = dimensionResource(id = R.dimen.dp0_5),
-                    color = MaterialTheme.localColors.white
+                    color = MaterialTheme.localColors.white_alpha05
                 )
                 IconWithTextBelow(
                     iconResId = R.drawable.ic_comment,
@@ -98,7 +99,7 @@ fun HitReadsSideBar(
                                     size = Size(
                                         width = 3.dp.toPx(),
                                         height = size.height
-                                    )
+                                    ), topLeft = Offset(x = -1.7f, 0f)
                                 )
                             }
                         }
@@ -113,7 +114,7 @@ fun HitReadsSideBar(
                 )
                 Divider(
                     thickness = dimensionResource(id = R.dimen.dp0_5),
-                    color = MaterialTheme.localColors.white
+                    color = MaterialTheme.localColors.white_alpha05
                 )
                 SimpleIcon(
                     iconResId = R.drawable.ic_add_comment,
@@ -129,7 +130,7 @@ fun HitReadsSideBar(
                 )
                 Divider(
                     thickness = dimensionResource(id = R.dimen.dp0_5),
-                    color = MaterialTheme.localColors.white
+                    color = MaterialTheme.localColors.white_alpha05
                 )
                 SimpleIcon(
                     iconResId = R.drawable.ic_filter,
@@ -145,7 +146,7 @@ fun HitReadsSideBar(
                 )
                 Divider(
                     thickness = dimensionResource(id = R.dimen.dp0_5),
-                    color = MaterialTheme.localColors.white
+                    color = MaterialTheme.localColors.white_alpha05
                 )
             }
         }
