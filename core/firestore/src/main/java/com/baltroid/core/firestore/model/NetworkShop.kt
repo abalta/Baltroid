@@ -10,5 +10,7 @@ data class NetworkShop(
     val name: String? = null,
     @get:PropertyName("category_code")
     @set:PropertyName("category_code")
-    var categoryCode: Int? = null
+    var categoryCode: Int? = null,
+    val logo: String? = null,
+    val networkShopDetail: NetworkShopDetail? = null
 )

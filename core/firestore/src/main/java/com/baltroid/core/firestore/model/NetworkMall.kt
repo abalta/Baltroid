@@ -20,5 +20,5 @@ data class NetworkMall(
     val rating: String? = null,
     val reviews: String? = null,
     val district: String? = null,
-    val shops: List<Int>? = null
+    val shops: List<NetworkShopDetail>? = null
 )

@@ -3,6 +3,7 @@ package com.baltroid.domain
 import com.baltroid.core.data.repository.CitiesRepository
 import com.baltroid.model.Category
 import com.baltroid.model.Mall
+import com.baltroid.model.ShopDetail
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import javax.inject.Inject
@@ -27,7 +28,10 @@ class GetMallUseCase @Inject constructor(
             mall.shops.keys.forEach { key ->
                 shops.forEach { shop ->
                     if (key == shop.code) {
-                        mall.shops[key] = shop
+                        val shopInfo = mall.shops[key]?.shopDetail
+                        mall.shops[key] = shop.apply {
+                            shopDetail = shopInfo!!
+                        }
                     }
                 }
             }

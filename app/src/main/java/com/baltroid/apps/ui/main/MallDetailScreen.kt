@@ -24,6 +24,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -48,6 +49,7 @@ import com.baltroid.designsystem.component.H3Title
 import com.baltroid.designsystem.component.MallFeature
 import com.baltroid.designsystem.component.MallPhoto
 import com.baltroid.designsystem.component.ServiceCard
+import com.baltroid.designsystem.component.ShopCard
 import com.baltroid.designsystem.component.Subhead
 import com.baltroid.designsystem.theme.hollyColor
 import com.baltroid.designsystem.theme.hollyColor54
@@ -181,7 +183,7 @@ internal fun MallDetailScreen(
                 Spacer(modifier = Modifier.height(18.dp))
                 LazyRow(
                     contentPadding = PaddingValues(horizontal = 20.dp),
-                    horizontalArrangement = Arrangement.spacedBy(14.dp)
+                    horizontalArrangement = Arrangement.spacedBy(24.dp)
                 ) {
                     items(items = categoryList, itemContent = { category ->
                         H3Title(
@@ -197,14 +199,29 @@ internal fun MallDetailScreen(
                 }
                 Spacer(modifier = Modifier.height(18.dp))
                 Column(
-                    modifier = Modifier.padding(horizontal = 20.dp),
-                    verticalArrangement = Arrangement.spacedBy(14.dp)
+                    modifier = Modifier
+                        .padding(horizontal = 20.dp)
+                        .height(400.dp)
+                        .verticalScroll(
+                            rememberScrollState()
+                        ),
+                    verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
                     shopMap.forEach {
                         if (categorySelection.intValue == 0) {
-                            Subhead(text = it.value.name)
+                            ShopCard(painter = rememberAsyncImagePainter(
+                                model = fireStorage.getReferenceFromUrl(it.value.logo),
+                                imageLoader = imageLoader,
+                                placeholder = painterResource(id = R.drawable.bg_banner)
+                            ), shopName = it.value.name, floor = it.value.shopDetail.floor.toString(), phoneNumber = it.value.shopDetail.phone)
+                            Divider(thickness = 1.dp, color = Color(0xFFF3F2F2))
                         } else if (categorySelection.intValue == it.value.categoryCode) {
-                            Subhead(text = it.value.name)
+                            ShopCard(painter = rememberAsyncImagePainter(
+                                model = fireStorage.getReferenceFromUrl(it.value.logo),
+                                imageLoader = imageLoader,
+                                placeholder = painterResource(id = R.drawable.bg_banner)
+                            ), shopName = it.value.name, floor = it.value.shopDetail.floor.toString(), phoneNumber = it.value.shopDetail.phone)
+                            Divider(thickness = 1.dp, color = Color(0xFFF3F2F2))
                         }
                     }
                 }

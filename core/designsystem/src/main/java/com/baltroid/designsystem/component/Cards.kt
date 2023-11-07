@@ -7,17 +7,17 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -34,10 +34,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImagePainter.State.Empty.painter
 import com.baltroid.core.designsystem.R
 import com.baltroid.designsystem.theme.Eucalyptus
 import com.baltroid.designsystem.theme.Holly
+import com.baltroid.designsystem.theme.Holly64
+import com.baltroid.designsystem.theme.Holly74
 import com.baltroid.model.Mall
 
 @Composable
@@ -147,4 +148,70 @@ fun ServiceCard(serviceName: String, serviceIcon: Int) {
 @Preview
 fun previewServiceCard() {
     ServiceCard(serviceName = "ATM", serviceIcon = R.drawable.icon_atm)
+}
+
+@Composable
+fun ShopCard(painter: Painter, shopName: String, floor: String, phoneNumber: String) {
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .height(IntrinsicSize.Min)) {
+        ShopLogo(painter = painter)
+        Column(modifier = Modifier
+            .padding(start = 18.dp)
+            .fillMaxSize(),
+            verticalArrangement = Arrangement.SpaceBetween) {
+
+            Column {
+                Text(
+                    shopName,
+                    style = TextStyle(
+                        color = Holly,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight(500),
+                        fontFamily = FontFamily(
+                            Font(R.font.sf_pro_regular)
+                        )
+                    )
+                )
+
+                Row(modifier = Modifier.padding(top = 6.dp),
+                    verticalAlignment = Alignment.CenterVertically) {
+                    MQIcon(resourceId = R.drawable.phone, modifier = Modifier.size(16.dp), tint = Holly64)
+
+                    Text(
+                        phoneNumber,
+                        modifier = Modifier.padding(start = 8.dp),
+                        style = TextStyle(
+                            color = Holly64,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight(400),
+                            fontFamily = FontFamily(
+                                Font(R.font.sf_pro_regular)
+                            )
+                        )
+                    )
+                }
+            }
+
+
+            Text(
+                floor,
+                style = TextStyle(
+                    color = Holly74,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight(400),
+                    fontFamily = FontFamily(
+                        Font(R.font.sf_pro_regular)
+                    )
+                )
+            )
+        }
+        
+    }
+}
+
+@Composable
+@Preview
+fun previewShopCard() {
+    ShopCard(painterResource(id = R.drawable.bg_banner), "Adidas", "1. Kat", "03225038573")
 }

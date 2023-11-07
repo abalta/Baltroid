@@ -6,6 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -22,6 +23,16 @@ fun MallLogo(painter: Painter) {
             .height(160.dp)
             .border(BorderStroke(1.dp, Color(0xFFF3F2F2)), RoundedCornerShape(10.dp))
             .padding(10.dp), painter = painter, contentDescription = "AVM Logo", contentScale = ContentScale.FillWidth
+    )
+}
+
+@Composable
+fun ShopLogo(painter: Painter) {
+    Image(
+        modifier = Modifier
+            .size(110.dp)
+            .border(BorderStroke(1.dp, Color(0xFFF3F2F2)), RoundedCornerShape(10.dp))
+            .padding(10.dp), painter = painter, contentDescription = "Shop Logo", contentScale = ContentScale.FillWidth
     )
 }
 
