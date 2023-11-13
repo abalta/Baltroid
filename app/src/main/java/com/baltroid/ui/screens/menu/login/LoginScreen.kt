@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
@@ -114,7 +114,7 @@ fun LoginScreenContent(
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.localColors.black)
-                .systemBarsPadding()
+                .safeDrawingPadding()
         ) {
             VerticalSpacer(height = dimensionResource(id = R.dimen.dp36))
             IconlessMenuBar(title = stringResource(id = R.string.member_login)) {

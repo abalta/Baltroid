@@ -251,11 +251,17 @@ fun InteractiveScreenContent(
         }
         clearOptionPurchased()
     }
+    val interactionSource = remember {
+        MutableInteractionSource()
+    }
 
     ConstraintLayout(
         modifier = Modifier
             .navigationBarsPadding()
             .fillMaxSize()
+            .clickable(interactionSource, indication = null) {
+                isEpisodesEnabled = false
+            }
     ) {
         val (toolbar, bottombar, focusCharacter,
             textBox, options, comments,
@@ -506,6 +512,7 @@ fun InteractiveScreenContent(
                         selectedEpisode = it
                     } else {
                         onEpisodeChange.invoke(it.id)
+                        isEpisodesEnabled = false
                     }
                 } else {
                     Toast.makeText(
@@ -1316,7 +1323,7 @@ fun InteractiveText(
             style = MaterialTheme.localTextStyles.poppins14Regular,
             color = MaterialTheme.localColors.white_alpha08,
             modifier = Modifier
-                .heightIn(max = dimensionResource(id = R.dimen.dp180))
+                .heightIn(max = dimensionResource(id = R.dimen.dp150))
                 .verticalScroll(rememberScrollState())
                 .constrainAs(content) {
                     start.linkTo(title.start)
