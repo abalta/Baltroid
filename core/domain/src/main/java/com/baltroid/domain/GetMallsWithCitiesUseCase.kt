@@ -4,6 +4,7 @@ import com.baltroid.core.data.repository.CitiesRepository
 import com.baltroid.model.City
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import javax.inject.Inject
 
 class GetMallsWithCitiesUseCase @Inject constructor(
@@ -15,7 +16,9 @@ class GetMallsWithCitiesUseCase @Inject constructor(
             citiesRepository.getMalls()
         ) { cities, malls ->
             malls.forEach { mall ->
-                cities.firstOrNull { it.code == mall.cityCode }?.malls?.add(mall)
+                if(cities.firstOrNull { it.code == mall.cityCode }?.malls?.contains(mall) == false) {
+                    cities.firstOrNull { it.code == mall.cityCode }?.malls?.add(mall)
+                }
             }
             cities.sortedByDescending {
                 it.malls.size

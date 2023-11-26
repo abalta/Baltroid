@@ -153,6 +153,7 @@ fun previewServiceCard() {
 @Composable
 fun ShopCard(painter: Painter, shopName: String, floor: String, phoneNumber: String) {
     Row(modifier = Modifier
+        .padding(horizontal = 20.dp)
         .fillMaxWidth()
         .height(IntrinsicSize.Min)) {
         ShopLogo(painter = painter)

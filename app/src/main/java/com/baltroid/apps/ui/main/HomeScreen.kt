@@ -43,7 +43,9 @@ internal fun HomeScreen(
                 contentPadding = PaddingValues(vertical = 24.dp),
                 verticalArrangement = Arrangement.spacedBy(34.dp)
             ) {
-                items(mainState.cityList) { city ->
+                items(key = {
+                    it.code
+                }, items = mainState.cityList) { city ->
                     H3Title(city.name, modifier = Modifier.padding(horizontal = 20.dp))
                     Spacer(modifier = Modifier.height(24.dp))
                     if (city.malls.isEmpty()) {
@@ -53,7 +55,9 @@ internal fun HomeScreen(
                             contentPadding = PaddingValues(horizontal = 20.dp),
                             horizontalArrangement = Arrangement.spacedBy(14.dp)
                         ) {
-                            items(items = city.malls, itemContent = { mall ->
+                            items(key = {
+                                it.id
+                            }, items = city.malls, itemContent = { mall ->
                                 CardMedium(
                                     mall,
                                     painter = rememberAsyncImagePainter(
@@ -69,6 +73,7 @@ internal fun HomeScreen(
                 }
             }
         }
+
         MainUiState.Loading -> {
             Log.i("MQ", "Home Loading")
         }

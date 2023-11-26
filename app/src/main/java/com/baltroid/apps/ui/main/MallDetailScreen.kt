@@ -28,6 +28,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -43,6 +44,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
 import coil.compose.rememberAsyncImagePainter
+import com.baltroid.apps.ext.floor
 import com.baltroid.core.designsystem.R
 import com.baltroid.designsystem.component.CardMedium
 import com.baltroid.designsystem.component.H3Title
@@ -82,148 +84,157 @@ internal fun MallDetailScreen(
             val categorySelection = remember {
                 mutableIntStateOf(0)
             }
-            Column(
-                modifier = Modifier
-                    .wrapContentSize()
-                    .verticalScroll(rememberScrollState())
-            ) {
-                Box {
-                    HorizontalPager(state = pagerState) { page ->
-                        MallPhoto(
-                            painter = rememberAsyncImagePainter(
-                                model = fireStorage.getReferenceFromUrl(mall.photos[page]),
-                                imageLoader = imageLoader,
-                                placeholder = painterResource(id = R.drawable.bg_banner)
-                            )
-                        )
-                    }
-                    Row(
-                        Modifier
-                            .padding(20.dp)
-                            .height(5.dp)
-                            .align(Alignment.BottomEnd),
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        repeat(pageCount) { iteration ->
-                            val color =
-                                if (pagerState.currentPage == iteration) Color.White else Color(
-                                    0x4DFFFFFF
+            val filteredShop = remember {
+                derivedStateOf {
+                    shopMap.filter { categorySelection.intValue == 0 || categorySelection.intValue == it.value.categoryCode }
+                        .toList()
+                }
+            }
+            LazyColumn {
+                item {
+                    Box {
+                        HorizontalPager(state = pagerState) { page ->
+                            MallPhoto(
+                                painter = rememberAsyncImagePainter(
+                                    model = fireStorage.getReferenceFromUrl(mall.photos[page]),
+                                    imageLoader = imageLoader,
+                                    placeholder = painterResource(id = R.drawable.bg_banner)
                                 )
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxHeight()
-                                    .width(8.dp)
-                                    .clip(RoundedCornerShape(4.dp))
-                                    .background(color)
-
                             )
+                        }
+                        Row(
+                            Modifier
+                                .padding(20.dp)
+                                .height(5.dp)
+                                .align(Alignment.BottomEnd),
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            repeat(pageCount) { iteration ->
+                                val color =
+                                    if (pagerState.currentPage == iteration) Color.White else Color(
+                                        0x4DFFFFFF
+                                    )
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxHeight()
+                                        .width(8.dp)
+                                        .clip(RoundedCornerShape(4.dp))
+                                        .background(color)
+
+                                )
+                            }
                         }
                     }
                 }
-                H3Title(
-                    text = mall.name,
-                    modifier = Modifier.padding(top = 24.dp, start = 20.dp, end = 20.dp)
-                )
-                Row(
-                    Modifier.padding(top = 14.dp, start = 20.dp, end = 20.dp),
-                    horizontalArrangement = Arrangement.spacedBy(24.dp)
-                ) {
-                    if (mall.floors.size == 1) {
-                        MallFeature(
-                            featureCount = stringResource(
-                                id = R.string.semi
-                            ), featureIcon = R.drawable.icon_flat, featureName = stringResource(
-                                id = R.string.open
+                item {
+                    H3Title(
+                        text = mall.name,
+                        modifier = Modifier.padding(top = 24.dp, start = 20.dp, end = 20.dp)
+                    )
+                    Row(
+                        Modifier.padding(top = 14.dp, start = 20.dp, end = 20.dp),
+                        horizontalArrangement = Arrangement.spacedBy(24.dp)
+                    ) {
+                        if (mall.floors.size == 1) {
+                            MallFeature(
+                                featureCount = stringResource(
+                                    id = R.string.semi
+                                ), featureIcon = R.drawable.icon_flat, featureName = stringResource(
+                                    id = R.string.open
+                                )
                             )
-                        )
-                    } else {
+                        } else {
+                            MallFeature(
+                                featureCount = mall.floors.size.toString(),
+                                featureIcon = R.drawable.icon_floors,
+                                featureName = stringResource(
+                                    id = R.string.floor
+                                )
+                            )
+                        }
+
                         MallFeature(
-                            featureCount = mall.floors.size.toString(),
-                            featureIcon = R.drawable.icon_floors,
+                            featureCount = mall.services.size.toString(),
+                            featureIcon = R.drawable.icon_services,
                             featureName = stringResource(
-                                id = R.string.floor
+                                id = R.string.service
+                            )
+                        )
+                        MallFeature(
+                            featureCount = shopMap.size.toString(),
+                            featureIcon = R.drawable.icon_shops,
+                            featureName = stringResource(
+                                id = R.string.shop
                             )
                         )
                     }
-
-                    MallFeature(
-                        featureCount = mall.services.size.toString(),
-                        featureIcon = R.drawable.icon_services,
-                        featureName = stringResource(
-                            id = R.string.service
-                        )
+                }
+                item {
+                    Subhead(
+                        text = stringResource(id = R.string.services),
+                        Modifier.padding(top = 34.dp, start = 20.dp, end = 20.dp)
                     )
-                    MallFeature(
-                        featureCount = mall.services.size.toString(),
-                        featureIcon = R.drawable.icon_shops,
-                        featureName = stringResource(
-                            id = R.string.shop
-                        )
-                    )
-                }
-                Subhead(
-                    text = stringResource(id = R.string.services),
-                    Modifier.padding(top = 34.dp, start = 20.dp, end = 20.dp)
-                )
-                Spacer(modifier = Modifier.height(18.dp))
-                LazyRow(
-                    contentPadding = PaddingValues(horizontal = 20.dp),
-                    horizontalArrangement = Arrangement.spacedBy(14.dp)
-                ) {
-                    items(items = mall.services.map {
-                        it.value
-                    }, itemContent = { service ->
-                        ServiceCard(serviceName = service.name, serviceIcon = service.icon)
-                    })
-                }
-                Subhead(
-                    text = stringResource(id = R.string.shops),
-                    Modifier.padding(top = 34.dp, start = 20.dp, end = 20.dp)
-                )
-                Spacer(modifier = Modifier.height(18.dp))
-                LazyRow(
-                    contentPadding = PaddingValues(horizontal = 20.dp),
-                    horizontalArrangement = Arrangement.spacedBy(24.dp)
-                ) {
-                    items(items = categoryList, itemContent = { category ->
-                        H3Title(
-                            text = category.name,
-                            color = if(categorySelection.intValue == category.code) MaterialTheme.colorScheme.hollyColor else MaterialTheme.colorScheme.hollyColor54,
-                            modifier = Modifier.selectable(
-                                selected = categorySelection.intValue == category.code,
-                                onClick = {
-                                    categorySelection.intValue = category.code
-                                }
-                            ))
-                    })
-                }
-                Spacer(modifier = Modifier.height(18.dp))
-                Column(
-                    modifier = Modifier
-                        .padding(horizontal = 20.dp)
-                        .height(400.dp)
-                        .verticalScroll(
-                            rememberScrollState()
-                        ),
-                    verticalArrangement = Arrangement.spacedBy(20.dp)
-                ) {
-                    shopMap.forEach {
-                        if (categorySelection.intValue == 0) {
-                            ShopCard(painter = rememberAsyncImagePainter(
-                                model = fireStorage.getReferenceFromUrl(it.value.logo),
-                                imageLoader = imageLoader,
-                                placeholder = painterResource(id = R.drawable.bg_banner)
-                            ), shopName = it.value.name, floor = it.value.shopDetail.floor.toString(), phoneNumber = it.value.shopDetail.phone)
-                            Divider(thickness = 1.dp, color = Color(0xFFF3F2F2))
-                        } else if (categorySelection.intValue == it.value.categoryCode) {
-                            ShopCard(painter = rememberAsyncImagePainter(
-                                model = fireStorage.getReferenceFromUrl(it.value.logo),
-                                imageLoader = imageLoader,
-                                placeholder = painterResource(id = R.drawable.bg_banner)
-                            ), shopName = it.value.name, floor = it.value.shopDetail.floor.toString(), phoneNumber = it.value.shopDetail.phone)
-                            Divider(thickness = 1.dp, color = Color(0xFFF3F2F2))
-                        }
+                    Spacer(modifier = Modifier.height(18.dp))
+                    LazyRow(
+                        contentPadding = PaddingValues(horizontal = 20.dp),
+                        horizontalArrangement = Arrangement.spacedBy(14.dp)
+                    ) {
+                        items(key = {
+                                    it.code
+                        }, items = mall.services.map {
+                            it.value
+                        }, itemContent = { service ->
+                            ServiceCard(serviceName = service.name, serviceIcon = service.icon)
+                        })
                     }
+                }
+                item {
+                    Subhead(
+                        text = stringResource(id = R.string.shops),
+                        Modifier.padding(top = 34.dp, start = 20.dp, end = 20.dp)
+                    )
+                    Spacer(modifier = Modifier.height(18.dp))
+                    LazyRow(
+                        contentPadding = PaddingValues(horizontal = 20.dp),
+                        horizontalArrangement = Arrangement.spacedBy(24.dp)
+                    ) {
+                        items(key = {
+                            it.code
+                        }, items = categoryList, itemContent = { category ->
+                            H3Title(
+                                text = category.name,
+                                color = if (categorySelection.intValue == category.code) MaterialTheme.colorScheme.hollyColor else MaterialTheme.colorScheme.hollyColor54,
+                                modifier = Modifier.selectable(
+                                    selected = categorySelection.intValue == category.code,
+                                    onClick = {
+                                        categorySelection.intValue = category.code
+                                    }
+                                ))
+                        })
+                    }
+                    Spacer(modifier = Modifier.height(18.dp))
+                }
+                items(
+                    key = {
+                        it.second.code
+                    },
+                    items = filteredShop.value
+                ) {
+                    ShopCard(
+                        painter = rememberAsyncImagePainter(
+                            model = fireStorage.getReferenceFromUrl(it.second.logo),
+                            imageLoader = imageLoader,
+                            placeholder = painterResource(id = R.drawable.bg_banner)
+                        ),
+                        shopName = it.second.name,
+                        floor = it.second.shopDetail.floor.floor(),
+                        phoneNumber = it.second.shopDetail.phone
+                    )
+                    Divider(
+                        thickness = 1.dp,
+                        color = Color(0xFFF3F2F2),
+                        modifier = Modifier.padding(all = 20.dp)
+                    )
                 }
             }
         }

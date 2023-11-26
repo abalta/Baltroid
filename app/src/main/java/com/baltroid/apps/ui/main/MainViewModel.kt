@@ -23,7 +23,7 @@ class MainViewModel @Inject constructor(
 
     val mainState: StateFlow<MainUiState> = getMallsWithCitiesUseCase.invoke().map(MainUiState::Success).stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
+        started = SharingStarted.Lazily,
         initialValue = MainUiState.Loading
     )
 }
