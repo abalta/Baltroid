@@ -21,13 +21,15 @@ object MallDetailDestination {
     }
 }
 
-fun NavGraphBuilder.mallDetailsGraph() = composable(
+fun NavGraphBuilder.mallDetailsGraph(
+    onNavigateUp: () -> Unit
+) = composable(
     route = MallDetailDestination.routeWithArguments,
     arguments = listOf(
         navArgument(MallDetailDestination.idArgument) { type = NavType.StringType }
     )
 ) {
-    MallDetailRoute()
+    MallDetailRoute(onBack = { onNavigateUp() })
 }
 
 private const val MallIdNullMessage = "Mall id is null."

@@ -29,6 +29,8 @@ fun MqNavHost(
         homeGraph {
            navController.navigate(MallDetailDestination.createNavigationRoute(it))
         }
-        mallDetailsGraph()
+        mallDetailsGraph {
+            navController.popBackStack()
+        }
     }
 }
