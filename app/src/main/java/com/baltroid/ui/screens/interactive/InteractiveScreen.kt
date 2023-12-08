@@ -121,6 +121,10 @@ fun InteractiveScreen(
         }
     }
 
+    LaunchedEffect(Unit) {
+        viewModel.isLogged()
+    }
+
     InteractiveScreenContent(
         original = original.original,
         readingUiState = readingUiState,
@@ -441,6 +445,7 @@ fun InteractiveScreenContent(
                     isCommentsEnabled = true
                 } else {
                     context.showLoginToast()
+                    navigate.invoke(HitReadsScreens.LoginScreen.route)
                 }
             },
             createFavorite = {
@@ -553,6 +558,7 @@ fun InteractiveScreenContent(
                     setReplyComment.invoke(it)
                 } else {
                     context.showLoginToast()
+                    navigate.invoke(HitReadsScreens.LoginScreen.route)
                 }
             },
             onBackClick = {
@@ -563,6 +569,7 @@ fun InteractiveScreenContent(
                     isWriteCardShown = true
                 } else {
                     context.showLoginToast()
+                    navigate.invoke(HitReadsScreens.LoginScreen.route)
                 }
             },
             setSelectedCommentTab = {
@@ -575,6 +582,7 @@ fun InteractiveScreenContent(
                     isWriteCardShown = true
                 } else {
                     context.showLoginToast()
+                    navigate.invoke(HitReadsScreens.LoginScreen.route)
                 }
             },
             hideComment = hideComment,

@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -91,9 +90,7 @@ fun NotificationsScreenContent(
             thickness = dimensionResource(id = R.dimen.dp0_5),
             color = MaterialTheme.localColors.white_alpha06
         )
-        LazyColumn(
-            contentPadding = PaddingValues(horizontal = dimensionResource(id = R.dimen.dp24))
-        ) {
+        LazyColumn {
             items(
                 notifications,
                 key = { it.id.orZero() }

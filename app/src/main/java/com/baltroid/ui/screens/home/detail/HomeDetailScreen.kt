@@ -5,6 +5,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -166,6 +168,9 @@ private fun HomeDetailScreenContent(
     var isEpisodePurchaseDialogVisible by rememberSaveable {
         mutableStateOf(false)
     }
+    val interactionSource = remember {
+        MutableInteractionSource()
+    }
     val context = LocalContext.current
 
     BackHandler(
@@ -190,6 +195,9 @@ private fun HomeDetailScreenContent(
             modifier = Modifier
                 .fillMaxSize()
                 .blur(10.dp)
+                .clickable(interactionSource = interactionSource, indication = null) {
+                    isEpisodesEnabled = false
+                }
         )
         Box(
             Modifier
@@ -533,7 +541,8 @@ fun EpisodeSheet(
         Text(
             text = stringResource(id = R.string.episodes),
             style = MaterialTheme.localTextStyles.poppins17Regular,
-            color = MaterialTheme.localColors.white_black
+            color = MaterialTheme.localColors.white_black,
+            modifier = Modifier.clickable { closeSheet.invoke() }
         )
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp6))
         SimpleIcon(

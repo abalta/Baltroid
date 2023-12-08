@@ -128,6 +128,10 @@ fun ReadingScreen(
         viewModel.showEpisode(OriginalType.TEXT)
     }
 
+    LaunchedEffect(Unit) {
+        viewModel.isLogged()
+    }
+
     ReadingScreenContent(
         uiState = uiState,
         navigate = navigate,
@@ -312,6 +316,7 @@ fun ReadingScreenContent(
                                         isWriteCardShown = true
                                     } else {
                                         context.showLoginToast()
+                                        navigate.invoke(HitReadsScreens.LoginScreen.route)
                                     }
                                 },
                                 onExpanseClicked = {
@@ -343,6 +348,7 @@ fun ReadingScreenContent(
                                 isWriteCardShown = true
                             } else {
                                 context.showLoginToast()
+                                navigate.invoke(HitReadsScreens.LoginScreen.route)
                             }
                         },
                         onShowEpisodes = { isSideEpisodesSheetVisible = true },

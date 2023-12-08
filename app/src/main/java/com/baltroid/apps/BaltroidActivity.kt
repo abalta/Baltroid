@@ -3,7 +3,6 @@ package com.baltroid.apps
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.view.WindowManager.LayoutParams
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -28,11 +27,11 @@ class BaltroidActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        window.setFlags(LayoutParams.FLAG_SECURE, LayoutParams.FLAG_SECURE)
+        //window.setFlags(LayoutParams.FLAG_SECURE, LayoutParams.FLAG_SECURE)
         setContent {
             val viewmodel: LoginViewModel = hiltViewModel()
             LaunchedEffect(Unit) {
-                //viewmodel.loginTest("demo@kitapkulubu.test", "password")
+                //  viewmodel.loginTest("demo@kitapkulubu.test", "password")
             }
             HitReadsTheme {
                 HitReadsNavHost(
