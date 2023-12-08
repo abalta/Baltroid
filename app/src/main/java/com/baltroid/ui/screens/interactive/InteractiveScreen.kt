@@ -239,6 +239,9 @@ fun InteractiveScreenContent(
     var selectedOption by remember {
         mutableStateOf<InteractiveOptions?>(null)
     }
+    var isExpanded by remember {
+        mutableStateOf(false)
+    }
 
     BackHandler(isEpisodesEnabled) {
         isEpisodesEnabled = false
@@ -436,35 +439,63 @@ fun InteractiveScreenContent(
 
         }
 
-        InteractiveScreenBottomSection(
-            indexOriginal = original,
-            episode = readingUiState.episode,
-            createComment = {
-                if (isLoggedIn) {
-                    loadComments.invoke(CommentsTabState.AllComments)
-                    isCommentsEnabled = true
-                } else {
-                    context.showLoginToast()
-                    navigate.invoke(HitReadsScreens.LoginScreen.route)
-                }
-            },
-            createFavorite = {
-                if (isLoggedIn) {
-                    action.invoke(InteractiveScreenAction.CREATE_FAVORITE)
-                } else {
-                    context.showLoginToast()
-                }
-            },
-            onEpisodesClicked = { isEpisodesEnabled = true },
-            modifier = Modifier
-                .fillMaxWidth()
-                .constrainAs(bottombar) {
-                    bottom.linkTo(parent.bottom)
-                    visibility =
-                        if ((currentDialogue?.lineType == "SMS") || isEndOfEpisode) Gone else Visible
-                }
-        )
-
+        if (isExpanded) {
+            InteractiveScreenBottomSection(
+                indexOriginal = original,
+                episode = readingUiState.episode,
+                createComment = {
+                    if (isLoggedIn) {
+                        loadComments.invoke(CommentsTabState.AllComments)
+                        isCommentsEnabled = true
+                    } else {
+                        context.showLoginToast()
+                        navigate.invoke(HitReadsScreens.LoginScreen.route)
+                    }
+                },
+                createFavorite = {
+                    if (isLoggedIn) {
+                        action.invoke(InteractiveScreenAction.CREATE_FAVORITE)
+                    } else {
+                        context.showLoginToast()
+                    }
+                },
+                onEpisodesClicked = { isEpisodesEnabled = true },
+                onExpandClick = {
+                    isExpanded = false
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .constrainAs(bottombar) {
+                        bottom.linkTo(parent.bottom)
+                        visibility =
+                            if ((currentDialogue?.lineType == "SMS") || isEndOfEpisode) Gone else Visible
+                    }
+            )
+        } else {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .constrainAs(bottombar) {
+                        bottom.linkTo(parent.bottom)
+                        visibility =
+                            if ((currentDialogue?.lineType == "SMS") || isEndOfEpisode) Gone else Visible
+                    }
+            ) {
+                Divider(
+                    thickness = 0.5.dp,
+                    color = MaterialTheme.localColors.white
+                )
+                VerticalSpacer(height = dimensionResource(id = R.dimen.dp13))
+                SimpleIcon(
+                    iconResId = R.drawable.ic_menu_horizontal,
+                    Modifier.clickable {
+                        isExpanded = true
+                    }
+                )
+                VerticalSpacer(height = dimensionResource(id = R.dimen.dp13))
+            }
+        }
         InteractiveText(
             model = currentDialogue,
             talker = talker,
@@ -1136,6 +1167,7 @@ fun InteractiveScreenBottomSection(
     episode: ShowEpisode?,
     createComment: () -> Unit,
     createFavorite: () -> Unit,
+    onExpandClick: () -> Unit,
     onEpisodesClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -1148,9 +1180,15 @@ fun InteractiveScreenBottomSection(
             color = MaterialTheme.localColors.white
         )
         VerticalSpacer(height = 7.dp)
+        Text(
+            text = stringResource(id = R.string.episodes),
+            style = MaterialTheme.localTextStyles.poppins17Medium,
+            color = MaterialTheme.localColors.white,
+            modifier = Modifier.clickable { onEpisodesClicked.invoke() }
+        )
         SimpleIcon(
             iconResId = R.drawable.ic_menu_horizontal,
-            Modifier.clickable(onClick = onEpisodesClicked)
+            Modifier.clickable(onClick = onExpandClick)
         )
         VerticalSpacer(height = dimensionResource(id = R.dimen.dp12))
         Row(
