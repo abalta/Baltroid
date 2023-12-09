@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import coil.ImageLoader
+import com.baltroid.apps.navigation.destinations.MallDetailDestination
 import com.baltroid.domain.GetMallUseCase
 import com.baltroid.model.Category
 import com.baltroid.model.Mall

@@ -42,6 +42,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -79,76 +80,11 @@ import kotlin.math.roundToInt
 @Composable
 internal fun MallDetailRoute(
     viewModel: MallDetailViewModel = hiltViewModel(),
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    goToShopSearch: () -> Unit
 ) {
     val mallDetailUiState by viewModel.uiState.collectAsStateWithLifecycle()
-    MallDetailScreen(mallDetailUiState, viewModel.imageLoader, viewModel.fireStorage, onBack)
-    //CollapsingToolbar()
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-internal fun CollapsingToolbar() {
-    val toolbarHeight = 48.dp
-    val toolbarHeightPx =
-        with(LocalDensity.current) { toolbarHeight.roundToPx().toFloat() }
-    var toolbarOffsetHeightPx by remember { mutableFloatStateOf(-toolbarHeightPx) }
-    val lazyListState = rememberLazyListState()
-    val isNestedConnectionEnable by remember {
-        derivedStateOf {
-            lazyListState.firstVisibleItemIndex in 0..2
-        }
-    }
-    val contextForToast = LocalContext.current.applicationContext
-
-    val nestedScrollConnection = remember {
-        object : NestedScrollConnection {
-            override fun onPreScroll(
-                available: Offset,
-                source: NestedScrollSource
-            ): Offset {
-                val delta = available.y
-                val newOffset = toolbarOffsetHeightPx - delta
-                if (isNestedConnectionEnable) {
-                    toolbarOffsetHeightPx = newOffset.coerceIn(-toolbarHeightPx, 0f)
-                }
-                return Offset.Zero
-            }
-        }
-    }
-    Box(
-        Modifier
-            .fillMaxSize()
-            .nestedScroll(nestedScrollConnection)
-    ) {
-        LazyColumn(state = lazyListState) {
-            items(100) { index ->
-                Text(
-                    "I'm item $index", modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                )
-            }
-        }
-        TopAppBar(
-            modifier = Modifier
-                .height(toolbarHeight)
-                .offset {
-                    IntOffset(
-                        x = 0,
-                        y = toolbarOffsetHeightPx.roundToInt()
-                    )
-                },
-            title = { Text("toolbar offset is $toolbarOffsetHeightPx") },
-            navigationIcon = {
-                IconButton(onClick = {
-                    Toast.makeText(contextForToast, "Nav Icon Click", Toast.LENGTH_SHORT).show()
-                }) {
-                    Icon(imageVector = Icons.Default.ArrowBackIosNew, contentDescription = "Back")
-                }
-            }
-        )
-    }
+    MallDetailScreen(mallDetailUiState, viewModel.imageLoader, viewModel.fireStorage, onBack, goToShopSearch)
 }
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
@@ -157,7 +93,8 @@ internal fun MallDetailScreen(
     mallDetailState: MallDetailUiState,
     imageLoader: ImageLoader,
     fireStorage: FirebaseStorage,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    goToShopSearch: () -> Unit
 ) {
 
     when (mallDetailState) {
@@ -181,7 +118,7 @@ internal fun MallDetailScreen(
             val toolbarHeight = 112.dp
             val toolbarHeightPx =
                 with(LocalDensity.current) { toolbarHeight.roundToPx().toFloat() }
-            var toolbarOffsetHeightPx by remember { mutableFloatStateOf(-toolbarHeightPx) }
+            var toolbarOffsetHeightPx by rememberSaveable { mutableFloatStateOf(-toolbarHeightPx) }
             val lazyListState = rememberLazyListState()
             val isNestedConnectionEnable by remember {
                 derivedStateOf {
@@ -369,9 +306,7 @@ internal fun MallDetailScreen(
                         }
                     },
                     actions = {
-                        IconButton(onClick = {
-
-                        }) {
+                        IconButton(onClick = goToShopSearch) {
                             Icon(
                                 imageVector = Icons.Default.Search,
                                 contentDescription = "Search",
@@ -391,7 +326,8 @@ internal fun MallDetailScreen(
                                 x = 0,
                                 y = toolbarOffsetHeightPx.roundToInt()
                             )
-                        }.shadow(
+                        }
+                        .shadow(
                             elevation = 4.dp
                         ),
                     title = { H3Title(mall.name) },
@@ -404,9 +340,7 @@ internal fun MallDetailScreen(
                         }
                     },
                     actions = {
-                        IconButton(onClick = {
-
-                        }) {
+                        IconButton(onClick = goToShopSearch) {
                             Icon(
                                 imageVector = Icons.Default.Search,
                                 contentDescription = "Search"

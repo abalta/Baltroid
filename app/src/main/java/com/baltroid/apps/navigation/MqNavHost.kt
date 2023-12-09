@@ -2,21 +2,14 @@ package com.baltroid.apps.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import androidx.navigation.navDeepLink
-import com.baltroid.apps.ui.main.HomeDestination
-import com.baltroid.apps.ui.main.HomeScreen
-import com.baltroid.apps.ui.main.MallDetailDestination
-import com.baltroid.apps.ui.main.MallDetailRoute
-import com.baltroid.apps.ui.main.MallDetailScreen
-import com.baltroid.apps.ui.main.homeGraph
-import com.baltroid.apps.ui.main.mallDetailsGraph
+import com.baltroid.apps.navigation.destinations.HomeDestination
+import com.baltroid.apps.navigation.destinations.MallDetailDestination
+import com.baltroid.apps.navigation.destinations.ShopSearchDestination
+import com.baltroid.apps.navigation.destinations.homeGraph
+import com.baltroid.apps.navigation.destinations.mallDetailsGraph
+import com.baltroid.apps.navigation.destinations.shopSearchGraph
 
 @Composable
 fun MqNavHost(
@@ -29,7 +22,12 @@ fun MqNavHost(
         homeGraph {
            navController.navigate(MallDetailDestination.createNavigationRoute(it))
         }
-        mallDetailsGraph {
+        mallDetailsGraph({
+            navController.popBackStack()
+        }, {
+            navController.navigate(ShopSearchDestination.createNavigationRoute())
+        })
+        shopSearchGraph {
             navController.popBackStack()
         }
     }

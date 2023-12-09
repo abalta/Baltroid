@@ -38,7 +38,7 @@ internal val Typography.h2TitleStyle: TextStyle
         letterSpacing = (0.18).sp
     )
 
-internal val Typography.h3TitleStyle: TextStyle
+val Typography.h3TitleStyle: TextStyle
     get() = TextStyle(
         fontFamily = sfProFamily,
         fontSize = 24.sp,

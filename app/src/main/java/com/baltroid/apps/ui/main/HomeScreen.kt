@@ -18,6 +18,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.rememberAsyncImagePainter
 import com.baltroid.apps.R
+import com.baltroid.apps.ui.shopsearch.ShopSearchScreen
 import com.baltroid.designsystem.component.Banner
 import com.baltroid.designsystem.component.CardMedium
 import com.baltroid.designsystem.component.H3Title
