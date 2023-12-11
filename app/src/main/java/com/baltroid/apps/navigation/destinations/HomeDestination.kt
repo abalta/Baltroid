@@ -1,5 +1,6 @@
 package com.baltroid.apps.navigation.destinations
 
+import android.util.Log
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.baltroid.apps.ui.main.HomeRoute

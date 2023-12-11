@@ -1,6 +1,5 @@
 package com.baltroid.apps.ui.main
 
-import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -20,6 +18,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -32,9 +31,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumTopAppBar
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -53,15 +50,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.compose.rememberNavController
 import coil.ImageLoader
 import coil.compose.rememberAsyncImagePainter
 import com.baltroid.apps.ext.floor
@@ -74,17 +69,25 @@ import com.baltroid.designsystem.component.ShopCard
 import com.baltroid.designsystem.component.Subhead
 import com.baltroid.designsystem.theme.hollyColor
 import com.baltroid.designsystem.theme.hollyColor54
+import com.baltroid.model.Mall
+import com.baltroid.model.Shop
 import com.google.firebase.storage.FirebaseStorage
 import kotlin.math.roundToInt
 
 @Composable
 internal fun MallDetailRoute(
-    viewModel: MallDetailViewModel = hiltViewModel(),
+    viewModel: MallDetailViewModel,
     onBack: () -> Unit,
     goToShopSearch: () -> Unit
 ) {
     val mallDetailUiState by viewModel.uiState.collectAsStateWithLifecycle()
-    MallDetailScreen(mallDetailUiState, viewModel.imageLoader, viewModel.fireStorage, onBack, goToShopSearch)
+    MallDetailScreen(
+        mallDetailUiState,
+        viewModel.imageLoader,
+        viewModel.fireStorage,
+        onBack,
+        goToShopSearch
+    )
 }
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
@@ -147,84 +150,23 @@ internal fun MallDetailScreen(
             ) {
                 LazyColumn(state = lazyListState) {
                     item {
-                        Box {
-                            HorizontalPager(state = pagerState) { page ->
-                                MallPhoto(
-                                    painter = rememberAsyncImagePainter(
-                                        model = fireStorage.getReferenceFromUrl(mall.photos[page]),
-                                        imageLoader = imageLoader,
-                                        placeholder = painterResource(id = R.drawable.bg_banner)
-                                    )
-                                )
-                            }
-                            Row(
-                                Modifier
-                                    .padding(20.dp)
-                                    .height(5.dp)
-                                    .align(Alignment.BottomEnd),
-                                horizontalArrangement = Arrangement.spacedBy(6.dp)
-                            ) {
-                                repeat(pageCount) { iteration ->
-                                    val color =
-                                        if (pagerState.currentPage == iteration) Color.White else Color(
-                                            0x4DFFFFFF
-                                        )
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxHeight()
-                                            .width(8.dp)
-                                            .clip(RoundedCornerShape(4.dp))
-                                            .background(color)
-
-                                    )
-                                }
-                            }
-                        }
+                        MallTopPager(
+                            pagerState,
+                            imageLoader,
+                            fireStorage,
+                            mall,
+                            pageCount
+                        )
                     }
                     item {
                         H3Title(
                             text = mall.name,
                             modifier = Modifier.padding(top = 24.dp, start = 20.dp, end = 20.dp)
                         )
-                        Row(
-                            Modifier.padding(top = 14.dp, start = 20.dp, end = 20.dp),
-                            horizontalArrangement = Arrangement.spacedBy(24.dp)
-                        ) {
-                            if (mall.floors.size == 1) {
-                                MallFeature(
-                                    featureCount = stringResource(
-                                        id = R.string.semi
-                                    ),
-                                    featureIcon = R.drawable.icon_flat,
-                                    featureName = stringResource(
-                                        id = R.string.open
-                                    )
-                                )
-                            } else {
-                                MallFeature(
-                                    featureCount = mall.floors.size.toString(),
-                                    featureIcon = R.drawable.icon_floors,
-                                    featureName = stringResource(
-                                        id = R.string.floor
-                                    )
-                                )
-                            }
-
-                            MallFeature(
-                                featureCount = mall.services.size.toString(),
-                                featureIcon = R.drawable.icon_services,
-                                featureName = stringResource(
-                                    id = R.string.service
-                                )
-                            )
-                            MallFeature(
-                                featureCount = shopMap.size.toString(),
-                                featureIcon = R.drawable.icon_shops,
-                                featureName = stringResource(
-                                    id = R.string.shop
-                                )
-                            )
-                        }
+                        MallFeatureGroup(
+                            mall,
+                            shopMap
+                        )
                     }
                     item {
                         Subhead(
@@ -294,59 +236,13 @@ internal fun MallDetailScreen(
                         )
                     }
                 }
-                TopAppBar(
-                    title = { },
-                    navigationIcon = {
-                        IconButton(onClick = onBack) {
-                            Icon(
-                                imageVector = Icons.Default.ArrowBackIosNew,
-                                contentDescription = "Back",
-                                tint = Color.White
-                            )
-                        }
-                    },
-                    actions = {
-                        IconButton(onClick = goToShopSearch) {
-                            Icon(
-                                imageVector = Icons.Default.Search,
-                                contentDescription = "Search",
-                                tint = Color.White
-                            )
-                        }
-                    },
-                    colors = topAppBarColors(
-                        containerColor = Color.Transparent
-                    )
-                )
-                MediumTopAppBar(
-                    modifier = Modifier
-                        .height(toolbarHeight)
-                        .offset {
-                            IntOffset(
-                                x = 0,
-                                y = toolbarOffsetHeightPx.roundToInt()
-                            )
-                        }
-                        .shadow(
-                            elevation = 4.dp
-                        ),
-                    title = { H3Title(mall.name) },
-                    navigationIcon = {
-                        IconButton(onClick = onBack) {
-                            Icon(
-                                imageVector = Icons.Default.ArrowBackIosNew,
-                                contentDescription = "Back"
-                            )
-                        }
-                    },
-                    actions = {
-                        IconButton(onClick = goToShopSearch) {
-                            Icon(
-                                imageVector = Icons.Default.Search,
-                                contentDescription = "Search"
-                            )
-                        }
-                    }
+                MallDetailTopAppBar(onBack, goToShopSearch)
+                MallDetailMediumTopAppBar(
+                    toolbarHeight,
+                    toolbarOffsetHeightPx,
+                    mall,
+                    onBack,
+                    goToShopSearch
                 )
             }
         }
@@ -357,3 +253,164 @@ internal fun MallDetailScreen(
     }
 
 }
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+internal fun MallTopPager(
+    pagerState: PagerState,
+    imageLoader: ImageLoader,
+    fireStorage: FirebaseStorage,
+    mall: Mall,
+    pageCount: Int
+) {
+    Box {
+        HorizontalPager(state = pagerState) { page ->
+            MallPhoto(
+                painter = rememberAsyncImagePainter(
+                    model = fireStorage.getReferenceFromUrl(mall.photos[page]),
+                    imageLoader = imageLoader,
+                    placeholder = painterResource(id = R.drawable.bg_banner)
+                )
+            )
+        }
+        Row(
+            Modifier
+                .padding(20.dp)
+                .height(5.dp)
+                .align(Alignment.BottomEnd),
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            repeat(pageCount) { iteration ->
+                val color =
+                    if (pagerState.currentPage == iteration) Color.White else Color(
+                        0x4DFFFFFF
+                    )
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(8.dp)
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(color)
+
+                )
+            }
+        }
+    }
+}
+
+@Composable
+internal fun MallFeatureGroup(
+    mall: Mall,
+    shopMap: Map<Int, Shop>
+) {
+    Row(
+        Modifier.padding(top = 14.dp, start = 20.dp, end = 20.dp),
+        horizontalArrangement = Arrangement.spacedBy(24.dp)
+    ) {
+        if (mall.floors.size == 1) {
+            MallFeature(
+                featureCount = stringResource(
+                    id = R.string.semi
+                ),
+                featureIcon = R.drawable.icon_flat,
+                featureName = stringResource(
+                    id = R.string.open
+                )
+            )
+        } else {
+            MallFeature(
+                featureCount = mall.floors.size.toString(),
+                featureIcon = R.drawable.icon_floors,
+                featureName = stringResource(
+                    id = R.string.floor
+                )
+            )
+        }
+
+        MallFeature(
+            featureCount = mall.services.size.toString(),
+            featureIcon = R.drawable.icon_services,
+            featureName = stringResource(
+                id = R.string.service
+            )
+        )
+        MallFeature(
+            featureCount = shopMap.size.toString(),
+            featureIcon = R.drawable.icon_shops,
+            featureName = stringResource(
+                id = R.string.shop
+            )
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun MallDetailTopAppBar(
+    onBack: () -> Unit,
+    goToShopSearch: () -> Unit
+) = TopAppBar(
+    title = { },
+    navigationIcon = {
+        IconButton(onClick = onBack) {
+            Icon(
+                imageVector = Icons.Default.ArrowBackIosNew,
+                contentDescription = "Back",
+                tint = Color.White
+            )
+        }
+    },
+    actions = {
+        IconButton(onClick = {
+            goToShopSearch()
+        }) {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = "Search",
+                tint = Color.White
+            )
+        }
+    },
+    colors = topAppBarColors(
+        containerColor = Color.Transparent
+    )
+)
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun MallDetailMediumTopAppBar(
+    toolbarHeight: Dp,
+    toolbarOffsetHeightPx: Float,
+    mall: Mall,
+    onBack: () -> Unit,
+    goToShopSearch: () -> Unit
+) = MediumTopAppBar(
+    modifier = Modifier
+        .height(toolbarHeight)
+        .offset {
+            IntOffset(
+                x = 0,
+                y = toolbarOffsetHeightPx.roundToInt()
+            )
+        }
+        .shadow(
+            elevation = 4.dp
+        ),
+    title = { H3Title(mall.name) },
+    navigationIcon = {
+        IconButton(onClick = onBack) {
+            Icon(
+                imageVector = Icons.Default.ArrowBackIosNew,
+                contentDescription = "Back"
+            )
+        }
+    },
+    actions = {
+        IconButton(onClick = goToShopSearch) {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = "Search"
+            )
+        }
+    }
+)
