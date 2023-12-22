@@ -74,10 +74,10 @@ fun Headline(text: String, modifier: Modifier = Modifier) {
 fun previewHeadline() = Headline(text = "Headline")
 
 @Composable
-fun Body(text: String, modifier: Modifier = Modifier) {
+fun Body(text: String, color: Color = MaterialTheme.colorScheme.grayColor, modifier: Modifier = Modifier) {
     Text(
         text = text,
-        color = MaterialTheme.colorScheme.grayColor,
+        color = color,
         modifier = modifier,
         style = MaterialTheme.typography.bodyStyle
     )

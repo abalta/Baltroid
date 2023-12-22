@@ -1,5 +1,6 @@
 package com.baltroid.apps.ui.main
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -9,10 +10,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -24,8 +28,14 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.Call
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -38,6 +48,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -46,13 +57,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -60,6 +74,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
 import coil.compose.rememberAsyncImagePainter
 import com.baltroid.apps.ext.floor
+import com.baltroid.apps.showCall
+import com.baltroid.apps.showLocationOnMap
+import com.baltroid.apps.showMail
+import com.baltroid.apps.showWeb
 import com.baltroid.core.designsystem.R
 import com.baltroid.designsystem.component.H3Title
 import com.baltroid.designsystem.component.MallFeature
@@ -67,6 +85,7 @@ import com.baltroid.designsystem.component.MallPhoto
 import com.baltroid.designsystem.component.ServiceCard
 import com.baltroid.designsystem.component.ShopCard
 import com.baltroid.designsystem.component.Subhead
+import com.baltroid.designsystem.dialog.MqDialog
 import com.baltroid.designsystem.theme.hollyColor
 import com.baltroid.designsystem.theme.hollyColor54
 import com.baltroid.model.Mall
@@ -78,7 +97,7 @@ import kotlin.math.roundToInt
 internal fun MallDetailRoute(
     viewModel: MallDetailViewModel,
     onBack: () -> Unit,
-    goToShopSearch: () -> Unit
+    goToShopSearch: () -> Unit,
 ) {
     val mallDetailUiState by viewModel.uiState.collectAsStateWithLifecycle()
     MallDetailScreen(
@@ -86,18 +105,18 @@ internal fun MallDetailRoute(
         viewModel.imageLoader,
         viewModel.fireStorage,
         onBack,
-        goToShopSearch
+        goToShopSearch,
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun MallDetailScreen(
     mallDetailState: MallDetailUiState,
     imageLoader: ImageLoader,
     fireStorage: FirebaseStorage,
     onBack: () -> Unit,
-    goToShopSearch: () -> Unit
+    goToShopSearch: () -> Unit,
 ) {
 
     when (mallDetailState) {
@@ -236,7 +255,7 @@ internal fun MallDetailScreen(
                         )
                     }
                 }
-                MallDetailTopAppBar(onBack, goToShopSearch)
+                MallDetailTopAppBar(mall, onBack, goToShopSearch)
                 MallDetailMediumTopAppBar(
                     toolbarHeight,
                     toolbarOffsetHeightPx,
@@ -263,6 +282,8 @@ internal fun MallTopPager(
     mall: Mall,
     pageCount: Int
 ) {
+    val brush = Brush.verticalGradient(listOf(Color(0x80000000), Color.Transparent))
+
     Box {
         HorizontalPager(state = pagerState) { page ->
             MallPhoto(
@@ -295,6 +316,12 @@ internal fun MallTopPager(
                 )
             }
         }
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .size(280.dp)
+                .background(brush)
+        )
     }
 }
 
@@ -347,34 +374,74 @@ internal fun MallFeatureGroup(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun MallDetailTopAppBar(
+    mall: Mall,
     onBack: () -> Unit,
-    goToShopSearch: () -> Unit
-) = TopAppBar(
-    title = { },
-    navigationIcon = {
-        IconButton(onClick = onBack) {
-            Icon(
-                imageVector = Icons.Default.ArrowBackIosNew,
-                contentDescription = "Back",
-                tint = Color.White
-            )
-        }
-    },
-    actions = {
-        IconButton(onClick = {
-            goToShopSearch()
-        }) {
-            Icon(
-                imageVector = Icons.Default.Search,
-                contentDescription = "Search",
-                tint = Color.White
-            )
-        }
-    },
-    colors = topAppBarColors(
-        containerColor = Color.Transparent
+    goToShopSearch: () -> Unit,
+) {
+    val context = LocalContext.current
+    var showMenu by remember { mutableStateOf(false) }
+    var showInfo by remember { mutableStateOf(false) }
+
+    TopAppBar(
+        title = { },
+        navigationIcon = {
+            IconButton(onClick = onBack) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBackIosNew,
+                    contentDescription = "Back",
+                    tint = Color.White
+                )
+            }
+        },
+        actions = {
+            IconButton(onClick = {
+                goToShopSearch()
+            }) {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = "Search",
+                    tint = Color.White
+                )
+            }
+            IconButton(onClick = { context.showLocationOnMap(mall.location, mall.name) }) {
+                Icon(
+                    imageVector = Icons.Default.LocationOn,
+                    contentDescription = "Location",
+                    tint = Color.White
+                )
+            }
+            IconButton(onClick = {showMenu = !showMenu}) {
+                Icon(
+                    imageVector = Icons.Default.MoreVert,
+                    contentDescription = "More",
+                    tint = Color.White
+                )
+            }
+            DropdownMenu(
+                expanded = showMenu,
+                onDismissRequest = { showMenu = false }
+            ) {
+                DropdownMenuItem(text = { Subhead(text = "İletişim Bilgileri") }, onClick = {
+                    showInfo = !showInfo
+                    showMenu = false
+                })
+            }
+        },
+        colors = topAppBarColors(
+            containerColor = Color.Transparent
+        )
     )
-)
+
+    if (showInfo) {
+        MqDialog(mall, onDismiss = { showInfo = false }, onPhoneClick = {
+            context.showCall(mall.phone)
+        }, onEmailClick = {
+            context.showMail(mall.email)
+        }, onWebClick = {
+            context.showWeb(mall.web)
+        })
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -383,34 +450,73 @@ internal fun MallDetailMediumTopAppBar(
     toolbarOffsetHeightPx: Float,
     mall: Mall,
     onBack: () -> Unit,
-    goToShopSearch: () -> Unit
-) = MediumTopAppBar(
-    modifier = Modifier
-        .height(toolbarHeight)
-        .offset {
-            IntOffset(
-                x = 0,
-                y = toolbarOffsetHeightPx.roundToInt()
-            )
+    goToShopSearch: () -> Unit,
+) {
+    val context = LocalContext.current
+    var showMenu by remember { mutableStateOf(false) }
+    var showInfo by remember { mutableStateOf(false) }
+
+    MediumTopAppBar(
+        modifier = Modifier
+            .height(toolbarHeight)
+            .offset {
+                IntOffset(
+                    x = 0,
+                    y = toolbarOffsetHeightPx.roundToInt()
+                )
+            }
+            .shadow(
+                elevation = 4.dp
+            ),
+        title = { H3Title(mall.name) },
+        navigationIcon = {
+            IconButton(onClick = onBack) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBackIosNew,
+                    contentDescription = "Back"
+                )
+            }
+        },
+        actions = {
+            IconButton(onClick = goToShopSearch) {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = "Search"
+                )
+            }
+            IconButton(onClick = {
+                context.showLocationOnMap(mall.location, mall.name)
+            }) {
+                Icon(
+                    imageVector = Icons.Default.LocationOn,
+                    contentDescription = "Location"
+                )
+            }
+            IconButton(onClick = {showMenu = !showMenu}) {
+                Icon(
+                    imageVector = Icons.Default.MoreVert,
+                    contentDescription = "More"
+                )
+            }
+            DropdownMenu(
+                expanded = showMenu,
+                onDismissRequest = { showMenu = false }
+            ) {
+                DropdownMenuItem(text = { Subhead(text = "İletişim Bilgileri") }, onClick = {
+                    showInfo = !showInfo
+                    showMenu = false
+                })
+            }
         }
-        .shadow(
-            elevation = 4.dp
-        ),
-    title = { H3Title(mall.name) },
-    navigationIcon = {
-        IconButton(onClick = onBack) {
-            Icon(
-                imageVector = Icons.Default.ArrowBackIosNew,
-                contentDescription = "Back"
-            )
-        }
-    },
-    actions = {
-        IconButton(onClick = goToShopSearch) {
-            Icon(
-                imageVector = Icons.Default.Search,
-                contentDescription = "Search"
-            )
-        }
+    )
+
+    if (showInfo) {
+        MqDialog(mall, onDismiss = { showInfo = false }, onPhoneClick = {
+            context.showCall(mall.phone)
+        }, onEmailClick = {
+            context.showMail(mall.email)
+        }, onWebClick = {
+            context.showWeb(mall.web)
+        })
     }
-)
+}

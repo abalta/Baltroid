@@ -1,6 +1,12 @@
 package com.baltroid.apps.navigation.destinations
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.util.Log
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -33,6 +39,7 @@ object MallDetailDestination {
 }
 
 
+@SuppressLint("QueryPermissionsNeeded")
 fun NavGraphBuilder.mallDetailsGraph(navController: NavController) {
     navigation(
         startDestination = startDestination,
