@@ -1,16 +1,9 @@
 package com.baltroid.apps.navigation.destinations
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.content.Intent
-import android.net.Uri
-import android.util.Log
-import androidx.compose.ui.platform.LocalContext
-import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
@@ -19,11 +12,13 @@ import com.baltroid.apps.navigation.destinations.MallDetailDestination.startDest
 import com.baltroid.apps.navigation.sharedViewModel
 import com.baltroid.apps.ui.main.MallDetailRoute
 import com.baltroid.apps.ui.main.MallDetailViewModel
+import com.baltroid.apps.ui.mallplan.MallPlanRoute
 import com.baltroid.apps.ui.shopsearch.ShopSearchRoute
 
 object MallDetailDestination {
     const val route = "mall_detail_route"
     const val shop_search_route = "shop_search"
+    const val mall_plan_route = "mall_plan"
     const val startDestination = "mall_detail"
 
     const val idArgument = "id"
@@ -58,6 +53,8 @@ fun NavGraphBuilder.mallDetailsGraph(navController: NavController) {
                     navController.popBackStack()
                 }, goToShopSearch = {
                     navController.navigate(MallDetailDestination.shop_search_route)
+                }, goToMallPlan = {
+                    navController.navigate(MallDetailDestination.mall_plan_route)
                 }
             )
         }
@@ -66,6 +63,12 @@ fun NavGraphBuilder.mallDetailsGraph(navController: NavController) {
         ) { entry ->
             val viewModel = entry.sharedViewModel<MallDetailViewModel>(navController)
             ShopSearchRoute(viewModel, onBack = { navController.popBackStack() })
+        }
+        composable(
+            route = MallDetailDestination.mall_plan_route
+        ) { entry ->
+            val viewModel = entry.sharedViewModel<MallDetailViewModel>(navController)
+            MallPlanRoute(viewModel = viewModel, onBack = { navController.popBackStack() })
         }
     }
 }

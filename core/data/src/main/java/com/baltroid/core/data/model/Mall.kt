@@ -1,7 +1,9 @@
 package com.baltroid.core.data.model
 
+import com.baltroid.core.firestore.model.NetworkFloor
 import com.baltroid.core.firestore.model.NetworkMall
 import com.baltroid.core.firestore.model.NetworkShopDetail
+import com.baltroid.model.Floor
 import com.baltroid.model.Mall
 import com.baltroid.model.Service
 import com.baltroid.model.Shop
@@ -12,7 +14,9 @@ fun NetworkMall.asMall() = Mall(
     cityCode = cityCode ?: 0,
     address = address.orEmpty(),
     email = email.orEmpty(),
-    floors = floors.orEmpty(),
+    floors = floors?.map {
+        it.asFloor()
+    }.orEmpty(),
     location = Pair(location?.latitude ?: 0.0, location?.longitude ?: 0.0),
     name = name.orEmpty(),
     phone = phone.orEmpty(),
@@ -31,7 +35,16 @@ fun NetworkMall.asMall() = Mall(
             name = "",
             categoryCode = 0,
             logo = "",
-            shopDetail = ShopDetail(floor = it.floor ?: 0, phone = it.phone.orEmpty(), code = it.code ?: 0)
+            shopDetail = ShopDetail(
+                floor = it.floor ?: 0,
+                phone = it.phone.orEmpty(),
+                code = it.code ?: 0
+            )
         )
     }?.toMutableMap() ?: mutableMapOf(),
+)
+
+fun NetworkFloor.asFloor() = Floor(
+    no = no ?: 999,
+    plan = plan.orEmpty()
 )

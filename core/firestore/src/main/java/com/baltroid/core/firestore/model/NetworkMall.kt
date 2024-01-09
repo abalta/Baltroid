@@ -9,7 +9,7 @@ data class NetworkMall(
     val cityCode: Int? = null,
     val address: String? = null,
     val email: String? = null,
-    val floors: List<Int>? = null,
+    val floors: List<NetworkFloor>? = null,
     val location: GeoPoint? = null,
     val name: String? = null,
     val phone: String? = null,

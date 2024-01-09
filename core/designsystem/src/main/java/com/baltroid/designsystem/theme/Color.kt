@@ -15,7 +15,7 @@ internal val CarrotOrange = Color(0xFFEF9920)
 internal val CornflowerBlue = Color(0xFF4285F4)
 internal val Chambray = Color(0xFF395998)
 
-internal val ColorScheme.eucalyptusColor: Color
+val ColorScheme.eucalyptusColor: Color
     get() = Eucalyptus
 
 val ColorScheme.hollyColor: Color

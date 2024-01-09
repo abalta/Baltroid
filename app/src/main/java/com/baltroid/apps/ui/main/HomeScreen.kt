@@ -61,11 +61,7 @@ internal fun HomeScreen(
                             }, items = city.malls, itemContent = { mall ->
                                 CardMedium(
                                     mall,
-                                    painter = rememberAsyncImagePainter(
-                                        model = viewModel.fireStorage.getReferenceFromUrl(mall.logo),
-                                        imageLoader = viewModel.imageLoader,
-                                        placeholder = painterResource(id = com.baltroid.core.designsystem.R.drawable.bg_banner)
-                                    ),
+                                    painter = mall.logo,
                                     onMallClick
                                 )
                             })

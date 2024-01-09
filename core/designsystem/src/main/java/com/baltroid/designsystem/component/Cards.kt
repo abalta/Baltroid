@@ -1,5 +1,6 @@
 package com.baltroid.designsystem.component
 
+import android.content.Context
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,24 +27,32 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.ImageLoader
 import com.baltroid.core.designsystem.R
+import com.baltroid.designsystem.extension.showCall
 import com.baltroid.designsystem.theme.Eucalyptus
 import com.baltroid.designsystem.theme.Holly
 import com.baltroid.designsystem.theme.Holly64
 import com.baltroid.designsystem.theme.Holly74
+import com.baltroid.designsystem.theme.eucalyptusColor
 import com.baltroid.model.Mall
 
 @Composable
-fun CardMedium(mall: Mall, painter: Painter, onMallClick: (String) -> Unit) {
+fun CardMedium(mall: Mall, painter: String, onMallClick: (String) -> Unit) {
     Column(
         modifier = Modifier
             .width(200.dp)
@@ -55,7 +65,7 @@ fun CardMedium(mall: Mall, painter: Painter, onMallClick: (String) -> Unit) {
         Subhead(text = mall.name, modifier = Modifier.padding(top = 14.dp))
         Body(text = mall.district)
         Spacer(modifier = Modifier.height(10.dp))
-        if(mall.rating.isNotEmpty()) {
+        if (mall.rating.isNotEmpty()) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     mall.rating,
@@ -95,8 +105,9 @@ fun CardMedium(mall: Mall, painter: Painter, onMallClick: (String) -> Unit) {
 
 @Composable
 @Preview
-fun previewCardMedium() = CardMedium(
-    mall = Mall("1",
+fun PreviewCardMedium() = CardMedium(
+    mall = Mall(
+        "1",
         cityCode = 7108,
         address = "labores",
         email = "frankie.greene@example.com",
@@ -113,20 +124,25 @@ fun previewCardMedium() = CardMedium(
         district = "Colarodo, San Francisco",
         shops = mutableMapOf()
     ),
-    painter = painterResource(id = R.drawable.bg_banner),
+    painter = "",
     onMallClick = { _ ->
 
     })
 
 @Composable
 fun ServiceCard(serviceName: String, serviceIcon: Int) {
-    Column(modifier = Modifier.wrapContentSize(),
-        horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        modifier = Modifier.wrapContentSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Image(
             modifier = Modifier
                 .size(120.dp)
                 .border(BorderStroke(1.dp, Color(0xFFF3F2F2)), RoundedCornerShape(10.dp))
-                .padding(30.dp), painter = painterResource(id = serviceIcon), contentDescription = "Service Logo", contentScale = ContentScale.FillWidth
+                .padding(30.dp),
+            painter = painterResource(id = serviceIcon),
+            contentDescription = "Service Logo",
+            contentScale = ContentScale.FillWidth
         )
         Text(
             serviceName,
@@ -146,21 +162,31 @@ fun ServiceCard(serviceName: String, serviceIcon: Int) {
 
 @Composable
 @Preview
-fun previewServiceCard() {
+fun PreviewServiceCard() {
     ServiceCard(serviceName = "ATM", serviceIcon = R.drawable.icon_atm)
 }
 
 @Composable
-fun ShopCard(painter: Painter, shopName: String, floor: String, phoneNumber: String) {
-    Row(modifier = Modifier
-        .padding(horizontal = 20.dp)
-        .fillMaxWidth()
-        .height(IntrinsicSize.Min)) {
-        ShopLogo(painter = painter)
-        Column(modifier = Modifier
-            .padding(start = 18.dp)
-            .fillMaxSize(),
-            verticalArrangement = Arrangement.SpaceBetween) {
+fun ShopCard(
+    model: String,
+    shopName: String,
+    floor: String,
+    phoneNumber: String
+) {
+    val context: Context = LocalContext.current
+    Row(
+        modifier = Modifier
+            .padding(horizontal = 20.dp)
+            .fillMaxWidth()
+            .height(IntrinsicSize.Min)
+    ) {
+        ShopLogo(model)
+        Column(
+            modifier = Modifier
+                .padding(start = 18.dp)
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
 
             Column {
                 Text(
@@ -174,23 +200,38 @@ fun ShopCard(painter: Painter, shopName: String, floor: String, phoneNumber: Str
                         )
                     )
                 )
+                if (phoneNumber.isNotEmpty()) {
+                    Row(
+                        modifier = Modifier.padding(top = 6.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        MQIcon(
+                            resourceId = R.drawable.phone,
+                            modifier = Modifier.size(16.dp),
+                            tint = Holly64
+                        )
 
-                Row(modifier = Modifier.padding(top = 6.dp),
-                    verticalAlignment = Alignment.CenterVertically) {
-                    MQIcon(resourceId = R.drawable.phone, modifier = Modifier.size(16.dp), tint = Holly64)
-
-                    Text(
-                        phoneNumber,
-                        modifier = Modifier.padding(start = 8.dp),
-                        style = TextStyle(
-                            color = Holly64,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight(400),
-                            fontFamily = FontFamily(
-                                Font(R.font.sf_pro_regular)
+                        Text(
+                            text = buildAnnotatedString {
+                                withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.eucalyptusColor)) {
+                                    append(phoneNumber)
+                                }
+                            },
+                            modifier = Modifier
+                                .padding(start = 8.dp)
+                                .clickable {
+                                    context.showCall(phoneNumber)
+                                },
+                            style = TextStyle(
+                                color = Holly64,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight(400),
+                                fontFamily = FontFamily(
+                                    Font(R.font.sf_pro_regular)
+                                )
                             )
                         )
-                    )
+                    }
                 }
             }
 
@@ -207,12 +248,12 @@ fun ShopCard(painter: Painter, shopName: String, floor: String, phoneNumber: Str
                 )
             )
         }
-        
+
     }
 }
 
 @Composable
 @Preview
-fun previewShopCard() {
-    ShopCard(painterResource(id = R.drawable.bg_banner), "Adidas", "1. Kat", "03225038573")
+fun PreviewShopCard() {
+    ShopCard(model = "", "Adidas", "1. Kat", "0507 458 99 38")
 }

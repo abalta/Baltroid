@@ -16,9 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    getMallsWithCitiesUseCase: GetMallsWithCitiesUseCase,
-    val imageLoader: ImageLoader,
-    val fireStorage: FirebaseStorage
+    getMallsWithCitiesUseCase: GetMallsWithCitiesUseCase
 ): ViewModel() {
 
     val mainState: StateFlow<MainUiState> = getMallsWithCitiesUseCase.invoke().map(MainUiState::Success).stateIn(

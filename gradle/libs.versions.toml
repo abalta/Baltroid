@@ -56,7 +56,6 @@ org-jetbrains-kotlin-android = "1.9.20"
 junit = "1.1.5"
 material = "1.11.0"
 firebaseCoroutines = "1.8.0-RC"
-firebaseCoil = "2.0.0-rc03"
 lifecycle-runtime-ktx = "2.6.2"
 
 [libraries]
@@ -112,7 +111,6 @@ firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore
 firebase-storage =  { group = "com.google.firebase", name = "firebase-storage-ktx" }
 firebase-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-play-services", version.ref = "firebaseCoroutines" }
 firebase-performance-gradle = { group = "com.google.firebase", name = "perf-plugin", version.ref = "firebasePerfPlugin" }
-fire-coil =  { group = "com.github.rosariopfernandes", name = "firecoil", version.ref = "firebaseCoil" }
 google-oss-licenses = { group = "com.google.android.gms", name = "play-services-oss-licenses", version.ref = "googleOss" }
 google-oss-licenses-plugin = { group = "com.google.android.gms", name = "oss-licenses-plugin", version.ref = "googleOssPlugin" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }

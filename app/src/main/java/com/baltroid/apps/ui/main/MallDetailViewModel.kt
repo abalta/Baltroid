@@ -19,8 +19,6 @@ import javax.inject.Inject
 @HiltViewModel
 class MallDetailViewModel @Inject constructor(
     getMallUseCase: GetMallUseCase,
-    val imageLoader: ImageLoader,
-    val fireStorage: FirebaseStorage,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 

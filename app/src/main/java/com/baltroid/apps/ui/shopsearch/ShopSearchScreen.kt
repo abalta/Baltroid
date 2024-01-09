@@ -18,7 +18,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -26,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -53,9 +53,7 @@ internal fun ShopSearchRoute(
     ShopSearchScreen(
         onBack,
         shopSearchViewModel,
-        mallDetailUiState,
-        viewModel.imageLoader,
-        viewModel.fireStorage,
+        mallDetailUiState
     )
 }
 
@@ -63,15 +61,15 @@ internal fun ShopSearchRoute(
 internal fun ShopSearchScreen(
     onBack: () -> Unit,
     shopSearchViewModel: ShopSearchViewModel,
-    mallDetailState: MallDetailUiState,
-    imageLoader: ImageLoader,
-    fireStorage: FirebaseStorage
+    mallDetailState: MallDetailUiState
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         ShopSearchInput(onBack, shopSearchViewModel)
         when (mallDetailState) {
             is MallDetailUiState.Success -> {
-                val mall = mallDetailState.pairMallAndCategory.first
+                val mall = remember {
+                    mallDetailState.pairMallAndCategory.first
+                }
                 val shopMap = mall.shops
                 val categorySelection = remember {
                     mutableIntStateOf(0)
@@ -87,7 +85,7 @@ internal fun ShopSearchScreen(
                         it.second
                     }
                 )
-                val shopList by shopSearchViewModel.shops.collectAsState()
+                val shopList by shopSearchViewModel.shops.collectAsStateWithLifecycle()
                 LazyColumn {
                     items(
                         key = {
@@ -96,11 +94,7 @@ internal fun ShopSearchScreen(
                         items = shopList
                     ) {
                         ShopCard(
-                            painter = rememberAsyncImagePainter(
-                                model = fireStorage.getReferenceFromUrl(it.logo),
-                                imageLoader = imageLoader,
-                                placeholder = painterResource(id = R.drawable.bg_banner)
-                            ),
+                            model = it.logo,
                             shopName = it.name,
                             floor = it.shopDetail.floor.floor(),
                             phoneNumber = it.shopDetail.phone
@@ -126,7 +120,7 @@ internal fun ShopSearchInput(
     onBack: () -> Unit,
     shopSearchViewModel: ShopSearchViewModel
 ) {
-    val searchText by shopSearchViewModel.searchText.collectAsState()
+    val searchText by shopSearchViewModel.searchText.collectAsStateWithLifecycle()
     Row(
         modifier = Modifier
             .fillMaxWidth()

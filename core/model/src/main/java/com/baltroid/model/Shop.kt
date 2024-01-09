@@ -13,3 +13,4 @@ data class Shop(
      val phone: String,
      val code: Int
  )
+

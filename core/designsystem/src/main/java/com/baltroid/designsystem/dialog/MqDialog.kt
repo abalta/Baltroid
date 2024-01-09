@@ -1,5 +1,6 @@
 package com.baltroid.designsystem.dialog
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -8,12 +9,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -27,17 +31,19 @@ import com.baltroid.core.designsystem.R
 import com.baltroid.designsystem.component.Body
 import com.baltroid.designsystem.component.MQIcon
 import com.baltroid.designsystem.component.Subhead
+import com.baltroid.designsystem.extension.launchCustomChromeTab
+import com.baltroid.designsystem.extension.showCall
+import com.baltroid.designsystem.extension.showMail
+import com.baltroid.designsystem.theme.eucalyptusColor
+import com.baltroid.designsystem.theme.hollyColor
 import com.baltroid.model.Mall
 
 @Composable
 fun MqDialog(
     mall: Mall,
-    onDismiss: () -> Unit,
-    onPhoneClick: () -> Unit,
-    onEmailClick: () -> Unit,
-    onWebClick: () -> Unit
+    onDismiss: () -> Unit
 ) {
-    val context = LocalContext.current
+    val context: Context = LocalContext.current
     Dialog(
         onDismissRequest = { onDismiss() },
         properties = DialogProperties(
@@ -60,39 +66,41 @@ fun MqDialog(
                 Text(
                     text = buildAnnotatedString {
                         append("Telefon: ")
-                        withStyle(style = SpanStyle(textDecoration = TextDecoration.Underline)) {
+                        withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.eucalyptusColor)) {
                             append(mall.phone)
                         }
                     },
                     Modifier
                         .padding(top = 24.dp, start = 18.dp, end = 18.dp)
                         .clickable {
-                            onPhoneClick()
+                            context.showCall(mall.phone)
                         })
                 Text(
                     text = buildAnnotatedString {
                         append("E-posta: ")
-                        withStyle(style = SpanStyle(textDecoration = TextDecoration.Underline)) {
+                        withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.eucalyptusColor)) {
                             append(mall.email)
                         }
                     },
                     Modifier
                         .padding(start = 18.dp, end = 18.dp, top = 8.dp)
                         .clickable {
-                            onEmailClick()
+                            context.showMail(mall.email)
                         })
                 Text(
                     buildAnnotatedString {
                         append("Web Adresi: ")
-                        withStyle(style = SpanStyle(textDecoration = TextDecoration.Underline)) {
+                        withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.eucalyptusColor)) {
                             append(mall.web)
                         }
                     },
                     Modifier
                         .padding(start = 18.dp, end = 18.dp, bottom = 30.dp, top = 8.dp)
-                        .clickable { onWebClick() })
+                        .clickable {
+                            context.launchCustomChromeTab(mall.web, Color.White.toArgb())
+                        })
                 TextButton(onClick = { onDismiss() }, Modifier.padding(bottom = 18.dp, start = 18.dp, end = 18.dp).fillMaxWidth().align(Alignment.CenterHorizontally)) {
-                    Body("Tamam", color = Color(0xFF1C274C))
+                    Body("Tamam", color = MaterialTheme.colorScheme.eucalyptusColor)
                 }
             }
             MQIcon(
@@ -127,9 +135,6 @@ fun MqDialogPreview() {
             district = "parturient",
             shops = mutableMapOf()
         ),
-        onDismiss = { },
-        onPhoneClick = { },
-        onEmailClick = { },
-        onWebClick = { }
+        onDismiss = { }
     )
 }

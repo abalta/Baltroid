@@ -26,6 +26,8 @@ dependencies {
     api(libs.androidx.compose.ui.util)
 
     debugApi(libs.androidx.compose.ui.tooling)
+
+    implementation(libs.androidx.browser)
     implementation(libs.androidx.core.ktx)
     implementation(libs.coil.kt.compose)
 }
