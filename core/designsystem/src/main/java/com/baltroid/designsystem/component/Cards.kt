@@ -30,6 +30,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -75,6 +76,9 @@ fun CardMedium(mall: Mall, painter: String, onMallClick: (String) -> Unit) {
                         fontWeight = FontWeight(600),
                         fontFamily = FontFamily(
                             Font(R.font.sf_pro_regular)
+                        ),
+                        platformStyle = PlatformTextStyle(
+                            includeFontPadding = false
                         )
                     ),
                     modifier = Modifier

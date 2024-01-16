@@ -106,7 +106,7 @@ fun MallDetailTopAppBar(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MallDetailMediumTopAppBar(
     toolbarHeight: Dp,

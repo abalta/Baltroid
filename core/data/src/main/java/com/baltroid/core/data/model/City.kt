@@ -6,6 +6,7 @@ import com.baltroid.model.City
 fun NetworkCity.asCity() = City(
     code = code ?: 0,
     name = name.orEmpty(),
+    image = image.orEmpty(),
     malls = malls.map {
         it.asMall()
     }.toMutableList()

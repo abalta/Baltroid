@@ -60,7 +60,7 @@ fun MallLogo(painter: String) {
         model = painter,
         placeholder = painterResource(id = R.drawable.bg_banner),
         contentDescription = "AVM Logo",
-        contentScale = ContentScale.FillWidth
+        contentScale = ContentScale.Fit
     )
 }
 

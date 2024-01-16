@@ -42,7 +42,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -68,7 +67,7 @@ internal fun MallDetailRoute(
     onBack: () -> Unit,
     goToShopSearch: () -> Unit,
     goToMallPlan: () -> Unit,
-    ) {
+) {
     val mallDetailUiState by viewModel.uiState.collectAsStateWithLifecycle()
     MallDetailScreen(
         mallDetailUiState,

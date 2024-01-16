@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -22,6 +23,8 @@ import com.baltroid.apps.ui.shopsearch.ShopSearchScreen
 import com.baltroid.designsystem.component.Banner
 import com.baltroid.designsystem.component.CardMedium
 import com.baltroid.designsystem.component.H3Title
+import com.baltroid.model.City
+import com.baltroid.model.Mall
 
 @Composable
 internal fun HomeRoute(
@@ -36,7 +39,6 @@ internal fun HomeRoute(
 internal fun HomeScreen(
     mainState: MainUiState,
     onMallClick: (String) -> Unit,
-    viewModel: MainViewModel = hiltViewModel()
 ) {
     when (mainState) {
         is MainUiState.Success -> {
@@ -79,4 +81,41 @@ internal fun HomeScreen(
 
         }
     }
+}
+
+@Preview
+@Composable
+fun PreviewHomeScreen() {
+    HomeScreen(mainState = MainUiState.Success(
+        listOf(
+            City(
+                code = 6391, name = "Stephanie Levy", image = "nibh", malls = mutableListOf(
+                    Mall(
+                        id = "purus",
+                        cityCode = 1980,
+                        address = "repudiare",
+                        email = "sandy.holland@example.com",
+                        floors = listOf(),
+                        location = Pair(0.0, 0.0),
+                        name = "Angelique Patton",
+                        phone = "(649) 890-4837",
+                        services = mutableMapOf(),
+                        web = "hendrerit",
+                        logo = "ludus",
+                        photos = listOf(),
+                        rating = "4.2",
+                        reviews = "13k",
+                        district = "adipiscing",
+                        shops = mutableMapOf()
+                    )
+                )
+            ),
+            City(
+                code = 6541,
+                name = "Eunice Bradshaw",
+                image = "ubique",
+                malls = mutableListOf()
+            )
+        )
+    ), onMallClick = {})
 }
