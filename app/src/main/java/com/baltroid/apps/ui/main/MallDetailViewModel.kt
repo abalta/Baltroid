@@ -3,12 +3,10 @@ package com.baltroid.apps.ui.main
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import coil.ImageLoader
 import com.baltroid.apps.navigation.destinations.MallDetailDestination
 import com.baltroid.domain.GetMallUseCase
 import com.baltroid.model.Category
 import com.baltroid.model.Mall
-import com.google.firebase.storage.FirebaseStorage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

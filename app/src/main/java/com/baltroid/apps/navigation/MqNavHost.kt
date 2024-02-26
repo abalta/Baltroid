@@ -16,16 +16,12 @@ import com.baltroid.apps.navigation.destinations.homeGraph
 import com.baltroid.apps.navigation.destinations.mallDetailsGraph
 
 @Composable
-fun MqNavHost(
-    modifier: Modifier = Modifier
-) {
+fun MqNavHost() {
     val navController = rememberNavController()
     NavHost(
-        navController = navController, startDestination = HomeDestination.route
+        navController = navController, startDestination = HomeDestination.graphRoute
     ) {
-        homeGraph {
-            navController.navigate(MallDetailDestination.createNavigationRoute(it))
-        }
+        homeGraph(navController)
         mallDetailsGraph(navController)
     }
 }

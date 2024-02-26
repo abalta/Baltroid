@@ -55,8 +55,8 @@ turbine = "1.0.0"
 org-jetbrains-kotlin-android = "1.9.20"
 junit = "1.1.5"
 material = "1.11.0"
-firebaseCoroutines = "1.8.0-RC"
-lifecycle-runtime-ktx = "2.6.2"
+firebaseCoroutines = "1.8.0"
+lifecycle-runtime-ktx = "2.7.0"
 
 [libraries]
 accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist" }

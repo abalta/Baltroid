@@ -9,7 +9,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.baltroid.core.designsystem.R
 
-internal val sfProFamily = FontFamily(
+val sfProFamily = FontFamily(
     Font(R.font.sf_pro_black_italic, FontWeight.Black, FontStyle.Italic),
     Font(R.font.sf_pro_bold, FontWeight.Bold),
     Font(R.font.sf_pro_light_italic, FontWeight.Light, FontStyle.Italic),

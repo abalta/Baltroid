@@ -16,13 +16,13 @@ import com.baltroid.apps.ui.mallplan.MallPlanRoute
 import com.baltroid.apps.ui.shopsearch.ShopSearchRoute
 
 object MallDetailDestination {
-    const val route = "mall_detail_route"
+    private const val route = "mall_detail_route"
     const val shop_search_route = "shop_search"
     const val mall_plan_route = "mall_plan"
     const val startDestination = "mall_detail"
 
     const val idArgument = "id"
-    val routeWithArguments = "$route/{$idArgument}"
+    const val routeWithArguments = "$route/{$idArgument}"
 
     fun createNavigationRoute(id: String) = "$route/$id"
 
@@ -34,7 +34,6 @@ object MallDetailDestination {
 }
 
 
-@SuppressLint("QueryPermissionsNeeded")
 fun NavGraphBuilder.mallDetailsGraph(navController: NavController) {
     navigation(
         startDestination = startDestination,

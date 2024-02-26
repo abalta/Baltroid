@@ -2,11 +2,8 @@ package com.baltroid.apps.ui.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import coil.ImageLoader
-import com.baltroid.core.data.repository.CitiesRepository
 import com.baltroid.domain.GetMallsWithCitiesUseCase
 import com.baltroid.model.City
-import com.google.firebase.storage.FirebaseStorage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -16,7 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    getMallsWithCitiesUseCase: GetMallsWithCitiesUseCase
+    getMallsWithCitiesUseCase: GetMallsWithCitiesUseCase,
 ): ViewModel() {
 
     val mainState: StateFlow<MainUiState> = getMallsWithCitiesUseCase.invoke().map(MainUiState::Success).stateIn(

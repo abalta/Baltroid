@@ -25,7 +25,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -37,12 +36,10 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.ImageLoader
 import com.baltroid.core.designsystem.R
 import com.baltroid.designsystem.extension.showCall
 import com.baltroid.designsystem.theme.Eucalyptus
@@ -53,7 +50,7 @@ import com.baltroid.designsystem.theme.eucalyptusColor
 import com.baltroid.model.Mall
 
 @Composable
-fun CardMedium(mall: Mall, painter: String, onMallClick: (String) -> Unit) {
+fun MallCard(mall: Mall, onMallClick: (String) -> Unit) {
     Column(
         modifier = Modifier
             .width(200.dp)
@@ -62,8 +59,62 @@ fun CardMedium(mall: Mall, painter: String, onMallClick: (String) -> Unit) {
                 onMallClick(mall.id)
             }
     ) {
-        MallLogo(painter)
+        MallLogo(mall.logo)
         Subhead(text = mall.name, modifier = Modifier.padding(top = 14.dp))
+        Body(text = mall.district)
+        Spacer(modifier = Modifier.height(10.dp))
+        if (mall.rating.isNotEmpty()) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    mall.rating,
+                    style = TextStyle(
+                        color = Color.White,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight(600),
+                        fontFamily = FontFamily(
+                            Font(R.font.sf_pro_regular)
+                        ),
+                        platformStyle = PlatformTextStyle(
+                            includeFontPadding = false
+                        )
+                    ),
+                    modifier = Modifier
+                        .background(
+                            color = Eucalyptus,
+                            shape = RoundedCornerShape(size = 6.dp)
+                        )
+                        .padding(8.dp, 4.dp, 8.dp, 4.dp)
+                )
+                Text(
+                    stringResource(id = R.string.comment, mall.reviews),
+                    style = TextStyle(
+                        color = Holly,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight(500),
+                        fontFamily = FontFamily(
+                            Font(R.font.sf_pro_regular)
+                        )
+                    ),
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun MallBigCard(mall: Mall, onMallClick: (String) -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(282.dp)
+            .clickable {
+                onMallClick(mall.id)
+            }
+    ) {
+        MallLogo(mall.logo)
+        Subhead(text = mall.name, modifier = Modifier.padding(top = 16.dp))
         Body(text = mall.district)
         Spacer(modifier = Modifier.height(10.dp))
         if (mall.rating.isNotEmpty()) {
@@ -109,7 +160,7 @@ fun CardMedium(mall: Mall, painter: String, onMallClick: (String) -> Unit) {
 
 @Composable
 @Preview
-fun PreviewCardMedium() = CardMedium(
+fun PreviewMallCard() = MallCard(
     mall = Mall(
         "1",
         cityCode = 7108,
@@ -128,7 +179,31 @@ fun PreviewCardMedium() = CardMedium(
         district = "Colarodo, San Francisco",
         shops = mutableMapOf()
     ),
-    painter = "",
+    onMallClick = { _ ->
+
+    })
+
+@Composable
+@Preview
+fun PreviewMallBigCard() = MallBigCard(
+    mall = Mall(
+        "1",
+        cityCode = 7108,
+        address = "labores",
+        email = "frankie.greene@example.com",
+        floors = listOf(),
+        location = Pair(0.0, 0.0),
+        name = "Erin Duffy",
+        phone = "(973) 917-5437",
+        services = mutableMapOf(),
+        web = "intellegebat",
+        logo = "quem",
+        photos = listOf(),
+        rating = "4.3",
+        reviews = "6.3k",
+        district = "Colarodo, San Francisco",
+        shops = mutableMapOf()
+    ),
     onMallClick = { _ ->
 
     })
