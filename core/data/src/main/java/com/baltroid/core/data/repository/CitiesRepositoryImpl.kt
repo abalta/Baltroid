@@ -1,5 +1,6 @@
 package com.baltroid.core.data.repository
 
+import android.util.Log
 import com.baltroid.core.common.dispatcher.BaltroidDispatchers
 import com.baltroid.core.common.dispatcher.Dispatcher
 import com.baltroid.core.data.model.asCategory
@@ -42,6 +43,7 @@ class CitiesRepositoryImpl @Inject constructor(
     }.flowOn(ioDispatcher)
 
     override fun getMalls(): Flow<List<Mall>> = flow {
+        mallList.clear()
         if (mallList.isEmpty()) {
             mallList.addAll(firestore.getMalls().map {
                 it.asMall()

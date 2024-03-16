@@ -20,7 +20,7 @@ enum class BaltroidFlavor(val dimension: FlavorDimension, val applicationIdSuffi
 }
 
 fun configureFlavors(
-    commonExtension: CommonExtension<*, *, *, *, *>,
+    commonExtension: CommonExtension<*, *, *, *, *, *>,
     flavorConfigurationBlock: ProductFlavor.(flavor: BaltroidFlavor) -> Unit = {}
 ) {
     commonExtension.apply {
