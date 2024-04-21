@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="text_btn_login">Giriş Yap</string>
+    <string name="title_recently_added_courses">Son Eklenen Eğitimler</string>
+    <string name="text_btn_all_courses">Tüm Eğitimler</string>
+    <string name="title_courses">Eğitimler</string>
+    <string name="title_recently_added">Son Eklenenler</string>
+    <string name="title_instructors">Eğitmenler</string>
+    <string name="title_academies">Akademiler</string>
+    <string name="read_more">Devamını oku</string>
+    <string name="read_less">Daha az</string>
+    <string name="text_btn_edit">Düzenle</string>
+    <string name="title_edit_profile">Profil Düzenle</string>
+    <string name="title_name">İsim</string>
+    <string name="title_surname">Soyisim</string>
+    <string name="title_email">E-Posta Adresi</string>
+    <string name="title_phone">Telefon</string>
+    <string name="title_about">Hakkımda</string>
+    <string name="text_btn_review_courses">Eğitimleri İncele</string>
+    <string name="title_my_courses">Eğitimlerim</string>
+    <string name="title_favorites">Favorilerim</string>
+    <string name="title_menu">Menu</string>
+    <string name="title_settings">Ayarlar</string>
+    <string name="title_about_app">Mekik Hakkında</string>
+    <string name="title_search">Arama</string>
+    <string name="title_notification">Bildirimler</string>
+    <string name="title_sort">Sırala</string>
+    <string name="title_comments">Yorumlar</string>
+    <string name="title_do_comment">Yorum Yap</string>
+    <string name="hint_write_comment">Yorum Yaz</string>
+</resources>
