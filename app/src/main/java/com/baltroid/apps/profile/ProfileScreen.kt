@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,7 +38,9 @@ import com.baltroid.apps.home.hideSheetAndUpdateState
 import com.baltroid.core.designsystem.R
 import com.baltroid.designsystem.component.CircularButton
 import com.baltroid.designsystem.component.FilterHeadText
+import com.baltroid.designsystem.component.MekikFilledButton
 import com.baltroid.designsystem.component.MekikOutlinedButton
+import com.baltroid.designsystem.component.MekikTextField
 import com.baltroid.designsystem.component.ProfileInfoCard
 import com.baltroid.designsystem.component.shadow
 import com.baltroid.designsystem.theme.regularStyle
@@ -56,8 +57,7 @@ fun ProfileScreen() {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(138.dp),
-            contentAlignment = Alignment.Center
+                .height(138.dp), contentAlignment = Alignment.Center
         ) {
             Image(
                 painter = painterResource(id = R.drawable.sample_profile_background),
@@ -110,10 +110,9 @@ fun ProfileScreen() {
             showBottomSheet = true
         }
         if (showBottomSheet) {
-            ModalBottomSheet(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 48.dp),
+            ModalBottomSheet(modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 48.dp),
                 dragHandle = null,
                 sheetState = sheetState,
                 containerColor = Color.White,
@@ -125,14 +124,27 @@ fun ProfileScreen() {
                         showBottomSheet = false
                     }
                 }, modifier = Modifier.padding(top = 30.dp, start = 24.dp)) {
-                    Image(painter = painterResource(id = R.drawable.ic_close), contentDescription = "close")
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_close),
+                        contentDescription = "close"
+                    )
                 }
-                FilterHeadText(text = stringResource(id = R.string.title_edit_profile), showIcon = false, modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 22.dp, top = 24.dp))
-                Row(modifier = Modifier.padding(top = 16.dp).align(Alignment.CenterHorizontally), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(
-                    (-24).dp
-                )) {
+                FilterHeadText(
+                    text = stringResource(id = R.string.title_edit_profile),
+                    showIcon = false,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 22.dp, top = 24.dp)
+                )
+                Row(
+                    modifier = Modifier
+                        .padding(top = 16.dp)
+                        .align(Alignment.CenterHorizontally),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(
+                        (-24).dp
+                    )
+                ) {
                     Image(
                         painter = painterResource(id = R.drawable.sample_profile_image),
                         modifier = Modifier
@@ -143,8 +155,23 @@ fun ProfileScreen() {
                     IconButton(onClick = {
 
                     }) {
-                        Image(painter = painterResource(id = R.drawable.ic_add), contentDescription = "add")
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_add),
+                            contentDescription = "add"
+                        )
                     }
+                }
+                MekikTextField(label = stringResource(id = R.string.title_name))
+                MekikTextField(label = stringResource(id = R.string.title_surname))
+                MekikTextField(label = stringResource(id = R.string.title_email))
+                MekikTextField(label = stringResource(id = R.string.title_phone))
+                MekikTextField(label = stringResource(id = R.string.title_about))
+                MekikFilledButton(
+                    text = "Kaydet", modifier = Modifier.padding(
+                        top = 16.dp, start = 13.dp, end = 13.dp, bottom = 16.dp
+                    )
+                ) {
+
                 }
             }
         }
