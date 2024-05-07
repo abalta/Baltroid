@@ -19,10 +19,9 @@ dependencyResolutionManagement {
 rootProject.name = "Baltroid"
 
 include(":app")
-include(":core:common")
-include(":core:network")
-include(":core:firestore")
-include(":core:data")
-include(":core:model")
 include(":core:designsystem")
+include(":core:network")
+include(":core:common")
+include(":core:data")
 include(":core:domain")
+include(":core:model")

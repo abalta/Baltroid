@@ -53,6 +53,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 import com.baltroid.apps.AppState
+import com.baltroid.apps.auth.LoginSheet
 import com.baltroid.apps.navigation.BottomBar
 import com.baltroid.apps.navigation.BottomNavGraph
 import com.baltroid.apps.navigation.OnAction
@@ -98,9 +99,11 @@ fun HomeScreen() {
                     animationSpec = tween(300)
                 )
             ) {
-                TopBar(navController = navController) {
+                TopBar(navController = navController, {
                     showBottomSheet = true
-                }
+                }, {
+                    navController.navigate(BottomBarScreen.Notifications.route)
+                })
             }
         },
         bottomBar = {
@@ -156,10 +159,22 @@ fun HomeScreen() {
                     }
                 }
                 MenuButton(text = stringResource(id = R.string.title_favorites), icon = R.drawable.ic_favorite) {
-
+                    navController.navigate(BottomBarScreen.Favorites.route) {
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                    sheetStateScope.hideSheetAndUpdateState(sheetState) {
+                        showBottomSheet = false
+                    }
                 }
                 MenuButton(text = stringResource(id = R.string.title_settings), icon = R.drawable.ic_settings) {
-
+                    navController.navigate(BottomBarScreen.Settings.route) {
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                    sheetStateScope.hideSheetAndUpdateState(sheetState) {
+                        showBottomSheet = false
+                    }
                 }
                 MenuButton(text = stringResource(id = R.string.title_about_app), icon = R.drawable.ic_about) {
 
@@ -183,7 +198,9 @@ fun CoroutineScope.hideSheetAndUpdateState(sheetState: SheetState, showBottomShe
 
 @Composable
 fun HomeContent(onAction: OnAction) {
-    LazyColumn(modifier = Modifier.fillMaxSize().padding(top = 56.dp, bottom = 64.dp), contentPadding = PaddingValues(vertical = 12.dp)) {
+    LazyColumn(modifier = Modifier
+        .fillMaxSize()
+        .padding(top = 56.dp, bottom = 64.dp), contentPadding = PaddingValues(vertical = 12.dp)) {
         item {
             HomePager()
         }
@@ -216,6 +233,7 @@ fun HomePager() {
     val pagerState = rememberPagerState(pageCount = {
         3
     })
+    var showLoginSheet by rememberSaveable { mutableStateOf(false) }
     Column(
         modifier =
         Modifier
@@ -263,9 +281,16 @@ fun HomePager() {
                 }
             }
             TextButton(
-                onClick = { }
+                onClick = {
+                    showLoginSheet = true
+                }
             ) {
                 ButtonText("Giriş Yap")
+            }
+            if (showLoginSheet) {
+                LoginSheet {
+                    showLoginSheet = false
+                }
             }
         }
 
@@ -282,7 +307,7 @@ fun RecentCourses(onAction: OnAction) {
                 )
             }
         }
-        
+
     }
 }
 

@@ -161,11 +161,21 @@ fun ProfileScreen() {
                         )
                     }
                 }
-                MekikTextField(label = stringResource(id = R.string.title_name))
-                MekikTextField(label = stringResource(id = R.string.title_surname))
-                MekikTextField(label = stringResource(id = R.string.title_email))
-                MekikTextField(label = stringResource(id = R.string.title_phone))
-                MekikTextField(label = stringResource(id = R.string.title_about))
+                MekikTextField(label = stringResource(id = R.string.title_name)) {
+
+                }
+                MekikTextField(label = stringResource(id = R.string.title_surname)) {
+
+                }
+                MekikTextField(label = stringResource(id = R.string.title_email)) {
+
+                }
+                MekikTextField(label = stringResource(id = R.string.title_phone)) {
+
+                }
+                MekikTextField(label = stringResource(id = R.string.title_about)) {
+
+                }
                 MekikFilledButton(
                     text = "Kaydet", modifier = Modifier.padding(
                         top = 16.dp, start = 13.dp, end = 13.dp, bottom = 16.dp

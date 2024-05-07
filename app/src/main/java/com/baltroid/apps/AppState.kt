@@ -16,7 +16,10 @@ class AppState(
         BottomBarScreen.Play,
         BottomBarScreen.Courses,
         BottomBarScreen.Academies,
-        BottomBarScreen.Instructors
+        BottomBarScreen.Instructors,
+        BottomBarScreen.Favorites,
+        BottomBarScreen.Notifications,
+        BottomBarScreen.Settings
     )
     private val bottomBarRoutes = bottomBarTabs.map { it.route }
 

@@ -21,6 +21,8 @@
     <string name="title_favorites">Favorilerim</string>
     <string name="title_menu">Menu</string>
     <string name="title_settings">Ayarlar</string>
+    <string name="notification_settings">Bildirim Ayarları</string>
+    <string name="application_settings">Uygulama Ayarları</string>
     <string name="title_about_app">Mekik Hakkında</string>
     <string name="title_search">Arama</string>
     <string name="title_notification">Bildirimler</string>
@@ -28,4 +30,13 @@
     <string name="title_comments">Yorumlar</string>
     <string name="title_do_comment">Yorum Yap</string>
     <string name="hint_write_comment">Yorum Yaz</string>
+    <string name="title_login">Giriş Yap</string>
+    <string name="title_register">Kayıt Ol</string>
+    <string name="text_password">Şifre</string>
+    <string name="text_btn_forgot_password">Şifremi Unuttm</string>
+    <string name="text_no_register">Hesabın Yok mu? Hemen Kayıt Ol.</string>
+    <string name="text_btn_free_register">Ücretsiz Kayıt Ol</string>
+    <string name="checkbox_text_permission">Mekik\'in bana yenilikler ve güncellemeler ile ilgili eposta göndermesini onaylıyorum.</string>
+    <string name="text_privacy">Kayıt olduğunda veri işleme ve gizlilik politikamızı onaylamış olursun.</string>
+    <string name="text_btn_already_register">Hesabın mı var? Giriş yap</string>
 </resources>

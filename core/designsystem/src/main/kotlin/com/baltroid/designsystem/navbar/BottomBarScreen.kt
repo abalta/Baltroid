@@ -34,8 +34,16 @@ sealed class BottomBarScreen(
         route = "instructors",
         icon = 0
     )
-    data object Menu : BottomBarScreen(
-        route = "menu",
+    data object Favorites : BottomBarScreen(
+        route = "favorites",
+        icon = 0
+    )
+    data object Notifications : BottomBarScreen(
+        route = "notifications",
+        icon = 0
+    )
+    data object Settings : BottomBarScreen(
+        route = "settings",
         icon = 0
     )
 }

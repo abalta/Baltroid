@@ -17,10 +17,15 @@ import com.baltroid.apps.academies.AcademiesScreen
 import com.baltroid.apps.academy.AcademyScreen
 import com.baltroid.apps.course.CourseScreen
 import com.baltroid.apps.courses.CoursesScreen
+import com.baltroid.apps.courses.MyCoursesScreen
+import com.baltroid.apps.favorites.FavoritesScreen
 import com.baltroid.apps.home.HomeContent
 import com.baltroid.apps.instructor.InstructorScreen
 import com.baltroid.apps.instructors.InstructorsScreen
+import com.baltroid.apps.notifications.NotificationsScreen
 import com.baltroid.apps.profile.ProfileScreen
+import com.baltroid.apps.search.SearchScreen
+import com.baltroid.apps.settings.SettingsScreen
 import com.baltroid.designsystem.navbar.BottomBarScreen
 import com.baltroid.designsystem.navbar.DetailsScreen
 
@@ -51,10 +56,12 @@ fun BottomNavGraph(
             }
         }
         composable(route = BottomBarScreen.Search.route) {
-            //ReportScreen()
+            SearchScreen()
         }
         composable(route = BottomBarScreen.Play.route) {
-            //ProfileScreen()
+            MyCoursesScreen {
+
+            }
         }
         composable(route = BottomBarScreen.Profile.route) {
             ProfileScreen()
@@ -73,6 +80,15 @@ fun BottomNavGraph(
             InstructorsScreen {
                 navController.navigate(Graph.DETAIL)
             }
+        }
+        composable(route = BottomBarScreen.Favorites.route) {
+            FavoritesScreen()
+        }
+        composable(route = BottomBarScreen.Notifications.route) {
+            NotificationsScreen()
+        }
+        composable(route = BottomBarScreen.Settings.route) {
+            SettingsScreen()
         }
         detailsNavGraph(navController = navController)
     }

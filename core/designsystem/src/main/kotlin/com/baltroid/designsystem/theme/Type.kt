@@ -130,7 +130,7 @@ internal val Typography.mediumSmallStyle: TextStyle
         fontSize = 10.sp,
         fontWeight = FontWeight.Medium
     )
-internal val Typography.mediumBigStyle: TextStyle
+val Typography.mediumBigStyle: TextStyle
     get() = TextStyle(
         fontFamily = montserratFamily,
         fontSize = 14.sp,

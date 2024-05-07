@@ -24,7 +24,7 @@ import com.baltroid.core.designsystem.R
 import com.baltroid.designsystem.theme.electricVioletColor
 
 @Composable
-fun TopBar(navController: NavHostController, onMenuClick: () -> Unit) {
+fun TopBar(navController: NavHostController, onMenuClick: () -> Unit, onNotificationClick: () -> Unit) {
     var route by rememberSaveable { mutableStateOf("") }
     navController.addOnDestinationChangedListener { _, destination, _ ->
         route = destination.route.orEmpty()
@@ -49,7 +49,7 @@ fun TopBar(navController: NavHostController, onMenuClick: () -> Unit) {
                 .align(Alignment.CenterVertically),
             tint = MaterialTheme.colorScheme.electricVioletColor
         )
-        IconButton(onClick = { }) {
+        IconButton(onClick = onNotificationClick) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_bell),
                 contentDescription = "notification"
@@ -61,5 +61,5 @@ fun TopBar(navController: NavHostController, onMenuClick: () -> Unit) {
 @Preview
 @Composable
 fun PreviewTopBar() {
-    TopBar(navController = rememberNavController(), onMenuClick = {})
+    TopBar(navController = rememberNavController(), onMenuClick = {}, onNotificationClick = {})
 }

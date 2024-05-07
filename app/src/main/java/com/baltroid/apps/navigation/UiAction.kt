@@ -5,4 +5,5 @@ sealed class UiAction {
     data object InstructorClick : UiAction()
     data object AcademyClick : UiAction()
     data object OnCourseClick : UiAction()
+    data object OnLoginClick : UiAction()
 }
