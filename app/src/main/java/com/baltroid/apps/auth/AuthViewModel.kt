@@ -2,6 +2,7 @@ package com.baltroid.apps.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.baltroid.core.common.HttpException
 import com.baltroid.core.common.handle
 import com.baltroid.model.LoginModel
 import com.mobven.domain.usecase.LoginUseCase
@@ -55,7 +56,7 @@ class AuthViewModel @Inject constructor(
                     state = state.copy(
                         isLoading = false,
                         loginModel = null,
-                        error = triggered(throwable.message ?: "An error occurred")
+                        error = triggered((throwable as HttpException).statusMessage ?: "Bir hata oluştu.")
                     )
                 }
             }

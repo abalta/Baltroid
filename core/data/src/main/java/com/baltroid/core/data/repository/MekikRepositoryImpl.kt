@@ -23,9 +23,9 @@ class MekikRepositoryImpl @Inject constructor(
         emit(BaltroidResult.loading())
         val response = networkDataSource.login(username, password)
         if (response.isSuccess()) {
-            emit(BaltroidResult.success(response.value.asLoginResponseModel()))
+            emit(BaltroidResult.success(response.value.result!!.asLoginResponseModel()))
         } else if (response.isFailure()) {
-            emit(BaltroidResult.failure(response.error))
+            emit(BaltroidResult.failure((response as BaltroidResult.Failure.HttpError).error))
         }
     }.flowOn(Dispatchers.IO)
 }

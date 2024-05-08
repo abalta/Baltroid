@@ -2,6 +2,10 @@ package com.baltroid.core.network.retrofit
 
 import com.baltroid.core.common.BaltroidResult
 import com.baltroid.core.common.HttpException
+import com.baltroid.core.network.model.DataResponse
+import com.baltroid.core.network.model.ErrorResponse
+import com.baltroid.core.network.util.defaultJson
+import kotlinx.serialization.json.Json
 import okio.Timeout
 import retrofit2.Call
 import retrofit2.Callback
@@ -30,10 +34,12 @@ internal class ResultCall<T>(proxy: Call<T>) : CallDelegate<T, BaltroidResult<T>
                     url = call.request().url.toString()
                 )
             } else {
+                val errorBody = response.errorBody()?.string()
+                val errorResponse = defaultJson.decodeFromString<ErrorResponse>(errorBody.orEmpty())
                 BaltroidResult.failure(
                     HttpException(
                         statusCode = response.code(),
-                        statusMessage = response.message(),
+                        statusMessage = errorResponse.message ?: response.message(),
                         url = call.request().url.toString()
                     )
                 )

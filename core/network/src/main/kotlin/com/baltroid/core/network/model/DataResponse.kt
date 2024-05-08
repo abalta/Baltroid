@@ -13,3 +13,11 @@ data class DataResponse<T>(
     @SerialName(Constants.Fields.MESSAGE)
     val message: String?
 )
+
+@Serializable
+data class ErrorResponse(
+    @SerialName(Constants.Fields.STATUS)
+    val status: Int?,
+    @SerialName(Constants.Fields.MESSAGE)
+    val message: String?
+)

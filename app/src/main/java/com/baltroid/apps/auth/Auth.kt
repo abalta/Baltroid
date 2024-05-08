@@ -74,7 +74,6 @@ fun LoginSheet(
     val uiState by viewModel.authState.collectAsStateLifecycleAware()
 
     EventEffect(event = uiState.error, onConsumed = viewModel::onConsumedFailedEvent) {
-        Log.d("LoginSheet", "ErrorC: $it")
         snackbarStateScope.launch {
             snackbarHostState.showSnackbar(message = it)
         }
