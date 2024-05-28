@@ -15,6 +15,8 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:domain"))
+
     api(libs.androidx.compose.foundation)
     api(libs.androidx.compose.foundation.layout)
     api(libs.androidx.compose.material.iconsExtended)

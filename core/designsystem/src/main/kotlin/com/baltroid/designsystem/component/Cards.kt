@@ -40,11 +40,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.baltroid.core.designsystem.R
 import com.baltroid.designsystem.theme.electricVioletColor
+import com.mobven.domain.model.LessonModel
 
 @Composable
-fun MekikCard(caption: String, title: String, category: String, onClick: () -> Unit) {
+fun MekikCard(caption: String, title: String, popular: Boolean = false, painter: String = "", onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .padding(start = 13.dp, end = 13.dp, top = 10.dp)
@@ -67,22 +69,17 @@ fun MekikCard(caption: String, title: String, category: String, onClick: () -> U
             })
     ) {
         Row(Modifier.fillMaxSize()) {
-            Image(
-                painter = painterResource(id = R.drawable.sample_thumbnall),
-                contentDescription = "thumbnail",
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
-                    .padding(top = 10.dp, bottom = 10.dp, start = 6.dp)
-                    .width(117.dp)
-                    .clip(RoundedCornerShape(9.dp))
-            )
+            MekikCardImage(modifier = Modifier
+                .align(Alignment.CenterVertically), painter = painter)
             Column(
                 Modifier
                     .fillMaxSize()
                     .padding(top = 10.dp, bottom = 10.dp, end = 6.dp, start = 12.dp),
                 verticalArrangement = Arrangement.Bottom
             ) {
-                SmallBold(text = category, color = MaterialTheme.colorScheme.electricVioletColor)
+                if(popular) {
+                    SmallBold(text = "Popüler", color = MaterialTheme.colorScheme.electricVioletColor)
+                }
                 Body(text = title, modifier = Modifier.padding(top = 4.dp))
                 CaptionSmall(
                     text = caption,
@@ -100,14 +97,14 @@ fun PreviewMekikCard() {
     MekikCard(
         "Taner Özdeş",
         "Dijital Dünyanın Antidijital Nefesi Dijital Dünyanın Antidijital Nefesi",
-        "Popüler"
+        false
     ) {
 
     }
 }
 
 @Composable
-fun MekikHorizontalCard(caption: String, title: String, category: String, onClick: () -> Unit) {
+fun MekikHorizontalCard(caption: String, title: String, popular: Boolean = false, painter: String = "", onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .width(181.dp)
@@ -131,22 +128,16 @@ fun MekikHorizontalCard(caption: String, title: String, category: String, onClic
             )
     ) {
         Column(Modifier.fillMaxSize()) {
-            Image(
-                painter = painterResource(id = R.drawable.sample_thumbnall),
-                contentDescription = "thumbnail",
-                contentScale = ContentScale.FillWidth,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(99.dp)
-                    .clip(RoundedCornerShape(12.dp))
-            )
+            MekikHorizontalCardImage(painter = painter)
             Column(
                 Modifier
                     .fillMaxSize()
                     .padding(top = 10.dp, bottom = 10.dp, end = 12.dp, start = 12.dp),
                 verticalArrangement = Arrangement.Top
             ) {
-                SmallBold(text = category, color = MaterialTheme.colorScheme.electricVioletColor)
+                if (popular) {
+                    SmallBold(text = "Popüler", color = MaterialTheme.colorScheme.electricVioletColor)
+                }
                 Body(
                     text = title, modifier = Modifier
                         .padding(top = 4.dp)
@@ -165,7 +156,7 @@ fun MekikHorizontalCard(caption: String, title: String, category: String, onClic
 @Preview
 @Composable
 fun PreviewMekikHorizontalCard() {
-    MekikHorizontalCard("Taner Özdeş", "Dijital Dünyanın Antidijital Nefesi", "Popüler") {
+    MekikHorizontalCard("Taner Özdeş", "Dijital Dünyanın Antidijital Nefesi", true) {
 
     }
 }
@@ -176,6 +167,7 @@ fun MekikCardDouble(
     captionBottom: String,
     title: String,
     category: String = "",
+    painter: String = "",
     onClick: () -> Unit
 ) {
     Box(
@@ -200,9 +192,11 @@ fun MekikCardDouble(
             })
     ) {
         Row(Modifier.fillMaxSize()) {
-            Image(
-                painter = painterResource(id = R.drawable.sample_thumbnall),
+            AsyncImage(
+                model = painter,
                 contentDescription = "thumbnail",
+                placeholder = painterResource(id = R.drawable.logo),
+                contentScale = ContentScale.FillWidth,
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
                     .padding(top = 10.dp, bottom = 10.dp, start = 6.dp)
@@ -277,7 +271,7 @@ fun PreviewMekikPagerItem() {
 }
 
 @Composable
-fun ExpandableCard(title: String) {
+fun ExpandableCard(title: String, lessons: List<LessonModel>) {
     var expanded by remember { mutableStateOf(false) }
     var angle by remember { mutableFloatStateOf(0f) }
     val rotation = remember { Animatable(angle) }
@@ -350,7 +344,7 @@ fun ExpandableCard(title: String) {
                 )
             }
             if (expanded) {
-                for (i in 0..2) {
+                lessons.forEach {
                     Column(Modifier.clickable(
                         onClick = {
 
@@ -366,7 +360,7 @@ fun ExpandableCard(title: String) {
                             color = Color.Black.copy(0.3f)
                         )
                         MediumBold(
-                            text = "Tanıtım",
+                            text = it.name,
                             modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp)
                         )
                         Row(
@@ -381,14 +375,16 @@ fun ExpandableCard(title: String) {
                                 modifier = Modifier.size(20.dp)
                             )
                             MediumText(
-                                text = "02:36",
+                                text = it.length,
                                 modifier = Modifier.padding(start = 8.dp, end = 16.dp)
                             )
-                            BadgeText(text = "Ücretsiz")
+                            if (it.isPromo) {
+                                BadgeText(text = "Ücretsiz")
+                            }
                             Spacer(modifier = Modifier.weight(1f))
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_play),
-                                contentDescription = "time",
+                                contentDescription = "play",
                                 modifier = Modifier.size(22.dp)
                             )
                         }
@@ -402,7 +398,7 @@ fun ExpandableCard(title: String) {
 @Preview
 @Composable
 fun PreviewExpandableCard() {
-    ExpandableCard("Expandable Card")
+    ExpandableCard("Expandable Card", emptyList())
 }
 
 @Composable

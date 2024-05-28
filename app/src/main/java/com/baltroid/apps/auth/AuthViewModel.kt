@@ -6,6 +6,7 @@ import com.baltroid.core.common.HttpException
 import com.baltroid.core.common.handle
 import com.baltroid.model.LoginModel
 import com.mobven.domain.usecase.LoginUseCase
+import com.mobven.domain.usecase.RegisterUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import de.palm.composestateevents.StateEvent
 import de.palm.composestateevents.StateEventWithContent
@@ -25,7 +26,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    private val loginUseCase: LoginUseCase
+    private val loginUseCase: LoginUseCase,
+    private val registerUseCase: RegisterUseCase
 ) : ViewModel() {
 
     private val _authState = MutableStateFlow(AuthState())
@@ -40,6 +42,32 @@ class AuthViewModel @Inject constructor(
     fun login(email: String, password: String) {
         viewModelScope.launch {
             loginUseCase(email, password).handle {
+                onLoading {
+                    state = state.copy(isLoading = true, loginModel = null)
+                }
+                onSuccess { loginResponseModel ->
+                    state = state.copy(
+                        isLoading = false, loginModel = LoginModel(
+                            loginResponseModel.customerId,
+                            loginResponseModel.email,
+                            loginResponseModel.token
+                        ), triggered
+                    )
+                }
+                onFailure { throwable ->
+                    state = state.copy(
+                        isLoading = false,
+                        loginModel = null,
+                        error = triggered((throwable as HttpException).statusMessage ?: "Bir hata oluştu.")
+                    )
+                }
+            }
+        }
+    }
+
+    fun register(email: String, password: String, firstname: String, lastname: String, agreement: Boolean) {
+        viewModelScope.launch {
+            registerUseCase(email, password, firstname, lastname, agreement).handle {
                 onLoading {
                     state = state.copy(isLoading = true, loginModel = null)
                 }

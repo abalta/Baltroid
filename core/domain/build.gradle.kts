@@ -9,7 +9,10 @@ android {
 
 dependencies {
     api(project(":core:common"))
+    implementation(project(":core:network"))
+    
     implementation(libs.hilt.android)
+    implementation(libs.pagingv3)
 
     kapt(libs.hilt.compiler)
 }

@@ -34,9 +34,9 @@ fun MyCoursesScreen(onAction: OnAction) {
                 .padding(start = 24.dp, end = 24.dp))
         }
         items(12) {
-            MekikCard(caption = "Taner Özdeş", title = "Dijital Dünyanın Antidijital Nefesi", category = "Popüler") {
+            MekikCard(caption = "Taner Özdeş", title = "Dijital Dünyanın Antidijital Nefesi", popular = true) {
                 onAction(
-                    UiAction.OnCourseClick
+                    UiAction.OnCourseClick(3)
                 )
             }
         }

@@ -1,6 +1,7 @@
 package com.baltroid.designsystem.component
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -24,16 +25,18 @@ import com.baltroid.core.designsystem.R
 import com.baltroid.designsystem.theme.electricVioletColor
 
 @Composable
-fun TopBar(navController: NavHostController, onMenuClick: () -> Unit, onNotificationClick: () -> Unit) {
+fun TopBar(
+    navController: NavHostController,
+    onMenuClick: () -> Unit
+) {
     var route by rememberSaveable { mutableStateOf("") }
     navController.addOnDestinationChangedListener { _, destination, _ ->
         route = destination.route.orEmpty()
     }
-    Row(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 10.dp, end = 10.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
+            .padding(start = 10.dp, end = 10.dp)
     ) {
         IconButton(onClick = onMenuClick) {
             Icon(
@@ -45,21 +48,15 @@ fun TopBar(navController: NavHostController, onMenuClick: () -> Unit, onNotifica
             painter = painterResource(id = R.drawable.logo),
             contentDescription = "logo",
             modifier = Modifier
-                .size(56.dp, 33.dp)
-                .align(Alignment.CenterVertically),
-            tint = MaterialTheme.colorScheme.electricVioletColor
+                .fillMaxWidth()
+                .size(56.dp, 33.dp).align(Alignment.Center),
+            tint = MaterialTheme.colorScheme.electricVioletColor,
         )
-        IconButton(onClick = onNotificationClick) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_bell),
-                contentDescription = "notification"
-            )
-        }
     }
 }
 
 @Preview
 @Composable
 fun PreviewTopBar() {
-    TopBar(navController = rememberNavController(), onMenuClick = {}, onNotificationClick = {})
+    TopBar(navController = rememberNavController(), onMenuClick = {})
 }

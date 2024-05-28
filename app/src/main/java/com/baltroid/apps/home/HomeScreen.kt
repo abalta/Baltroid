@@ -4,9 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideIn
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,23 +14,26 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -51,9 +51,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.baltroid.apps.AppState
 import com.baltroid.apps.auth.LoginSheet
+import com.baltroid.apps.ext.collectAsStateLifecycleAware
 import com.baltroid.apps.navigation.BottomBar
 import com.baltroid.apps.navigation.BottomNavGraph
 import com.baltroid.apps.navigation.OnAction
@@ -71,6 +73,8 @@ import com.baltroid.designsystem.component.TopBar
 import com.baltroid.designsystem.component.shadow
 import com.baltroid.designsystem.navbar.BottomBarScreen
 import com.baltroid.designsystem.theme.electricVioletColor
+import com.mobven.domain.model.CourseModel
+import de.palm.composestateevents.EventEffect
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -91,30 +95,24 @@ fun HomeScreen() {
         containerColor = Color.White,
         topBar = {
             AnimatedVisibility(
-                visible = appState.shouldShowTopBar,
-                enter = fadeIn(
+                visible = appState.shouldShowTopBar, enter = fadeIn(
                     animationSpec = tween(300)
-                ),
-                exit = fadeOut(
+                ), exit = fadeOut(
                     animationSpec = tween(300)
                 )
             ) {
-                TopBar(navController = navController, {
+                TopBar(navController = navController) {
                     showBottomSheet = true
-                }, {
-                    navController.navigate(BottomBarScreen.Notifications.route)
-                })
+                }
             }
         },
         bottomBar = {
             BottomBar(navController = navController)
-        }
-    ) { innerPadding ->
+        }) { innerPadding ->
         if (showBottomSheet) {
-            ModalBottomSheet(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 48.dp),
+            ModalBottomSheet(modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 48.dp),
                 dragHandle = null,
                 sheetState = sheetState,
                 containerColor = Color.White,
@@ -126,12 +124,22 @@ fun HomeScreen() {
                         showBottomSheet = false
                     }
                 }, modifier = Modifier.padding(top = 30.dp, start = 24.dp)) {
-                    Image(painter = painterResource(id = R.drawable.ic_close), contentDescription = "close")
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_close),
+                        contentDescription = "close"
+                    )
                 }
-                FilterHeadText(text = stringResource(id = R.string.title_menu), showIcon = false, modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 22.dp, top = 24.dp))
-                MenuButton(text = stringResource(id = R.string.title_courses), icon = R.drawable.ic_bottom_play) {
+                FilterHeadText(
+                    text = stringResource(id = R.string.title_menu),
+                    showIcon = false,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 22.dp, top = 24.dp)
+                )
+                MenuButton(
+                    text = stringResource(id = R.string.title_courses),
+                    icon = R.drawable.ic_bottom_play
+                ) {
                     navController.navigate(BottomBarScreen.Courses.route) {
                         launchSingleTop = true
                         restoreState = true
@@ -140,7 +148,10 @@ fun HomeScreen() {
                         showBottomSheet = false
                     }
                 }
-                MenuButton(text = stringResource(id = R.string.title_instructors), icon = R.drawable.ic_instructor) {
+                MenuButton(
+                    text = stringResource(id = R.string.title_instructors),
+                    icon = R.drawable.ic_instructor
+                ) {
                     navController.navigate(BottomBarScreen.Instructors.route) {
                         launchSingleTop = true
                         restoreState = true
@@ -149,7 +160,10 @@ fun HomeScreen() {
                         showBottomSheet = false
                     }
                 }
-                MenuButton(text = stringResource(id = R.string.title_academies), icon = R.drawable.ic_academy) {
+                MenuButton(
+                    text = stringResource(id = R.string.title_academies),
+                    icon = R.drawable.ic_academy
+                ) {
                     navController.navigate(BottomBarScreen.Academies.route) {
                         launchSingleTop = true
                         restoreState = true
@@ -158,7 +172,10 @@ fun HomeScreen() {
                         showBottomSheet = false
                     }
                 }
-                MenuButton(text = stringResource(id = R.string.title_favorites), icon = R.drawable.ic_favorite) {
+                MenuButton(
+                    text = stringResource(id = R.string.title_favorites),
+                    icon = R.drawable.ic_favorite
+                ) {
                     navController.navigate(BottomBarScreen.Favorites.route) {
                         launchSingleTop = true
                         restoreState = true
@@ -167,17 +184,16 @@ fun HomeScreen() {
                         showBottomSheet = false
                     }
                 }
-                MenuButton(text = stringResource(id = R.string.title_settings), icon = R.drawable.ic_settings) {
-                    navController.navigate(BottomBarScreen.Settings.route) {
+                MenuButton(
+                    text = stringResource(id = R.string.title_about_app), icon = R.drawable.ic_about
+                ) {
+                    navController.navigate(BottomBarScreen.About.route) {
                         launchSingleTop = true
                         restoreState = true
                     }
                     sheetStateScope.hideSheetAndUpdateState(sheetState) {
                         showBottomSheet = false
                     }
-                }
-                MenuButton(text = stringResource(id = R.string.title_about_app), icon = R.drawable.ic_about) {
-
                 }
             }
         }
@@ -188,40 +204,93 @@ fun HomeScreen() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-fun CoroutineScope.hideSheetAndUpdateState(sheetState: SheetState, showBottomSheet: () -> Unit) = launch {
-    sheetState.hide()
-}.invokeOnCompletion {
-    if (!sheetState.isVisible) {
-        showBottomSheet.invoke()
+fun CoroutineScope.hideSheetAndUpdateState(sheetState: SheetState, showBottomSheet: () -> Unit) =
+    launch {
+        sheetState.hide()
+    }.invokeOnCompletion {
+        if (!sheetState.isVisible) {
+            showBottomSheet.invoke()
+        }
     }
-}
 
 @Composable
-fun HomeContent(onAction: OnAction) {
-    LazyColumn(modifier = Modifier
-        .fillMaxSize()
-        .padding(top = 56.dp, bottom = 64.dp), contentPadding = PaddingValues(vertical = 12.dp)) {
-        item {
-            HomePager()
+fun HomeContent(
+    viewModel: HomeViewModel = hiltViewModel(), onAction: OnAction
+) {
+    val uiState by viewModel.homeState.collectAsStateLifecycleAware()
+    val snackbarStateScope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    EventEffect(event = uiState.error, onConsumed = viewModel::onConsumedFailedEvent) {
+        snackbarStateScope.launch {
+            snackbarHostState.showSnackbar(message = it)
         }
-        item {
-            RowtitleText(text = "Son Eklenen Eğitimler", modifier = Modifier.padding(start = 32.dp, end = 32.dp, top = 22.dp))
+    }
+
+    Scaffold(
+        containerColor = Color.White,
+        snackbarHost = {
+            SnackbarHost(
+                hostState = snackbarHostState
+            )
         }
-        item {
-            RecentCourses(onAction)
-            Spacer(modifier = Modifier.height(8.dp))
-        }
-        items(12) {
-            MekikCard(caption = "Taner Özdeş", title = "Dijital Dünyanın Antidijital Nefesi", category = "Popüler") {
-                onAction(
-                    UiAction.OnCourseClick
-                )
-            }
-        }
-        item {
-            Spacer(modifier = Modifier.height(13.dp))
-            MekikOutlinedButton(text = "Tüm Eğitimler") {
-                onAction(UiAction.OnAllCoursesClick)
+    ) { innerPadding ->
+        Box(modifier = Modifier.fillMaxSize()) {
+            when {
+                uiState.isLoading -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
+
+                uiState.courses.isNotEmpty() -> {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(top = 56.dp, bottom = 64.dp),
+                        contentPadding = PaddingValues(vertical = 12.dp)
+                    ) {
+                        item {
+                            HomePager(viewModel)
+                        }
+                        if (uiState.latestCourses.isNotEmpty()) {
+                            item {
+                                RowtitleText(
+                                    text = "Son Eklenen Eğitimler",
+                                    modifier = Modifier.padding(
+                                        start = 32.dp,
+                                        end = 32.dp,
+                                        top = 22.dp
+                                    )
+                                )
+                            }
+                            item {
+                                RecentCourses(onAction, uiState.latestCourses)
+                                Spacer(modifier = Modifier.height(8.dp))
+                            }
+                        }
+                        items(key = {
+                            it.id
+                        }, items = uiState.courses) {
+                            MekikCard(
+                                caption = it.author,
+                                title = it.title,
+                                popular = it.popular,
+                                painter = it.cover
+                            ) {
+                                onAction(
+                                    UiAction.OnCourseClick(it.id)
+                                )
+                            }
+                        }
+                        item {
+                            Spacer(modifier = Modifier.height(13.dp))
+                            MekikOutlinedButton(text = "Tüm Eğitimler") {
+                                onAction(UiAction.OnAllCoursesClick)
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -229,14 +298,18 @@ fun HomeContent(onAction: OnAction) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun HomePager() {
+fun HomePager(
+    viewModel: HomeViewModel
+) {
     val pagerState = rememberPagerState(pageCount = {
         3
     })
     var showLoginSheet by rememberSaveable { mutableStateOf(false) }
+
+    val uiState by viewModel.homeState.collectAsStateLifecycleAware()
+
     Column(
-        modifier =
-        Modifier
+        modifier = Modifier
             .padding(start = 13.dp, end = 13.dp)
             .shadow(
                 color = Color.Black.copy(0.05f),
@@ -255,9 +328,13 @@ fun HomePager() {
         Row(
             Modifier
                 .fillMaxWidth()
-                .padding(start = 13.dp, end = 13.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                .padding(start = 13.dp, end = 13.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Row(
-                Modifier.height(6.dp),
+                Modifier.height(38.dp),
+                verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(2.dp)
             ) {
                 repeat(3) { iteration ->
@@ -267,8 +344,7 @@ fun HomePager() {
                         )
                     Box(
                         modifier = Modifier
-                            .fillMaxHeight()
-                            .width(6.dp)
+                            .size(6.dp)
                             .border(
                                 1.dp,
                                 MaterialTheme.colorScheme.electricVioletColor,
@@ -280,30 +356,39 @@ fun HomePager() {
                     )
                 }
             }
-            TextButton(
-                onClick = {
+            if (uiState.isLoggedIn.not()) {
+                TextButton(onClick = {
                     showLoginSheet = true
+                }) {
+                    ButtonText("Giriş Yap")
                 }
-            ) {
-                ButtonText("Giriş Yap")
-            }
-            if (showLoginSheet) {
-                LoginSheet {
-                    showLoginSheet = false
+                if (showLoginSheet) {
+                    LoginSheet(onDismiss = {
+                        showLoginSheet = false
+                    }, checkLogin = {
+                        viewModel.isUserLoggedIn()
+                    })
                 }
             }
         }
-
     }
 }
 
 @Composable
-fun RecentCourses(onAction: OnAction) {
-    LazyRow(contentPadding = PaddingValues(start = 14.dp, top = 14.dp), horizontalArrangement = Arrangement.spacedBy(24.dp)) {
-        items(5) {
-            MekikHorizontalCard(caption = "Taner Özdeş", title = "Dijital Dünyanın Antidijital Nefesi", category = "Popüler") {
+fun RecentCourses(onAction: OnAction, courseList: List<CourseModel>) {
+    LazyRow(
+        contentPadding = PaddingValues(start = 14.dp, top = 14.dp),
+        horizontalArrangement = Arrangement.spacedBy(24.dp)
+    ) {
+        items(courseList.size) {
+            MekikHorizontalCard(
+                caption = courseList[it].author,
+                title = courseList[it].title,
+                popular = courseList[it].popular,
+                painter = courseList[it].cover
+            ) {
                 onAction(
-                    UiAction.OnCourseClick
+                    UiAction.OnCourseClick(courseList[it].id)
                 )
             }
         }

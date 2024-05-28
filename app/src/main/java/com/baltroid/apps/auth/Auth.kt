@@ -57,7 +57,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun LoginSheet(
     viewModel: AuthViewModel = hiltViewModel(),
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    checkLogin: () -> Unit,
 ) {
     val sheetState = rememberModalBottomSheetState(
         true
@@ -82,7 +83,7 @@ fun LoginSheet(
     if (uiState.isLoading) {
         Log.d("LoginSheet", "Loading")
     } else if (uiState.loginModel != null) {
-        Log.d("LoginSheet", "LoginModel: ${uiState.loginModel}")
+        checkLogin()
     } else if (uiState.error.toString().isNotEmpty()) {
         Log.d("LoginSheet", "Error: ${uiState.error}")
     }
@@ -197,9 +198,9 @@ fun LoginSheet(
             }
         }
         if (showRegisterSheet) {
-            RegisterSheet {
+            RegisterSheet(viewModel, onDismiss = {
                 showRegisterSheet = false
-            }
+            }, checkLogin = checkLogin)
         }
     }
 }
@@ -207,18 +208,52 @@ fun LoginSheet(
 @Composable
 @Preview
 fun LoginSheetPreview() {
-    LoginSheet {
+    LoginSheet(onDismiss = {
 
-    }
+    }, checkLogin = {
+
+    })
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegisterSheet(onDismiss: () -> Unit) {
+fun RegisterSheet(
+    viewModel: AuthViewModel = hiltViewModel(),
+    onDismiss: () -> Unit,
+    checkLogin: () -> Unit
+) {
     val sheetState = rememberModalBottomSheetState(
         true
     )
     val sheetStateScope = rememberCoroutineScope()
+    var nameError by rememberSaveable { mutableStateOf(false) }
+    var surnameError by rememberSaveable { mutableStateOf(false) }
+    var emailError by rememberSaveable { mutableStateOf(false) }
+    var passwordError by rememberSaveable { mutableStateOf(false) }
+    var email by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
+    var name by rememberSaveable { mutableStateOf("") }
+    var surname by rememberSaveable { mutableStateOf("") }
+    var agreement by rememberSaveable { mutableStateOf(false) }
+    val snackbarStateScope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    val uiState by viewModel.authState.collectAsStateLifecycleAware()
+
+    EventEffect(event = uiState.error, onConsumed = viewModel::onConsumedFailedEvent) {
+        snackbarStateScope.launch {
+            snackbarHostState.showSnackbar(message = it)
+        }
+    }
+
+    if (uiState.isLoading) {
+        Log.d("LoginSheet", "Loading")
+    } else if (uiState.loginModel != null) {
+        Log.d("LoginSheet", "LoginModel: ${uiState.loginModel}")
+        checkLogin()
+    } else if (uiState.error.toString().isNotEmpty()) {
+        Log.d("LoginSheet", "Error: ${uiState.error}")
+    }
 
     ModalBottomSheet(
         modifier = Modifier
@@ -230,83 +265,130 @@ fun RegisterSheet(onDismiss: () -> Unit) {
         onDismissRequest = {
             onDismiss()
         }) {
-        Column(
-            modifier = Modifier
-                .fillMaxHeight(0.9f)
-                .verticalScroll(rememberScrollState())
-        ) {
-            IconButton(onClick = {
-                sheetStateScope.hideSheetAndUpdateState(sheetState) {
-                    onDismiss()
+        Box {
+            Scaffold(
+                containerColor = Color.White,
+                snackbarHost = {
+                    SnackbarHost(
+                        hostState = snackbarHostState,
+                        modifier = Modifier.padding(bottom = 48.dp)
+                    )
                 }
-            }, modifier = Modifier.padding(top = 30.dp, start = 24.dp)) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_close),
-                    contentDescription = "close"
+            ) { padding ->
+                Column(
+                    modifier = Modifier
+                        .fillMaxHeight(0.9f)
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    IconButton(onClick = {
+                        sheetStateScope.hideSheetAndUpdateState(sheetState) {
+                            onDismiss()
+                        }
+                    }, modifier = Modifier.padding(top = 30.dp, start = 24.dp)) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_close),
+                            contentDescription = "close"
+                        )
+                    }
+                    FilterHeadText(
+                        text = stringResource(id = R.string.title_register),
+                        showIcon = false,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 22.dp, top = 24.dp)
+                    )
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_auth), modifier = Modifier
+                            .padding(top = 24.dp)
+                            .align(Alignment.CenterHorizontally), contentDescription = "auth"
+                    )
+                    MekikTextField(
+                        label = stringResource(id = R.string.title_name), modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 12.dp, end = 12.dp, top = 24.dp),
+                        error = nameError,
+                        errorMessage = "Hatalı İsim Girişi"
+                    ) {
+                        nameError = false
+                        name = it
+                    }
+                    MekikTextField(
+                        label = stringResource(id = R.string.title_surname), modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 12.dp, end = 12.dp, top = 16.dp),
+                        error = surnameError,
+                        errorMessage = "Hatalı Soyisim Girişi"
+                    ) {
+                        surnameError = false
+                        surname = it
+                    }
+                    MekikTextField(
+                        label = stringResource(id = R.string.title_email),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 12.dp, end = 12.dp, top = 16.dp),
+                        error = emailError,
+                        errorMessage = "Hatalı E-posta Girişi",
+                        keyboardType = KeyboardType.Email
+                    ) {
+                        emailError = false
+                        email = it
+                    }
+                    MekikTextField(
+                        label = stringResource(id = R.string.text_password), modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 12.dp, end = 12.dp, top = 16.dp),
+                        error = passwordError,
+                        errorMessage = "Hatalı Şifre Girişi",
+                        keyboardType = KeyboardType.Password,
+                        visualTransformation = PasswordVisualTransformation()
+                    ) {
+                        passwordError = false
+                        password = it
+                    }
+                    MekikCheckBox(
+                        label = "Mekik'in bana yenilikler ve güncellemeler ile ilgili eposta göndermesini onaylıyorum.",
+                        modifier = Modifier.padding(top = 16.dp, start = 24.dp, end = 24.dp)
+                    ) {
+                        agreement = true
+                    }
+                    MekikFilledButton(
+                        text = stringResource(id = R.string.title_register),
+                        modifier = Modifier.padding(top = 16.dp, start = 24.dp, end = 24.dp)
+                    ) {
+                        if (name.isEmpty()) {
+                            nameError = true
+                            return@MekikFilledButton
+                        } else if (surname.isEmpty()) {
+                            surnameError = true
+                            return@MekikFilledButton
+                        } else if (email.isValidEmail().not()) {
+                            emailError = true
+                            return@MekikFilledButton
+                        } else if (password.isValidPassword().not()) {
+                            passwordError = true
+                            return@MekikFilledButton
+                        } else {
+                            viewModel.register(email, password, name, surname, agreement)
+                        }
+                    }
+                    Caption(
+                        text = stringResource(id = R.string.text_privacy), modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 24.dp, end = 24.dp, top = 24.dp)
+                    )
+                    MekikOutlinedButton(
+                        text = stringResource(id = R.string.text_btn_already_register),
+                        modifier = Modifier.padding(top = 16.dp, start = 11.dp, end = 11.dp)
+                    ) {
+                        onDismiss()
+                    }
+                }
+            }
+            if (uiState.isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center)
                 )
-            }
-            FilterHeadText(
-                text = stringResource(id = R.string.title_register),
-                showIcon = false,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 22.dp, top = 24.dp)
-            )
-            Icon(
-                painter = painterResource(id = R.drawable.ic_auth), modifier = Modifier
-                    .padding(top = 24.dp)
-                    .align(Alignment.CenterHorizontally), contentDescription = "auth"
-            )
-            MekikTextField(
-                label = stringResource(id = R.string.title_name), modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 12.dp, end = 12.dp, top = 24.dp)
-            ) {
-
-            }
-            MekikTextField(
-                label = stringResource(id = R.string.title_surname), modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 12.dp, end = 12.dp, top = 16.dp)
-            ) {
-
-            }
-            MekikTextField(
-                label = stringResource(id = R.string.title_email), modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 12.dp, end = 12.dp, top = 16.dp)
-            ) {
-
-            }
-            MekikTextField(
-                label = stringResource(id = R.string.text_password), modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 12.dp, end = 12.dp, top = 16.dp)
-            ) {
-
-            }
-            MekikCheckBox(
-                label = "Mekik'in bana yenilikler ve güncellemeler ile ilgili eposta göndermesini onaylıyorum.",
-                modifier = Modifier.padding(top = 16.dp, start = 24.dp, end = 24.dp)
-            ) {
-
-            }
-            MekikFilledButton(
-                text = stringResource(id = R.string.title_register),
-                modifier = Modifier.padding(top = 16.dp, start = 24.dp, end = 24.dp)
-            ) {
-
-            }
-            Caption(
-                text = stringResource(id = R.string.text_privacy), modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 24.dp, end = 24.dp, top = 24.dp)
-            )
-            MekikOutlinedButton(
-                text = stringResource(id = R.string.text_btn_already_register),
-                modifier = Modifier.padding(top = 16.dp, start = 11.dp, end = 11.dp)
-            ) {
-                onDismiss()
             }
         }
     }
@@ -315,7 +397,12 @@ fun RegisterSheet(onDismiss: () -> Unit) {
 @Composable
 @Preview
 fun RegisterSheetPreview() {
-    RegisterSheet {
+    RegisterSheet(
+        onDismiss = {
 
-    }
+        },
+        checkLogin = {
+
+        }
+    )
 }

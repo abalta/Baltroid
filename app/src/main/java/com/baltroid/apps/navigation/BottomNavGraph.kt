@@ -8,19 +8,26 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.runtime.Composable
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import androidx.navigation.navigation
+import com.baltroid.apps.about.AboutScreen
 import com.baltroid.apps.academies.AcademiesScreen
+import com.baltroid.apps.academy.AcademyDetailViewModel
 import com.baltroid.apps.academy.AcademyScreen
+import com.baltroid.apps.course.CourseDetailViewModel
 import com.baltroid.apps.course.CourseScreen
 import com.baltroid.apps.courses.CoursesScreen
 import com.baltroid.apps.courses.MyCoursesScreen
 import com.baltroid.apps.favorites.FavoritesScreen
 import com.baltroid.apps.home.HomeContent
 import com.baltroid.apps.instructor.InstructorScreen
+import com.baltroid.apps.instructor.TeacherDetailViewModel
 import com.baltroid.apps.instructors.InstructorsScreen
 import com.baltroid.apps.notifications.NotificationsScreen
 import com.baltroid.apps.profile.ProfileScreen
@@ -48,7 +55,10 @@ fun BottomNavGraph(
             HomeContent {
                 when (it) {
                     is UiAction.OnAllCoursesClick -> navController.navigate(BottomBarScreen.Courses.route)
-                    is UiAction.OnCourseClick -> navController.navigate(DetailsScreen.Course.route)
+                    is UiAction.OnCourseClick -> {
+                        navController.navigate("course/${it.id}")
+                    }
+
                     else -> {
 
                     }
@@ -73,22 +83,36 @@ fun BottomNavGraph(
         }
         composable(route = BottomBarScreen.Academies.route) {
             AcademiesScreen {
-                navController.navigate(DetailsScreen.Academy.route)
+                when (it) {
+                    is UiAction.OnAcademyClick -> {
+                        navController.navigate("academy/${it.id}")
+                    }
+                    else -> {
+
+                    }
+                }
             }
         }
         composable(route = BottomBarScreen.Instructors.route) {
             InstructorsScreen {
-                navController.navigate(Graph.DETAIL)
+                when (it) {
+                    is UiAction.OnInstructorClick -> {
+                        navController.navigate("instructor/${it.id}")
+                    }
+
+                    else -> {
+
+                    }
+                }
             }
         }
         composable(route = BottomBarScreen.Favorites.route) {
             FavoritesScreen()
         }
-        composable(route = BottomBarScreen.Notifications.route) {
-            NotificationsScreen()
-        }
-        composable(route = BottomBarScreen.Settings.route) {
-            SettingsScreen()
+        composable(route = BottomBarScreen.About.route) {
+            AboutScreen {
+                navController.popBackStack()
+            }
         }
         detailsNavGraph(navController = navController)
     }
@@ -99,18 +123,55 @@ fun NavGraphBuilder.detailsNavGraph(navController: NavHostController) {
         startDestination = DetailsScreen.Instructor.route,
         route = Graph.DETAIL
     ) {
-        composable(DetailsScreen.Instructor.route) {
-            InstructorScreen {
+        composable(DetailsScreen.Instructor.route, arguments = listOf(
+            navArgument("id") {
+                type = NavType.IntType
+            }
+        )) {
+            val viewModel = hiltViewModel<TeacherDetailViewModel>()
+            InstructorScreen(viewModel) {
+                when (it) {
+                    is UiAction.OnBackClick -> navController.popBackStack()
+                    is UiAction.OnCourseClick -> {
+                        navController.navigate("course/${it.id}")
+                    }
 
+                    else -> {
+
+                    }
+                }
             }
         }
-        composable(DetailsScreen.Academy.route) {
-            AcademyScreen {
+        composable(DetailsScreen.Academy.route, arguments = listOf(
+            navArgument("id") {
+                type = NavType.IntType
+            }
+        )) {
+            val viewModel = hiltViewModel<AcademyDetailViewModel>()
+            AcademyScreen(viewModel) {
+                when (it) {
+                    is UiAction.OnBackClick -> navController.popBackStack()
+                    is UiAction.OnCourseClick -> {
+                        navController.navigate("course/${it.id}")
+                    }
+                    is UiAction.OnInstructorClick -> {
+                        navController.navigate("instructor/${it.id}")
+                    }
+                    else -> {
 
+                    }
+                }
             }
         }
-        composable(DetailsScreen.Course.route) {
-            CourseScreen()
+        composable(DetailsScreen.Course.route, arguments = listOf(
+            navArgument("id") {
+                type = NavType.IntType
+            }
+        )) {
+            val viewModel = hiltViewModel<CourseDetailViewModel>()
+            CourseScreen(viewModel) {
+                navController.popBackStack()
+            }
         }
     }
 }

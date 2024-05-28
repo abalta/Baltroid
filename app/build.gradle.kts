@@ -78,5 +78,8 @@ dependencies {
     implementation(libs.androidx.profileinstaller)
     implementation(libs.kotlinx.coroutines.guava)
     implementation(libs.coil.kt)
+    implementation(libs.coil.kt.compose)
     implementation(libs.compose.state.events)
+    implementation(libs.pagingv3)
+    implementation(libs.pagingv3.compose)
 }

@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 interface BaltroidResultHandler<T> {
     fun onLoading(block: (T?) -> Unit)
     fun onSuccess(block: (T) -> Unit)
-    fun onFailure(block: (Throwable) -> Unit)
+    fun onFailure(block: (String) -> Unit)
 }
 
 fun <T> BaltroidResult<T>.handle(builder: BaltroidResultHandler<T>.() -> Unit) {
@@ -18,8 +18,14 @@ fun <T> BaltroidResult<T>.handle(builder: BaltroidResultHandler<T>.() -> Unit) {
             if (isSuccess()) block(value)
         }
 
-        override fun onFailure(block: (Throwable) -> Unit) {
-            if (isFailure()) block(error)
+        override fun onFailure(block: (String) -> Unit) {
+            if (isFailure()) block(
+                if (error is HttpException) {
+                    (error as HttpException).statusMessage.orEmpty()
+                } else {
+                    "Bir hata oluştu."
+                }
+            )
         }
     }
 

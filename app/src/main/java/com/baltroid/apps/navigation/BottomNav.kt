@@ -50,11 +50,24 @@ fun BottomBar(navController: NavHostController) {
         BottomBarScreen.Home, BottomBarScreen.Search, BottomBarScreen.Play, BottomBarScreen.Profile
     )
 
+    val bottomBarRoute = listOf(
+        BottomBarScreen.Instructors.route,
+        BottomBarScreen.Courses.route,
+        BottomBarScreen.Academies.route,
+        BottomBarScreen.Favorites.route,
+        BottomBarScreen.Profile.route,
+        BottomBarScreen.Search.route
+    )
+
     val navStackBackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navStackBackEntry?.destination
 
     val bottomBarDestination = screens.any { it.route == currentDestination?.route }
-    if (bottomBarDestination || currentDestination?.route == BottomBarScreen.Instructors.route || currentDestination?.route == BottomBarScreen.Courses.route || currentDestination?.route == BottomBarScreen.Academies.route || currentDestination?.route == BottomBarScreen.Favorites.route || currentDestination?.route == BottomBarScreen.Profile.route || currentDestination?.route == BottomBarScreen.Search.route || currentDestination?.route == BottomBarScreen.Notifications.route || currentDestination?.route == BottomBarScreen.Settings.route) {
+    val currentRoute = bottomBarRoute.any {
+        it == currentDestination?.route
+    }
+
+    if (bottomBarDestination || currentRoute) {
         Row(
             modifier = Modifier
                 .padding(start = 13.dp, end = 13.dp, top = 8.dp, bottom = 27.dp)

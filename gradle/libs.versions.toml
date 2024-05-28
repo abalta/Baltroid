@@ -6,7 +6,7 @@ androidxActivity = "1.9.0"
 androidxAppCompat = "1.6.1"
 androidxBrowser = "1.8.0"
 androidxComposeBom = "2024.05.00"
-androidxComposeCompiler = "1.5.11"
+androidxComposeCompiler = "1.5.14"
 androidxComposeRuntimeTracing = "1.0.0-beta01"
 androidxCore = "1.13.1"
 androidxCoreSplashscreen = "1.0.1"
@@ -38,7 +38,7 @@ hilt = "2.51.1"
 hiltExt = "1.2.0"
 jacoco = "0.8.7"
 junit4 = "4.13.2"
-kotlin = "2.0.0"
+kotlin = "1.9.24"
 kotlinxCoroutines = "1.8.1"
 kotlinxDatetime = "0.6.0"
 kotlinxSerializationJson = "1.6.3"
@@ -54,8 +54,9 @@ secrets = "2.0.1"
 turbine = "1.1.0"
 kotlinVersion = "1.9.0"
 junit = "1.1.5"
-material = "1.10.0"
+material = "1.12.0"
 compote-state-events = "2.2.0"
+paging = "3.2.1"
 
 [libraries]
 accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist" }
@@ -134,6 +135,8 @@ room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
 compose-state-events = { group = "com.github.leonard-palm", name = "compose-state-events", version.ref = "compote-state-events" }
+pagingv3 = { group = "androidx.paging", name = "paging-runtime-ktx", version.ref = "paging" }
+pagingv3-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "paging" }
 
 # Dependencies of the included build-logic
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }

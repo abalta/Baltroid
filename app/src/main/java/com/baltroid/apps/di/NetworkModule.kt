@@ -1,10 +1,12 @@
 package com.baltroid.apps.di
 
+import android.content.Context
+import com.baltroid.core.common.PreferencesHelper
 import com.baltroid.core.network.api.MekikApi
-import com.baltroid.core.network.api.MekikTokenProvider
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -14,14 +16,14 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideMekikApi(tokenProvider: MekikTokenProvider) = MekikApi(tokenProvider)
+    fun provideMekikApi(tokenProvider: PreferencesHelper) = MekikApi(tokenProvider)
 
-    @Provides
-    fun provideMekikTokenProvider() = object : MekikTokenProvider {
-        override val token: String? = null
-    }
 
     @Provides
     fun provideMekikService(api: MekikApi) = api.mekikService
+
+    @Provides
+    @Singleton
+    fun providePreferences(@ApplicationContext context: Context) = PreferencesHelper(context)
 
 }

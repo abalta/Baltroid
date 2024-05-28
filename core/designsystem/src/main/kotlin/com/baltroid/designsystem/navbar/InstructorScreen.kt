@@ -5,15 +5,15 @@ sealed class DetailsScreen(
     val icon: Int
 ) {
     data object Instructor : DetailsScreen(
-        route = "instructor",
+        route = "instructor/{id}",
         icon = 0
     )
     data object Academy : DetailsScreen(
-        route = "academy",
+        route = "academy/{id}",
         icon = 0
     )
     data object Course : DetailsScreen(
-        route = "course",
+        route = "course/{id}",
         icon = 0
     )
 }

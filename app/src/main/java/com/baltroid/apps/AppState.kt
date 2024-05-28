@@ -8,7 +8,7 @@ import com.baltroid.designsystem.navbar.BottomBarScreen
 
 @Stable
 class AppState(
-    val navController: NavController
+    private val navController: NavController
 ) {
     private val bottomBarTabs = listOf(
         BottomBarScreen.Home,
@@ -18,8 +18,6 @@ class AppState(
         BottomBarScreen.Academies,
         BottomBarScreen.Instructors,
         BottomBarScreen.Favorites,
-        BottomBarScreen.Notifications,
-        BottomBarScreen.Settings
     )
     private val bottomBarRoutes = bottomBarTabs.map { it.route }
 

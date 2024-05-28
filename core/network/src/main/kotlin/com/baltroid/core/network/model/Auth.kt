@@ -13,6 +13,22 @@ data class LoginRequestDto(
 )
 
 @Serializable
+data class RegisterRequestDto(
+    @SerialName(Constants.Fields.EMAIL)
+    val email: String,
+    @SerialName(Constants.Fields.PASSWORD)
+    val password: String,
+    @SerialName(Constants.Fields.PASSWORD_CONFIRMATION)
+    val passwordConfirmation: String,
+    @SerialName(Constants.Fields.FIRST_NAME)
+    val firstName: String,
+    @SerialName(Constants.Fields.LAST_NAME)
+    val lastName: String,
+    @SerialName(Constants.Fields.AGREEMENT)
+    val agreement: Boolean
+)
+
+@Serializable
 data class LoginResponseDto(
     @SerialName(Constants.Fields.TOKEN)
     val token: String?,
@@ -20,4 +36,28 @@ data class LoginResponseDto(
     val customerId: Int?,
     @SerialName(Constants.Fields.EMAIL)
     val email: String?
+)
+
+@Serializable
+data class ProfileDto(
+    @SerialName("id")
+    val id: Int?,
+    @SerialName("email")
+    val email: String?,
+    @SerialName("avatar")
+    val avatar: String?,
+    @SerialName("firstname")
+    val firstName: String?,
+    @SerialName("lastname")
+    val lastName: String?,
+    @SerialName("phone")
+    val phone: String?,
+    @SerialName("about_text")
+    val about: String?,
+)
+
+@Serializable
+data class ProfileEntity(
+    @SerialName("user")
+    val profile: ProfileDto
 )

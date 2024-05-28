@@ -35,7 +35,7 @@ fun NotificationsScreen() {
                 .padding(start = 24.dp, end = 24.dp, top = 12.dp))
         }
         items(2) {
-            MekikCard(caption = "Taner Özdeş", title = "Dijital Dünyanın Antidijital Nefesi", category = "") {
+            MekikCard(caption = "Taner Özdeş", title = "Dijital Dünyanın Antidijital Nefesi") {
 
             }
         }
@@ -45,7 +45,7 @@ fun NotificationsScreen() {
                 .padding(start = 24.dp, end = 24.dp, top = 12.dp))
         }
         items(2) {
-            MekikCard(caption = "CCIM Institute", title = "Zeynep Begüm Kocaçal", category = "") {
+            MekikCard(caption = "CCIM Institute", title = "Zeynep Begüm Kocaçal") {
 
             }
         }
