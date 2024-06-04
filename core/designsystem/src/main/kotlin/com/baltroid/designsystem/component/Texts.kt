@@ -36,6 +36,7 @@ import com.baltroid.designsystem.theme.mediumSmallStyle
 import com.baltroid.designsystem.theme.mediumStyle
 import com.baltroid.designsystem.theme.mediumTitleStyle
 import com.baltroid.designsystem.theme.menuStyle
+import com.baltroid.designsystem.theme.ratingBoldStyle
 import com.baltroid.designsystem.theme.rowTitleStyle
 import com.baltroid.designsystem.theme.sharkColor
 import com.baltroid.designsystem.theme.smallBoldStyle
@@ -131,6 +132,16 @@ fun HeadText(text: String, modifier: Modifier = Modifier, color: Color = Color.B
         modifier = modifier,
         color = color,
         style = MaterialTheme.typography.headerStyle
+    )
+}
+
+@Composable
+fun RatingText(text: String, modifier: Modifier = Modifier, color: Color = MaterialTheme.colorScheme.electricVioletColor) {
+    Text(
+        text = text,
+        modifier = modifier,
+        color = color,
+        style = MaterialTheme.typography.ratingBoldStyle
     )
 }
 

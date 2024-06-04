@@ -3,11 +3,8 @@ package com.baltroid.apps.course
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.baltroid.apps.home.HomeState
-import com.baltroid.core.common.HttpException
 import com.baltroid.core.common.handle
-import com.baltroid.model.LoginModel
-import com.mobven.domain.model.CourseDetailModel
+import com.mobven.domain.model.CourseModel
 import com.mobven.domain.usecase.CourseDetailUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import de.palm.composestateevents.StateEvent
@@ -40,7 +37,7 @@ class CourseDetailViewModel @Inject constructor(
         getCourseDetail()
     }
 
-    private fun getCourseDetail() {
+    fun getCourseDetail() {
         viewModelScope.launch {
             courseDetailUseCase(courseId).handle {
                 onLoading {
@@ -65,7 +62,7 @@ class CourseDetailViewModel @Inject constructor(
 
 data class CourseDetailState(
     val isLoading: Boolean = false,
-    val courseDetail: CourseDetailModel? = null,
+    val courseDetail: CourseModel? = null,
     val success: StateEvent = consumed,
     val error: StateEventWithContent<String> = consumed()
 )

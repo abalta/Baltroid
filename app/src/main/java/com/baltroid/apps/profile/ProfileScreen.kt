@@ -6,18 +6,27 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -33,6 +42,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -59,6 +69,13 @@ fun ProfileScreen(
     )
     val sheetStateScope = rememberCoroutineScope()
     var showBottomSheet by rememberSaveable { mutableStateOf(false) }
+
+    var email by rememberSaveable { mutableStateOf("") }
+    var firstname by rememberSaveable { mutableStateOf("") }
+    var lastname by rememberSaveable { mutableStateOf("") }
+    var phone by rememberSaveable { mutableStateOf("") }
+    var about by rememberSaveable { mutableStateOf("") }
+
     Box(modifier = Modifier.fillMaxSize()) {
         when {
             profileState.isLoading -> {
@@ -81,14 +98,6 @@ fun ProfileScreen(
                             contentDescription = "profile_background",
                             contentScale = ContentScale.FillWidth
                         )
-                        CircularButton(
-                            icon = R.drawable.ic_back,
-                            Modifier
-                                .padding(top = 28.dp, start = 24.dp)
-                                .align(Alignment.TopStart)
-                        ) {
-
-                        }
                         Image(
                             painter = painterResource(id = R.drawable.sample_profile_image),
                             modifier = Modifier
@@ -99,7 +108,9 @@ fun ProfileScreen(
                     }
                     ProfileInfoCard(icon = R.drawable.ic_profile_name, info = profile.name)
                     ProfileInfoCard(icon = R.drawable.ic_mail, info = profile.email)
-                    ProfileInfoCard(icon = R.drawable.ic_phone, info = profile.phone)
+                    ProfileInfoCard(
+                        icon = R.drawable.ic_phone,
+                        info = profile.phone.ifEmpty { "Telefon numarası girebilirsiniz" })
                     Box(
                         modifier = Modifier
                             .padding(top = 16.dp, start = 13.dp, end = 13.dp)
@@ -117,7 +128,7 @@ fun ProfileScreen(
                             .background(Color.White)
                     ) {
                         Text(
-                            text = profile.about,
+                            text = profile.about.ifEmpty { "Hakkımda kısmını doldurabilirsiniz" },
                             style = MaterialTheme.typography.regularStyle,
                             modifier = Modifier.padding(horizontal = 26.dp, vertical = 16.dp)
                         )
@@ -128,87 +139,122 @@ fun ProfileScreen(
                     ) {
                         showBottomSheet = true
                     }
-                    if (showBottomSheet) {
-                        ModalBottomSheet(modifier = Modifier
-                            .fillMaxSize()
-                            .padding(top = 48.dp),
-                            dragHandle = null,
-                            sheetState = sheetState,
-                            containerColor = Color.White,
-                            onDismissRequest = {
-                                showBottomSheet = false
-                            }) {
-                            IconButton(onClick = {
-                                sheetStateScope.hideSheetAndUpdateState(sheetState) {
-                                    showBottomSheet = false
-                                }
-                            }, modifier = Modifier.padding(top = 30.dp, start = 24.dp)) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.ic_close),
-                                    contentDescription = "close"
-                                )
-                            }
-                            FilterHeadText(
-                                text = stringResource(id = R.string.title_edit_profile),
-                                showIcon = false,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 22.dp, top = 24.dp)
-                            )
-                            Row(
-                                modifier = Modifier
-                                    .padding(top = 16.dp)
-                                    .align(Alignment.CenterHorizontally),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(
-                                    (-24).dp
-                                )
-                            ) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.sample_profile_image),
-                                    modifier = Modifier
-                                        .size(68.dp)
-                                        .clip(CircleShape),
-                                    contentDescription = "profile"
-                                )
-                                IconButton(onClick = {
-
-                                }) {
-                                    Image(
-                                        painter = painterResource(id = R.drawable.ic_add),
-                                        contentDescription = "add"
-                                    )
-                                }
-                            }
-                            MekikTextField(label = stringResource(id = R.string.title_name)) {
-
-                            }
-                            MekikTextField(label = stringResource(id = R.string.title_surname)) {
-
-                            }
-                            MekikTextField(label = stringResource(id = R.string.title_email)) {
-
-                            }
-                            MekikTextField(label = stringResource(id = R.string.title_phone)) {
-
-                            }
-                            MekikTextField(label = stringResource(id = R.string.title_about)) {
-
-                            }
-                            MekikFilledButton(
-                                text = "Kaydet", modifier = Modifier.padding(
-                                    top = 16.dp, start = 13.dp, end = 13.dp, bottom = 16.dp
-                                )
-                            ) {
-
-                            }
-                        }
-                    }
                 }
             }
         }
     }
+    if (showBottomSheet) {
+        val profile = profileState.profile!!
+        ModalBottomSheet(modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 48.dp),
+            dragHandle = null,
+            sheetState = sheetState,
+            containerColor = Color.White,
+            onDismissRequest = {
+                showBottomSheet = false
+            }) {
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight(0.9f)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                IconButton(
+                    onClick = {
+                        sheetStateScope.hideSheetAndUpdateState(sheetState) {
+                            showBottomSheet = false
+                        }
+                    },
+                    modifier = Modifier.padding(top = 30.dp, start = 24.dp)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_close),
+                        contentDescription = "close"
+                    )
+                }
+                FilterHeadText(
+                    text = stringResource(id = R.string.title_edit_profile),
+                    showIcon = false,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 22.dp, top = 24.dp)
+                )
+                Row(
+                    modifier = Modifier
+                        .padding(top = 16.dp)
+                        .align(Alignment.CenterHorizontally),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(
+                        (-24).dp
+                    )
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.sample_profile_image),
+                        modifier = Modifier
+                            .size(68.dp)
+                            .clip(CircleShape),
+                        contentDescription = "profile"
+                    )
+                    IconButton(onClick = {
 
+                    }) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_add),
+                            contentDescription = "add"
+                        )
+                    }
+                }
+                MekikTextField(
+                    label = stringResource(id = R.string.title_name),
+                    typedText = profile.firstname
+                ) {
+                    firstname = it
+                }
+                MekikTextField(
+                    label = stringResource(id = R.string.title_surname),
+                    typedText = profile.lastname
+                ) {
+                    lastname = it
+                }
+                MekikTextField(
+                    label = stringResource(id = R.string.title_email),
+                    typedText = profile.email,
+                    keyboardType = KeyboardType.Email
+                ) {
+                    email = it
+                }
+                MekikTextField(
+                    label = stringResource(id = R.string.title_phone),
+                    typedText = profile.phone,
+                    keyboardType = KeyboardType.Phone
+                ) {
+                    phone = it
+                }
+                MekikTextField(
+                    label = stringResource(id = R.string.title_about),
+                    typedText = profile.about
+                ) {
+                    about = it
+                }
+                MekikFilledButton(
+                    text = "Kaydet", modifier = Modifier.padding(
+                        top = 16.dp,
+                        start = 13.dp,
+                        end = 13.dp,
+                        bottom = 16.dp
+                    )
+                ) {
+                    viewModel.updateProfile(
+                        email = email,
+                        firstname = firstname,
+                        lastname = lastname,
+                        phone = phone,
+                        about = about
+                    )
+                }
+            }
+        }
+    }
 }
 
 @Preview

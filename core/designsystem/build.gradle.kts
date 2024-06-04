@@ -30,4 +30,6 @@ dependencies {
     implementation(libs.androidx.browser)
     implementation(libs.androidx.core.ktx)
     implementation(libs.coil.kt.compose)
+    implementation(libs.constraint.compose)
+    implementation(libs.ratingbar)
 }

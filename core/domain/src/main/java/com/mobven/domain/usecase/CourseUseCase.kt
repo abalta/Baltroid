@@ -7,5 +7,5 @@ class CourseUseCase @Inject constructor(
     private val mekikRepository: MekikRepository
 ){
     operator fun invoke() = mekikRepository.getCourses()
-    operator fun invoke(limit: Int, sort: String?) = mekikRepository.getLimitedCourses(limit, sort)
+    operator fun invoke(limit: Int, sort: String? = null) = mekikRepository.getLimitedCourses(limit, sort)
 }

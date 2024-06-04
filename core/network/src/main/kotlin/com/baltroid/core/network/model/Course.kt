@@ -55,6 +55,32 @@ data class CourseDto(
     val commentCount: Int?,
     @SerialName("rating_avg")
     val ratingAvg: Double?,
+    @SerialName("comments")
+    val comments: List<CommentDto>?
+)
+
+@Serializable
+data class CommentDto(
+    @SerialName("id")
+    val id: Int?,
+    @SerialName("comment")
+    val comment: String?,
+    @SerialName("rating")
+    val rating: Int?,
+    @SerialName("user")
+    val user: UserDto?
+)
+
+@Serializable
+data class UserDto(
+    @SerialName("id")
+    val id: Int?,
+    @SerialName("firstname")
+    val firstname: String?,
+    @SerialName("lastname")
+    val lastname: String?,
+    @SerialName("avatar")
+    val avatar: String?,
 )
 
 @Serializable
@@ -144,14 +170,4 @@ data class CategoryDto(
     val id: Int?,
     @SerialName("slug")
     val slug: String?
-)
-
-@Serializable
-data class CourseDetailDto(
-    @SerialName("course")
-    val course: CourseDto?,
-    @SerialName("user_course")
-    val userCourse: String?,
-    @SerialName("wishlist")
-    val wishlist: String?
 )

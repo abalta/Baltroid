@@ -66,7 +66,22 @@ fun BottomNavGraph(
             }
         }
         composable(route = BottomBarScreen.Search.route) {
-            SearchScreen()
+            SearchScreen {
+                when (it) {
+                    is UiAction.OnCourseClick -> {
+                        navController.navigate("course/${it.id}")
+                    }
+                    is UiAction.OnAcademyClick -> {
+                        navController.navigate("academy/${it.id}")
+                    }
+                    is UiAction.OnInstructorClick -> {
+                        navController.navigate("instructor/${it.id}")
+                    }
+                    else -> {
+
+                    }
+                }
+            }
         }
         composable(route = BottomBarScreen.Play.route) {
             MyCoursesScreen {
@@ -78,7 +93,15 @@ fun BottomNavGraph(
         }
         composable(route = BottomBarScreen.Courses.route) {
             CoursesScreen {
+                when (it) {
+                    is UiAction.OnCourseClick -> {
+                        navController.navigate("course/${it.id}")
+                    }
 
+                    else -> {
+
+                    }
+                }
             }
         }
         composable(route = BottomBarScreen.Academies.route) {
@@ -99,7 +122,6 @@ fun BottomNavGraph(
                     is UiAction.OnInstructorClick -> {
                         navController.navigate("instructor/${it.id}")
                     }
-
                     else -> {
 
                     }

@@ -6,20 +6,14 @@ data class CourseModel(
     val description: String,
     val popular: Boolean,
     val author: String,
-    val cover: String
-)
-
-data class CourseDetailModel(
-    val id: Int,
-    val title: String,
-    val description: String,
-    val author: String,
+    val cover: String,
     val academy: String,
     val level: String,
-    val cover: String,
     val commentCount: Int,
+    val ratingAvg: Double,
+    val ratings: List<Int>,
     val chapters: List<ChapterModel>,
-    val ratingAvg: Double
+    val comments: List<CommentModel>
 )
 data class ChapterModel(
     val id: Int,
@@ -33,4 +27,17 @@ data class LessonModel(
     val length: String,
     val playerId: String,
     val isPromo: Boolean
+)
+
+data class CommentModel(
+    val id: Int,
+    val comment: String,
+    val rating: Int,
+    val user: UserModel
+)
+
+data class UserModel(
+    val id: Int,
+    val name: String,
+    val avatar: String
 )

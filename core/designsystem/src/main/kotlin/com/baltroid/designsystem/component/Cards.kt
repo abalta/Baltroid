@@ -5,6 +5,7 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -19,15 +20,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -36,17 +41,35 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ChainStyle
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import coil.compose.AsyncImage
 import com.baltroid.core.designsystem.R
+import com.baltroid.designsystem.theme.badgeStyle
 import com.baltroid.designsystem.theme.electricVioletColor
+import com.baltroid.designsystem.theme.goldenTainoiColor
+import com.baltroid.designsystem.theme.montserratFamily
+import com.gowtham.ratingbar.RatingBar
 import com.mobven.domain.model.LessonModel
 
+
 @Composable
-fun MekikCard(caption: String, title: String, popular: Boolean = false, painter: String = "", onClick: () -> Unit) {
+fun MekikCard(
+    caption: String,
+    title: String,
+    popular: Boolean = false,
+    painter: String = "",
+    onClick: () -> Unit
+) {
     Box(
         modifier = Modifier
             .padding(start = 13.dp, end = 13.dp, top = 10.dp)
@@ -69,16 +92,19 @@ fun MekikCard(caption: String, title: String, popular: Boolean = false, painter:
             })
     ) {
         Row(Modifier.fillMaxSize()) {
-            MekikCardImage(modifier = Modifier
-                .align(Alignment.CenterVertically), painter = painter)
+            MekikCardImage(
+                modifier = Modifier.align(Alignment.CenterVertically), painter = painter
+            )
             Column(
                 Modifier
                     .fillMaxSize()
                     .padding(top = 10.dp, bottom = 10.dp, end = 6.dp, start = 12.dp),
                 verticalArrangement = Arrangement.Bottom
             ) {
-                if(popular) {
-                    SmallBold(text = "Popüler", color = MaterialTheme.colorScheme.electricVioletColor)
+                if (popular) {
+                    SmallBold(
+                        text = "Popüler", color = MaterialTheme.colorScheme.electricVioletColor
+                    )
                 }
                 Body(text = title, modifier = Modifier.padding(top = 4.dp))
                 CaptionSmall(
@@ -104,7 +130,13 @@ fun PreviewMekikCard() {
 }
 
 @Composable
-fun MekikHorizontalCard(caption: String, title: String, popular: Boolean = false, painter: String = "", onClick: () -> Unit) {
+fun MekikHorizontalCard(
+    caption: String,
+    title: String,
+    popular: Boolean = false,
+    painter: String = "",
+    onClick: () -> Unit
+) {
     Box(
         modifier = Modifier
             .width(181.dp)
@@ -117,15 +149,11 @@ fun MekikHorizontalCard(caption: String, title: String, popular: Boolean = false
             )
             .clip(RoundedCornerShape(12.dp))
             .background(Color.White)
-            .clickable(
-                onClick = onClick,
-                indication = rememberRipple(
-                    color = MaterialTheme.colorScheme.electricVioletColor
-                ),
-                interactionSource = remember {
-                    MutableInteractionSource()
-                }
-            )
+            .clickable(onClick = onClick, indication = rememberRipple(
+                color = MaterialTheme.colorScheme.electricVioletColor
+            ), interactionSource = remember {
+                MutableInteractionSource()
+            })
     ) {
         Column(Modifier.fillMaxSize()) {
             MekikHorizontalCardImage(painter = painter)
@@ -136,7 +164,9 @@ fun MekikHorizontalCard(caption: String, title: String, popular: Boolean = false
                 verticalArrangement = Arrangement.Top
             ) {
                 if (popular) {
-                    SmallBold(text = "Popüler", color = MaterialTheme.colorScheme.electricVioletColor)
+                    SmallBold(
+                        text = "Popüler", color = MaterialTheme.colorScheme.electricVioletColor
+                    )
                 }
                 Body(
                     text = title, modifier = Modifier
@@ -279,8 +309,7 @@ fun ExpandableCard(title: String, lessons: List<LessonModel>) {
         if (expanded) {
             // Infinite repeatable rotation when is playing
             rotation.animateTo(
-                targetValue = 90f,
-                animationSpec = tween(
+                targetValue = 90f, animationSpec = tween(
                     durationMillis = 300
                 )
             ) {
@@ -289,8 +318,7 @@ fun ExpandableCard(title: String, lessons: List<LessonModel>) {
         } else {
             // Slow down rotation on pause
             rotation.animateTo(
-                targetValue = 0f,
-                animationSpec = tween(
+                targetValue = 0f, animationSpec = tween(
                     durationMillis = 300
                 )
             ) {
@@ -334,26 +362,27 @@ fun ExpandableCard(title: String, lessons: List<LessonModel>) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 CaptionMedium(
-                    text = title,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 18.dp)
+                    text = title, modifier = Modifier.padding(horizontal = 16.dp, vertical = 18.dp)
                 )
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_menu_arrow), modifier = Modifier
+                    painter = painterResource(id = R.drawable.ic_menu_arrow),
+                    modifier = Modifier
                         .padding(end = 32.dp, start = 8.dp)
-                        .rotate(rotation.value), contentDescription = "menu_arrow"
+                        .rotate(rotation.value),
+                    contentDescription = "menu_arrow"
                 )
             }
             if (expanded) {
                 lessons.forEach {
-                    Column(Modifier.clickable(
-                        onClick = {
+                    Column(
+                        Modifier.clickable(onClick = {
 
                         }, indication = rememberRipple(
                             color = MaterialTheme.colorScheme.electricVioletColor
                         ), interactionSource = remember {
                             MutableInteractionSource()
-                        }
-                    )) {
+                        })
+                    ) {
                         HorizontalDivider(
                             Modifier.padding(horizontal = 16.dp),
                             thickness = 0.5.dp,
@@ -420,10 +449,13 @@ fun ProfileInfoCard(icon: Int, info: String) {
             .background(Color.White),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(painter = painterResource(id = icon), modifier = Modifier.padding(start = 24.dp), contentDescription = "info_icon")
+        Icon(
+            painter = painterResource(id = icon),
+            modifier = Modifier.padding(start = 24.dp),
+            contentDescription = "info_icon"
+        )
         MediumBigText(
-            text = info,
-            modifier = Modifier.padding(start = 16.dp, end = 16.dp)
+            text = info, modifier = Modifier.padding(start = 16.dp, end = 16.dp)
         )
     }
 }
@@ -432,4 +464,254 @@ fun ProfileInfoCard(icon: Int, info: String) {
 @Composable
 fun PreviewProfileInfoCard() {
     ProfileInfoCard(R.drawable.ic_mail, "c******@******.***")
+}
+
+@Composable
+fun RatingCard(
+    rating: String, ratingPercent: List<Int>
+) {
+    val totalRating = ratingPercent.size
+    var oneStartPercent by remember { mutableIntStateOf(0) }
+    var twoStartPercent by remember { mutableIntStateOf(0) }
+    var threeStartPercent by remember { mutableIntStateOf(0) }
+    var fourStartPercent by remember { mutableIntStateOf(0) }
+    var fiveStartPercent by remember { mutableIntStateOf(0) }
+
+    if (totalRating != 0) {
+        oneStartPercent = ratingPercent.count {
+            it == 1
+        } * 100 / totalRating
+
+        twoStartPercent = ratingPercent.count {
+            it == 2
+        } * 100 / totalRating
+
+        threeStartPercent = ratingPercent.count {
+            it == 3
+        } * 100 / totalRating
+
+        fourStartPercent = ratingPercent.count {
+            it == 4
+        } * 100 / totalRating
+
+        fiveStartPercent = ratingPercent.count {
+            it == 5
+        } * 100 / totalRating
+    }
+
+    val percentList = mutableListOf(
+        fiveStartPercent,
+        fourStartPercent,
+        threeStartPercent,
+        twoStartPercent,
+        oneStartPercent
+    )
+
+    ConstraintLayout(
+        modifier = Modifier
+            .padding(start = 13.dp, end = 13.dp, top = 10.dp)
+            .fillMaxWidth()
+            .height(98.dp)
+            .shadow(
+                color = Color.Black.copy(0.05f),
+                offsetX = 2.dp,
+                offsetY = 2.dp,
+                borderRadius = 9.dp,
+                spread = 4.dp,
+                blurRadius = 6.dp
+            )
+            .clip(RoundedCornerShape(9.dp))
+            .background(Color.White)
+    ) {
+        val (avg, ratings, percent, progress) = createRefs()
+
+        createHorizontalChain(avg, ratings, percent, progress, chainStyle = ChainStyle.Spread)
+
+        RatingText(
+            rating,
+            modifier = Modifier
+                .padding(start = 18.dp, end = 18.dp)
+                .constrainAs(avg) {
+                    centerVerticallyTo(parent)
+                })
+        Image(
+            painter = painterResource(id = R.drawable.ratings),
+            modifier = Modifier.constrainAs(ratings) {
+                width = Dimension.wrapContent
+                centerVerticallyTo(parent)
+            },
+            contentDescription = "ratings"
+        )
+        Column(verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.constrainAs(percent) {
+                height = Dimension.fillToConstraints
+                top.linkTo(ratings.top)
+                bottom.linkTo(ratings.bottom)
+            }) {
+            percentList.forEach {
+                Text(
+                    text = "% $it",
+                    color = Color.Black,
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                    style = MaterialTheme.typography.badgeStyle,
+                )
+            }
+        }
+        Column(verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .padding(end = 24.dp)
+                .constrainAs(progress) {
+                    width = Dimension.fillToConstraints
+                    height = Dimension.fillToConstraints
+                    top.linkTo(ratings.top)
+                    bottom.linkTo(ratings.bottom)
+                }) {
+            percentList.forEach {
+                LinearProgressIndicator(
+                    progress = {
+                        it.toFloat() / 100
+                    },
+                    color = MaterialTheme.colorScheme.goldenTainoiColor,
+                    trackColor = Color(0xFFF5F5F5),
+                    strokeCap = StrokeCap.Round,
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .height(8.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                )
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+fun PreviewRatingCard() {
+    RatingCard(
+        "4.5", mutableListOf(50, 50, 0, 0, 0)
+    )
+}
+
+@Composable
+fun CommentCard(name: String, rating: String, comment: String, avatar: String) {
+    ConstraintLayout(
+        modifier = Modifier
+            .padding(start = 13.dp, end = 13.dp, top = 10.dp)
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .shadow(
+                color = Color.Black.copy(0.05f),
+                offsetX = 2.dp,
+                offsetY = 2.dp,
+                borderRadius = 9.dp,
+                spread = 4.dp,
+                blurRadius = 6.dp
+            )
+            .clip(RoundedCornerShape(9.dp))
+            .background(Color.White)
+    ) {
+        val (img, user, star, rateRef, commentRef) = createRefs()
+        AsyncImage(
+            model = avatar,
+            modifier = Modifier
+                .size(40.dp)
+                .clip(CircleShape)
+                .border(1.dp, MaterialTheme.colorScheme.electricVioletColor, CircleShape)
+                .constrainAs(img) {
+                    top.linkTo(parent.top, 16.dp)
+                    start.linkTo(parent.start, 22.dp)
+                },
+            contentDescription = "profile",
+            error = painterResource(id = R.drawable.ic_auth),
+            contentScale = ContentScale.Inside,
+            placeholder = painterResource(id = R.drawable.ic_auth),
+        )
+        MediumText(text = name, modifier = Modifier.constrainAs(user) {
+            top.linkTo(img.top, 4.dp)
+            start.linkTo(img.end, 14.dp)
+        })
+        Icon(painter = painterResource(id = R.drawable.ic_star),
+            tint = MaterialTheme.colorScheme.goldenTainoiColor,
+            contentDescription = "star",
+            modifier = Modifier.constrainAs(star) {
+                top.linkTo(user.bottom, 2.dp)
+                start.linkTo(user.start)
+            })
+        Text(
+            text = rating, color = Color.Black, modifier = Modifier.constrainAs(rateRef) {
+                top.linkTo(star.top)
+                bottom.linkTo(star.bottom)
+                start.linkTo(star.end)
+            }, style = TextStyle(
+                fontFamily = montserratFamily, fontSize = 10.sp, fontWeight = FontWeight.Bold
+            )
+        )
+        Text(
+            text = comment, color = Color.Black, modifier = Modifier.constrainAs(commentRef) {
+                top.linkTo(img.bottom, 12.dp)
+                start.linkTo(img.start)
+                bottom.linkTo(parent.bottom, 16.dp)
+                end.linkTo(parent.end, 16.dp)
+                width = Dimension.fillToConstraints
+            }, style = TextStyle(
+                fontFamily = montserratFamily,
+                fontSize = 11.sp,
+                lineHeight = 18.sp,
+                fontWeight = FontWeight.Normal
+            )
+        )
+    }
+}
+
+@Preview
+@Composable
+fun PreviewCommentCard() {
+    CommentCard(
+        "Ceyda Yılmaztürk",
+        "4",
+        "Her danışmanın 1 kere değil bir çok kez izleyerek sindirebilecek muhteşem bir eğitim.",
+        ""
+    )
+}
+
+@Composable
+fun RatingBarCard(onRatingSelect : (Float) -> Unit, modifier: Modifier = Modifier) {
+    var rating: Float by remember { mutableFloatStateOf(0.0f) }
+
+    Box(
+        modifier = modifier
+            .padding(start = 13.dp, end = 13.dp, top = 10.dp)
+            .fillMaxWidth()
+            .height(68.dp)
+            .shadow(
+                color = Color.Black.copy(0.05f),
+                offsetX = 2.dp,
+                offsetY = 2.dp,
+                borderRadius = 9.dp,
+                spread = 4.dp,
+                blurRadius = 6.dp
+            )
+            .clip(RoundedCornerShape(9.dp))
+            .background(Color.White)
+    ) {
+        RatingBar(
+            value = rating,
+            modifier = Modifier.align(Alignment.Center),
+            painterFilled = painterResource(id = R.drawable.ic_star),
+            painterEmpty = painterResource(id = R.drawable.ic_star_empty),
+            spaceBetween = 0.dp,
+            size = 26.dp, onValueChange = {
+                rating = it
+            }) {
+            onRatingSelect(it)
+        }
+    }
+}
+
+@Preview
+@Composable
+fun PreviewRatingBarCard() {
+    RatingBarCard(onRatingSelect = {}, modifier = Modifier.fillMaxWidth())
 }

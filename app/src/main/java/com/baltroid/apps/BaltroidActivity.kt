@@ -21,12 +21,16 @@ import com.baltroid.apps.navigation.RootNavGraph
 import com.baltroid.designsystem.component.TopBar
 import com.baltroid.designsystem.theme.MekikTheme
 import dagger.hilt.android.AndroidEntryPoint
+import io.sanghun.compose.video.cache.VideoPlayerCacheManager
 
 @AndroidEntryPoint
 class BaltroidActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
+
+        VideoPlayerCacheManager.initialize(this, 1024 * 1024 * 1024)
+
         setContent {
             val navController = rememberNavController()
             val isDarkMode = isSystemInDarkTheme()

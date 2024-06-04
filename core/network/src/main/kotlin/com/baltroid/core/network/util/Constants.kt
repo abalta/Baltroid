@@ -17,6 +17,10 @@ internal object Constants {
         internal const val TEACHER = "teacher"
         internal const val ACADEMY = "academy"
         internal const val PROFILE = "profile"
+        internal const val COMMENT = "comment"
+        internal const val SEARCH = "search"
+        internal const val ALLTOTAL = "all-total"
+        internal const val VIDEO = "video"
     }
 
     internal object Fields {
@@ -35,12 +39,12 @@ internal object Constants {
         internal const val FIRST_NAME = "firstname"
         internal const val LAST_NAME = "lastname"
         internal const val AGREEMENT = "agreement"
-        internal const val LANGUAGES = "languages"
-        internal const val ORDER = "order"
-        internal const val MAXIMUM = "maximum"
-        internal const val MINIMUM = "minimum"
-        internal const val QUERY = "query"
-        internal const val LANGUAGE = "language"
+        internal const val COMMENT = "comment"
+        internal const val COURSE_ID = "course_id"
+        internal const val RATING = "rating"
+        internal const val TITLE = "title"
+        internal const val PLAYER_ID = "player_id"
+
         private fun buildAppendToResponse(vararg fields: String) =
             fields.joinToString(separator = APPEND_TO_RESPONSE_SEPARATOR)
 

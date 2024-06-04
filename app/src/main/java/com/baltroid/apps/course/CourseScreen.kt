@@ -1,5 +1,6 @@
 package com.baltroid.apps.course
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +17,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import com.baltroid.apps.comment.CommentsSheet
 import com.baltroid.apps.ext.collectAsStateLifecycleAware
 import com.baltroid.apps.navigation.OnAction
 import com.baltroid.apps.navigation.UiAction
@@ -45,6 +50,7 @@ fun CourseScreen(
     onAction: OnAction
 ) {
     val uiState by viewModel.courseDetailState.collectAsStateLifecycleAware()
+    var showCommentSheet by rememberSaveable { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize()) {
         when {
@@ -138,6 +144,17 @@ fun CourseScreen(
                                     text = courseDetail.level,
                                     Modifier.padding(start = 8.dp, end = 8.dp)
                                 )
+                            }
+                            Row(
+                                modifier = Modifier.padding(
+                                    start = 20.dp,
+                                    top = 12.dp,
+                                    end = 20.dp
+                                ).clickable {
+                                    showCommentSheet = true
+                                },
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.ic_comment),
                                     modifier = Modifier.size(15.dp),
@@ -170,6 +187,11 @@ fun CourseScreen(
                     }
                 }
             }
+        }
+    }
+    if (showCommentSheet) {
+        CommentsSheet(viewModel) {
+            showCommentSheet = false
         }
     }
 }

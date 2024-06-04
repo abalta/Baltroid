@@ -86,11 +86,16 @@ internal val Typography.headerStyle: TextStyle
         fontSize = 24.sp,
         fontWeight = FontWeight.SemiBold
     )
-
 internal val Typography.headerBoldStyle: TextStyle
     get() = TextStyle(
         fontFamily = montserratFamily,
         fontSize = 24.sp,
+        fontWeight = FontWeight.Bold
+    )
+internal val Typography.ratingBoldStyle: TextStyle
+    get() = TextStyle(
+        fontFamily = montserratFamily,
+        fontSize = 30.sp,
         fontWeight = FontWeight.Bold
     )
 internal val Typography.badgeStyle: TextStyle

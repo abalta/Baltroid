@@ -1,6 +1,7 @@
 package com.baltroid.core.data.mapper
 
 import com.baltroid.core.network.model.LoginResponseDto
+import com.baltroid.core.network.model.ProfileDto
 import com.baltroid.core.network.model.ProfileEntity
 import com.mobven.domain.model.LoginResponseModel
 import com.mobven.domain.model.ProfileModel
@@ -16,6 +17,19 @@ fun ProfileEntity.asProfileModel() = ProfileModel(
     email = profile.email.orEmpty(),
     avatar = profile.avatar.orEmpty(),
     name = "${profile.firstName.orEmpty()} ${profile.lastName.orEmpty()}",
-    phone = profile.phone ?: "Telefon numarası girebilirsiniz.",
-    about = profile.about ?: "Hakkınızda bilgi girebilirsiniz."
+    firstname = profile.firstName.orEmpty(),
+    lastname = profile.lastName.orEmpty(),
+    phone = profile.phone.orEmpty(),
+    about = profile.about.orEmpty()
+)
+
+fun ProfileDto.asProfileModel() = ProfileModel(
+    id = id ?: 0,
+    email = email.orEmpty(),
+    avatar = avatar.orEmpty(),
+    name = "$firstName $lastName",
+    firstname = firstName.orEmpty(),
+    lastname = lastName.orEmpty(),
+    phone = phone.orEmpty(),
+    about = about.orEmpty()
 )

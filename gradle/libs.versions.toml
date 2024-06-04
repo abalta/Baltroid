@@ -57,6 +57,10 @@ junit = "1.1.5"
 material = "1.12.0"
 compote-state-events = "2.2.0"
 paging = "3.2.1"
+constraintlayout = "1.0.1"
+ratingBar = "1.3.12"
+composeVideo = "1.2.0"
+media3 = "1.3.1"
 
 [libraries]
 accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist" }
@@ -137,6 +141,12 @@ turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine
 compose-state-events = { group = "com.github.leonard-palm", name = "compose-state-events", version.ref = "compote-state-events" }
 pagingv3 = { group = "androidx.paging", name = "paging-runtime-ktx", version.ref = "paging" }
 pagingv3-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "paging" }
+constraint-compose = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "constraintlayout" }
+ratingbar = { group = "com.github.a914-gowtham", name = "compose-ratingbar", version.ref = "ratingBar" }
+compose-video = { group = "io.sanghun", name = "compose-video", version.ref = "composeVideo" }
+media3-exoplayer = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "media3" }
+media3-session = { group = "androidx.media3", name = "media3-session", version.ref = "media3" }
+media3-ui = { group = "androidx.media3", name = "media3-ui", version.ref = "media3" }
 
 # Dependencies of the included build-logic
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }

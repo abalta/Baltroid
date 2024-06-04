@@ -6,6 +6,7 @@ import com.baltroid.core.network.model.CourseListDto
 import com.baltroid.core.network.model.DataResponse
 import com.baltroid.core.network.model.LoginRequestDto
 import com.baltroid.core.network.model.LoginResponseDto
+import com.baltroid.core.network.model.ProfileDto
 import com.baltroid.core.network.model.RegisterRequestDto
 import javax.inject.Inject
 
@@ -50,5 +51,33 @@ class MekikNetworkDataSource @Inject constructor(private val mekikService: Mekik
     suspend fun academyDetail(id: Int) = mekikService.getAcademyDetail(id)
 
     suspend fun profile() = mekikService.getProfile()
+
+    suspend fun updateProfile(
+        email: String? = null,
+        firstname: String? = null,
+        lastname: String? = null,
+        phone: String? = null,
+        about: String? = null
+    ) = mekikService.updateProfile(
+        ProfileDto(
+            id = null,
+            email = email,
+            avatar = null,
+            firstName = firstname,
+            lastName = lastname,
+            phone = phone,
+            about = about
+        )
+    )
+
+    suspend fun addComment(courseId: Int, comment: String, rating: Int) =
+        mekikService.addComment(comment, courseId, rating)
+
+    suspend fun search(query: String) =
+        mekikService.search(query)
+
+    suspend fun allTotal() = mekikService.allTotal()
+
+    suspend fun video(id: String) = mekikService.video(id)
 
 }

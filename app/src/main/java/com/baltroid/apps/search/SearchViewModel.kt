@@ -1,10 +1,11 @@
-package com.baltroid.apps.profile
+package com.baltroid.apps.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.baltroid.core.common.handle
-import com.mobven.domain.model.ProfileModel
-import com.mobven.domain.usecase.ProfileUseCase
+import com.mobven.domain.model.SearchModel
+import com.mobven.domain.model.TotalModel
+import com.mobven.domain.usecase.SearchUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import de.palm.composestateevents.StateEvent
 import de.palm.composestateevents.StateEventWithContent
@@ -17,33 +18,33 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ProfileViewModel @Inject constructor(
-    private val profileUseCase: ProfileUseCase
+class SearchViewModel @Inject constructor(
+    private val searchUseCase: SearchUseCase
 ) : ViewModel() {
 
-    private val _profileState = MutableStateFlow(ProfileState())
-    val profileState = _profileState.asStateFlow()
+    private val _searchState = MutableStateFlow(SearchState())
+    val searchState = _searchState.asStateFlow()
 
-    private var state: ProfileState
-        get() = _profileState.value
+    private var state: SearchState
+        get() = _searchState.value
         set(newState) {
-            _profileState.update { newState }
+            _searchState.update { newState }
         }
 
     init {
-        getProfile()
+        total()
     }
 
-    private fun getProfile() {
+    private fun total() {
         viewModelScope.launch {
-            profileUseCase().handle {
+            searchUseCase().handle {
                 onLoading {
                     state = state.copy(isLoading = true)
                 }
                 onSuccess { model ->
                     state = state.copy(
                         isLoading = false,
-                        profile = model, triggered
+                        totalModel = model, success = triggered
                     )
                 }
                 onFailure { throwable ->
@@ -56,22 +57,16 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    fun updateProfile(
-        email: String?,
-        firstname: String?,
-        lastname: String?,
-        phone: String?,
-        about: String?
-    ) {
+    fun search(query: String) {
         viewModelScope.launch {
-            profileUseCase(email, firstname, lastname, phone, about).handle {
+            searchUseCase(query).handle {
                 onLoading {
                     state = state.copy(isLoading = true)
                 }
                 onSuccess { model ->
                     state = state.copy(
                         isLoading = false,
-                        profile = model, triggered
+                        searchModel = model, success = triggered
                     )
                 }
                 onFailure { throwable ->
@@ -85,9 +80,10 @@ class ProfileViewModel @Inject constructor(
     }
 }
 
-data class ProfileState(
+data class SearchState(
     val isLoading: Boolean = false,
-    val profile: ProfileModel? = null,
+    val searchModel: SearchModel? = null,
+    val totalModel: TotalModel? = null,
     val success: StateEvent = consumed,
     val error: StateEventWithContent<String> = consumed()
 )

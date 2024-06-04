@@ -82,4 +82,8 @@ dependencies {
     implementation(libs.compose.state.events)
     implementation(libs.pagingv3)
     implementation(libs.pagingv3.compose)
+    implementation(libs.compose.video)
+    implementation(libs.media3.exoplayer)
+    implementation(libs.media3.session)
+    implementation(libs.media3.ui)
 }

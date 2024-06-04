@@ -1,11 +1,9 @@
-package com.baltroid.apps.instructor
+package com.baltroid.apps.comment
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.baltroid.core.common.handle
-import com.mobven.domain.model.TeacherDetailModel
-import com.mobven.domain.usecase.TeacherDetailUseCase
+import com.mobven.domain.usecase.CommentUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import de.palm.composestateevents.StateEvent
 import de.palm.composestateevents.StateEventWithContent
@@ -18,35 +16,33 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class TeacherDetailViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
-    private val teacherDetailUseCase: TeacherDetailUseCase
+class CommentViewModel @Inject constructor(
+    private val commentUseCase: CommentUseCase
 ) : ViewModel() {
-    private val _teacherDetailState = MutableStateFlow(TeacherDetailState())
-    val teacherDetailState = _teacherDetailState.asStateFlow()
 
-    private val teacherId: Int = checkNotNull(savedStateHandle["id"])
+    private val _commentState = MutableStateFlow(CommentState())
+    val commentState = _commentState.asStateFlow()
 
-    private var state: TeacherDetailState
-        get() = _teacherDetailState.value
+    private var state: CommentState
+        get() = _commentState.value
         set(newState) {
-            _teacherDetailState.update { newState }
+            _commentState.update { newState }
         }
 
-    init {
-        getTeacherDetail()
-    }
-
-    private fun getTeacherDetail() {
+    fun addComment(
+        id: Int,
+        comment: String,
+        rating: Int
+    ) {
         viewModelScope.launch {
-            teacherDetailUseCase(teacherId).handle {
+            commentUseCase(id, comment, rating).handle {
                 onLoading {
                     state = state.copy(isLoading = true)
                 }
-                onSuccess { detailModel ->
+                onSuccess { model ->
                     state = state.copy(
                         isLoading = false,
-                        teacherDetail = detailModel, triggered
+                        success = triggered
                     )
                 }
                 onFailure { throwable ->
@@ -58,11 +54,14 @@ class TeacherDetailViewModel @Inject constructor(
             }
         }
     }
+
+    fun addCommentSucceededEvent(){
+        state = state.copy(success = consumed)
+    }
 }
 
-data class TeacherDetailState(
+data class CommentState(
     val isLoading: Boolean = false,
-    val teacherDetail: TeacherDetailModel? = null,
     val success: StateEvent = consumed,
     val error: StateEventWithContent<String> = consumed()
 )

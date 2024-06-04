@@ -12,12 +12,6 @@ data class AcademyListDto(
 )
 
 @Serializable
-data class AcademyDetailDto(
-    @SerialName("academy")
-    val academy: AcademyEntityDto
-)
-
-@Serializable
 data class AcademyEntityDto(
     @SerialName("id")
     val id: Int?,
