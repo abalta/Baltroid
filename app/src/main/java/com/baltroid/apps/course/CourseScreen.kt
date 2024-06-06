@@ -24,13 +24,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.baltroid.apps.comment.CommentsSheet
 import com.baltroid.apps.ext.collectAsStateLifecycleAware
+import com.baltroid.apps.ext.showWeb
 import com.baltroid.apps.navigation.OnAction
 import com.baltroid.apps.navigation.UiAction
 import com.baltroid.core.designsystem.R
@@ -43,6 +46,7 @@ import com.baltroid.designsystem.component.MediumSmallText
 import com.baltroid.designsystem.component.ReadMoreClickableText
 import com.baltroid.designsystem.theme.electricVioletColor
 import com.baltroid.designsystem.theme.goldenTainoiColor
+import de.palm.composestateevents.EventEffect
 
 @Composable
 fun CourseScreen(
@@ -51,6 +55,11 @@ fun CourseScreen(
 ) {
     val uiState by viewModel.courseDetailState.collectAsStateLifecycleAware()
     var showCommentSheet by rememberSaveable { mutableStateOf(false) }
+    val context = LocalContext.current
+
+    EventEffect(event = uiState.fav, onConsumed = viewModel::favState) {
+        viewModel.getCourseDetail()
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         when {
@@ -93,10 +102,14 @@ fun CourseScreen(
 
                                 }
                                 CircularButton(
-                                    icon = R.drawable.ic_fav,
+                                    icon = if(courseDetail.isFavorite) R.drawable.ic_fav_filled else R.drawable.ic_fav,
                                     Modifier.padding(top = 28.dp, end = 24.dp)
                                 ) {
-
+                                    if (courseDetail.isFavorite) {
+                                        viewModel.deleteFavorite()
+                                    } else {
+                                        viewModel.addFavorite()
+                                    }
                                 }
                             }
                         }
@@ -132,7 +145,7 @@ fun CourseScreen(
                                     contentDescription = "time"
                                 )
                                 MediumSmallText(
-                                    text = "17dk",
+                                    text = courseDetail.duration,
                                     Modifier.padding(start = 8.dp, end = 8.dp)
                                 )
                                 Icon(
@@ -146,13 +159,15 @@ fun CourseScreen(
                                 )
                             }
                             Row(
-                                modifier = Modifier.padding(
-                                    start = 20.dp,
-                                    top = 12.dp,
-                                    end = 20.dp
-                                ).clickable {
-                                    showCommentSheet = true
-                                },
+                                modifier = Modifier
+                                    .padding(
+                                        start = 20.dp,
+                                        top = 12.dp,
+                                        end = 20.dp
+                                    )
+                                    .clickable {
+                                        showCommentSheet = true
+                                    },
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Icon(
@@ -183,7 +198,17 @@ fun CourseScreen(
                         }
                     }
                     items(courseDetail.chapters.size) {
-                        ExpandableCard(title = courseDetail.chapters[it].name, courseDetail.chapters[it].lessons)
+                        ExpandableCard(title = courseDetail.chapters[it].name, courseDetail.chapters[it].lessons) { playerId ->
+                            if (courseDetail.isSale) {
+                                onAction(
+                                    UiAction.OnPlayerClick(
+                                        playerId
+                                    )
+                                )
+                            } else {
+                                context.showWeb(courseDetail.page)
+                            }
+                        }
                     }
                 }
             }

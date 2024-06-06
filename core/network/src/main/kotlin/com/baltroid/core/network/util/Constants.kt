@@ -21,6 +21,7 @@ internal object Constants {
         internal const val SEARCH = "search"
         internal const val ALLTOTAL = "all-total"
         internal const val VIDEO = "video"
+        internal const val FAVORITE = "favorite"
     }
 
     internal object Fields {

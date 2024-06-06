@@ -1,12 +1,11 @@
-package com.baltroid.apps.academy
+package com.baltroid.apps.favorites
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.baltroid.core.common.ErrorModel
 import com.baltroid.core.common.handle
-import com.mobven.domain.model.AcademyDetailModel
-import com.mobven.domain.usecase.AcademyDetailUseCase
+import com.mobven.domain.model.CourseModel
+import com.mobven.domain.usecase.FavoriteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import de.palm.composestateevents.StateEvent
 import de.palm.composestateevents.StateEventWithContent
@@ -19,35 +18,33 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AcademyDetailViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
-    private val academyDetailUseCase: AcademyDetailUseCase
+class FavoriteViewModel @Inject constructor(
+    private val favoriteUseCase: FavoriteUseCase
 ) : ViewModel() {
-    private val _academyDetailState = MutableStateFlow(AcademyDetailState())
-    val academyDetailState = _academyDetailState.asStateFlow()
 
-    private val academyId: Int = checkNotNull(savedStateHandle["id"])
+    private val _favoriteState = MutableStateFlow(FavoriteState())
+    val favoriteState = _favoriteState.asStateFlow()
 
-    private var state: AcademyDetailState
-        get() = _academyDetailState.value
+    private var state: FavoriteState
+        get() = _favoriteState.value
         set(newState) {
-            _academyDetailState.update { newState }
+            _favoriteState.update { newState }
         }
 
     init {
-        getAcademyDetail()
+        getFavorites()
     }
 
-    private fun getAcademyDetail() {
+    fun getFavorites() {
         viewModelScope.launch {
-            academyDetailUseCase(academyId).handle {
+            favoriteUseCase().handle {
                 onLoading {
                     state = state.copy(isLoading = true)
                 }
-                onSuccess { detailModel ->
+                onSuccess { list ->
                     state = state.copy(
                         isLoading = false,
-                        academyDetail = detailModel, triggered
+                        favorites = list, triggered
                     )
                 }
                 onFailure { throwable ->
@@ -59,11 +56,15 @@ class AcademyDetailViewModel @Inject constructor(
             }
         }
     }
+
+    fun onConsumedFailedEvent() {
+        state = state.copy(error = consumed())
+    }
 }
 
-data class AcademyDetailState(
+data class FavoriteState(
     val isLoading: Boolean = false,
-    val academyDetail: AcademyDetailModel? = null,
+    val favorites: List<CourseModel>? = null,
     val success: StateEvent = consumed,
     val error: StateEventWithContent<ErrorModel> = consumed()
 )

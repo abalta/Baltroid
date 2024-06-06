@@ -53,11 +53,5 @@ data class ProfileDto(
     @SerialName("phone")
     val phone: String?,
     @SerialName("about_text")
-    val about: String?,
-)
-
-@Serializable
-data class ProfileEntity(
-    @SerialName("user")
-    val profile: ProfileDto
+    val about: String?
 )

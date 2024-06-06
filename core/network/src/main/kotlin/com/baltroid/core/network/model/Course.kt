@@ -56,7 +56,11 @@ data class CourseDto(
     @SerialName("rating_avg")
     val ratingAvg: Double?,
     @SerialName("comments")
-    val comments: List<CommentDto>?
+    val comments: List<CommentDto>?,
+    @SerialName("is_sale")
+    val isSale: Int?,
+    @SerialName("is_favorite")
+    val isFavorite: Int?,
 )
 
 @Serializable

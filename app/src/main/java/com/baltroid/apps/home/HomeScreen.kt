@@ -223,7 +223,7 @@ fun HomeContent(
 
     EventEffect(event = uiState.error, onConsumed = viewModel::onConsumedFailedEvent) {
         snackbarStateScope.launch {
-            snackbarHostState.showSnackbar(message = it)
+            snackbarHostState.showSnackbar(message = it.message.orEmpty())
         }
     }
 
@@ -302,7 +302,7 @@ fun HomePager(
     viewModel: HomeViewModel
 ) {
     val pagerState = rememberPagerState(pageCount = {
-        3
+        1
     })
     var showLoginSheet by rememberSaveable { mutableStateOf(false) }
 
@@ -337,7 +337,7 @@ fun HomePager(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(2.dp)
             ) {
-                repeat(3) { iteration ->
+                /*repeat(3) { iteration ->
                     val color =
                         if (pagerState.currentPage == iteration) MaterialTheme.colorScheme.electricVioletColor else Color(
                             0x4DFFFFFF
@@ -354,7 +354,7 @@ fun HomePager(
                             .background(color)
 
                     )
-                }
+                }*/
             }
             if (uiState.isLoggedIn.not()) {
                 TextButton(onClick = {

@@ -22,6 +22,8 @@ import com.baltroid.apps.academy.AcademyDetailViewModel
 import com.baltroid.apps.academy.AcademyScreen
 import com.baltroid.apps.course.CourseDetailViewModel
 import com.baltroid.apps.course.CourseScreen
+import com.baltroid.apps.course.PlayerScreen
+import com.baltroid.apps.course.PlayerViewModel
 import com.baltroid.apps.courses.CoursesScreen
 import com.baltroid.apps.courses.MyCoursesScreen
 import com.baltroid.apps.favorites.FavoritesScreen
@@ -129,7 +131,19 @@ fun BottomNavGraph(
             }
         }
         composable(route = BottomBarScreen.Favorites.route) {
-            FavoritesScreen()
+            FavoritesScreen {
+                when (it) {
+                    is UiAction.OnCourseClick -> {
+                        navController.navigate("course/${it.id}")
+                    }
+                    is UiAction.OnAllCoursesClick -> {
+                        navController.navigate(BottomBarScreen.Courses.route)
+                    }
+                    else -> {
+
+                    }
+                }
+            }
         }
         composable(route = BottomBarScreen.About.route) {
             AboutScreen {
@@ -192,8 +206,24 @@ fun NavGraphBuilder.detailsNavGraph(navController: NavHostController) {
         )) {
             val viewModel = hiltViewModel<CourseDetailViewModel>()
             CourseScreen(viewModel) {
-                navController.popBackStack()
+                when (it) {
+                    is UiAction.OnBackClick -> navController.popBackStack()
+                    is UiAction.OnPlayerClick -> {
+                        navController.navigate("player/${it.id}")
+                    }
+                    else -> {
+
+                    }
+                }
             }
+        }
+        composable(DetailsScreen.Player.route, arguments = listOf(
+            navArgument("id") {
+                type = NavType.StringType
+            }
+        )) {
+            val viewModel = hiltViewModel<PlayerViewModel>()
+            PlayerScreen(viewModel)
         }
     }
 }

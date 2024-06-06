@@ -80,4 +80,10 @@ class MekikNetworkDataSource @Inject constructor(private val mekikService: Mekik
 
     suspend fun video(id: String) = mekikService.video(id)
 
+    suspend fun getFavorites() = mekikService.getFavorites()
+
+    suspend fun addFavorite(courseId: Int) = mekikService.addFavorite(courseId)
+
+    suspend fun removeFavorite(courseId: Int) = mekikService.removeFavorite(courseId)
+
 }

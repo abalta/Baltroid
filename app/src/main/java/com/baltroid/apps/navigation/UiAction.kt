@@ -5,6 +5,7 @@ sealed class UiAction {
     data class OnInstructorClick(val id: Int) : UiAction()
     data class OnAcademyClick(val id: Int) : UiAction()
     data class OnCourseClick(val id: Int) : UiAction()
+    data class OnPlayerClick(val id: String) : UiAction()
     data object OnLoginClick : UiAction()
     data object OnBackClick : UiAction()
 }

@@ -75,6 +75,10 @@ private val preferencesHelper: PreferencesHelper,
         preferencesHelper.userAccessToken = token
     }
 
+    override fun deleteToken() {
+        preferencesHelper.removeUserAccessToken()
+    }
+
     override fun isUserLoggedIn(): Boolean = preferencesHelper.userAccessToken.isNullOrEmpty().not()
 
     override fun getCourses(): Flow<PagingData<CourseModel>> {
@@ -167,9 +171,35 @@ private val preferencesHelper: PreferencesHelper,
         )
 
     override fun video(id: String): Flow<BaltroidResult<VideoModel>> =
+        flow {
+            emit(BaltroidResult.loading())
+            val response = networkDataSource.video(id)
+            if (response.isSuccess()) {
+                emit(BaltroidResult.success(response.value.asVideoModel()))
+            } else if (response.isFailure()) {
+                if (response.error is HttpException) {
+                    emit(BaltroidResult.failure(response.error))
+                } else {
+                    emit(BaltroidResult.failure(Throwable(COMMON_ERROR_MESSAGE)))
+                }
+            }
+        }.flowOn(Dispatchers.IO)
+
+    override fun getFavorites(): Flow<BaltroidResult<List<CourseModel>>>
+    = networkRequestFlow(
+        request = { networkDataSource.getFavorites() },
+        onSuccess = { response -> response.map { it.asCourseResponseModel() } }
+    )
+    override fun addFavorite(id: Int): Flow<BaltroidResult<Boolean>> =
         networkRequestFlow(
-            request = { networkDataSource.video(id) },
-            onSuccess = { it.asVideoModel() }
+            request = { networkDataSource.addFavorite(id) },
+            onSuccess = { true }
+        )
+
+    override fun deleteFavorite(id: Int): Flow<BaltroidResult<Boolean>> =
+        networkRequestFlow(
+            request = { networkDataSource.removeFavorite(id) },
+            onSuccess = { true }
         )
 
     private inline fun <T, R> networkRequestFlow(
@@ -182,6 +212,9 @@ private val preferencesHelper: PreferencesHelper,
             emit(BaltroidResult.success(onSuccess(response.value.result!!)))
         } else if (response.isFailure()) {
             if (response.error is HttpException) {
+                if ((response.error as HttpException).statusCode == 401) {
+                    deleteToken()
+                }
                 emit(BaltroidResult.failure(response.error))
             } else {
                 emit(BaltroidResult.failure(Throwable(COMMON_ERROR_MESSAGE)))

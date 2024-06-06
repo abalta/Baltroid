@@ -19,6 +19,7 @@ interface MekikRepository {
     fun login(email: String, password: String): Flow<BaltroidResult<LoginResponseModel>>
     fun register(email: String, password: String, firstname: String, lastname: String, agreement: Boolean): Flow<BaltroidResult<LoginResponseModel>>
     fun saveToken(token: String)
+    fun deleteToken()
     fun isUserLoggedIn(): Boolean
     fun getCourses(): Flow<PagingData<CourseModel>>
     fun getTeachers(): Flow<PagingData<TeacherModel>>
@@ -33,5 +34,9 @@ interface MekikRepository {
     fun search(query: String): Flow<BaltroidResult<SearchModel>>
     fun allTotal(): Flow<BaltroidResult<TotalModel>>
     fun video(id: String): Flow<BaltroidResult<VideoModel>>
+    fun getFavorites(): Flow<BaltroidResult<List<CourseModel>>>
+    fun addFavorite(id: Int): Flow<BaltroidResult<Boolean>>
+    fun deleteFavorite(id: Int): Flow<BaltroidResult<Boolean>>
+
 
 }

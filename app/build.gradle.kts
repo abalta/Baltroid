@@ -11,7 +11,7 @@ plugins {
 
 android {
     defaultConfig {
-        applicationId = "com.baltroid.apps"
+        applicationId = "org.mekik.apps"
         versionCode = 1
         versionName = "0.0.1" // X.Y.Z; X = Major, Y = minor, Z = Patch level
 
@@ -86,4 +86,5 @@ dependencies {
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.session)
     implementation(libs.media3.ui)
+    implementation(platform(libs.firebase.bom))
 }

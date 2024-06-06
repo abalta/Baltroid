@@ -21,7 +21,6 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -76,7 +75,7 @@ fun LoginSheet(
 
     EventEffect(event = uiState.error, onConsumed = viewModel::onConsumedFailedEvent) {
         snackbarStateScope.launch {
-            snackbarHostState.showSnackbar(message = it)
+            snackbarHostState.showSnackbar(message = it.message.orEmpty())
         }
     }
 
@@ -242,7 +241,7 @@ fun RegisterSheet(
 
     EventEffect(event = uiState.error, onConsumed = viewModel::onConsumedFailedEvent) {
         snackbarStateScope.launch {
-            snackbarHostState.showSnackbar(message = it)
+            snackbarHostState.showSnackbar(message = it.message.orEmpty())
         }
     }
 

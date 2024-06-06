@@ -13,7 +13,11 @@ data class CourseModel(
     val ratingAvg: Double,
     val ratings: List<Int>,
     val chapters: List<ChapterModel>,
-    val comments: List<CommentModel>
+    val comments: List<CommentModel>,
+    val isFavorite: Boolean,
+    val isSale: Boolean,
+    val page: String,
+    val duration: String
 )
 data class ChapterModel(
     val id: Int,

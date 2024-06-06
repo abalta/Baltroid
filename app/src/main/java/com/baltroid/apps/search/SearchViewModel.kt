@@ -2,6 +2,7 @@ package com.baltroid.apps.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.baltroid.core.common.ErrorModel
 import com.baltroid.core.common.handle
 import com.mobven.domain.model.SearchModel
 import com.mobven.domain.model.TotalModel
@@ -85,5 +86,5 @@ data class SearchState(
     val searchModel: SearchModel? = null,
     val totalModel: TotalModel? = null,
     val success: StateEvent = consumed,
-    val error: StateEventWithContent<String> = consumed()
+    val error: StateEventWithContent<ErrorModel> = consumed()
 )

@@ -46,6 +46,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -58,6 +59,7 @@ import com.baltroid.designsystem.theme.badgeStyle
 import com.baltroid.designsystem.theme.electricVioletColor
 import com.baltroid.designsystem.theme.goldenTainoiColor
 import com.baltroid.designsystem.theme.montserratFamily
+import com.baltroid.designsystem.theme.regularStyle
 import com.gowtham.ratingbar.RatingBar
 import com.mobven.domain.model.LessonModel
 
@@ -301,7 +303,7 @@ fun PreviewMekikPagerItem() {
 }
 
 @Composable
-fun ExpandableCard(title: String, lessons: List<LessonModel>) {
+fun ExpandableCard(title: String, lessons: List<LessonModel>, onLessonClick: (String) -> Unit) {
     var expanded by remember { mutableStateOf(false) }
     var angle by remember { mutableFloatStateOf(0f) }
     val rotation = remember { Animatable(angle) }
@@ -362,7 +364,7 @@ fun ExpandableCard(title: String, lessons: List<LessonModel>) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 CaptionMedium(
-                    text = title, modifier = Modifier.padding(horizontal = 16.dp, vertical = 18.dp)
+                    text = title, modifier = Modifier.padding(horizontal = 16.dp, vertical = 18.dp).weight(1f)
                 )
                 Icon(
                     painter = painterResource(id = R.drawable.ic_menu_arrow),
@@ -376,7 +378,7 @@ fun ExpandableCard(title: String, lessons: List<LessonModel>) {
                 lessons.forEach {
                     Column(
                         Modifier.clickable(onClick = {
-
+                            onLessonClick(it.playerId)
                         }, indication = rememberRipple(
                             color = MaterialTheme.colorScheme.electricVioletColor
                         ), interactionSource = remember {
@@ -427,7 +429,9 @@ fun ExpandableCard(title: String, lessons: List<LessonModel>) {
 @Preview
 @Composable
 fun PreviewExpandableCard() {
-    ExpandableCard("Expandable Card", emptyList())
+    ExpandableCard("Expandable Card Expandable Card Expandable Card Expandable Card", emptyList()) {
+
+    }
 }
 
 @Composable
@@ -677,7 +681,7 @@ fun PreviewCommentCard() {
 }
 
 @Composable
-fun RatingBarCard(onRatingSelect : (Float) -> Unit, modifier: Modifier = Modifier) {
+fun RatingBarCard(onRatingSelect: (Float) -> Unit, modifier: Modifier = Modifier) {
     var rating: Float by remember { mutableFloatStateOf(0.0f) }
 
     Box(
@@ -714,4 +718,42 @@ fun RatingBarCard(onRatingSelect : (Float) -> Unit, modifier: Modifier = Modifie
 @Composable
 fun PreviewRatingBarCard() {
     RatingBarCard(onRatingSelect = {}, modifier = Modifier.fillMaxWidth())
+}
+
+@Composable
+fun ErrorCard(message: String, buttonText: String, onButtonClick: () -> Unit) {
+    Column {
+        Text(
+            text = message, style = MaterialTheme.typography.regularStyle,
+            modifier = Modifier
+                .padding(top = 16.dp, start = 13.dp, end = 13.dp)
+                .fillMaxWidth()
+                .height(54.dp)
+                .shadow(
+                    color = Color.Black.copy(0.05f),
+                    offsetX = 2.dp,
+                    offsetY = 2.dp,
+                    borderRadius = 9.dp,
+                    spread = 4.dp,
+                    blurRadius = 6.dp
+                )
+                .clip(RoundedCornerShape(9.dp))
+                .background(Color.White).wrapContentHeight(Alignment.CenterVertically).padding(horizontal = 20.dp)
+
+        )
+        MekikOutlinedButton(
+            text = buttonText,
+            Modifier.padding(top = 16.dp)
+        ) {
+            onButtonClick()
+        }
+    }
+}
+
+@Preview
+@Composable
+fun PreviewErrorCard() {
+    ErrorCard("Bir hata oluştu. Lütfen tekrar deneyin.", "Tekrar Dene") {
+
+    }
 }

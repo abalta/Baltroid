@@ -24,7 +24,11 @@ fun CourseDto.asCourseResponseModel() = CourseModel(
     ratingAvg = ratingAvg ?: 0.0,
     chapters = chapters?.map { it.asChapterModel() } ?: emptyList(),
     comments = comments?.map { it.asCommentModel() } ?: emptyList(),
-    ratings = comments?.map { it.rating ?: 0 } ?: emptyList()
+    ratings = comments?.map { it.rating ?: 0 } ?: emptyList(),
+    isFavorite = isFavorite == 1,
+    isSale = isSale == 1,
+    page = "https://www.mekik.org/egitim/${slug.orEmpty()}",
+    duration = duration.orEmpty()
 )
 
 fun ChapterDto.asChapterModel() = ChapterModel(

@@ -10,14 +10,15 @@ import com.baltroid.core.network.model.DataResponse
 import com.baltroid.core.network.model.LoginRequestDto
 import com.baltroid.core.network.model.LoginResponseDto
 import com.baltroid.core.network.model.ProfileDto
-import com.baltroid.core.network.model.ProfileEntity
 import com.baltroid.core.network.model.RegisterRequestDto
 import com.baltroid.core.network.model.SearchDto
 import com.baltroid.core.network.model.TeacherDto
 import com.baltroid.core.network.model.TeacherListDto
 import com.baltroid.core.network.model.VideoDto
 import com.baltroid.core.network.util.Constants
+import okhttp3.ResponseBody
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
@@ -73,7 +74,7 @@ interface MekikService {
     ): BaltroidResult<DataResponse<AcademyEntityDto>>
 
     @GET(Constants.Path.PROFILE)
-    suspend fun getProfile(): BaltroidResult<DataResponse<ProfileEntity>>
+    suspend fun getProfile(): BaltroidResult<DataResponse<ProfileDto>>
 
     @POST(Constants.Path.PROFILE)
     suspend fun updateProfile(
@@ -99,6 +100,18 @@ interface MekikService {
     @POST(Constants.Path.VIDEO)
     suspend fun video(
         @Query(Constants.Fields.PLAYER_ID) playerId: String
-    ): BaltroidResult<DataResponse<VideoDto>>
+    ): BaltroidResult<VideoDto>
 
+    @GET(Constants.Path.FAVORITE)
+    suspend fun getFavorites(): BaltroidResult<DataResponse<List<CourseDto>>>
+
+    @POST(Constants.Path.FAVORITE)
+    suspend fun addFavorite(
+        @Query(Constants.Fields.COURSE_ID) courseId: Int
+    ): BaltroidResult<DataResponse<List<String>>>
+
+    @DELETE(Constants.Path.FAVORITE)
+    suspend fun removeFavorite(
+        @Query(Constants.Fields.COURSE_ID) courseId: Int
+    ): BaltroidResult<DataResponse<List<String>>>
 }

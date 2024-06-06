@@ -1,6 +1,7 @@
 package com.baltroid.apps.di
 
 import android.content.Context
+import com.baltroid.core.common.EventBus
 import com.baltroid.core.common.PreferencesHelper
 import com.baltroid.core.network.api.MekikApi
 import dagger.Module
@@ -25,5 +26,9 @@ object NetworkModule {
     @Provides
     @Singleton
     fun providePreferences(@ApplicationContext context: Context) = PreferencesHelper(context)
+
+    @Provides
+    @Singleton
+    fun provideEventBus() = EventBus()
 
 }

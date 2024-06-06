@@ -39,4 +39,5 @@
     <string name="checkbox_text_permission">Mekik\'in bana yenilikler ve güncellemeler ile ilgili eposta göndermesini onaylıyorum.</string>
     <string name="text_privacy">Kayıt olduğunda veri işleme ve gizlilik politikamızı onaylamış olursun.</string>
     <string name="text_btn_already_register">Hesabın mı var? Giriş yap</string>
+    <string name="error_unauthorized">Devam edebilmek için lütfen giriş yapın.</string>
 </resources>

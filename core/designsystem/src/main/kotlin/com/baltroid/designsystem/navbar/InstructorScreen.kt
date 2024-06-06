@@ -16,4 +16,8 @@ sealed class DetailsScreen(
         route = "course/{id}",
         icon = 0
     )
+    data object Player : DetailsScreen(
+        route = "player/{id}",
+        icon = 0
+    )
 }

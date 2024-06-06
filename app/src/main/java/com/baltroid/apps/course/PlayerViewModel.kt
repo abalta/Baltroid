@@ -1,12 +1,12 @@
-package com.baltroid.apps.academy
+package com.baltroid.apps.course
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.baltroid.core.common.ErrorModel
 import com.baltroid.core.common.handle
-import com.mobven.domain.model.AcademyDetailModel
-import com.mobven.domain.usecase.AcademyDetailUseCase
+import com.mobven.domain.model.VideoModel
+import com.mobven.domain.usecase.PlayerUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import de.palm.composestateevents.StateEvent
 import de.palm.composestateevents.StateEventWithContent
@@ -19,35 +19,35 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AcademyDetailViewModel @Inject constructor(
+class PlayerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val academyDetailUseCase: AcademyDetailUseCase
+    private val playerUseCase: PlayerUseCase
 ) : ViewModel() {
-    private val _academyDetailState = MutableStateFlow(AcademyDetailState())
-    val academyDetailState = _academyDetailState.asStateFlow()
+    private val _playerState = MutableStateFlow(PlayerState())
+    val playerState = _playerState.asStateFlow()
 
-    private val academyId: Int = checkNotNull(savedStateHandle["id"])
+    private val playerId: String = checkNotNull(savedStateHandle["id"])
 
-    private var state: AcademyDetailState
-        get() = _academyDetailState.value
+    private var state: PlayerState
+        get() = _playerState.value
         set(newState) {
-            _academyDetailState.update { newState }
+            _playerState.update { newState }
         }
 
     init {
-        getAcademyDetail()
+        getVideo()
     }
 
-    private fun getAcademyDetail() {
+    private fun getVideo() {
         viewModelScope.launch {
-            academyDetailUseCase(academyId).handle {
+            playerUseCase(playerId).handle {
                 onLoading {
                     state = state.copy(isLoading = true)
                 }
                 onSuccess { detailModel ->
                     state = state.copy(
                         isLoading = false,
-                        academyDetail = detailModel, triggered
+                        playerModel = detailModel, triggered
                     )
                 }
                 onFailure { throwable ->
@@ -61,9 +61,9 @@ class AcademyDetailViewModel @Inject constructor(
     }
 }
 
-data class AcademyDetailState(
+data class PlayerState(
     val isLoading: Boolean = false,
-    val academyDetail: AcademyDetailModel? = null,
+    val playerModel: VideoModel? = null,
     val success: StateEvent = consumed,
     val error: StateEventWithContent<ErrorModel> = consumed()
 )

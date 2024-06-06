@@ -2,6 +2,7 @@ package com.baltroid.apps.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.baltroid.core.common.ErrorModel
 import com.baltroid.core.common.handle
 import com.mobven.domain.model.ProfileModel
 import com.mobven.domain.usecase.ProfileUseCase
@@ -89,5 +90,5 @@ data class ProfileState(
     val isLoading: Boolean = false,
     val profile: ProfileModel? = null,
     val success: StateEvent = consumed,
-    val error: StateEventWithContent<String> = consumed()
+    val error: StateEventWithContent<ErrorModel> = consumed()
 )

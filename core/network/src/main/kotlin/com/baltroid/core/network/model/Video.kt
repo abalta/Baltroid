@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class VideoDto(
     @SerialName("id")
-    val id: Int?,
+    val id: String?,
     @SerialName("status")
     val status: String?,
     @SerialName("duration")

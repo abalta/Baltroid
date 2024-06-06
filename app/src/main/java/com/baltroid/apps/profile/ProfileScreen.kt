@@ -99,10 +99,12 @@ fun ProfileScreen(
                             contentScale = ContentScale.FillWidth
                         )
                         Image(
-                            painter = painterResource(id = R.drawable.sample_profile_image),
+                            painter = painterResource(id = R.drawable.ic_auth),
                             modifier = Modifier
                                 .size(98.dp)
-                                .clip(CircleShape),
+                                .clip(CircleShape)
+                                .background(Color.White)
+                                .padding(16.dp),
                             contentDescription = "profile"
                         )
                     }
@@ -189,20 +191,21 @@ fun ProfileScreen(
                     )
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.sample_profile_image),
+                        painter = painterResource(id = R.drawable.ic_auth),
                         modifier = Modifier
                             .size(68.dp)
-                            .clip(CircleShape),
+                            .clip(CircleShape)
+                            .padding(8.dp),
                         contentDescription = "profile"
                     )
-                    IconButton(onClick = {
+                    /*IconButton(onClick = {
 
                     }) {
                         Image(
                             painter = painterResource(id = R.drawable.ic_add),
                             contentDescription = "add"
                         )
-                    }
+                    }*/
                 }
                 MekikTextField(
                     label = stringResource(id = R.string.title_name),

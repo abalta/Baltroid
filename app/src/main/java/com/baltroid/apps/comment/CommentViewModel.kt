@@ -2,6 +2,7 @@ package com.baltroid.apps.comment
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.baltroid.core.common.ErrorModel
 import com.baltroid.core.common.handle
 import com.mobven.domain.usecase.CommentUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -39,7 +40,7 @@ class CommentViewModel @Inject constructor(
                 onLoading {
                     state = state.copy(isLoading = true)
                 }
-                onSuccess { model ->
+                onSuccess { _ ->
                     state = state.copy(
                         isLoading = false,
                         success = triggered
@@ -63,5 +64,5 @@ class CommentViewModel @Inject constructor(
 data class CommentState(
     val isLoading: Boolean = false,
     val success: StateEvent = consumed,
-    val error: StateEventWithContent<String> = consumed()
+    val error: StateEventWithContent<ErrorModel> = consumed()
 )

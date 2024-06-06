@@ -6,6 +6,7 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.baltroid.apps.auth.AuthState
 import com.baltroid.apps.mapper.pagingMap
+import com.baltroid.core.common.ErrorModel
 import com.baltroid.core.common.handle
 import com.mobven.domain.model.CourseModel
 import com.mobven.domain.usecase.CourseUseCase
@@ -61,5 +62,5 @@ data class CoursesState(
     val courses: Flow<PagingData<CourseModel>> = flowOf(),
     val latestCourses: List<CourseModel> = emptyList(),
     val success: StateEvent = consumed,
-    val error: StateEventWithContent<String> = consumed()
+    val error: StateEventWithContent<ErrorModel> = consumed()
 )

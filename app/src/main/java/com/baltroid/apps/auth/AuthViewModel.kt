@@ -2,6 +2,9 @@ package com.baltroid.apps.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.baltroid.core.common.AppEvent
+import com.baltroid.core.common.ErrorModel
+import com.baltroid.core.common.EventBus
 import com.baltroid.core.common.HttpException
 import com.baltroid.core.common.handle
 import com.baltroid.model.LoginModel
@@ -27,7 +30,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
-    private val registerUseCase: RegisterUseCase
+    private val registerUseCase: RegisterUseCase,
+    private val eventBus: EventBus
 ) : ViewModel() {
 
     private val _authState = MutableStateFlow(AuthState())
@@ -46,6 +50,9 @@ class AuthViewModel @Inject constructor(
                     state = state.copy(isLoading = true, loginModel = null)
                 }
                 onSuccess { loginResponseModel ->
+                    viewModelScope.launch {
+                        eventBus.invokeEvent(AppEvent.LOGIN)
+                    }
                     state = state.copy(
                         isLoading = false, loginModel = LoginModel(
                             loginResponseModel.customerId,
@@ -58,7 +65,7 @@ class AuthViewModel @Inject constructor(
                     state = state.copy(
                         isLoading = false,
                         loginModel = null,
-                        error = triggered((throwable as HttpException).statusMessage ?: "Bir hata oluştu.")
+                        error = triggered(throwable)
                     )
                 }
             }
@@ -72,6 +79,9 @@ class AuthViewModel @Inject constructor(
                     state = state.copy(isLoading = true, loginModel = null)
                 }
                 onSuccess { loginResponseModel ->
+                    viewModelScope.launch {
+                        eventBus.invokeEvent(AppEvent.LOGIN)
+                    }
                     state = state.copy(
                         isLoading = false, loginModel = LoginModel(
                             loginResponseModel.customerId,
@@ -84,7 +94,7 @@ class AuthViewModel @Inject constructor(
                     state = state.copy(
                         isLoading = false,
                         loginModel = null,
-                        error = triggered((throwable as HttpException).statusMessage ?: "Bir hata oluştu.")
+                        error = triggered(throwable)
                     )
                 }
             }
@@ -104,5 +114,5 @@ data class AuthState(
     val isLoading: Boolean = false,
     val loginModel: LoginModel? = null,
     val success: StateEvent = consumed,
-    val error: StateEventWithContent<String> = consumed()
+    val error: StateEventWithContent<ErrorModel> = consumed()
 )

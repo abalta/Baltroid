@@ -3,6 +3,7 @@ package com.baltroid.apps.instructor
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.baltroid.core.common.ErrorModel
 import com.baltroid.core.common.handle
 import com.mobven.domain.model.TeacherDetailModel
 import com.mobven.domain.usecase.TeacherDetailUseCase
@@ -64,5 +65,5 @@ data class TeacherDetailState(
     val isLoading: Boolean = false,
     val teacherDetail: TeacherDetailModel? = null,
     val success: StateEvent = consumed,
-    val error: StateEventWithContent<String> = consumed()
+    val error: StateEventWithContent<ErrorModel> = consumed()
 )

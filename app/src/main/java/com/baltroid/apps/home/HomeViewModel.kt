@@ -2,6 +2,8 @@ package com.baltroid.apps.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.baltroid.core.common.ErrorModel
+import com.baltroid.core.common.EventBus
 import com.baltroid.core.common.HttpException
 import com.baltroid.core.common.handle
 import com.mobven.domain.model.CourseModel
@@ -25,6 +27,7 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val authUseCase: AuthUseCase,
     private val courseUseCase: CourseUseCase,
+    private val eventBus: EventBus
 ) : ViewModel() {
 
     private val _homeState = MutableStateFlow(HomeState())
@@ -39,6 +42,11 @@ class HomeViewModel @Inject constructor(
     init {
         isUserLoggedIn()
         getHomeCourses()
+        viewModelScope.launch {
+            eventBus.events.collect {
+                isUserLoggedIn()
+            }
+        }
     }
 
     fun isUserLoggedIn() {
@@ -106,5 +114,5 @@ data class HomeState(
     val courses: List<CourseModel> = emptyList(),
     val latestCourses: List<CourseModel> = emptyList(),
     val success: StateEvent = consumed,
-    val error: StateEventWithContent<String> = consumed()
+    val error: StateEventWithContent<ErrorModel> = consumed()
 )
