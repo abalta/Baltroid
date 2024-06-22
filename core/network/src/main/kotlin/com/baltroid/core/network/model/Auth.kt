@@ -29,6 +29,12 @@ data class RegisterRequestDto(
 )
 
 @Serializable
+data class ForgotPasswordRequestDto(
+    @SerialName(Constants.Fields.EMAIL)
+    val email: String
+)
+
+@Serializable
 data class LoginResponseDto(
     @SerialName(Constants.Fields.TOKEN)
     val token: String?,

@@ -3,6 +3,7 @@ package com.baltroid.apps.auth
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -15,10 +16,12 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,6 +37,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -43,12 +47,14 @@ import com.baltroid.apps.ext.isValidEmail
 import com.baltroid.apps.ext.isValidPassword
 import com.baltroid.apps.home.hideSheetAndUpdateState
 import com.baltroid.core.designsystem.R
+import com.baltroid.designsystem.component.ButtonText
 import com.baltroid.designsystem.component.Caption
 import com.baltroid.designsystem.component.FilterHeadText
 import com.baltroid.designsystem.component.MekikCheckBox
 import com.baltroid.designsystem.component.MekikFilledButton
 import com.baltroid.designsystem.component.MekikOutlinedButton
 import com.baltroid.designsystem.component.MekikTextField
+import com.baltroid.designsystem.theme.electricVioletColor
 import de.palm.composestateevents.EventEffect
 import kotlinx.coroutines.launch
 
@@ -63,6 +69,7 @@ fun LoginSheet(
         true
     )
     var showRegisterSheet by rememberSaveable { mutableStateOf(false) }
+    var showForgotPasswordSheet by rememberSaveable { mutableStateOf(false) }
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var emailError by rememberSaveable { mutableStateOf(false) }
@@ -77,14 +84,6 @@ fun LoginSheet(
         snackbarStateScope.launch {
             snackbarHostState.showSnackbar(message = it.message.orEmpty())
         }
-    }
-
-    if (uiState.isLoading) {
-        Log.d("LoginSheet", "Loading")
-    } else if (uiState.loginModel != null) {
-        checkLogin()
-    } else if (uiState.error.toString().isNotEmpty()) {
-        Log.d("LoginSheet", "Error: ${uiState.error}")
     }
 
     ModalBottomSheet(
@@ -155,12 +154,16 @@ fun LoginSheet(
                         passwordError = false
                         password = it
                     }
-                    Caption(
-                        text = stringResource(id = R.string.text_btn_forgot_password),
+                    TextButton(
+                        onClick = {
+                            showForgotPasswordSheet = true
+                        },
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 24.dp, end = 24.dp, top = 24.dp)
-                    )
+                            .align(Alignment.Start)
+                            .padding(start = 24.dp, end = 24.dp, top = 8.dp),
+                    ) {
+                        ButtonText(text = stringResource(id = R.string.text_btn_forgot_password), textAlign = TextAlign.Start)
+                    }
                     MekikFilledButton(
                         text = stringResource(id = R.string.text_btn_login),
                         isEnable = uiState.isLoading.not(),
@@ -199,6 +202,11 @@ fun LoginSheet(
         if (showRegisterSheet) {
             RegisterSheet(viewModel, onDismiss = {
                 showRegisterSheet = false
+            }, checkLogin = checkLogin)
+        }
+        if (showForgotPasswordSheet) {
+            ForgotPasswordSheet(viewModel, onDismiss = {
+                showForgotPasswordSheet = false
             }, checkLogin = checkLogin)
         }
     }
@@ -347,9 +355,10 @@ fun RegisterSheet(
                     }
                     MekikCheckBox(
                         label = "Mekik'in bana yenilikler ve güncellemeler ile ilgili eposta göndermesini onaylıyorum.",
+                        checked = false,
                         modifier = Modifier.padding(top = 16.dp, start = 24.dp, end = 24.dp)
                     ) {
-                        agreement = true
+                        agreement = it
                     }
                     MekikFilledButton(
                         text = stringResource(id = R.string.title_register),
@@ -404,4 +413,115 @@ fun RegisterSheetPreview() {
 
         }
     )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ForgotPasswordSheet(
+    viewModel: AuthViewModel = hiltViewModel(),
+    onDismiss: () -> Unit,
+    checkLogin: () -> Unit
+) {
+    val sheetState = rememberModalBottomSheetState(
+        true
+    )
+    val sheetStateScope = rememberCoroutineScope()
+    var emailError by rememberSaveable { mutableStateOf(false) }
+    var email by rememberSaveable { mutableStateOf("") }
+    val snackbarStateScope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    val uiState by viewModel.authState.collectAsStateLifecycleAware()
+
+    EventEffect(event = uiState.error, onConsumed = viewModel::onConsumedFailedEvent) {
+        snackbarStateScope.launch {
+            snackbarHostState.showSnackbar(message = it.message.orEmpty())
+        }
+    }
+
+    EventEffect(event = uiState.success, onConsumed = viewModel::onConsumedSucceededEvent) {
+        snackbarStateScope.launch {
+            snackbarHostState.showSnackbar(message = "Şifre sıfırlama bilgileri e-posta adresinize gönderilmiştir.")
+        }
+    }
+
+    ModalBottomSheet(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 48.dp),
+        dragHandle = null,
+        sheetState = sheetState,
+        containerColor = Color.White,
+        onDismissRequest = {
+            onDismiss()
+        }) {
+        Box {
+            Scaffold(
+                containerColor = Color.White,
+                snackbarHost = {
+                    SnackbarHost(
+                        hostState = snackbarHostState,
+                        modifier = Modifier.padding(bottom = 48.dp)
+                    )
+                }
+            ) { padding ->
+                Column(
+                    modifier = Modifier
+                        .fillMaxHeight(0.9f)
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    IconButton(onClick = {
+                        sheetStateScope.hideSheetAndUpdateState(sheetState) {
+                            onDismiss()
+                        }
+                    }, modifier = Modifier.padding(top = 30.dp, start = 24.dp)) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_close),
+                            contentDescription = "close"
+                        )
+                    }
+                    FilterHeadText(
+                        text = "Şifremi Sıfırlama",
+                        showIcon = false,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 22.dp, top = 24.dp)
+                    )
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_auth), modifier = Modifier
+                            .padding(top = 24.dp)
+                            .align(Alignment.CenterHorizontally), contentDescription = "auth"
+                    )
+                    MekikTextField(
+                        label = stringResource(id = R.string.title_email),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 12.dp, end = 12.dp, top = 16.dp),
+                        error = emailError,
+                        errorMessage = "Hatalı E-posta Girişi",
+                        keyboardType = KeyboardType.Email
+                    ) {
+                        emailError = false
+                        email = it
+                    }
+                    MekikFilledButton(
+                        text = "Şifremi Sıfırlama",
+                        modifier = Modifier.padding(top = 16.dp, start = 24.dp, end = 24.dp)
+                    ) {
+                        if (email.isValidEmail().not()) {
+                            emailError = true
+                            return@MekikFilledButton
+                        } else {
+                            viewModel.forgotPassword(email)
+                        }
+                    }
+                }
+            }
+            if (uiState.isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+        }
+    }
 }

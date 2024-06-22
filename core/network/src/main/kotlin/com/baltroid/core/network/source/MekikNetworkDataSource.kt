@@ -4,6 +4,7 @@ import com.baltroid.core.common.BaltroidResult
 import com.baltroid.core.network.api.service.MekikService
 import com.baltroid.core.network.model.CourseListDto
 import com.baltroid.core.network.model.DataResponse
+import com.baltroid.core.network.model.ForgotPasswordRequestDto
 import com.baltroid.core.network.model.LoginRequestDto
 import com.baltroid.core.network.model.LoginResponseDto
 import com.baltroid.core.network.model.ProfileDto
@@ -35,8 +36,10 @@ class MekikNetworkDataSource @Inject constructor(private val mekikService: Mekik
             )
         )
 
-    suspend fun courses(page: Int? = null, limit: Int? = null, sort: String? = null) =
-        mekikService.getCourses(page, limit, sort)
+    suspend fun forgotPassword(email: String) = mekikService.forgotPassword(ForgotPasswordRequestDto(email))
+
+    suspend fun courses(page: Int? = null, limit: Int? = null, sort: String? = null, category: Int? = null) =
+        mekikService.getCourses(page, limit, sort, category)
 
     suspend fun courseDetail(id: Int) = mekikService.getCourseDetail(id)
 
@@ -85,5 +88,9 @@ class MekikNetworkDataSource @Inject constructor(private val mekikService: Mekik
     suspend fun addFavorite(courseId: Int) = mekikService.addFavorite(courseId)
 
     suspend fun removeFavorite(courseId: Int) = mekikService.removeFavorite(courseId)
+
+    suspend fun userCourses() = mekikService.getUserCourses()
+
+    suspend fun categories() = mekikService.getCategories()
 
 }

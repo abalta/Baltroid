@@ -109,6 +109,10 @@ class CourseDetailViewModel @Inject constructor(
     fun favState() {
         state = state.copy(fav = consumed)
     }
+
+    fun onConsumedFailedEvent() {
+        state = state.copy(error = consumed())
+    }
 }
 
 data class CourseDetailState(

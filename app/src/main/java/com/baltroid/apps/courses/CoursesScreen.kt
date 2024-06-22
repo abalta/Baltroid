@@ -19,8 +19,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.baltroid.apps.ext.collectAsStateLifecycleAware
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.paging.LoadState
+import com.baltroid.apps.filter.FilterSheet
 import com.baltroid.apps.home.RecentCourses
 import com.baltroid.apps.navigation.OnAction
 import com.baltroid.apps.navigation.UiAction
@@ -36,6 +40,7 @@ fun CoursesScreen(
 ) {
     val uiState by viewModel.courseState.collectAsStateLifecycleAware()
     val allCourses = uiState.courses.collectAsLazyPagingItems()
+    var showFilterSheet by rememberSaveable { mutableStateOf(false) }
 
     LazyColumn(
         modifier = Modifier
@@ -49,7 +54,9 @@ fun CoursesScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 24.dp, end = 24.dp)
-            )
+            ) {
+                showFilterSheet = true
+            }
         }
         if (uiState.latestCourses.isNotEmpty()) {
             item {
@@ -82,19 +89,34 @@ fun CoursesScreen(
                 loadState.refresh is LoadState.Loading -> {
                     item {
                         CircularProgressIndicator(
-                            modifier = Modifier.fillMaxWidth().padding(10.dp).wrapContentWidth(Alignment.CenterHorizontally)
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(10.dp)
+                                .wrapContentWidth(Alignment.CenterHorizontally)
                         )
                     }
                 }
+
                 loadState.append is LoadState.Loading -> {
                     item {
                         CircularProgressIndicator(
-                            modifier = Modifier.fillMaxWidth().padding(10.dp).wrapContentWidth(Alignment.CenterHorizontally)
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(10.dp)
+                                .wrapContentWidth(Alignment.CenterHorizontally)
                         )
                     }
                 }
             }
         }
+    }
+    if (showFilterSheet) {
+        FilterSheet (onDismiss = {
+            showFilterSheet = false
+        }, onSubmit = { pair ->
+            showFilterSheet = false
+            viewModel.refreshCourses(pair.first, pair.second)
+        })
     }
 }
 

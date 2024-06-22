@@ -55,9 +55,9 @@ fun FavoritesScreen(
                     .padding(start = 24.dp, end = 24.dp)
             )
         }
-        uiState.favorites?.let {course ->
+        uiState.favorites?.let { course ->
+            showLoginSheet = false
             if (course.isNotEmpty()) {
-                showLoginSheet = false
                 items(key = {
                     it.id
                 }, items = course) { favorite ->

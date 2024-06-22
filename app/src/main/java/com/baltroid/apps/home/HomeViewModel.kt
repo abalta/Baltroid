@@ -8,6 +8,7 @@ import com.baltroid.core.common.HttpException
 import com.baltroid.core.common.handle
 import com.mobven.domain.model.CourseModel
 import com.mobven.domain.usecase.AuthUseCase
+import com.mobven.domain.usecase.CategoryUseCase
 import com.mobven.domain.usecase.CourseUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import de.palm.composestateevents.StateEvent

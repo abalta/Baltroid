@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -35,15 +36,16 @@ import com.baltroid.designsystem.theme.regularStyle
 @Composable
 fun MekikCheckBox(
     label: String,
+    checked: Boolean,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit,
+    onClick: (Boolean) -> Unit,
 ) {
     val interactionSource = remember {
         MutableInteractionSource()
     }
 
-    var checked by rememberSaveable {
-        mutableStateOf(false)
+    var checkedState by rememberSaveable {
+        mutableStateOf(checked)
     }
 
     Row(
@@ -51,8 +53,8 @@ fun MekikCheckBox(
             interactionSource = interactionSource,
             indication = null,
             onClick = {
-                checked = !checked
-                onClick()
+                checkedState = !checkedState
+                onClick(checkedState)
             }),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -81,14 +83,17 @@ fun MekikCheckBox(
 @Composable
 @Preview
 fun MekikCheckBoxPreview() {
-    MekikCheckBox("Yeni Eğitim Eklendiğinde", onClick = {})
+    MekikCheckBox("Yeni Eğitim Eklendiğinde", false, onClick = {
+
+    })
 }
 
 @Composable
 fun MekikRadioButton(
     selected: Boolean,
+    modifier: Modifier = Modifier,
     label: String,
-    modifier: Modifier = Modifier
+    onClick: (Boolean) -> Unit
 ) {
 
     var checked by rememberSaveable {
@@ -104,6 +109,7 @@ fun MekikRadioButton(
     ) {
         RadioButton(selected = checked, onClick = {
             checked = !checked
+            onClick(checked)
         })
         Text(
             text = label,
@@ -115,7 +121,9 @@ fun MekikRadioButton(
 @Composable
 @Preview
 fun MekikRadioButtonPreview() {
-    MekikRadioButton(false, "Yeni Eğitim Eklendiğinde")
+    MekikRadioButton(false, label = "Yeni Eğitim Eklendiğinde", onClick = {
+
+    })
 }
 
 @Composable
@@ -123,7 +131,8 @@ fun MekikSortButton(
     selected: Boolean,
     label: String,
     icon: Int,
-    modifier: Modifier = Modifier
+    onClick: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
 
     var checked by rememberSaveable {
@@ -131,9 +140,10 @@ fun MekikSortButton(
     }
 
     Row(
-        modifier = modifier.clickable(
+        modifier = modifier.fillMaxWidth().clickable(
             onClick = {
                 checked = !checked
+                onClick(checked)
             }),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -146,14 +156,14 @@ fun MekikSortButton(
             Icon(
                 painter = painterResource(id = icon),
                 contentDescription = "check",
-                tint = if(checked) MaterialTheme.colorScheme.electricVioletColor else Color.Black
+                tint = if(selected) MaterialTheme.colorScheme.electricVioletColor else Color.Black
             )
         }
         Text(
             text = label,
-            style = if(checked) MaterialTheme.typography.mediumBoldStyle else MaterialTheme.typography.regularStyle,
+            style = if(selected) MaterialTheme.typography.mediumBoldStyle else MaterialTheme.typography.regularStyle,
             modifier = Modifier.padding(start = 16.dp),
-            color = if(checked) MaterialTheme.colorScheme.electricVioletColor else Color.Black
+            color = if(selected) MaterialTheme.colorScheme.electricVioletColor else Color.Black
         )
     }
 }
@@ -161,5 +171,7 @@ fun MekikSortButton(
 @Preview
 @Composable
 fun MekikSortButtonPreview() {
-    MekikSortButton(true, "Yeni Eğitim Eklendiğinde", R.drawable.sort_popular)
+    MekikSortButton(false, "Yeni Eğitim Eklendiğinde", R.drawable.sort_popular, {
+
+    })
 }

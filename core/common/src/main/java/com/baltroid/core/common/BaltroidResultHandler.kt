@@ -21,7 +21,11 @@ fun <T> BaltroidResult<T>.handle(builder: BaltroidResultHandler<T>.() -> Unit) {
         override fun onFailure(block: (ErrorModel) -> Unit) {
             if (isFailure()) block(
                 if (error is HttpException) {
-                    ErrorModel((error as HttpException).statusCode, "Lütfen giriş yapınız.", error.cause)
+                    if ((error as HttpException).statusCode == 401) {
+                        ErrorModel(401, "Lütfen giriş yapınız.", error.cause)
+                    } else {
+                        ErrorModel((error as HttpException).statusCode, (error as HttpException).statusMessage, error.cause)
+                    }
                 } else {
                     ErrorModel(999, "Bir hata oluştu.", error.cause)
                 }

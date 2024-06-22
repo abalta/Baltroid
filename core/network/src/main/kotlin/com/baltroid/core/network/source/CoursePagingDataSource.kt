@@ -7,6 +7,8 @@ import com.baltroid.core.network.model.CourseDto
 
 class CoursePagingDataSource(
     private val networkDataSource: MekikNetworkDataSource,
+    private val sort: String? = null,
+    private val category: Int? = null
 ) : PagingSource<Int, CourseDto>() {
 
     companion object {
@@ -25,7 +27,7 @@ class CoursePagingDataSource(
         val page = params.key ?: STARTING_PAGE_INDEX
 
         return try {
-            when (val result = networkDataSource.courses(page, LIMIT)) {
+            when (val result = networkDataSource.courses(page, LIMIT, sort, category)) {
                 is BaltroidResult.Failure -> {
                     return LoadResult.Error(result.error)
                 }

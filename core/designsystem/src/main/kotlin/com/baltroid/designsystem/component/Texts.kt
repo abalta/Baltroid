@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -99,11 +100,12 @@ fun Body(text: String, modifier: Modifier = Modifier) {
     )
 }
 @Composable
-fun ButtonText(text: String, modifier: Modifier = Modifier, color: Color = MaterialTheme.colorScheme.electricVioletColor) {
+fun ButtonText(text: String, modifier: Modifier = Modifier, color: Color = MaterialTheme.colorScheme.electricVioletColor, textAlign: TextAlign? = null) {
     Text(
         text = text,
         color = color,
         modifier = modifier,
+        textAlign = textAlign,
         style = MaterialTheme.typography.buttonTextStyle
     )
 }
@@ -175,14 +177,14 @@ fun SmallText(text: String, modifier: Modifier = Modifier, color: Color = Materi
     )
 }
 @Composable
-fun FilterHeadText(text: String, modifier: Modifier = Modifier, showIcon: Boolean = true, color: Color = Color.Black) {
+fun FilterHeadText(text: String, modifier: Modifier = Modifier, showIcon: Boolean = true, color: Color = Color.Black, onFilterClick: () -> Unit = {}) {
     Row(modifier = modifier, horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
         HeadText(
             text = text,
             color = color
         )
         if (showIcon) {
-            IconButton(onClick = {  }) {
+            IconButton(onClick = onFilterClick) {
                 Icon(painter = painterResource(id = R.drawable.ic_filter), contentDescription = "filter")
             }
         }
@@ -192,7 +194,9 @@ fun FilterHeadText(text: String, modifier: Modifier = Modifier, showIcon: Boolea
 @Preview
 @Composable
 fun PreviewFilterHeadText() {
-    FilterHeadText(text = "Eğitimler")
+    FilterHeadText(text = "Eğitimler", onFilterClick = {
+
+    })
 }
 
 @Composable

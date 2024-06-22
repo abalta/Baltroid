@@ -4,9 +4,13 @@ import com.baltroid.core.common.BaltroidResult
 import com.baltroid.core.network.model.AcademyEntityDto
 import com.baltroid.core.network.model.AcademyListDto
 import com.baltroid.core.network.model.AllTotalDto
+import com.baltroid.core.network.model.CategoryDto
+import com.baltroid.core.network.model.CategoryMainDto
+import com.baltroid.core.network.model.CategoryNameDto
 import com.baltroid.core.network.model.CourseDto
 import com.baltroid.core.network.model.CourseListDto
 import com.baltroid.core.network.model.DataResponse
+import com.baltroid.core.network.model.ForgotPasswordRequestDto
 import com.baltroid.core.network.model.LoginRequestDto
 import com.baltroid.core.network.model.LoginResponseDto
 import com.baltroid.core.network.model.ProfileDto
@@ -16,7 +20,6 @@ import com.baltroid.core.network.model.TeacherDto
 import com.baltroid.core.network.model.TeacherListDto
 import com.baltroid.core.network.model.VideoDto
 import com.baltroid.core.network.util.Constants
-import okhttp3.ResponseBody
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.Field
@@ -37,11 +40,17 @@ interface MekikService {
         @Body request: RegisterRequestDto
     ): BaltroidResult<DataResponse<LoginResponseDto>>
 
+    @POST(Constants.Path.FORGOT_PASSWORD)
+    suspend fun forgotPassword(
+        @Body request: ForgotPasswordRequestDto
+    ): BaltroidResult<DataResponse<List<Unit>>>
+
     @GET(Constants.Path.COURSES)
     suspend fun getCourses(
         @Query(Constants.Fields.PAGE) page: Int? = null,
         @Query(Constants.Fields.LIMIT) limit: Int? = null,
-        @Query(Constants.Fields.SORT) sort: String? = null
+        @Query(Constants.Fields.SORT) sort: String? = null,
+        @Query(Constants.Fields.CATEGORY_ID) categoryId: Int? = null
     ): BaltroidResult<DataResponse<CourseListDto>>
 
     @GET("${Constants.Path.COURSES}/{${Constants.Fields.ID}}")
@@ -94,13 +103,13 @@ interface MekikService {
         @Query(Constants.Fields.TITLE) query: String
     ): BaltroidResult<DataResponse<SearchDto>>
 
-    @GET(Constants.Path.ALLTOTAL)
+    @GET(Constants.Path.ALL_TOTAL)
     suspend fun allTotal(): BaltroidResult<DataResponse<AllTotalDto>>
 
     @POST(Constants.Path.VIDEO)
     suspend fun video(
         @Query(Constants.Fields.PLAYER_ID) playerId: String
-    ): BaltroidResult<VideoDto>
+    ): BaltroidResult<DataResponse<VideoDto>>
 
     @GET(Constants.Path.FAVORITE)
     suspend fun getFavorites(): BaltroidResult<DataResponse<List<CourseDto>>>
@@ -114,4 +123,10 @@ interface MekikService {
     suspend fun removeFavorite(
         @Query(Constants.Fields.COURSE_ID) courseId: Int
     ): BaltroidResult<DataResponse<List<String>>>
+
+    @GET(Constants.Path.USER_COURSES)
+    suspend fun getUserCourses(): BaltroidResult<DataResponse<List<CourseDto>>>
+
+    @GET(Constants.Path.CATEGORY)
+    suspend fun getCategories(): BaltroidResult<DataResponse<List<CategoryMainDto>>>
 }

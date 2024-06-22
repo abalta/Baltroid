@@ -36,16 +36,16 @@ fun SettingsScreen() {
         Caption(text = stringResource(id = R.string.notification_settings), color = MaterialTheme.colorScheme.electricVioletColor, modifier = Modifier
             .fillMaxWidth()
             .padding(start = 24.dp, end = 24.dp, top = 8.dp))
-        MekikCheckBox(label = "Yeni Eğitim Eklendiğinde", modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 14.dp)) {
+        MekikCheckBox(label = "Yeni Eğitim Eklendiğinde", false, modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 14.dp)) {
             
         }
-        MekikCheckBox(label = "Yeni Eğitmen Eklendiğinde", modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 12.dp)) {
+        MekikCheckBox(label = "Yeni Eğitmen Eklendiğinde", false, modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 12.dp)) {
 
         }
-        MekikCheckBox(label = "Yeni Akademi Eklendiğinde", modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 12.dp)) {
+        MekikCheckBox(label = "Yeni Akademi Eklendiğinde", false, modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 12.dp)) {
 
         }
-        MekikCheckBox(label = "Favorilerime İçerik Eklendiğinde", modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 12.dp)) {
+        MekikCheckBox(label = "Favorilerime İçerik Eklendiğinde", false, modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 12.dp)) {
 
         }
         HorizontalDivider(modifier = Modifier.padding(top = 16.dp, start = 24.dp, end = 24.dp))

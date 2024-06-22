@@ -175,3 +175,31 @@ data class CategoryDto(
     @SerialName("slug")
     val slug: String?
 )
+
+@Serializable
+data class CategoryMainDto(
+    @SerialName("category_name")
+    val categoryName: CategoryNameDto?,
+    @SerialName("created_at")
+    val createdAt: String?,
+    @SerialName("deleted_at")
+    val deletedAt: String?,
+    @SerialName("id")
+    val id: Int?,
+    @SerialName("is_promoted")
+    val isPromoted: Boolean?,
+    @SerialName("parent_id")
+    val parentId: String?,
+    @SerialName("slug")
+    val slug: String?,
+    @SerialName("updated_at")
+    val updatedAt: String?
+)
+
+@Serializable
+data class CategoryNameDto(
+    @SerialName("en")
+    val en: String?,
+    @SerialName("tr")
+    val tr: String?
+)

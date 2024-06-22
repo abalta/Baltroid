@@ -6,6 +6,7 @@ data class CourseModel(
     val description: String,
     val popular: Boolean,
     val author: String,
+    val authorId: Int,
     val cover: String,
     val academy: String,
     val level: String,
@@ -44,4 +45,9 @@ data class UserModel(
     val id: Int,
     val name: String,
     val avatar: String
+)
+
+data class CategoryModel(
+    val id: Int,
+    val name: String
 )

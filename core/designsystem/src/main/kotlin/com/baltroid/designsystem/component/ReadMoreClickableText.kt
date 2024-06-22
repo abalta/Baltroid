@@ -25,7 +25,7 @@ fun ReadMoreClickableText(
     text: String,
     modifier: Modifier = Modifier,
     textStyle: TextStyle = MaterialTheme.typography.regularStyle,
-    minimizedMaxLines: Int = 2,
+    minimizedMaxLines: Int = 4,
 ) {
     var expanded by remember { mutableStateOf(false) }
     val seeMoreSizeState = remember { mutableStateOf<IntSize?>(null) }

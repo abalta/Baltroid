@@ -15,9 +15,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -33,6 +38,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.baltroid.apps.comment.CommentsSheet
 import com.baltroid.apps.ext.collectAsStateLifecycleAware
+import com.baltroid.apps.ext.share
 import com.baltroid.apps.ext.showWeb
 import com.baltroid.apps.navigation.OnAction
 import com.baltroid.apps.navigation.UiAction
@@ -47,6 +53,7 @@ import com.baltroid.designsystem.component.ReadMoreClickableText
 import com.baltroid.designsystem.theme.electricVioletColor
 import com.baltroid.designsystem.theme.goldenTainoiColor
 import de.palm.composestateevents.EventEffect
+import kotlinx.coroutines.launch
 
 @Composable
 fun CourseScreen(
@@ -55,10 +62,18 @@ fun CourseScreen(
 ) {
     val uiState by viewModel.courseDetailState.collectAsStateLifecycleAware()
     var showCommentSheet by rememberSaveable { mutableStateOf(false) }
+    val snackbarStateScope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
 
     EventEffect(event = uiState.fav, onConsumed = viewModel::favState) {
         viewModel.getCourseDetail()
+    }
+
+    EventEffect(event = uiState.error, onConsumed = viewModel::onConsumedFailedEvent) {
+        snackbarStateScope.launch {
+            snackbarHostState.showSnackbar(message = it.message.orEmpty())
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -71,142 +86,171 @@ fun CourseScreen(
 
             uiState.courseDetail != null -> {
                 val courseDetail = uiState.courseDetail!!
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    item {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(211.dp)
-                        ) {
-                            AsyncImage(
-                                modifier = Modifier.fillMaxSize(),
-                                model = courseDetail.cover,
-                                placeholder = painterResource(id = R.drawable.logo),
-                                contentDescription = "Image",
-                                contentScale = ContentScale.FillBounds
-                            )
-                            Row(Modifier.fillMaxWidth()) {
-                                CircularButton(
-                                    icon = R.drawable.ic_back,
-                                    Modifier.padding(top = 28.dp, start = 24.dp)
-                                ) {
-                                    onAction(
-                                        UiAction.OnBackClick
-                                    )
-                                }
-                                Spacer(modifier = Modifier.weight(1f))
-                                CircularButton(
-                                    icon = R.drawable.ic_share,
-                                    Modifier.padding(top = 28.dp, end = 6.dp)
-                                ) {
-
-                                }
-                                CircularButton(
-                                    icon = if(courseDetail.isFavorite) R.drawable.ic_fav_filled else R.drawable.ic_fav,
-                                    Modifier.padding(top = 28.dp, end = 24.dp)
-                                ) {
-                                    if (courseDetail.isFavorite) {
-                                        viewModel.deleteFavorite()
-                                    } else {
-                                        viewModel.addFavorite()
+                Scaffold(
+                    containerColor = Color.White,
+                    snackbarHost = {
+                        SnackbarHost(
+                            hostState = snackbarHostState
+                        )
+                    }
+                ) { _ ->
+                    LazyColumn(modifier = Modifier.fillMaxSize()) {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(211.dp)
+                            ) {
+                                AsyncImage(
+                                    modifier = Modifier.fillMaxSize(),
+                                    model = courseDetail.cover,
+                                    placeholder = painterResource(id = R.drawable.logo),
+                                    contentDescription = "Image",
+                                    contentScale = ContentScale.FillBounds
+                                )
+                                Row(Modifier.fillMaxWidth()) {
+                                    CircularButton(
+                                        icon = R.drawable.ic_back,
+                                        Modifier.padding(top = 28.dp, start = 24.dp)
+                                    ) {
+                                        onAction(
+                                            UiAction.OnBackClick
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.weight(1f))
+                                    CircularButton(
+                                        icon = R.drawable.ic_share,
+                                        Modifier.padding(top = 28.dp, end = 6.dp)
+                                    ) {
+                                        context.share(courseDetail.page, courseDetail.title)
+                                    }
+                                    CircularButton(
+                                        icon = if (courseDetail.isFavorite) R.drawable.ic_fav_filled else R.drawable.ic_fav,
+                                        Modifier.padding(top = 28.dp, end = 24.dp)
+                                    ) {
+                                        if (courseDetail.isFavorite) {
+                                            viewModel.deleteFavorite()
+                                        } else {
+                                            viewModel.addFavorite()
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
-                    item {
-                        Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.Center) {
-                            BoldHeadText(
-                                courseDetail.title,
-                                Modifier
-                                    .padding(start = 20.dp, top = 8.dp, end = 20.dp),
-                            )
-                            CaptionMedium(
-                                text = courseDetail.author,
-                                color = MaterialTheme.colorScheme.electricVioletColor,
-                                modifier = Modifier.padding(start = 20.dp, top = 12.dp, end = 20.dp)
-                            )
-                            Caption(
-                                text = courseDetail.academy,
-                                color = Color.Black.copy(0.5f),
-                                modifier = Modifier.padding(start = 20.dp, top = 12.dp, end = 20.dp)
-                            )
-                            Row(
-                                modifier = Modifier.padding(
-                                    start = 20.dp,
-                                    top = 12.dp,
-                                    end = 20.dp
-                                ),
-                                verticalAlignment = Alignment.CenterVertically
+                        item {
+                            Column(
+                                Modifier.fillMaxWidth(),
+                                verticalArrangement = Arrangement.Center
                             ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_duration),
-                                    modifier = Modifier.size(15.dp),
-                                    contentDescription = "time"
+                                BoldHeadText(
+                                    courseDetail.title,
+                                    Modifier
+                                        .padding(start = 20.dp, top = 8.dp, end = 20.dp),
                                 )
-                                MediumSmallText(
-                                    text = courseDetail.duration,
-                                    Modifier.padding(start = 8.dp, end = 8.dp)
+                                CaptionMedium(
+                                    text = courseDetail.author,
+                                    color = MaterialTheme.colorScheme.electricVioletColor,
+                                    modifier = Modifier.padding(
+                                        start = 20.dp,
+                                        top = 12.dp,
+                                        end = 20.dp
+                                    ).clickable {
+                                        onAction(
+                                            UiAction.OnInstructorClick(
+                                                courseDetail.authorId
+                                            )
+                                        )
+                                    }
                                 )
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_level),
-                                    modifier = Modifier.size(15.dp),
-                                    contentDescription = "level"
-                                )
-                                MediumSmallText(
-                                    text = courseDetail.level,
-                                    Modifier.padding(start = 8.dp, end = 8.dp)
-                                )
-                            }
-                            Row(
-                                modifier = Modifier
-                                    .padding(
+                                Caption(
+                                    text = courseDetail.academy,
+                                    color = Color.Black.copy(0.5f),
+                                    modifier = Modifier.padding(
                                         start = 20.dp,
                                         top = 12.dp,
                                         end = 20.dp
                                     )
-                                    .clickable {
-                                        showCommentSheet = true
-                                    },
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_comment),
-                                    modifier = Modifier.size(15.dp),
-                                    contentDescription = "comment",
-                                    tint = MaterialTheme.colorScheme.electricVioletColor
                                 )
-                                MediumSmallText(
-                                    text = "Yorumlar (${courseDetail.commentCount})",
-                                    Modifier.padding(start = 8.dp, end = 8.dp)
-                                )
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_star),
-                                    modifier = Modifier.size(15.dp),
-                                    contentDescription = "star",
-                                    tint = MaterialTheme.colorScheme.goldenTainoiColor
-                                )
-                                MediumSmallText(
-                                    text = courseDetail.ratingAvg.toString(),
-                                    Modifier.padding(start = 8.dp, end = 8.dp)
+                                Row(
+                                    modifier = Modifier.padding(
+                                        start = 20.dp,
+                                        top = 12.dp,
+                                        end = 20.dp
+                                    ),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_duration),
+                                        modifier = Modifier.size(15.dp),
+                                        contentDescription = "time"
+                                    )
+                                    MediumSmallText(
+                                        text = courseDetail.duration,
+                                        Modifier.padding(start = 8.dp, end = 8.dp)
+                                    )
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_level),
+                                        modifier = Modifier.size(15.dp),
+                                        contentDescription = "level"
+                                    )
+                                    MediumSmallText(
+                                        text = courseDetail.level,
+                                        Modifier.padding(start = 8.dp, end = 8.dp)
+                                    )
+                                }
+                                Row(
+                                    modifier = Modifier
+                                        .padding(
+                                            start = 20.dp,
+                                            top = 12.dp,
+                                            end = 20.dp
+                                        )
+                                        .clickable {
+                                            showCommentSheet = true
+                                        },
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_comment),
+                                        modifier = Modifier.size(15.dp),
+                                        contentDescription = "comment",
+                                        tint = MaterialTheme.colorScheme.electricVioletColor
+                                    )
+                                    MediumSmallText(
+                                        text = "Yorumlar (${courseDetail.commentCount})",
+                                        Modifier.padding(start = 8.dp, end = 8.dp)
+                                    )
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_star),
+                                        modifier = Modifier.size(15.dp),
+                                        contentDescription = "star",
+                                        tint = MaterialTheme.colorScheme.goldenTainoiColor
+                                    )
+                                    MediumSmallText(
+                                        text = courseDetail.ratingAvg.toString(),
+                                        Modifier.padding(start = 8.dp, end = 8.dp)
+                                    )
+                                }
+                                ReadMoreClickableText(
+                                    text = courseDetail.description,
+                                    Modifier.padding(start = 20.dp, top = 16.dp, end = 20.dp)
                                 )
                             }
-                            ReadMoreClickableText(
-                                text = courseDetail.description,
-                                Modifier.padding(start = 20.dp, top = 16.dp, end = 20.dp)
-                            )
                         }
-                    }
-                    items(courseDetail.chapters.size) {
-                        ExpandableCard(title = courseDetail.chapters[it].name, courseDetail.chapters[it].lessons) { playerId ->
-                            if (courseDetail.isSale) {
-                                onAction(
-                                    UiAction.OnPlayerClick(
-                                        playerId
+                        items(courseDetail.chapters.size) {
+                            ExpandableCard(
+                                title = courseDetail.chapters[it].name,
+                                courseDetail.chapters[it].lessons
+                            ) { playerId ->
+                                if (courseDetail.isSale) {
+                                    onAction(
+                                        UiAction.OnPlayerClick(
+                                            playerId
+                                        )
                                     )
-                                )
-                            } else {
-                                context.showWeb(courseDetail.page)
+                                } else {
+                                    context.showWeb(courseDetail.page)
+                                }
                             }
                         }
                     }

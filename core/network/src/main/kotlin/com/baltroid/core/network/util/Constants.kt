@@ -13,15 +13,18 @@ internal object Constants {
     internal object Path {
         internal const val LOGIN = "auth/login"
         internal const val REGISTER = "auth/register"
+        internal const val FORGOT_PASSWORD = "auth/forgot-password"
         internal const val COURSES = "courses"
         internal const val TEACHER = "teacher"
         internal const val ACADEMY = "academy"
         internal const val PROFILE = "profile"
         internal const val COMMENT = "comment"
         internal const val SEARCH = "search"
-        internal const val ALLTOTAL = "all-total"
+        internal const val ALL_TOTAL = "all-total"
         internal const val VIDEO = "video"
         internal const val FAVORITE = "favorite"
+        internal const val USER_COURSES = "user_courses"
+        internal const val CATEGORY = "category"
     }
 
     internal object Fields {
@@ -45,6 +48,7 @@ internal object Constants {
         internal const val RATING = "rating"
         internal const val TITLE = "title"
         internal const val PLAYER_ID = "player_id"
+        internal const val CATEGORY_ID = "category_id"
 
         private fun buildAppendToResponse(vararg fields: String) =
             fields.joinToString(separator = APPEND_TO_RESPONSE_SEPARATOR)

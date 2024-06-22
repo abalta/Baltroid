@@ -11,6 +11,7 @@ import com.baltroid.core.common.isSuccess
 import com.baltroid.core.data.extension.emptyToNull
 import com.baltroid.core.data.mapper.asAcademyDetailModel
 import com.baltroid.core.data.mapper.asAcademyModel
+import com.baltroid.core.data.mapper.asCategoryModel
 import com.baltroid.core.data.mapper.asCourseResponseModel
 import com.baltroid.core.data.mapper.asLoginResponseModel
 import com.baltroid.core.data.mapper.asProfileModel
@@ -28,6 +29,7 @@ import com.baltroid.core.network.source.MekikNetworkDataSource
 import com.baltroid.core.network.source.TeacherPagingDataSource
 import com.mobven.domain.model.AcademyDetailModel
 import com.mobven.domain.model.AcademyModel
+import com.mobven.domain.model.CategoryModel
 import com.mobven.domain.model.CourseModel
 import com.mobven.domain.model.LoginResponseModel
 import com.mobven.domain.model.ProfileModel
@@ -44,9 +46,11 @@ import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 class MekikRepositoryImpl @Inject constructor(
-private val networkDataSource: MekikNetworkDataSource,
-private val preferencesHelper: PreferencesHelper,
+    private val networkDataSource: MekikNetworkDataSource,
+    private val preferencesHelper: PreferencesHelper,
 ) : MekikRepository {
+
+    private val categoryList = mutableListOf<CategoryModel>()
 
     override fun login(
         email: String,
@@ -71,6 +75,11 @@ private val preferencesHelper: PreferencesHelper,
         }
     )
 
+    override fun forgotPassword(email: String): Flow<BaltroidResult<Boolean>> = networkRequestFlow(
+        request = { networkDataSource.forgotPassword(email) },
+        onSuccess = { true }
+    )
+
     override fun saveToken(token: String) {
         preferencesHelper.userAccessToken = token
     }
@@ -81,10 +90,10 @@ private val preferencesHelper: PreferencesHelper,
 
     override fun isUserLoggedIn(): Boolean = preferencesHelper.userAccessToken.isNullOrEmpty().not()
 
-    override fun getCourses(): Flow<PagingData<CourseModel>> {
+    override fun getCourses(sort: String?, category: Int?): Flow<PagingData<CourseModel>> {
         return Pager(
             config = PagingConfig(pageSize = 20, enablePlaceholders = false),
-            pagingSourceFactory = { CoursePagingDataSource(networkDataSource) }
+            pagingSourceFactory = { CoursePagingDataSource(networkDataSource, sort, category) }
         ).flow.pagingMap { it.asCourseResponseModel() }
     }
 
@@ -102,7 +111,10 @@ private val preferencesHelper: PreferencesHelper,
         ).flow.pagingMap { it.asAcademyModel() }
     }
 
-    override fun getLimitedCourses(limit: Int, sort: String?): Flow<BaltroidResult<List<CourseModel>>> =
+    override fun getLimitedCourses(
+        limit: Int,
+        sort: String?
+    ): Flow<BaltroidResult<List<CourseModel>>> =
         networkRequestFlow(
             request = { networkDataSource.courses(limit = limit, sort = sort) },
             onSuccess = { response -> response.courses.map { it.asCourseResponseModel() } }
@@ -152,7 +164,11 @@ private val preferencesHelper: PreferencesHelper,
             onSuccess = { it.asProfileModel() }
         )
 
-    override fun addComment(courseId: Int, comment: String, rating: Int): Flow<BaltroidResult<Boolean>> =
+    override fun addComment(
+        courseId: Int,
+        comment: String,
+        rating: Int
+    ): Flow<BaltroidResult<Boolean>> =
         networkRequestFlow(
             request = { networkDataSource.addComment(courseId, comment, rating) },
             onSuccess = { it }
@@ -170,26 +186,16 @@ private val preferencesHelper: PreferencesHelper,
             onSuccess = { it.asTotalModel() }
         )
 
-    override fun video(id: String): Flow<BaltroidResult<VideoModel>> =
-        flow {
-            emit(BaltroidResult.loading())
-            val response = networkDataSource.video(id)
-            if (response.isSuccess()) {
-                emit(BaltroidResult.success(response.value.asVideoModel()))
-            } else if (response.isFailure()) {
-                if (response.error is HttpException) {
-                    emit(BaltroidResult.failure(response.error))
-                } else {
-                    emit(BaltroidResult.failure(Throwable(COMMON_ERROR_MESSAGE)))
-                }
-            }
-        }.flowOn(Dispatchers.IO)
+    override fun video(id: String): Flow<BaltroidResult<VideoModel>> = networkRequestFlow(
+        request = { networkDataSource.video(id) },
+        onSuccess = { it.asVideoModel() }
+    )
 
-    override fun getFavorites(): Flow<BaltroidResult<List<CourseModel>>>
-    = networkRequestFlow(
+    override fun getFavorites(): Flow<BaltroidResult<List<CourseModel>>> = networkRequestFlow(
         request = { networkDataSource.getFavorites() },
         onSuccess = { response -> response.map { it.asCourseResponseModel() } }
     )
+
     override fun addFavorite(id: Int): Flow<BaltroidResult<Boolean>> =
         networkRequestFlow(
             request = { networkDataSource.addFavorite(id) },
@@ -200,6 +206,30 @@ private val preferencesHelper: PreferencesHelper,
         networkRequestFlow(
             request = { networkDataSource.removeFavorite(id) },
             onSuccess = { true }
+        )
+
+    override fun getMyCourses(): Flow<BaltroidResult<List<CourseModel>>> =
+        networkRequestFlow(
+            request = { networkDataSource.userCourses() },
+            onSuccess = { response -> response.map { it.asCourseResponseModel() } }
+        )
+
+    override fun getCategories(): Flow<BaltroidResult<List<CategoryModel>>> =
+        networkRequestFlow(
+            request = {
+                if (categoryList.isEmpty()) {
+                    networkDataSource.categories()
+                } else {
+                    BaltroidResult.success(DataResponse(mutableListOf(), null, null))
+                }
+            },
+            onSuccess = { response ->
+                val categories = response.map {
+                    it.asCategoryModel()
+                }
+                categoryList.addAll(categories)
+                categoryList
+            }
         )
 
     private inline fun <T, R> networkRequestFlow(

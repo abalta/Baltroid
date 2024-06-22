@@ -8,6 +8,7 @@ import com.baltroid.core.common.EventBus
 import com.baltroid.core.common.HttpException
 import com.baltroid.core.common.handle
 import com.baltroid.model.LoginModel
+import com.mobven.domain.usecase.ForgotPasswordUseCase
 import com.mobven.domain.usecase.LoginUseCase
 import com.mobven.domain.usecase.RegisterUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,6 +32,7 @@ import javax.inject.Inject
 class AuthViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
     private val registerUseCase: RegisterUseCase,
+    private val forgotPasswordUseCase: ForgotPasswordUseCase,
     private val eventBus: EventBus
 ) : ViewModel() {
 
@@ -94,6 +96,30 @@ class AuthViewModel @Inject constructor(
                     state = state.copy(
                         isLoading = false,
                         loginModel = null,
+                        error = triggered(throwable)
+                    )
+                }
+            }
+        }
+    }
+
+    fun forgotPassword(email: String) {
+        viewModelScope.launch {
+            forgotPasswordUseCase(email).handle {
+                onLoading {
+                    state = state.copy(isLoading = true, loginModel = null)
+                }
+                onSuccess {
+                    viewModelScope.launch {
+                        eventBus.invokeEvent(AppEvent.LOGIN)
+                    }
+                    state = state.copy(
+                        isLoading = false, success = triggered
+                    )
+                }
+                onFailure { throwable ->
+                    state = state.copy(
+                        isLoading = false,
                         error = triggered(throwable)
                     )
                 }

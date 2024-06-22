@@ -10,6 +10,7 @@ import com.baltroid.core.common.ErrorModel
 import com.baltroid.core.common.handle
 import com.mobven.domain.model.CourseModel
 import com.mobven.domain.usecase.CourseUseCase
+import com.mobven.domain.usecase.MyCoursesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import de.palm.composestateevents.StateEvent
 import de.palm.composestateevents.StateEventWithContent
@@ -24,48 +25,55 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class CoursesViewModel @Inject constructor(
-    private val courseUseCase: CourseUseCase
+class MyCoursesViewModel @Inject constructor(
+   private val myCoursesUseCase: MyCoursesUseCase
 ) : ViewModel() {
 
-    private val _courseState = MutableStateFlow(CoursesState())
+    private val _courseState = MutableStateFlow(MyCoursesState())
     val courseState = _courseState.asStateFlow()
 
-    private var state: CoursesState
+    private var state: MyCoursesState
         get() = _courseState.value
         set(newState) {
             _courseState.update { newState }
         }
 
     init {
-        val courses = courseUseCase.invoke().cachedIn(viewModelScope)
-        val latestCoursesFlow = courseUseCase.invoke(5, "en-yeniler")
+        getMyCourses()
+    }
+
+    fun getMyCourses() {
         viewModelScope.launch {
-            latestCoursesFlow.handle {
+            myCoursesUseCase.invoke().handle {
                 onLoading {
                     state = state.copy(isLoading = true)
                 }
-                onSuccess { latestCourses ->
-                    state = state.copy(latestCourses = latestCourses)
+                onSuccess { myCourses ->
+                    state = state.copy(
+                        isLoading = false,
+                        courses = myCourses,
+                        success = triggered,
+                        error = triggered(null)
+                    )
                 }
-                onFailure {
-                    state = state.copy(error = triggered(it))
+                onFailure { throwable ->
+                    state = state.copy(
+                        isLoading = false,
+                        error = triggered(throwable)
+                    )
                 }
             }
-            state = state.copy(courses = courses)
         }
     }
 
-    fun refreshCourses(sort: String? = null, category: Int? = null) {
-        val courses = courseUseCase.invoke(sort, category).cachedIn(viewModelScope)
-        state = state.copy(courses = courses)
+    fun onConsumedFailedEvent() {
+        state = state.copy(error = consumed())
     }
 }
 
-data class CoursesState(
+data class MyCoursesState(
     val isLoading: Boolean = false,
-    val courses: Flow<PagingData<CourseModel>> = flowOf(),
-    val latestCourses: List<CourseModel> = emptyList(),
+    val courses:List<CourseModel>? = null,
     val success: StateEvent = consumed,
-    val error: StateEventWithContent<ErrorModel> = consumed()
+    val error: StateEventWithContent<ErrorModel?> = consumed()
 )

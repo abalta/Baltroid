@@ -2,9 +2,9 @@ package com.mobven.domain.repository
 
 import androidx.paging.PagingData
 import com.baltroid.core.common.BaltroidResult
-import com.baltroid.core.network.model.AcademyEntityDto
 import com.mobven.domain.model.AcademyDetailModel
 import com.mobven.domain.model.AcademyModel
+import com.mobven.domain.model.CategoryModel
 import com.mobven.domain.model.CourseModel
 import com.mobven.domain.model.LoginResponseModel
 import com.mobven.domain.model.ProfileModel
@@ -18,10 +18,11 @@ import kotlinx.coroutines.flow.Flow
 interface MekikRepository {
     fun login(email: String, password: String): Flow<BaltroidResult<LoginResponseModel>>
     fun register(email: String, password: String, firstname: String, lastname: String, agreement: Boolean): Flow<BaltroidResult<LoginResponseModel>>
+    fun forgotPassword(email: String): Flow<BaltroidResult<Boolean>>
     fun saveToken(token: String)
     fun deleteToken()
     fun isUserLoggedIn(): Boolean
-    fun getCourses(): Flow<PagingData<CourseModel>>
+    fun getCourses(sort: String?, category: Int?): Flow<PagingData<CourseModel>>
     fun getTeachers(): Flow<PagingData<TeacherModel>>
     fun getAcademies(): Flow<PagingData<AcademyModel>>
     fun getLimitedCourses(limit: Int, sort: String?): Flow<BaltroidResult<List<CourseModel>>>
@@ -37,6 +38,7 @@ interface MekikRepository {
     fun getFavorites(): Flow<BaltroidResult<List<CourseModel>>>
     fun addFavorite(id: Int): Flow<BaltroidResult<Boolean>>
     fun deleteFavorite(id: Int): Flow<BaltroidResult<Boolean>>
-
+    fun getMyCourses(): Flow<BaltroidResult<List<CourseModel>>>
+    fun getCategories(): Flow<BaltroidResult<List<CategoryModel>>>
 
 }

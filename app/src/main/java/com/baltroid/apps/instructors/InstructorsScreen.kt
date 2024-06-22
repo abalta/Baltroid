@@ -42,6 +42,7 @@ fun InstructorsScreen(
         item {
             FilterHeadText(
                 text = stringResource(id = R.string.title_instructors),
+                showIcon = false,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 24.dp, end = 24.dp)

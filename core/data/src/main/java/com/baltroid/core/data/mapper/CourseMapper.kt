@@ -1,10 +1,12 @@
 package com.baltroid.core.data.mapper
 
+import com.baltroid.core.network.model.CategoryMainDto
 import com.baltroid.core.network.model.ChapterDto
 import com.baltroid.core.network.model.CommentDto
 import com.baltroid.core.network.model.CourseDto
 import com.baltroid.core.network.model.LessonDto
 import com.baltroid.core.network.model.UserDto
+import com.mobven.domain.model.CategoryModel
 import com.mobven.domain.model.ChapterModel
 import com.mobven.domain.model.CommentModel
 import com.mobven.domain.model.CourseModel
@@ -17,6 +19,7 @@ fun CourseDto.asCourseResponseModel() = CourseModel(
     description = description.orEmpty(),
     popular = isPromoted ?: false,
     author = author?.name.orEmpty(),
+    authorId = author?.id ?: 0,
     cover = cover.orEmpty(),
     academy = academy?.academyName.orEmpty(),
     level = level.orEmpty(),
@@ -56,4 +59,9 @@ fun UserDto.asUserModel() = UserModel(
     id = id ?: 0,
     name = "$firstname $lastname",
     avatar = avatar.orEmpty()
+)
+
+fun CategoryMainDto.asCategoryModel() = CategoryModel(
+    id = id ?: 0,
+    name = categoryName?.tr.orEmpty()
 )

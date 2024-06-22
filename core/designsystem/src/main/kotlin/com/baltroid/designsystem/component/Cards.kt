@@ -100,7 +100,7 @@ fun MekikCard(
             Column(
                 Modifier
                     .fillMaxSize()
-                    .padding(top = 10.dp, bottom = 10.dp, end = 6.dp, start = 12.dp),
+                    .padding(top = 8.dp, bottom = 8.dp, end = 6.dp, start = 12.dp),
                 verticalArrangement = Arrangement.Bottom
             ) {
                 if (popular) {
@@ -108,11 +108,11 @@ fun MekikCard(
                         text = "Popüler", color = MaterialTheme.colorScheme.electricVioletColor
                     )
                 }
-                Body(text = title, modifier = Modifier.padding(top = 4.dp))
+                Body(text = title, modifier = Modifier.padding(top = 2.dp))
                 CaptionSmall(
                     text = caption,
                     color = Color.Black.copy(alpha = 0.5f),
-                    modifier = Modifier.padding(top = 4.dp)
+                    modifier = Modifier.padding(top = 2.dp)
                 )
             }
         }
@@ -124,8 +124,8 @@ fun MekikCard(
 fun PreviewMekikCard() {
     MekikCard(
         "Taner Özdeş",
-        "Dijital Dünyanın Antidijital Nefesi Dijital Dünyanın Antidijital Nefesi",
-        false
+        "Dijital Dünyanın Antidijital Nefesi Dijital Dünyanın Antidijital Nefesi Nefesi Nefesi Nefesi Nefesi Nefesi Nefesi",
+        true
     ) {
 
     }
@@ -247,11 +247,13 @@ fun MekikCardDouble(
                     modifier = Modifier.weight(1f)
                 )
                 Body(text = title, modifier = Modifier.padding(top = 4.dp))
-                CaptionSmall(
-                    text = captionTop,
-                    color = Color.Black.copy(alpha = 0.5f),
-                    modifier = Modifier.padding(top = 4.dp)
-                )
+                if (captionTop.isNotEmpty()) {
+                    CaptionSmall(
+                        text = captionTop,
+                        color = Color.Black.copy(alpha = 0.5f),
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
                 CaptionSmall(
                     text = captionBottom,
                     color = Color.Black.copy(alpha = 0.5f),
@@ -265,7 +267,7 @@ fun MekikCardDouble(
 @Preview
 @Composable
 fun PreviewMekikCardDoubleCaption() {
-    MekikCardDouble("CCIM Institute", "1 Eğitim", "Zeynep Begüm Kocaçal", "Popüler") {
+    MekikCardDouble("", "1 Eğitim", "Zeynep Begüm Kocaçal", "Popüler") {
 
     }
 }
