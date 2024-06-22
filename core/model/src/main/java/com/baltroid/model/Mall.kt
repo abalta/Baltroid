@@ -1,8 +1,5 @@
 package com.baltroid.model
 
-import androidx.compose.runtime.Immutable
-
-@Immutable
 data class Mall(
     val id: String,
     val cityCode: Int,

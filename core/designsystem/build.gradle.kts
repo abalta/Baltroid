@@ -1,7 +1,6 @@
 plugins {
     id("baltroid.android.library")
     id("baltroid.android.library.compose")
-    id("baltroid.android.feature")
 }
 
 android {

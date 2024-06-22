@@ -21,6 +21,10 @@ android {
         }
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     buildTypes {
         debug {
             applicationIdSuffix = BaltroidBuildType.DEBUG.applicationIdSuffix

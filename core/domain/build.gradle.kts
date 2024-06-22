@@ -1,6 +1,6 @@
 plugins {
     id("baltroid.android.library")
-    kotlin("kapt")
+    id("baltroid.android.hilt")
 }
 
 android {
@@ -11,8 +11,7 @@ dependencies {
     implementation(project(":core:data"))
     implementation(project(":core:model"))
     implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.datetime)
-
-    kapt(libs.hilt.compiler)
 }
