@@ -199,13 +199,13 @@ class MekikRepositoryImpl @Inject constructor(
     override fun addFavorite(id: Int): Flow<BaltroidResult<Boolean>> =
         networkRequestFlow(
             request = { networkDataSource.addFavorite(id) },
-            onSuccess = { true }
+            onSuccess = { it }
         )
 
     override fun deleteFavorite(id: Int): Flow<BaltroidResult<Boolean>> =
         networkRequestFlow(
             request = { networkDataSource.removeFavorite(id) },
-            onSuccess = { true }
+            onSuccess = { it }
         )
 
     override fun getMyCourses(): Flow<BaltroidResult<List<CourseModel>>> =

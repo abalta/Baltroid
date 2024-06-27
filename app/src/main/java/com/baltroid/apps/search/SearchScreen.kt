@@ -2,6 +2,8 @@ package com.baltroid.apps.search
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -38,6 +40,7 @@ import kotlinx.coroutines.Job
 import androidx.compose.foundation.lazy.items
 import com.baltroid.apps.navigation.OnAction
 import com.baltroid.apps.navigation.UiAction
+import com.baltroid.designsystem.component.BadgeText
 import com.baltroid.designsystem.component.MekikCardDouble
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -120,8 +123,35 @@ fun SearchScreen(
                 focusedPlaceholderColor = Color.Transparent
             ),
         )
-        LazyColumn(modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp)) {
-            searchState.searchModel?.let { searchModel ->
+        searchState.categories?.let {
+            Caption(
+                text = "Kategoriler",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 24.dp, end = 24.dp, top = 20.dp)
+            )
+            Row(modifier = Modifier.padding(top = 12.dp, start = 24.dp, end = 24.dp)) {
+                it.forEach {
+                    BadgeText(text = it.name) {
+                        text = it.name
+                        searchViewModel.search(it.name)
+                    }
+                    Spacer(modifier = Modifier.padding(start = 8.dp))
+                }
+            }
+        }
+        searchState.searchModel?.let { searchModel ->
+            Caption(
+                text = "${searchModel.courses.size} Sonuç bulundu",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 24.dp, end = 24.dp, top = 20.dp)
+            )
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 10.dp)
+            ) {
                 if (searchModel.courses.isNotEmpty()) {
                     item {
                         Caption(
@@ -133,7 +163,12 @@ fun SearchScreen(
                         )
                     }
                     items(searchModel.courses) {
-                        MekikCard(caption =it.author, title = it.title, popular = it.popular, painter = it.cover) {
+                        MekikCard(
+                            caption = it.author,
+                            title = it.title,
+                            popular = it.popular,
+                            painter = it.cover
+                        ) {
                             onAction(UiAction.OnCourseClick(it.id))
                         }
                     }
@@ -188,7 +223,7 @@ fun SearchScreen(
 @Preview
 @Composable
 fun PreviewSearchScreen() {
-    SearchScreen{
+    SearchScreen {
 
     }
 }

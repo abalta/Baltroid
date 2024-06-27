@@ -4,8 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.baltroid.core.common.ErrorModel
 import com.baltroid.core.common.handle
+import com.mobven.domain.model.CategoryModel
 import com.mobven.domain.model.SearchModel
 import com.mobven.domain.model.TotalModel
+import com.mobven.domain.usecase.CategoryUseCase
 import com.mobven.domain.usecase.SearchUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import de.palm.composestateevents.StateEvent
@@ -20,7 +22,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val searchUseCase: SearchUseCase
+    private val searchUseCase: SearchUseCase,
+    private val categoryUseCase: CategoryUseCase
 ) : ViewModel() {
 
     private val _searchState = MutableStateFlow(SearchState())
@@ -34,6 +37,7 @@ class SearchViewModel @Inject constructor(
 
     init {
         total()
+        categories()
     }
 
     private fun total() {
@@ -58,6 +62,28 @@ class SearchViewModel @Inject constructor(
         }
     }
 
+    private fun categories() {
+        viewModelScope.launch {
+            categoryUseCase().handle {
+                onLoading {
+                    state = state.copy(isLoading = true)
+                }
+                onSuccess { list ->
+                    state = state.copy(
+                        isLoading = false,
+                        categories = list
+                    )
+                }
+                onFailure { throwable ->
+                    state = state.copy(
+                        isLoading = false,
+                        error = triggered(throwable)
+                    )
+                }
+            }
+        }
+    }
+
     fun search(query: String) {
         viewModelScope.launch {
             searchUseCase(query).handle {
@@ -67,6 +93,7 @@ class SearchViewModel @Inject constructor(
                 onSuccess { model ->
                     state = state.copy(
                         isLoading = false,
+                        categories = null,
                         searchModel = model, success = triggered
                     )
                 }
@@ -85,6 +112,7 @@ data class SearchState(
     val isLoading: Boolean = false,
     val searchModel: SearchModel? = null,
     val totalModel: TotalModel? = null,
+    val categories: List<CategoryModel>? = null,
     val success: StateEvent = consumed,
     val error: StateEventWithContent<ErrorModel> = consumed()
 )

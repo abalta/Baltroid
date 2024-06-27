@@ -6,15 +6,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.ime
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -25,13 +21,12 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -46,10 +41,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.baltroid.apps.auth.LoginSheet
 import com.baltroid.apps.ext.collectAsStateLifecycleAware
 import com.baltroid.apps.home.hideSheetAndUpdateState
+import com.baltroid.core.common.ErrorModel
 import com.baltroid.core.designsystem.R
-import com.baltroid.designsystem.component.CircularButton
+import com.baltroid.designsystem.component.ErrorCard
 import com.baltroid.designsystem.component.FilterHeadText
 import com.baltroid.designsystem.component.MekikFilledButton
 import com.baltroid.designsystem.component.MekikOutlinedButton
@@ -57,6 +54,7 @@ import com.baltroid.designsystem.component.MekikTextField
 import com.baltroid.designsystem.component.ProfileInfoCard
 import com.baltroid.designsystem.component.shadow
 import com.baltroid.designsystem.theme.regularStyle
+import de.palm.composestateevents.EventEffect
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -76,6 +74,13 @@ fun ProfileScreen(
     var phone by rememberSaveable { mutableStateOf("") }
     var about by rememberSaveable { mutableStateOf("") }
 
+    var error: ErrorModel? by remember { mutableStateOf(null) }
+    var showLoginSheet by rememberSaveable { mutableStateOf(false) }
+
+    EventEffect(event = profileState.error, onConsumed = viewModel::onConsumedFailedEvent) {
+        error = it
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
         when {
             profileState.isLoading -> {
@@ -85,6 +90,7 @@ fun ProfileScreen(
             }
 
             profileState.profile != null -> {
+                showLoginSheet = false
                 val profile = profileState.profile!!
                 Column(modifier = Modifier.fillMaxSize()) {
                     Box(
@@ -143,7 +149,27 @@ fun ProfileScreen(
                     }
                 }
             }
+
         }
+        error?.let {
+            if (error?.code == 401) {
+                ErrorCard(
+                    message = stringResource(id = R.string.error_unauthorized),
+                    buttonText = stringResource(
+                        id = R.string.text_btn_login
+                    )
+                ) {
+                    showLoginSheet = true
+                }
+            }
+        }
+    }
+    if (showLoginSheet) {
+        LoginSheet(onDismiss = {
+            showLoginSheet = false
+        }, checkLogin = {
+            viewModel.getProfile()
+        })
     }
     if (showBottomSheet) {
         val profile = profileState.profile!!
@@ -254,6 +280,7 @@ fun ProfileScreen(
                         phone = phone,
                         about = about
                     )
+                    showBottomSheet = false
                 }
             }
         }

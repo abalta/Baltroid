@@ -1,6 +1,7 @@
 package com.baltroid.designsystem.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -236,11 +237,14 @@ fun MediumBigText(text: String, modifier: Modifier = Modifier, color: Color = Co
     )
 }
 @Composable
-fun BadgeText(text: String) {
+fun BadgeText(text: String, onClick: () -> Unit = {}) {
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(6.dp))
             .background(MaterialTheme.colorScheme.electricVioletColor)
+            .clickable {
+                onClick()
+            }
     ) {
         Text(
             text = text,

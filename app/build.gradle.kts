@@ -13,7 +13,7 @@ android {
     defaultConfig {
         applicationId = "org.mekik.apps"
         versionCode = 1
-        versionName = "0.0.3" // X.Y.Z; X = Major, Y = minor, Z = Patch level
+        versionName = "0.0.4"
 
         vectorDrawables {
             useSupportLibrary = true

@@ -64,7 +64,7 @@ fun MekikCheckBox(
                 .border(BorderStroke(0.5.dp, Color.Black), RoundedCornerShape(4.dp)),
             contentAlignment = Alignment.Center
         ) {
-            if (checked) {
+            if (checkedState) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_check),
                     contentDescription = "check",

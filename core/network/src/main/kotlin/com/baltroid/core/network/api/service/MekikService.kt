@@ -117,12 +117,12 @@ interface MekikService {
     @POST(Constants.Path.FAVORITE)
     suspend fun addFavorite(
         @Query(Constants.Fields.COURSE_ID) courseId: Int
-    ): BaltroidResult<DataResponse<List<String>>>
+    ): BaltroidResult<DataResponse<Boolean>>
 
     @DELETE(Constants.Path.FAVORITE)
     suspend fun removeFavorite(
         @Query(Constants.Fields.COURSE_ID) courseId: Int
-    ): BaltroidResult<DataResponse<List<String>>>
+    ): BaltroidResult<DataResponse<Boolean>>
 
     @GET(Constants.Path.USER_COURSES)
     suspend fun getUserCourses(): BaltroidResult<DataResponse<List<CourseDto>>>

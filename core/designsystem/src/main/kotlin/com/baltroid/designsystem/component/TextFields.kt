@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -19,9 +20,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusProperties
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.error
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,6 +42,7 @@ fun MekikTextField(
     modifier: Modifier = Modifier,
     typedText: String = "",
     keyboardType: KeyboardType = KeyboardType.Text,
+    imeAction: ImeAction = ImeAction.Done,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     leadingIcon: @Composable (() -> Unit)? = null,
     error: Boolean = false,
@@ -44,6 +50,7 @@ fun MekikTextField(
     onValue: (String) -> Unit
 ) {
     var text by remember { mutableStateOf(typedText) }
+    val focusManager = LocalFocusManager.current
 
     Column(modifier = modifier.padding(top = 16.dp)) {
         Caption(
@@ -59,7 +66,11 @@ fun MekikTextField(
                 onValue(it)
             },
             isError = error,
-            keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(keyboardType = keyboardType, imeAction = imeAction),
+            keyboardActions = KeyboardActions {
+                focusManager.clearFocus()
+            },
             visualTransformation = visualTransformation,
             modifier = Modifier
                 .fillMaxWidth()

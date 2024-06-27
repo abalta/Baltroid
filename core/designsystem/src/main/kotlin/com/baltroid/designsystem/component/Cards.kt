@@ -105,7 +105,9 @@ fun MekikCard(
             ) {
                 if (popular) {
                     SmallBold(
-                        text = "Popüler", color = MaterialTheme.colorScheme.electricVioletColor
+                        text = "Popüler",
+                        color = MaterialTheme.colorScheme.electricVioletColor,
+                        modifier = Modifier.weight(1f)
                     )
                 }
                 Body(text = title, modifier = Modifier.padding(top = 2.dp))
@@ -366,7 +368,10 @@ fun ExpandableCard(title: String, lessons: List<LessonModel>, onLessonClick: (St
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 CaptionMedium(
-                    text = title, modifier = Modifier.padding(horizontal = 16.dp, vertical = 18.dp).weight(1f)
+                    text = title,
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp, vertical = 18.dp)
+                        .weight(1f)
                 )
                 Icon(
                     painter = painterResource(id = R.drawable.ic_menu_arrow),
@@ -740,7 +745,9 @@ fun ErrorCard(message: String, buttonText: String, onButtonClick: () -> Unit) {
                     blurRadius = 6.dp
                 )
                 .clip(RoundedCornerShape(9.dp))
-                .background(Color.White).wrapContentHeight(Alignment.CenterVertically).padding(horizontal = 20.dp)
+                .background(Color.White)
+                .wrapContentHeight(Alignment.CenterVertically)
+                .padding(horizontal = 20.dp)
 
         )
         MekikOutlinedButton(

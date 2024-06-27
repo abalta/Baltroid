@@ -3,6 +3,7 @@ package com.baltroid.apps.profile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.baltroid.core.common.ErrorModel
+import com.baltroid.core.common.EventBus
 import com.baltroid.core.common.handle
 import com.mobven.domain.model.ProfileModel
 import com.mobven.domain.usecase.ProfileUseCase
@@ -19,7 +20,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val profileUseCase: ProfileUseCase
+    private val profileUseCase: ProfileUseCase,
+    private val eventBus: EventBus
 ) : ViewModel() {
 
     private val _profileState = MutableStateFlow(ProfileState())
@@ -33,9 +35,14 @@ class ProfileViewModel @Inject constructor(
 
     init {
         getProfile()
+        viewModelScope.launch {
+            eventBus.events.collect {
+                getProfile()
+            }
+        }
     }
 
-    private fun getProfile() {
+    fun getProfile() {
         viewModelScope.launch {
             profileUseCase().handle {
                 onLoading {
@@ -83,6 +90,10 @@ class ProfileViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun onConsumedFailedEvent() {
+        state = state.copy(error = consumed())
     }
 }
 

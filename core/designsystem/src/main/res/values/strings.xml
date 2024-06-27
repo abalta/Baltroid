@@ -33,7 +33,7 @@
     <string name="title_login">Giriş Yap</string>
     <string name="title_register">Kayıt Ol</string>
     <string name="text_password">Şifre</string>
-    <string name="text_btn_forgot_password">Şifremi Unuttm</string>
+    <string name="text_btn_forgot_password">Şifremi Unuttum</string>
     <string name="text_no_register">Hesabın Yok mu? Hemen Kayıt Ol.</string>
     <string name="text_btn_free_register">Ücretsiz Kayıt Ol</string>
     <string name="checkbox_text_permission">Mekik\'in bana yenilikler ve güncellemeler ile ilgili eposta göndermesini onaylıyorum.</string>
