@@ -40,5 +40,4 @@ interface MekikRepository {
     fun deleteFavorite(id: Int): Flow<BaltroidResult<Boolean>>
     fun getMyCourses(): Flow<BaltroidResult<List<CourseModel>>>
     fun getCategories(): Flow<BaltroidResult<List<CategoryModel>>>
-
 }

@@ -69,7 +69,9 @@ fun BottomNavGraph(
             }
         }
         composable(route = BottomBarScreen.Profile.route) {
-            ProfileScreen()
+            ProfileScreen {
+                it.navigate(navController)
+            }
         }
         composable(route = BottomBarScreen.Courses.route) {
             CoursesScreen {
@@ -149,6 +151,9 @@ fun NavGraphBuilder.detailsNavGraph(navController: NavHostController) {
 fun UiAction.navigate(navController: NavHostController) {
     when (this) {
         is UiAction.OnBackClick -> navController.popBackStack()
+        is UiAction.OnLogoutClick -> {
+            navController.navigate(BottomBarScreen.Home.route)
+        }
         is UiAction.OnCourseClick -> {
             navController.navigate("course/${id}")
         }

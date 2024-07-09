@@ -44,6 +44,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.baltroid.apps.auth.LoginSheet
 import com.baltroid.apps.ext.collectAsStateLifecycleAware
 import com.baltroid.apps.home.hideSheetAndUpdateState
+import com.baltroid.apps.navigation.OnAction
+import com.baltroid.apps.navigation.UiAction
 import com.baltroid.core.common.ErrorModel
 import com.baltroid.core.designsystem.R
 import com.baltroid.designsystem.component.ErrorCard
@@ -59,7 +61,8 @@ import de.palm.composestateevents.EventEffect
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
-    viewModel: ProfileViewModel = hiltViewModel()
+    viewModel: ProfileViewModel = hiltViewModel(),
+    onAction: OnAction
 ) {
     val profileState by viewModel.profileState.collectAsStateLifecycleAware()
     val sheetState = rememberModalBottomSheetState(
@@ -146,6 +149,15 @@ fun ProfileScreen(
                         modifier = Modifier.padding(top = 16.dp)
                     ) {
                         showBottomSheet = true
+                    }
+                    MekikOutlinedButton(
+                        text = "Çıkış", modifier = Modifier.padding(
+                            top = 4.dp,
+                            bottom = 16.dp
+                        )
+                    ) {
+                        viewModel.logout()
+                        onAction(UiAction.OnLogoutClick)
                     }
                 }
             }
@@ -290,5 +302,7 @@ fun ProfileScreen(
 @Preview
 @Composable
 fun PreviewProfileScreen() {
-    ProfileScreen()
+    ProfileScreen {
+
+    }
 }

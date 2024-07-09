@@ -2,10 +2,12 @@ package com.baltroid.apps.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.baltroid.core.common.AppEvent
 import com.baltroid.core.common.ErrorModel
 import com.baltroid.core.common.EventBus
 import com.baltroid.core.common.handle
 import com.mobven.domain.model.ProfileModel
+import com.mobven.domain.usecase.LogoutUseCase
 import com.mobven.domain.usecase.ProfileUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import de.palm.composestateevents.StateEvent
@@ -21,6 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val profileUseCase: ProfileUseCase,
+    private val logoutUseCase: LogoutUseCase,
     private val eventBus: EventBus
 ) : ViewModel() {
 
@@ -39,6 +42,13 @@ class ProfileViewModel @Inject constructor(
             eventBus.events.collect {
                 getProfile()
             }
+        }
+    }
+
+    fun logout() {
+        logoutUseCase()
+        viewModelScope.launch {
+            eventBus.invokeEvent(AppEvent.LOGIN)
         }
     }
 
