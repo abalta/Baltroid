@@ -144,6 +144,12 @@ class MekikRepositoryImpl @Inject constructor(
             onSuccess = { it.asProfileModel() }
         )
 
+    override fun deleteProfile(): Flow<BaltroidResult<Boolean>> =
+        networkRequestFlow(
+            request = { networkDataSource.deleteProfile() },
+            onSuccess = { true }
+        )
+
     override fun updateProfile(
         email: String?,
         firstname: String?,

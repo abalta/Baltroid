@@ -15,4 +15,6 @@ class ProfileUseCase @Inject constructor(
         phone: String?,
         about: String?
     ) = mekikRepository.updateProfile(email, firstname, lastname, phone, about)
+
+    fun delete() = mekikRepository.deleteProfile()
 }

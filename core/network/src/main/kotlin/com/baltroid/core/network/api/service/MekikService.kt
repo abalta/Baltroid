@@ -90,6 +90,9 @@ interface MekikService {
         @Body profile: ProfileDto
     ): BaltroidResult<DataResponse<ProfileDto>>
 
+    @DELETE(Constants.Path.PROFILE)
+    suspend fun deleteProfile(): BaltroidResult<DataResponse<String>>
+
     @POST(Constants.Path.COMMENT)
     @FormUrlEncoded
     suspend fun addComment(

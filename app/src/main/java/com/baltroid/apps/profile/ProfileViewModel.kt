@@ -102,6 +102,28 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
+    fun deleteProfile() {
+        viewModelScope.launch {
+            profileUseCase.delete().handle {
+                onLoading {
+                    state = state.copy(isLoading = true)
+                }
+                onSuccess {
+                    state = state.copy(
+                        isLoading = false,
+                        profile = null, triggered
+                    )
+                }
+                onFailure { throwable ->
+                    state = state.copy(
+                        isLoading = false,
+                        error = triggered(throwable)
+                    )
+                }
+            }
+        }
+    }
+
     fun onConsumedFailedEvent() {
         state = state.copy(error = consumed())
     }

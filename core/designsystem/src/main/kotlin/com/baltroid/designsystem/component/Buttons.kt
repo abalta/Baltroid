@@ -32,14 +32,14 @@ import com.baltroid.core.designsystem.R
 import com.baltroid.designsystem.theme.electricVioletColor
 
 @Composable
-fun MekikOutlinedButton(text: String, modifier: Modifier = Modifier, isEnable: Boolean = true, onClick: () -> Unit) {
+fun MekikOutlinedButton(text: String, modifier: Modifier = Modifier, borderColor: Color = Color.Black.copy(0.2f), isEnable: Boolean = true, onClick: () -> Unit) {
     OutlinedButton(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 13.dp)
             .height(45.dp),
         shape = RoundedCornerShape(9.dp),
-        border = BorderStroke(1.5.dp, Color.Black.copy(0.2f)),
+        border = BorderStroke(1.5.dp, borderColor),
         enabled = isEnable,
         onClick = { onClick() }) {
         ButtonText(text)

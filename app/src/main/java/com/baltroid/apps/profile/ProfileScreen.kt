@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -84,7 +85,7 @@ fun ProfileScreen(
         error = it
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize().padding(bottom = 64.dp)) {
         when {
             profileState.isLoading -> {
                 CircularProgressIndicator(
@@ -157,6 +158,17 @@ fun ProfileScreen(
                         )
                     ) {
                         viewModel.logout()
+                        onAction(UiAction.OnLogoutClick)
+                    }
+                    Spacer(modifier =
+                        Modifier.weight(1f))
+                    MekikOutlinedButton(
+                        text = "Hesabı Sil", modifier = Modifier.padding(
+                            top = 4.dp,
+                            bottom = 16.dp
+                        ), borderColor = Color.Red
+                    ) {
+                        viewModel.deleteProfile()
                         onAction(UiAction.OnLogoutClick)
                     }
                 }

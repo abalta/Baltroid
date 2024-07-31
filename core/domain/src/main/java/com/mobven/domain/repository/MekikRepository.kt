@@ -30,6 +30,7 @@ interface MekikRepository {
     fun getTeacherDetail(id: Int): Flow<BaltroidResult<TeacherDetailModel>>
     fun getAcademyDetail(id: Int): Flow<BaltroidResult<AcademyDetailModel>>
     fun getProfile(): Flow<BaltroidResult<ProfileModel>>
+    fun deleteProfile(): Flow<BaltroidResult<Boolean>>
     fun updateProfile(email: String?, firstname: String?, lastname: String?, phone: String?, about: String?): Flow<BaltroidResult<ProfileModel>>
     fun addComment(courseId: Int, comment: String, rating: Int): Flow<BaltroidResult<Boolean>>
     fun search(query: String): Flow<BaltroidResult<SearchModel>>

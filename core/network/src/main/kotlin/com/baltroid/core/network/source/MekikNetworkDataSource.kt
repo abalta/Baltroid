@@ -55,6 +55,8 @@ class MekikNetworkDataSource @Inject constructor(private val mekikService: Mekik
 
     suspend fun profile() = mekikService.getProfile()
 
+    suspend fun deleteProfile() = mekikService.deleteProfile()
+
     suspend fun updateProfile(
         email: String? = null,
         firstname: String? = null,
