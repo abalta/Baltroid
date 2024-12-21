@@ -16,7 +16,7 @@ import com.mobven.domain.model.VideoModel
 import kotlinx.coroutines.flow.Flow
 
 interface MekikRepository {
-    fun login(email: String, password: String): Flow<BaltroidResult<LoginResponseModel>>
+    fun  login(email: String, password: String): Flow<BaltroidResult<LoginResponseModel>>
     fun register(email: String, password: String, firstname: String, lastname: String, agreement: Boolean): Flow<BaltroidResult<LoginResponseModel>>
     fun forgotPassword(email: String): Flow<BaltroidResult<Boolean>>
     fun saveToken(token: String)

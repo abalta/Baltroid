@@ -3,10 +3,6 @@ package com.baltroid.apps.navigation
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
@@ -31,10 +27,8 @@ import com.baltroid.apps.home.HomeContent
 import com.baltroid.apps.instructor.InstructorScreen
 import com.baltroid.apps.instructor.TeacherDetailViewModel
 import com.baltroid.apps.instructors.InstructorsScreen
-import com.baltroid.apps.notifications.NotificationsScreen
 import com.baltroid.apps.profile.ProfileScreen
 import com.baltroid.apps.search.SearchScreen
-import com.baltroid.apps.settings.SettingsScreen
 import com.baltroid.designsystem.navbar.BottomBarScreen
 import com.baltroid.designsystem.navbar.DetailsScreen
 

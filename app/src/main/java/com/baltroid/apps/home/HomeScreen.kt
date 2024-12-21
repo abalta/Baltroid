@@ -72,7 +72,6 @@ import com.baltroid.designsystem.component.RowtitleText
 import com.baltroid.designsystem.component.TopBar
 import com.baltroid.designsystem.component.shadow
 import com.baltroid.designsystem.navbar.BottomBarScreen
-import com.baltroid.designsystem.theme.electricVioletColor
 import com.mobven.domain.model.CourseModel
 import de.palm.composestateevents.EventEffect
 import kotlinx.coroutines.CoroutineScope
